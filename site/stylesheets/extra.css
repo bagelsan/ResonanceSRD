@@ -1,0 +1,23 @@
+/* Import the Oswald font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+
+/* --- Font Rules for Resonance SRD --- */
+
+/* 1. Set the default body font to Calibri */
+/* The browser will try Calibri first. If the user doesn't have it, it will fall back to a standard sans-serif font. */
+body {
+  font-family: "Calibri", sans-serif;
+}
+
+/* 2. Set all header fonts to Oswald */
+/* This targets all heading levels, from h1 (the page title) down to h6. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Oswald", sans-serif;
+}
+
+/* 3. Set the font for call-out boxes (admonitions) and their titles to Lora */
+/* This targets the special boxes for notes, warnings, etc. */
+.md-typeset .admonition,
+.md-typeset .admonition-title {
+  font-family: "Lora", serif;
+}
