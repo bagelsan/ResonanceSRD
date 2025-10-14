@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Character Keeper</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Lora&display=swap');
+        :root {
+            --bg-color: #212121; --surface-color: #333; --surface-light: #424242;
+            --text-color: #ccc; --primary-color: #D2B48C; --accent-color: #FFC107;
+            --hp-color: #c62828; --sp-color: #28a745; --ep-color: #0277bd; --karma-color: #6a1b9a;
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: "Calibri", sans-serif; margin: 0; padding: 1em; }
+        h1, h2, h3, h4, button, label { font-family: "Oswald", sans-serif; color: var(--primary-color); }
+        input, select, textarea { background-color: var(--surface-light); color: #fff; border: 1px solid #555; border-radius: 4px; padding: 0.5em; font-family: inherit; font-size: 1em; }
+        button { background-color: var(--accent-color); color: #212121; border: none; border-radius: 4px; padding: 0.5em 1em; cursor: pointer; font-size: 1em; }
+        button:hover { background-color: #FFD54F; }
+        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1em; }
+        .card { background-color: var(--surface-color); padding: 1em; border-radius: 8px; }
+        .header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; }
+        .core-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1em; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5em; }
+        .stat-box { background-color: var(--surface-light); border-radius: 4px; padding: 0.5em; text-align: center; }
+        .stat-box label { font-size: 1.5em; }
+        .stat-box input { width: 100%; text-align: center; font-size: 1.5em; border: none; background: none; }
+        .clock-container { display: flex; flex-direction: column; gap: 0.5em; }
+        .clock { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 0.5em; }
+        .clock label { font-size: 1.5em; }
+        .clock-track { display: flex; gap: 2px; }
+        .clock-segment { width: 100%; height: 20px; background-color: var(--surface-light); cursor: pointer; border: 1px solid #212121; }
+        #hp-track .clock-segment.filled { background-color: var(--hp-color); }
+        #sp-track .clock-segment.filled { background-color: var(--sp-color); }
+        #ep-track .clock-segment.filled { background-color: var(--ep-color); }
+        #karma-track .clock-segment.filled { background-color: var(--karma-color); }
+        .keywords { grid-column: 1 / 3; }
+        .keyword-list { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .keyword-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .keyword-item input[type="checkbox"] { width: 18px; height: 18px; }
+        .keyword-item .name { flex-grow: 1; }
+        .keyword-item button { background-color: #c62828; color: white; font-size: 0.8em; padding: 2px 6px; }
+        .sidebar { grid-column: 3 / 4; display: flex; flex-direction: column; gap: 1em; }
+        .module-card { background-color: var(--surface-color); padding: 1em; border-radius: 8px; }
+        .module-card h3 { margin-top: 0; }
+        .module-list { max-height: 200px; overflow-y: auto; }
+        .module-item { background-color: var(--surface-light); padding: 0.8em; border-radius: 4px; margin-bottom: 0.5em; }
+        .module-item input, .module-item textarea, .module-item select { width: calc(100% - 1em); }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .modal-content { background-color: var(--surface-color); padding: 2em; border-radius: 8px; width: 80%; max-width: 600px; }
+        .modal-content textarea { width: 100%; height: 200px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Resonance Character Keeper</h1>
+            <div class="save-controls">
+                <button id="new-char-btn">New</button>
+                <button id="save-char-btn">Save</button>
+                <button id="load-char-btn">Load</button>
+                <button id="import-export-btn">Import/Export</button>
+            </div>
+        </div>
+
+        <div class="card core-stats">
+            <div class="char-identity">
+                <label for="char-name">Character Name</label>
+                <input type="text" id="char-name" placeholder="Name">
+                <label for="char-level">Level</label>
+                <input type="text" id="char-level" readonly>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-box"><label>M</label><input type="number" id="stat-M" min="1" max="5"></div>
+                <div class="stat-box"><label>A</label><input type="number" id="stat-A" min="1" max="5"></div>
+                <div class="stat-box"><label>B</label><input type="number" id="stat-B" min="1" max="5"></div>
+                <div class="stat-box"><label>W</label><input type="number" id="stat-W" min="1" max="5"></div>
+                <div class="stat-box"><label>E</label><input type="number" id="stat-E" min="1" max="5"></div>
+                <div class="stat-box"><label>T</label><input type="number" id="stat-T" min="1" max="5"></div>
+                <div class="stat-box"><label>P</label><input type="number" id="stat-P" min="1" max="5"></div>
+                <div class="stat-box"><label>I</label><input type="number" id="stat-I" min="1" max="5"></div>
+                <div class="stat-box"><label>F</label><input type="number" id="stat-F" min="1" max="5"></div>
+            </div>
+            <div class="stat-box">
+                <label>Resistance</label>
+                <input type="text" id="resistance-val" readonly>
+            </div>
+            <div class="clock-container">
+                <div class="clock" id="hp-clock"><label>H</label><div class="clock-track" id="hp-track"></div></div>
+                <div class="clock" id="sp-clock"><label>S</label><div class="clock-track" id="sp-track"></div></div>
+                <div class="clock" id="ep-clock"><label>E</label><div class="clock-track" id="ep-track"></div></div>
+                <div class="clock" id="karma-clock"><label>K</label><div class="clock-track" id="karma-track"></div></div>
+            </div>
+        </div>
+
+        <div class="card keywords">
+            <h3>Innate Keywords (<span id="passive-count">0</span>/<span id="passive-limit">1</span> Passives Slotted)</h3>
+            <div class="keyword-controls">
+                <select id="keyword-select"></select>
+                <button id="add-keyword-btn">+ Add Keyword</button>
+            </div>
+            <div class="keyword-list" id="keyword-list"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <h3>Tags</h3>
+                <textarea id="tags-area" rows="5" placeholder="Temporary Status and Boost Tags..."></textarea>
+            </div>
+            <div class="module-card">
+                <h3>Gear (<span id="gear-passive-count">0</span>/<span id="gear-passive-limit">1</span> Passives)</h3>
+                <div class="module-list" id="gear-list"></div>
+                <button id="add-gear-btn">+ Add Gear</button>
+            </div>
+            <div class="module-card">
+                <h3>Companions</h3>
+                <div class="module-list" id="companion-list"></div>
+                <button id="add-companion-btn">+ Add Companion</button>
+            </div>
+            <div class="module-card">
+                <h3>Factions</h3>
+                <div class="module-list" id="faction-list"></div>
+                <button id="add-faction-btn">+ Add Faction</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="import-export-modal" class="modal">
+        <div class="modal-content">
+            <h2>Import / Export Character</h2>
+            <p>Copy the text below to back up your character, or paste a previously saved character string here and click Import.</p>
+            <textarea id="import-export-area"></textarea>
+            <button id="import-btn">Import</button>
+            <button id="close-modal-btn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA (Keywords, etc.) ---
+        const keywordsData = [
+            { id: "0.0", name: "Restricted" }, { id: "0.1", name: "Aura" }, { id: "0.2", name: "Specialist" }, { id: "0.3", name: "Alert" }, { id: "0.4", name: "Liberate" }, { id: "0.5", name: "Mark" }, { id: "0.6", name: "Indirect" }, { id: "0.7", name: "Adaptive" }, { id: "0.8", name: "Gamble" }, { id: "0.9", name: "Edit" },
+            { id: "1.0", name: "Bane" }, { id: "1.1", name: "Traveller" }, { id: "1.2", name: "Martial" }, { id: "1.3", name: "Attuned" }, { id: "1.4", name: "Augment" }, { id: "1.5", name: "Impair" }, { id: "1.6", name: "Reactive" }, { id: "1.7", name: "Phasing" }, { id: "1.8", name: "Brutal" }, { id: "1.9", name: "Translocate" },
+            { id: "2.0", name: "Anxious" }, { id: "2.1", name: "Acrobatic" }, { id: "2.2", name: "Sentry" }, { id: "2.3", name: "Eidetic" }, { id: "2.4", name: "Haste" }, { id: "2.5", name: "Slow" }, { id: "2.6", name: "Snap" }, { id: "2.7", name: "Condense" }, { id: "2.8", name: "Rapid" }, { id: "2.9", name: "Reckless" },
+            { id: "3.0", name: "Hesitant" }, { id: "3.1", name: "Sturdy" }, { id: "3.2", name: "Brawler" }, { id: "3.3", name: "Stubborn" }, { id: "3.4", name: "Ward" }, { id: "3.5", name: "Daze" }, { id: "3.6", name: "Sculpt" }, { id: "3.7", name: "Defensive" }, { id: "3.8", name: "Impact" }, { id: "3.9", name: "Shift" },
+            { id: "4.0", name: "Feeble" }, { id: "4.1", name: "Survivor" }, { id: "4.2", name: "Stoic" }, { id: "4.3", name: "Ageless" }, { id: "4.4", name: "Bless" }, { id: "4.5", name: "Curse" }, { id: "4.6", name: "Piercing" }, { id: "4.7", name: "Flux" }, { id: "4.8", name: "Siphon" }, { id: "4.9", name: "Animate" },
+            { id: "5.0", name: "Gremlins" }, { id: "5.1", name: "Sensor" }, { id: "5.2", name: "Improvisor" }, { id: "5.3", name: "Crafty" }, { id: "5.4", name: "Charge" }, { id: "5.5", name: "Bind" }, { id: "5.6", name: "Imbue" }, { id: "5.7", name: "Material" }, { id: "5.8", name: "Leverage" }, { id: "5.9", name: "Manifest" },
+            { id: "6.0", name: "Vulnerable" }, { id: "6.1", name: "Tolerant" }, { id: "6.2", name: "Deadeye" }, { id: "6.3", name: "Immunized" }, { id: "6.4", name: "Cure" }, { id: "6.5", name: "Weaken" }, { id: "6.6", name: "Sticky" }, { id: "6.7", name: "Restore" }, { id: "6.8", name: "Exploit" }, { id: "6.9", name: "Growth" },
+            { id: "7.0", name: "Limited" }, { id: "7.1", name: "Resilient" }, { id: "7.2", name: "Font" }, { id: "7.3", name: "Insulated" }, { id: "7.4", name: "Regen" }, { id: "7.5", name: "Blight" }, { id: "7.6", name: "Area" }, { id: "7.7", name: "Ranged" }, { id: "7.8", name: "Multiply" }, { id: "7.9", name: "Split" },
+            { id: "8.0", name: "Awkward" }, { id: "8.1", name: "Charismatic" }, { id: "8.2", name: "Leader" }, { id: "8.3", name: "Insightful" }, { id: "8.4", name: "Enhance" }, { id: "8.5", name: "Silence" }, { id: "8.6", name: "Splash" }, { id: "8.7", name: "Lingering" }, { id: "8.8", name: "Spread" }, { id: "8.9", name: "Potent" },
+            { id: "9.0", name: "Mundane" }, { id: "9.1", name: "Aware" }, { id: "9.2", name: "Stealthy" }, { id: "9.3", name: "Trickster" }, { id: "9.4", name: "Obscure" }, { id: "9.5", name: "Nullify" }, { id: "9.6", name: "Chain" }, { id: "9.7", name: "Natural" }, { id: "9.8", name: "Ambience" }, { id: "9.9", name: "Channel" }
+        ];
+        const statNames = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
+
+        // --- STATE MANAGEMENT ---
+        let characterState = {};
+
+        function initializeState() {
+            characterState = {
+                name: "",
+                stats: { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 },
+                clocks: { hp: 10, sp: 10, ep: 10, karma: 0 },
+                keywords: [], // { id: "1.1", passive: false }
+                tags: "",
+                gear: [], // { name: "", level: 0, keywords: "", passive: false }
+                companions: [], // { name: "", level: 0, notes: "" }
+                factions: [] // { name: "", trust: "Neutral", notes: "" }
+            };
+            updateUI();
+        }
+
+        // --- UI BINDING & UPDATES ---
+        function updateUI() {
+            // Core Info
+            document.getElementById('char-name').value = characterState.name;
+            statNames.forEach(s => document.getElementById(`stat-${s}`).value = characterState.stats[s]);
+            
+            // Calculated Values
+            updateCalculatedValues();
+
+            // Clocks
+            renderClock('hp', 10);
+            renderClock('sp', 10);
+            renderClock('ep', 10);
+            renderClock('karma', 10);
+
+            // Keywords
+            renderKeywordList();
+
+            // Sidebar
+            document.getElementById('tags-area').value = characterState.tags;
+            renderModuleList('gear');
+            renderModuleList('companions');
+            renderModuleList('factions');
+        }
+
+        function updateCalculatedValues() {
+            // Level
+            const level = calculateLevel(characterState.keywords.length);
+            document.getElementById('char-level').value = level;
+            
+            // Resistance
+            const sortedStats = Object.values(characterState.stats).sort((a, b) => b - a);
+            const resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
+            document.getElementById('resistance-val').value = resistance;
+
+            // Passive Limits
+            document.getElementById('passive-limit').textContent = characterState.stats.F;
+            document.getElementById('gear-passive-limit').textContent = characterState.stats.E;
+            updatePassiveCounts();
+        }
+
+        function calculateLevel(keywordCount) {
+            if (keywordCount <= 1) return 0;
+            if (keywordCount <= 4) return 1;
+            return Math.floor((keywordCount - 3) / 2);
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderClock(id, size) {
+            const track = document.getElementById(`${id}-track`);
+            track.innerHTML = '';
+            for (let i = 0; i < size; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'clock-segment';
+                if (i < characterState.clocks[id]) {
+                    segment.classList.add('filled');
+                }
+                segment.addEventListener('click', () => {
+                    characterState.clocks[id] = (characterState.clocks[id] === i + 1) ? i : i + 1;
+                    renderClock(id, size);
+                });
+                track.appendChild(segment);
+            }
+        }
+
+        function renderKeywordList() {
+            const list = document.getElementById('keyword-list');
+            list.innerHTML = '';
+            characterState.keywords.forEach(kwItem => {
+                const kwData = keywordsData.find(k => k.id === kwItem.id);
+                if (!kwData) return;
+
+                const itemEl = document.createElement('div');
+                itemEl.className = 'keyword-item';
+                itemEl.innerHTML = `
+                    <input type="checkbox" ${kwItem.passive ? 'checked' : ''}>
+                    <span class="name"><code>${kwData.id}</code> ${kwData.name}</span>
+                    <button class="remove-btn">&times;</button>
+                `;
+                itemEl.querySelector('input').addEventListener('change', (e) => {
+                    kwItem.passive = e.target.checked;
+                    updatePassiveCounts();
+                });
+                itemEl.querySelector('.remove-btn').addEventListener('click', () => {
+                    characterState.keywords = characterState.keywords.filter(k => k.id !== kwItem.id);
+                    updateUI();
+                });
+                list.appendChild(itemEl);
+            });
+            updatePassiveCounts();
+        }
+
+        function updatePassiveCounts() {
+            const passiveCount = characterState.keywords.filter(k => k.passive).length;
+            document.getElementById('passive-count').textContent = passiveCount;
+            const gearPassiveCount = characterState.gear.filter(g => g.passive).length;
+            document.getElementById('gear-passive-count').textContent = gearPassiveCount;
+        }
+
+        function renderModuleList(type) {
+            const list = document.getElementById(`${type}-list`);
+            list.innerHTML = '';
+            characterState[type].forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'module-item';
+                let content = '';
+                if (type === 'gear') {
+                    content = `
+                        <input type="text" value="${item.name}" placeholder="Item Name" data-index="${index}" data-field="name">
+                        <input type="number" value="${item.level}" placeholder="Lvl" data-index="${index}" data-field="level" style="width: 50px;">
+                        <textarea rows="2" placeholder="Keywords..." data-index="${index}" data-field="keywords">${item.keywords}</textarea>
+                        <label><input type="checkbox" ${item.passive ? 'checked' : ''} data-index="${index}" data-field="passive"> Passive</label>
+                    `;
+                } else if (type === 'companions') {
+                    content = `
+                        <input type="text" value="${item.name}" placeholder="Companion Name" data-index="${index}" data-field="name">
+                        <input type="number" value="${item.level}" placeholder="Lvl" data-index="${index}" data-field="level" style="width: 50px;">
+                        <textarea rows="2" placeholder="Notes..." data-index="${index}" data-field="notes">${item.notes}</textarea>
+                    `;
+                } else if (type === 'factions') {
+                    content = `
+                        <input type="text" value="${item.name}" placeholder="Faction Name" data-index="${index}" data-field="name">
+                        <select data-index="${index}" data-field="trust">
+                            <option value="Ally" ${item.trust === 'Ally' ? 'selected' : ''}>Ally</option>
+                            <option value="Neutral" ${item.trust === 'Neutral' ? 'selected' : ''}>Neutral</option>
+                            <option value="Enemy" ${item.trust === 'Enemy' ? 'selected' : ''}>Enemy</option>
+                        </select>
+                        <textarea rows="2" placeholder="Notes..." data-index="${index}" data-field="notes">${item.notes}</textarea>
+                    `;
+                }
+                itemEl.innerHTML = content + `<button data-index="${index}" class="remove-module-btn">&times;</button>`;
+                list.appendChild(itemEl);
+            });
+
+            // Add event listeners for dynamic fields
+            list.querySelectorAll('input, textarea, select').forEach(el => {
+                el.addEventListener('change', (e) => {
+                    const index = e.target.dataset.index;
+                    const field = e.target.dataset.field;
+                    const value = (e.target.type === 'checkbox') ? e.target.checked : e.target.value;
+                    characterState[type][index][field] = value;
+                    if (type === 'gear' && field === 'passive') updatePassiveCounts();
+                });
+            });
+            list.querySelectorAll('.remove-module-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    characterState[type].splice(index, 1);
+                    renderModuleList(type);
+                });
+            });
+        }
+
+        // --- EVENT HANDLERS ---
+        document.getElementById('char-name').addEventListener('change', e => characterState.name = e.target.value);
+        document.getElementById('tags-area').addEventListener('change', e => characterState.tags = e.target.value);
+        statNames.forEach(s => {
+            document.getElementById(`stat-${s}`).addEventListener('change', e => {
+                characterState.stats[s] = parseInt(e.target.value);
+                updateCalculatedValues();
+            });
+        });
+
+        document.getElementById('add-keyword-btn').addEventListener('click', () => {
+            const id = document.getElementById('keyword-select').value;
+            if (id && !characterState.keywords.find(k => k.id === id)) {
+                characterState.keywords.push({ id: id, passive: false });
+                updateUI();
+            }
+        });
+
+        document.getElementById('add-gear-btn').addEventListener('click', () => {
+            characterState.gear.push({ name: "", level: 0, keywords: "", passive: false });
+            renderModuleList('gear');
+        });
+        document.getElementById('add-companion-btn').addEventListener('click', () => {
+            characterState.companions.push({ name: "", level: 0, notes: "" });
+            renderModuleList('companions');
+        });
+        document.getElementById('add-faction-btn').addEventListener('click', () => {
+            characterState.factions.push({ name: "", trust: "Neutral", notes: "" });
+            renderModuleList('factions');
+        });
+
+        // --- SAVE/LOAD/IMPORT/EXPORT ---
+        document.getElementById('new-char-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to start a new character? Any unsaved changes will be lost.')) {
+                initializeState();
+            }
+        });
+        document.getElementById('save-char-btn').addEventListener('click', () => {
+            const saveData = {
+                blueprint: compileBlueprint(),
+                dynamic: {
+                    hp: characterState.clocks.hp, sp: characterState.clocks.sp, ep: characterState.clocks.ep, karma: characterState.clocks.karma,
+                    tags: characterState.tags
+                },
+                gear: characterState.gear,
+                companions: characterState.companions,
+                factions: characterState.factions
+            };
+            localStorage.setItem('resonanceCharacter', JSON.stringify(saveData));
+            alert('Character Saved!');
+        });
+        document.getElementById('load-char-btn').addEventListener('click', () => {
+            const savedData = localStorage.getItem('resonanceCharacter');
+            if (savedData) {
+                parseSaveData(JSON.parse(savedData));
+                alert('Character Loaded!');
+            } else {
+                alert('No saved character found.');
+            }
+        });
+
+        const modal = document.getElementById('import-export-modal');
+        document.getElementById('import-export-btn').addEventListener('click', () => {
+            const saveData = {
+                blueprint: compileBlueprint(),
+                dynamic: {
+                    hp: characterState.clocks.hp, sp: characterState.clocks.sp, ep: characterState.clocks.ep, karma: characterState.clocks.karma,
+                    tags: characterState.tags
+                },
+                gear: characterState.gear,
+                companions: characterState.companions,
+                factions: characterState.factions
+            };
+            document.getElementById('import-export-area').value = JSON.stringify(saveData, null, 2);
+            modal.style.display = 'flex';
+        });
+        document.getElementById('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
+        document.getElementById('import-btn').addEventListener('click', () => {
+            try {
+                const importData = JSON.parse(document.getElementById('import-export-area').value);
+                parseSaveData(importData);
+                modal.style.display = 'none';
+                alert('Character Imported Successfully!');
+            } catch (e) {
+                alert('Error: Invalid import data. Please check the format.');
+            }
+        });
+
+        function compileBlueprint() {
+            const level = calculateLevel(characterState.keywords.length);
+            const statsString = `S[${statNames.map(s => `${s}${characterState.stats[s]}`).join(',')}]`;
+            const keywordsString = characterState.keywords.map(kw => `${kw.passive ? '!' : ''}${kw.id.replace('.','')}`).join('.');
+            return `L${level}-${statsString}-${keywordsString}`;
+        }
+
+        function parseSaveData(data) {
+            // Parse Blueprint
+            const blueprint = data.blueprint;
+            const parts = blueprint.split('-');
+            const statsPart = parts.find(p => p.startsWith('S['));
+            const keywordsPart = parts[parts.length - 1];
+
+            const newStats = {};
+            statsPart.slice(2, -1).split(',').forEach(s => {
+                const key = s.charAt(0);
+                const val = parseInt(s.slice(1));
+                newStats[key] = val;
+            });
+            characterState.stats = newStats;
+
+            const newKeywords = [];
+            if (keywordsPart) {
+                keywordsPart.split('.').forEach(kwStr => {
+                    const passive = kwStr.startsWith('!');
+                    const id = passive ? kwStr.slice(1) : kwStr;
+                    newKeywords.push({ id: `${id.charAt(0)}.${id.slice(1)}`, passive: passive });
+                });
+            }
+            characterState.keywords = newKeywords;
+            
+            // Parse Dynamic Data
+            characterState.clocks = {
+                hp: data.dynamic.hp, sp: data.dynamic.sp, ep: data.dynamic.ep, karma: data.dynamic.karma
+            };
+            characterState.tags = data.dynamic.tags;
+
+            // Parse Modules
+            characterState.gear = data.gear || [];
+            characterState.companions = data.companions || [];
+            characterState.factions = data.factions || [];
+
+            updateUI();
+        }
+
+        // --- INITIALIZATION ---
+        const keywordSelect = document.getElementById('keyword-select');
+        let optionsHTML = '';
+        const sortedKeywords = [...keywordsData].filter(k => k.category !== 'Flaw').sort((a, b) => a.name.localeCompare(b.name));
+        sortedKeywords.forEach(kw => {
+            optionsHTML += `<option value="${kw.id}">${kw.name} (${kw.id})</option>`;
+        });
+        keywordSelect.innerHTML = optionsHTML;
+
+        initializeState();
+        if (localStorage.getItem('resonanceCharacter')) {
+            if (confirm('Load previously saved character?')) {
+                document.getElementById('load-char-btn').click();
+            }
+        }
+    </script>
+
+</body>
+</html>
