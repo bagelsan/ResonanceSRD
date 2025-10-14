@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Entity Generator</title>
+    <title>Resonance Archive Room Generator</title>
     <style>
         /* --- Styling (Consistent with Site Theme) --- */
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Lora&display=swap');
@@ -17,13 +17,13 @@
             padding: 2em;
         }
 
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             font-family: "Oswald", sans-serif;
             color: #D2B48C;
         }
 
         #generator-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -33,7 +33,7 @@
             border-radius: 8px;
             border: 1px solid #444;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1.5em;
         }
 
@@ -48,7 +48,7 @@
             color: #ccc;
         }
 
-        .form-group select, .form-group input[type="number"] {
+        .form-group select, .form-group input {
             padding: 0.8em;
             background-color: #424242;
             color: #fff;
@@ -110,9 +110,16 @@
             padding: 2px 5px;
             border-radius: 3px;
         }
-        .keyword-meta {
-            color: #888;
-            font-style: italic;
+        .situation-block {
+            border-top: 2px solid #555;
+            margin-top: 1.5em;
+            padding-top: 1.5em;
+        }
+        .entity-block {
+            border-left: 3px solid #444;
+            padding-left: 1em;
+            margin-top: 1em;
+            margin-bottom: 1em;
         }
         .profile-section {
             border-top: 1px dashed #444;
@@ -124,47 +131,61 @@
             font-style: italic;
             color: #ccc;
         }
+        .flaw-keyword { color: #e57373; }
+        .compensation-keyword { color: #80cbc4; }
+        .keyword-tag { font-weight: bold; font-style: normal; color: #ccc; }
+        .keyword-meta { color: #888; font-style: italic; }
 
     </style>
 </head>
 <body>
 
     <div id="generator-container">
-        <h1>Resonance Entity Generator</h1>
-        <p>Select the parameters for the entity you wish to generate. This tool simulates the random progression of an entity, including a 5-Point Motivational Profile to give it a narrative soul.</p>
+        <h1>Archive Room Generator</h1>
+        <p>This tool uses the Blueprint Method from Appendix I to generate a complete, detailed, and thematically coherent Scene (a "Room") for the Archive game mode.</p>
         
         <div id="generator-form">
             <div class="form-group">
-                <label for="level">Level (0-9)</label>
-                <input type="number" id="level" min="0" max="9" value="1">
+                <label for="party-level">Party Level</label>
+                <input type="number" id="party-level" min="1" max="9" value="1">
             </div>
             <div class="form-group">
-                <label for="entity-type">Entity Type</label>
-                <select id="entity-type">
-                    <option value="Character">Character</option>
-                    <option value="Animation">Animation</option>
-                    <option value="Faction">Faction</option>
-                    <option value="Item">Item</option>
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty">
+                    <option value="-1">Easy (L-1)</option>
+                    <option value="0" selected>Normal (L+0)</option>
+                    <option value="1">Hard (L+1)</option>
+                    <option value="2">Boss (L+2)</option>
                 </select>
             </div>
-            <div class="form-group" id="seed-keyword-group" style="grid-column: 1 / -1;">
-                <label for="seed-keyword">Force Seed Keyword (Optional)</label>
-                <select id="seed-keyword">
-                    <!-- Options will be populated by JavaScript -->
+            <div class="form-group">
+                <label for="theme">Theme</label>
+                <select id="theme">
+                    <option value="random">Random</option>
+                    <option value="Null">Null</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Green">Green</option>
+                    <option value="Black">Black</option>
+                    <option value="Orange">Orange</option>
+                    <option value="White">White</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Purple">Purple</option>
                 </select>
             </div>
-            <button type="button" id="generate-btn">Generate Entity</button>
+            <button type="button" id="generate-btn">Generate Room</button>
         </div>
 
         <div id="output-container">
-            <h2>Generated Entity</h2>
+            <h2>Generated Room</h2>
             <pre id="output-content"></pre>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- DATA ---
+            // --- DATA (Keywords, Motivations, etc.) ---
             const keywordsData = [
                 { id: "0.0", name: "Restricted", color: "Null", category: "Flaw" }, { id: "0.1", name: "Aura", color: "Null", category: "Gift" }, { id: "0.2", name: "Specialist", color: "Null", category: "Talent" }, { id: "0.3", name: "Alert", color: "Null", category: "Quirk" }, { id: "0.4", name: "Liberate", color: "Null", category: "Boost" }, { id: "0.5", name: "Mark", color: "Null", category: "Status" }, { id: "0.6", name: "Indirect", color: "Null", category: "Form" }, { id: "0.7", name: "Adaptive", color: "Null", category: "Modifier" }, { id: "0.8", name: "Gamble", color: "Null", category: "Drive" }, { id: "0.9", name: "Edit", color: "Null", category: "Unique" },
                 { id: "1.0", name: "Bane", color: "Silver", category: "Flaw" }, { id: "1.1", name: "Traveller", color: "Silver", category: "Gift" }, { id: "1.2", name: "Martial", color: "Silver", category: "Talent" }, { id: "1.3", name: "Attuned", color: "Silver", category: "Quirk" }, { id: "1.4", name: "Augment", color: "Silver", category: "Boost" }, { id: "1.5", name: "Impair", color: "Silver", category: "Status" }, { id: "1.6", name: "Reactive", color: "Silver", category: "Form" }, { id: "1.7", name: "Phasing", color: "Silver", category: "Modifier" }, { id: "1.8", name: "Brutal", color: "Silver", category: "Drive" }, { id: "1.9", name: "Translocate", color: "Silver", category: "Unique" },
@@ -176,105 +197,135 @@
                 { id: "7.0", name: "Limited", color: "Red", category: "Flaw" }, { id: "7.1", name: "Resilient", color: "Red", category: "Gift" }, { id: "7.2", name: "Font", color: "Red", category: "Talent" }, { id: "7.3", name: "Insulated", color: "Red", category: "Quirk" }, { id: "7.4", name: "Regen", color: "Red", category: "Boost" }, { id: "7.5", name: "Blight", color: "Red", category: "Status" }, { id: "7.6", name: "Area", color: "Red", category: "Form" }, { id: "7.7", name: "Ranged", color: "Red", category: "Modifier" }, { id: "7.8", name: "Multiply", color: "Red", category: "Drive" }, { id: "7.9", name: "Split", color: "Red", category: "Unique" },
                 { id: "8.0", name: "Awkward", color: "Blue", category: "Flaw" }, { id: "8.1", name: "Charismatic", color: "Blue", category: "Gift" }, { id: "8.2", name: "Leader", color: "Blue", category: "Talent" }, { id: "8.3", name: "Insightful", color: "Blue", category: "Quirk" }, { id: "8.4", name: "Enhance", color: "Blue", category: "Boost" }, { id: "8.5", name: "Silence", color: "Blue", category: "Status" }, { id: "8.6", name: "Splash", color: "Blue", category: "Form" }, { id: "8.7", name: "Lingering", color: "Blue", category: "Modifier" }, { id: "8.8", name: "Spread", color: "Blue", category: "Drive" }, { id: "8.9", name: "Potent", color: "Blue", category: "Unique" },
                 { id: "9.0", name: "Mundane", color: "Purple", category: "Flaw" }, { id: "9.1", name: "Aware", color: "Purple", category: "Gift" }, { id: "9.2", name: "Stealthy", color: "Purple", category: "Talent" }, { id: "9.3", name: "Trickster", color: "Purple", category: "Quirk" }, { id: "9.4", name: "Obscure", color: "Purple", category: "Boost" }, { id: "9.5", name: "Nullify", color: "Purple", category: "Status" }, { id: "9.6", name: "Chain", color: "Purple", category: "Form" }, { id: "9.7", name: "Natural", color: "Purple", category: "Modifier" }, { id: "9.8", name: "Ambience", color: "Purple", category: "Drive" }, { id: "9.9", name: "Channel", color: "Purple", category: "Unique" }
-            ];
+            ].map(kw => ({...kw, colorName: ["Null", "Silver", "Yellow", "Green", "Black", "Orange", "White", "Red", "Blue", "Purple"][parseInt(kw.id.charAt(0))]}));
             const motivations = [
                 { name: "Absolution", color: "Silver" }, { name: "Ambition", color: "Yellow" }, { name: "Security", color: "Green" }, { name: "Legacy", color: "Black" }, { name: "Innovation", color: "Orange" }, { name: "Purity", color: "White" }, { name: "Glory", color: "Red" }, { name: "Influence", color: "Blue" }, { name: "Faith", color: "Purple" }, { name: "Discovery", color: "Null" }
             ];
             const colorToStat = {
                 Silver: 'M', Yellow: 'A', Green: 'B', Black: 'W', Orange: 'E', White: 'T', Red: 'P', Blue: 'I', Purple: 'F', Null: null
             };
-            const civilSystems = [
-                { name: "Food", aid: "Info, Rumors, secrets, maps, and intelligence." }, { name: "Water", aid: "Access, Passes, safehouses, and travel routes." }, { name: "Shelter", aid: "Downtime, Free rest, conversion, recovery." }, { name: "Infrastructure", aid: "Equipment, Tools, upgrades, and unique gear." }, { name: "Humanitarian", aid: "Protection, Guards, rescues, or sheltering." }, { name: "Education", aid: "Training, Boosts, upgrades, techniques." }, { name: "Healthcare", aid: "Companions, Allies, or NPCs." }, { name: "Government", aid: "Influence, Change laws, secure leverage." }, { name: "Commerce", aid: "Trade Goods, Surpluses and rare access." }, { name: "Military", aid: "Property, Bases, fortresses, and command." }
-            ];
-            const factionNameParts = {
-                adjectives: ["The Rivertown", "The Crimson", "The Iron", "The Gilded", "The Sunken", "The Ashen", "The Crystal", "The Silent", "The Final"],
-                nouns: ["Coalition", "Syndicate", "Enclave", "Order", "Pact", "Remnants", "Guild", "Consortium", "Vanguard"]
-            };
             const statNames = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
 
             // --- UI Elements ---
-            const levelInput = document.getElementById('level');
-            const entityTypeSelect = document.getElementById('entity-type');
-            const seedKeywordGroup = document.getElementById('seed-keyword-group');
-            const seedKeywordSelect = document.getElementById('seed-keyword');
             const generateBtn = document.getElementById('generate-btn');
             const outputContainer = document.getElementById('output-container');
             const outputContent = document.getElementById('output-content');
 
-            // --- Populate Seed Keyword Dropdown ---
-            let seedOptionsHTML = '<option value="random">Random</option>';
-            const nonFlawKeywords = keywordsData.filter(kw => kw.category !== 'Flaw');
-            nonFlawKeywords.sort((a, b) => a.name.localeCompare(b.name));
-            nonFlawKeywords.forEach(kw => {
-                seedOptionsHTML += `<option value="${kw.id}">${kw.name} (${kw.id})</option>`;
-            });
-            seedKeywordSelect.innerHTML = seedOptionsHTML;
-
-            // --- Event Listeners ---
-            generateBtn.addEventListener('click', generateEntity);
-            entityTypeSelect.addEventListener('change', toggleUI);
-
-            function toggleUI() {
-                const entityType = entityTypeSelect.value;
-                seedKeywordGroup.style.display = (entityType === 'Faction' || entityType === 'Item') ? 'none' : 'block';
-            }
+            // --- Event Listener ---
+            generateBtn.addEventListener('click', generateRoom);
 
             // --- Helper Functions ---
             function getRandomElement(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-            
+            function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
             function getRandomKeyword(excludeList = []) {
                 const availableKeywords = keywordsData.filter(kw => !excludeList.find(ex => ex.id === kw.id));
                 if (availableKeywords.length === 0) return null;
                 return getRandomElement(availableKeywords);
             }
+            function findKeyword(id) { return keywordsData.find(kw => kw.id === id); }
 
-            function findKeyword(id) {
-                return keywordsData.find(kw => kw.id === id);
-            }
+            // --- Main Orchestrator ---
+            function generateRoom() {
+                const partyLevel = parseInt(document.getElementById('party-level').value);
+                const difficulty = parseInt(document.getElementById('difficulty').value);
+                const themeColor = document.getElementById('theme').value;
 
-            // --- Main Generation Logic ---
-            function generateEntity() {
-                const level = parseInt(levelInput.value);
-                const entityType = entityTypeSelect.value;
+                const themeKeyword = getRandomElement(keywordsData.filter(kw => themeColor === 'random' || kw.colorName === themeColor));
+                const themeCode = themeKeyword.id.replace('.', '');
                 
-                let outputHTML = '';
-                switch (entityType) {
-                    case 'Character':
-                        outputHTML = generateCharacter(level);
-                        break;
-                    case 'Animation':
-                        outputHTML = generateAnimation(level);
-                        break;
-                    case 'Item':
-                        outputHTML = generateItem(level);
-                        break;
-                    case 'Faction':
-                        outputHTML = generateFaction(level);
-                        break;
+                const complexity = Math.floor(parseInt(themeCode.charAt(0)) / 2) + 1;
+                let situationCodes = [];
+                for (let i = 0; i < complexity; i++) {
+                    let code = getRandomInt(1, 9).toString();
+                    if (Math.random() < 0.15) code = '*' + code;
+                    situationCodes.push(code);
                 }
+                const blueprintString = `(${complexity})[${themeCode}]-${situationCodes.join('|')}`;
 
-                outputContent.innerHTML = outputHTML;
+                let output = `<strong>BLUEPRINT:</strong> <code>${blueprintString}</code>\n`;
+                output += `<strong>THEME:</strong> ${themeKeyword.name} (${themeKeyword.colorName})\n\n`;
+
+                situationCodes.forEach((code, index) => {
+                    output += `<div class="situation-block">`;
+                    output += generateSituationContent(code, index + 1, partyLevel, difficulty);
+                    output += `</div>`;
+                });
+
+                outputContent.innerHTML = output;
                 outputContainer.style.display = 'block';
             }
 
-            function generateMotivationalProfile() {
-                const shuffled = [...motivations].sort(() => 0.5 - Math.random());
-                return {
-                    goal: shuffled[0],
-                    method: shuffled[1],
-                    purpose: shuffled[2],
-                    external: shuffled[3],
-                    internal: shuffled[4]
-                };
+            function generateSituationContent(code, sitNum, partyLevel, difficulty) {
+                const isTimed = code.startsWith('*');
+                const sitCode = parseInt(code.replace('*', ''));
+                
+                let sitTitle = `<h4>SITUATION ${sitNum}</h4>`;
+                if (isTimed) sitTitle += "<strong>(TIMED PHASE)</strong>\n";
+                if (sitCode === 0) sitTitle += "<strong>(TWIST!)</strong>\n";
+                if (sitCode === 5) sitTitle += "<strong>(REST)</strong>\n";
+
+                let content = sitTitle;
+                
+                if (sitCode === 0) {
+                    content += "  - The situation is interrupted by a new, randomly generated Scene!\n";
+                    return content;
+                }
+                if (sitCode === 5) {
+                    content += "  - The party has a moment of respite. They may perform a free recovery or prep action.\n";
+                    return content;
+                }
+
+                const numEntities = getRandomInt(1, 2);
+                for (let i = 0; i < numEntities; i++) {
+                    const entityTypeRoll = getRandomInt(1, 3);
+                    let levelOffset = difficulty;
+                    if (isTimed && sitCode === 1 && i === 0) { levelOffset = difficulty + 2; }
+                    const finalLevel = Math.max(0, partyLevel + levelOffset);
+
+                    switch(entityTypeRoll) {
+                        case 1: content += generateBarrier(finalLevel); break;
+                        case 2: content += generatePuzzle(finalLevel); break;
+                        case 3: content += (Math.random() < 0.3) ? generateCharacter(finalLevel, 'random', true) : generateAnimation(finalLevel, 'random', true); break;
+                    }
+                }
+
+                // Chaos Slot
+                const chaosRoll = getRandomInt(1, 10);
+                const chaosLevel = Math.max(0, partyLevel + difficulty);
+                content += "<h4>CHAOS SLOT</h4>";
+                switch(true) {
+                    case (chaosRoll <= 2): content += generateCharacter(chaosLevel, 'random', true); break;
+                    case (chaosRoll <= 6): content += generateAnimation(chaosLevel, 'random', true); break;
+                    case (chaosRoll <= 9): content += generateItem(getRandomInt(1, 4)); break;
+                    case (chaosRoll === 10): content += generateCharacter(chaosLevel + 1, 'random', true); break;
+                }
+                return content;
             }
 
-            function generateCharacter(level) {
-                const seedId = seedKeywordSelect.value;
+            // --- Entity Generation Functions ---
+            function generateMotivationalProfile() {
+                const shuffled = [...motivations].sort(() => 0.5 - Math.random());
+                return { goal: shuffled[0], method: shuffled[1], purpose: shuffled[2], external: shuffled[3], internal: shuffled[4] };
+            }
+
+            function generateProfileHTML(profile) {
+                let html = `\n<div class="profile-section">`;
+                html += `<strong>5-POINT MOTIVATIONAL PROFILE:</strong>\n`;
+                html += `  <strong>Goal:</strong> ${profile.goal.name} (${profile.goal.color})\n`;
+                html += `  <strong>Method:</strong> ${profile.method.name} (${profile.method.color})\n`;
+                html += `  <strong>Purpose:</strong> ${profile.purpose.name} (${profile.purpose.color})\n`;
+                html += `  <strong>External Conflict:</strong> ${profile.external.name} (${profile.external.color})\n`;
+                html += `  <strong>Internal Conflict:</strong> ${profile.internal.name} (${profile.internal.color})\n\n`;
+                html += `<p>This entity is driven by a core goal of **${profile.goal.name}**. They pursue this through a method of **${profile.method.name}**, believing their actions are justified by a deeper purpose of **${profile.purpose.name}**. They often find themselves in conflict with those who embody **${profile.external.name}**, and they secretly struggle with their own internal pull towards **${profile.internal.name}**.</p>`;
+                html += `</div>`;
+                return html;
+            }
+
+            function generateCharacter(level, seedId = 'random', isNPC = false) {
                 const statPointGains = { 2:1, 3:1, 4:1, 5:1, 6:2, 7:2, 8:2, 9:2 };
-                
                 const profile = generateMotivationalProfile();
                 const primaryColor = profile.goal.color;
-
+                
                 let stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
                 let keywordList = [];
                 let hasFlaw = false;
@@ -285,7 +336,7 @@
                     let newKeyword;
                     if (i === 0 && seedId !== 'random') {
                         newKeyword = findKeyword(seedId);
-                    } else if (i === 0) { // Thematic Random Seed
+                    } else if (i === 0) {
                         const thematicKeywords = keywordsData.filter(kw => kw.color === primaryColor && kw.category !== 'Flaw' && !keywordList.find(item => item.kw.id === kw.id));
                         newKeyword = (thematicKeywords.length > 0) ? getRandomElement(thematicKeywords) : getRandomKeyword(keywordList.map(item => item.kw));
                     } else {
@@ -312,7 +363,6 @@
                     }
                 }
 
-                // --- Stat Calculation ---
                 let statPointsToDistribute = 0;
                 if (level >= 1) {
                     Object.keys(stats).forEach(key => stats[key] = 2);
@@ -321,21 +371,21 @@
                     statPointsToDistribute += statPointGains[i];
                 }
 
-                // Thematic Stat Distribution
                 const priorityStats = [colorToStat[profile.goal.color], colorToStat[profile.method.color], colorToStat[profile.purpose.color]].filter(s => s);
                 for (let i = 0; i < statPointsToDistribute; i++) {
                     const statToBuff = (i < priorityStats.length && stats[priorityStats[i]] < 5) ? priorityStats[i] : getRandomElement(statNames);
                     if (stats[statToBuff] < 5) {
                         stats[statToBuff]++;
                     } else {
-                        i--; // Try again
+                        i--;
                     }
                 }
 
                 const sortedStats = Object.values(stats).sort((a, b) => b - a);
                 const resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
 
-                let html = `<strong>ENTITY TYPE:</strong> Character\n`;
+                let html = `<div class="entity-block">`;
+                html += `<strong>ENTITY TYPE:</strong> Character\n`;
                 html += `<strong>LEVEL:</strong> ${level}\n\n`;
                 html += `<strong>STATS:</strong>\n`;
                 html += `  M: ${stats.M} | A: ${stats.A} | B: ${stats.B}\n`;
@@ -356,16 +406,14 @@
                     }
                     html += `  - <span ${lineClass}><code>${kw.id}</code> ${kw.name} <span class="keyword-meta">(${kw.color} / ${kw.category})</span> ${tag}</span>\n`;
                 });
-
                 html += generateProfileHTML(profile);
+                html += `</div>`;
                 return html;
             }
 
-            function generateAnimation(level) {
-                const seedId = seedKeywordSelect.value;
+            function generateAnimation(level, seedId = 'random', isNPC = false) {
                 const profile = generateMotivationalProfile();
                 const primaryColor = profile.goal.color;
-
                 let stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
                 let keywords = [];
                 
@@ -382,7 +430,6 @@
                     keywords.push(getRandomKeyword(keywords, kw => kw.category !== 'Flaw'));
                 }
 
-                // Stat Distribution
                 let statPointsToDistribute = level;
                 const priorityStats = [colorToStat[profile.goal.color], colorToStat[profile.method.color], colorToStat[profile.purpose.color]].filter(s => s);
                 for (let i = 0; i < statPointsToDistribute; i++) {
@@ -397,7 +444,8 @@
                 const sortedStats = Object.values(stats).sort((a, b) => b - a);
                 const resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
 
-                let html = `<strong>ENTITY TYPE:</strong> Animation\n`;
+                let html = `<div class="entity-block">`;
+                html += `<strong>ENTITY TYPE:</strong> Animation\n`;
                 html += `<strong>LEVEL:</strong> ${level}\n\n`;
                 html += `<strong>STATS:</strong>\n`;
                 html += `  M: ${stats.M} | A: ${stats.A} | B: ${stats.B}\n`;
@@ -410,8 +458,8 @@
                     let tag = (index === 0) ? "(Seed)" : "";
                     html += `  - <code>${kw.id}</code> ${kw.name} <span class="keyword-meta">(${kw.color} / ${kw.category})</span> ${tag}\n`;
                 });
-                
                 html += generateProfileHTML(profile);
+                html += `</div>`;
                 return html;
             }
 
@@ -435,7 +483,8 @@
                     }
                 }
 
-                let html = `<strong>ENTITY TYPE:</strong> Item\n`;
+                let html = `<div class="entity-block">`;
+                html += `<strong>ENTITY TYPE:</strong> Item\n`;
                 html += `<strong>LEVEL:</strong> ${level}\n\n`;
                 html += `<strong>DURABILITY CLOCK:</strong> [ ] [ ] (Undamaged)\n\n`;
                 html += `<strong>KEYWORDS (${keywords.length} active):</strong>\n`;
@@ -447,46 +496,38 @@
                 if (deadSlots > 0) {
                     html += `\n<strong>DEAD SLOTS:</strong> ${deadSlots} (Due to Collapse Protocol)\n`;
                 }
+                html += `</div>`;
                 return html;
             }
-
-            function generateFaction(level) {
-                const profile = generateMotivationalProfile();
-                const name = `${getRandomElement(factionNameParts.adjectives)} ${getRandomElement(factionNameParts.nouns)}`;
-                const shuffledSystems = [...civilSystems].sort(() => 0.5 - Math.random());
-                const establishedSystems = shuffledSystems.slice(0, level);
-
-                let html = `<strong>ENTITY TYPE:</strong> Faction\n`;
-                html += `<strong>NAME:</strong> ${name}\n`;
-                html += `<strong>LEVEL:</strong> ${level}\n\n`;
-                html += `<strong>ESTABLISHED CIVIL SYSTEMS (${establishedSystems.length}/10):</strong>\n`;
-                if (establishedSystems.length > 0) {
-                    establishedSystems.forEach(system => {
-                        html += `  - <strong>${system.name}:</strong> ${system.aid}\n`;
-                    });
-                } else {
-                    html += `  None established.\n`;
-                }
+            
+            function generateBarrier(level) {
+                const tn = 10 + level;
+                let clockSize;
+                if (level <= 1) clockSize = getRandomInt(3, 4);
+                else if (level <= 4) clockSize = getRandomInt(5, 7);
+                else if (level <= 7) clockSize = getRandomInt(8, 10);
+                else clockSize = getRandomInt(11, 14);
                 
-                html += generateProfileHTML(profile);
-                return html;
-            }
-
-            function generateProfileHTML(profile) {
-                let html = `\n<div class="profile-section">`;
-                html += `<strong>5-POINT MOTIVATIONAL PROFILE:</strong>\n`;
-                html += `  <strong>Goal:</strong> ${profile.goal.name} (${profile.goal.color})\n`;
-                html += `  <strong>Method:</strong> ${profile.method.name} (${profile.method.color})\n`;
-                html += `  <strong>Purpose:</strong> ${profile.purpose.name} (${profile.purpose.color})\n`;
-                html += `  <strong>External Conflict:</strong> ${profile.external.name} (${profile.external.color})\n`;
-                html += `  <strong>Internal Conflict:</strong> ${profile.internal.name} (${profile.internal.color})\n\n`;
-                html += `<p>This entity is driven by a core goal of **${profile.goal.name}**. They pursue this through a method of **${profile.method.name}**, believing their actions are justified by a deeper purpose of **${profile.purpose.name}**. They often find themselves in conflict with those who embody **${profile.external.name}**, and they secretly struggle with their own internal pull towards **${profile.internal.name}**.</p>`;
+                let html = `<div class="entity-block">`;
+                html += `<strong>CHALLENGE TYPE:</strong> Barrier\n`;
+                html += `<strong>LEVEL:</strong> ${level}\n`;
+                html += `<strong>TARGET NUMBER (TN):</strong> ${tn}\n`;
+                html += `<strong>TASK CLOCK:</strong> ${clockSize}\n`;
                 html += `</div>`;
                 return html;
             }
 
-            // Initial UI setup
-            toggleUI();
+            function generatePuzzle(level) {
+                const tn = 12 + level;
+                let html = `<div class="entity-block">`;
+                html += `<strong>CHALLENGE TYPE:</strong> Puzzle\n`;
+                html += `<strong>LEVEL:</strong> ${level}\n`;
+                html += `<strong>TARGET NUMBER (TN):</strong> ${tn}\n`;
+                html += `(Binary: Solved or Unsolved)\n`;
+                html += `</div>`;
+                return html;
+            }
+
         });
     </script>
 
