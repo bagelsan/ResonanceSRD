@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Dice Roller</title>
+    <style>
+        /* --- Styling (Consistent with Site Theme) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+
+        body {
+            background-color: #212121;
+            color: #ccc;
+            font-family: "Calibri", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        #roller-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #333;
+            padding: 2em;
+            border-radius: 8px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "Oswald", sans-serif;
+            color: #D2B48C;
+            margin-top: 0;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            gap: 2em;
+            margin: 2em 0;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .control-group label {
+            font-size: 1.2em;
+        }
+
+        .control-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        #roll-btn {
+            padding: 0.8em 2em;
+            font-family: "Oswald", sans-serif;
+            font-size: 2em;
+            color: #212121;
+            background-color: #FFC107; /* Amber accent color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        #roll-btn:hover {
+            background-color: #FFD54F;
+        }
+
+        #result-display {
+            margin-top: 2em;
+            padding: 1.5em;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+            min-height: 150px;
+        }
+
+        #result-final {
+            font-family: "Oswald", sans-serif;
+            font-size: 4em;
+            color: #fff;
+            margin: 0;
+        }
+
+        #result-breakdown {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-top: 0.5em;
+        }
+        
+        .critical-text {
+            font-family: "Oswald", sans-serif;
+            font-size: 1.5em;
+            color: #FFC107;
+            margin-top: 0.5em;
+        }
+
+        #log-container {
+            margin-top: 2em;
+        }
+        
+        #log-container h3 {
+            text-align: left;
+        }
+
+        #log-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        #log-list li {
+            padding: 0.5em 1em;
+            border-bottom: 1px solid #333;
+        }
+        #log-list li:last-child {
+            border-bottom: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="roller-container">
+        <h1>Resonance Dice Roller</h1>
+        
+        <div id="controls">
+            <div class="control-group">
+                <input type="checkbox" id="advantage-check">
+                <label for="advantage-check">Advantage</label>
+            </div>
+            <div class="control-group">
+                <input type="checkbox" id="disadvantage-check">
+                <label for="disadvantage-check">Disadvantage</label>
+            </div>
+        </div>
+
+        <button id="roll-btn">Roll Standard Roll (SR)</button>
+
+        <div id="result-display">
+            <p id="result-final">--</p>
+            <p id="result-breakdown">Ready to roll...</p>
+        </div>
+
+        <div id="log-container">
+            <h3>Roll History</h3>
+            <ul id="log-list">
+                <!-- Log entries will be added here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rollBtn = document.getElementById('roll-btn');
+            const advantageCheck = document.getElementById('advantage-check');
+            const disadvantageCheck = document.getElementById('disadvantage-check');
+            const resultFinal = document.getElementById('result-final');
+            const resultBreakdown = document.getElementById('result-breakdown');
+            const logList = document.getElementById('log-list');
+
+            // Ensure Advantage and Disadvantage are mutually exclusive
+            advantageCheck.addEventListener('change', () => {
+                if (advantageCheck.checked) disadvantageCheck.checked = false;
+            });
+            disadvantageCheck.addEventListener('change', () => {
+                if (disadvantageCheck.checked) advantageCheck.checked = false;
+            });
+
+            rollBtn.addEventListener('click', performRoll);
+
+            function d10() {
+                return Math.floor(Math.random() * 10) + 1;
+            }
+
+            function performRoll() {
+                const hasAdvantage = advantageCheck.checked;
+                const hasDisadvantage = disadvantageCheck.checked;
+
+                let runningTotal = 0;
+                let isCritical = false;
+                let breakdown = [];
+                let finalMainDieResult;
+
+                while (true) {
+                    let mainDie = d10();
+                    let luckyDie = d10();
+
+                    if (mainDie === luckyDie) {
+                        isCritical = true;
+                        const doubleValue = mainDie + luckyDie;
+                        runningTotal += doubleValue;
+                        breakdown.push(`Double ${mainDie}s! (+${doubleValue})`);
+                    } else {
+                        let finalRollText = `Final Roll: [${mainDie}, ${luckyDie}]`;
+                        if (hasAdvantage) {
+                            finalMainDieResult = Math.max(mainDie, luckyDie);
+                            finalRollText += ` -> took ${finalMainDieResult} (Advantage)`;
+                        } else if (hasDisadvantage) {
+                            finalMainDieResult = Math.min(mainDie, luckyDie);
+                            finalRollText += ` -> took ${finalMainDieResult} (Disadvantage)`;
+                        } else {
+                            finalMainDieResult = mainDie;
+                        }
+                        breakdown.push(finalRollText);
+                        break;
+                    }
+                }
+
+                const finalSR = runningTotal + finalMainDieResult;
+                
+                // Display Results
+                resultFinal.textContent = finalSR;
+                
+                let criticalText = '';
+                if (isCritical) {
+                    criticalText = '<p class="critical-text">CRITICAL!</p>';
+                }
+                if (finalSR >= 31) {
+                    criticalText = '<p class="critical-text">SUPER CRITICAL!</p>';
+                }
+
+                resultBreakdown.innerHTML = breakdown.join(' + ') + criticalText;
+
+                // Log the roll
+                addToLog(finalSR, breakdown.join(' + '), isCritical, finalSR >= 31);
+            }
+
+            function addToLog(sr, text, isCrit, isSuperCrit) {
+                const newLogItem = document.createElement('li');
+                let logText = `<strong>SR: ${sr}</strong> | ${text}`;
+                if (isSuperCrit) logText += " (Super Critical)";
+                else if (isCrit) logText += " (Critical)";
+                
+                newLogItem.innerHTML = logText;
+                logList.prepend(newLogItem); // Add to the top of the list
+
+                // Keep the log from getting too long
+                while (logList.children.length > 10) {
+                    logList.removeChild(logList.lastChild);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
