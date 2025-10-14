@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Clock Dashboard</title>
+    <style>
+        /* --- Styling (Consistent with Site Theme) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #212121;
+            --surface-color: #333;
+            --text-color: #ccc;
+            --primary-color: #D2B48C;
+            --accent-color: #FFC107;
+            --hp-color: #c62828;
+            --threat-color: #FFC107;
+            --situation-color: #795548;
+            --custom-color: #607d8b;
+            --segment-empty: #424242;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Calibri", sans-serif;
+            margin: 0;
+        }
+
+        h1, h2, h3, button, label {
+            font-family: "Oswald", sans-serif;
+        }
+
+        #control-panel {
+            background-color: var(--surface-color);
+            padding: 1em;
+            border-bottom: 1px solid #444;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.5em;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 0.5em;
+        }
+
+        .control-group button {
+            padding: 0.5em 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #212121;
+        }
+        
+        #btn-hp { background-color: var(--hp-color); }
+        #btn-threat { background-color: var(--threat-color); }
+        #btn-situation { background-color: var(--situation-color); }
+        #btn-custom { background-color: var(--custom-color); }
+
+        #custom-controls {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+        }
+
+        #custom-controls input {
+            padding: 0.5em;
+            background-color: #424242;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            width: 80px;
+        }
+
+        #clear-all-btn {
+            margin-left: auto;
+            background-color: #c62828;
+            color: #fff;
+        }
+
+        #dashboard {
+            padding: 2em;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2em;
+        }
+
+        .clock-container {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            padding: 1em;
+            text-align: center;
+            position: relative;
+            border: 1px solid #444;
+            cursor: grab;
+        }
+        .clock-container:active {
+            cursor: grabbing;
+            border-color: var(--accent-color);
+        }
+
+        .clock-name {
+            font-family: "Oswald", sans-serif;
+            font-size: 1.2em;
+            margin: 0 0 0.5em 0;
+            padding: 0.2em;
+        }
+
+        .clock-svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .clock-segment {
+            cursor: pointer;
+            transition: fill 0.1s ease-in-out;
+        }
+
+        .delete-clock-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .delete-clock-btn:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="control-panel">
+        <div class="control-group">
+            <button id="btn-hp" title="Add Player HP Clock (10 segments)">+ Player HP</button>
+            <button id="btn-threat" title="Add Threat Clock (12 segments)">+ Threat</button>
+            <button id="btn-situation" title="Add Situation Clock (8 segments)">+ Situation</button>
+        </div>
+        <div id="custom-controls">
+            <input type="text" id="custom-name" placeholder="Clock Name">
+            <input type="number" id="custom-segments" placeholder="Size" min="2" value="6">
+            <button id="btn-custom">+ Custom</button>
+        </div>
+        <button id="clear-all-btn">Clear All Clocks</button>
+    </div>
+
+    <div id="dashboard">
+        <!-- Clocks will be dynamically inserted here -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dashboard = document.getElementById('dashboard');
+            let clocks = [];
+            let dragSrcEl = null;
+
+            // --- Control Panel Buttons ---
+            document.getElementById('btn-hp').addEventListener('click', () => addClock('Player HP', 10, 'hp'));
+            document.getElementById('btn-threat').addEventListener('click', () => addClock('Threat', 12, 'threat'));
+            document.getElementById('btn-situation').addEventListener('click', () => addClock('Situation', 8, 'situation'));
+            document.getElementById('btn-custom').addEventListener('click', () => {
+                const name = document.getElementById('custom-name').value || 'Custom Clock';
+                const segments = parseInt(document.getElementById('custom-segments').value) || 6;
+                addClock(name, segments, 'custom');
+                document.getElementById('custom-name').value = '';
+            });
+            document.getElementById('clear-all-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete all clocks?')) {
+                    clocks = [];
+                    saveClocks();
+                    renderDashboard();
+                }
+            });
+
+            // --- Core Clock Logic ---
+            function addClock(name, segments, type) {
+                const newClock = {
+                    id: Date.now(),
+                    name: name,
+                    segments: segments,
+                    type: type,
+                    filled: 0
+                };
+                clocks.push(newClock);
+                saveClocks();
+                renderDashboard();
+            }
+
+            function removeClock(id) {
+                clocks = clocks.filter(clock => clock.id !== id);
+                saveClocks();
+                renderDashboard();
+            }
+
+            function updateClock(id, filled) {
+                const clock = clocks.find(c => c.id === id);
+                if (clock) {
+                    clock.filled = Math.max(0, Math.min(clock.segments, filled));
+                    saveClocks();
+                    renderDashboard();
+                }
+            }
+
+            // --- Rendering ---
+            function renderDashboard() {
+                dashboard.innerHTML = '';
+                clocks.forEach(clock => {
+                    const clockEl = createClockElement(clock);
+                    dashboard.appendChild(clockEl);
+                });
+            }
+
+            function createClockElement(clock) {
+                const container = document.createElement('div');
+                container.className = 'clock-container';
+                container.setAttribute('draggable', 'true');
+                container.dataset.id = clock.id;
+
+                const nameEl = document.createElement('h3');
+                nameEl.className = 'clock-name';
+                nameEl.textContent = clock.name;
+                nameEl.setAttribute('contenteditable', 'true');
+                nameEl.addEventListener('blur', (e) => {
+                    const foundClock = clocks.find(c => c.id === clock.id);
+                    if (foundClock) {
+                        foundClock.name = e.target.textContent;
+                        saveClocks();
+                    }
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-clock-btn';
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.onclick = () => removeClock(clock.id);
+
+                const svg = createClockSVG(clock);
+
+                container.appendChild(nameEl);
+                container.appendChild(deleteBtn);
+                container.appendChild(svg);
+                
+                // Drag and Drop Event Listeners
+                container.addEventListener('dragstart', handleDragStart, false);
+                container.addEventListener('dragenter', handleDragEnter, false);
+                container.addEventListener('dragover', handleDragOver, false);
+                container.addEventListener('dragleave', handleDragLeave, false);
+                container.addEventListener('drop', handleDrop, false);
+                container.addEventListener('dragend', handleDragEnd, false);
+
+                return container;
+            }
+
+            function createClockSVG(clock) {
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute('viewBox', '0 0 100 100');
+                svg.classList.add('clock-svg');
+
+                const radius = 45;
+                const center = 50;
+                const angleStep = 360 / clock.segments;
+                const colorVar = `var(--${clock.type}-color)`;
+
+                for (let i = 0; i < clock.segments; i++) {
+                    const path = document.createElementNS(svgNS, "path");
+                    const startAngle = i * angleStep - 90;
+                    const endAngle = (i + 1) * angleStep - 90;
+
+                    const x1 = center + radius * Math.cos(Math.PI * startAngle / 180);
+                    const y1 = center + radius * Math.sin(Math.PI * startAngle / 180);
+                    const x2 = center + radius * Math.cos(Math.PI * endAngle / 180);
+                    const y2 = center + radius * Math.sin(Math.PI * endAngle / 180);
+
+                    const largeArcFlag = angleStep > 180 ? 1 : 0;
+
+                    const d = [
+                        `M ${center},${center}`,
+                        `L ${x1},${y1}`,
+                        `A ${radius},${radius} 0 ${largeArcFlag} 1 ${x2},${y2}`,
+                        'Z'
+                    ].join(' ');
+
+                    path.setAttribute('d', d);
+                    path.classList.add('clock-segment');
+                    path.style.fill = (i < clock.filled) ? colorVar : 'var(--segment-empty)';
+                    path.style.stroke = 'var(--bg-color)';
+                    path.style.strokeWidth = '2';
+
+                    path.addEventListener('click', () => {
+                        const newFilled = (clock.filled === i + 1) ? i : i + 1;
+                        updateClock(clock.id, newFilled);
+                    });
+                    path.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        const newFilled = (clock.filled === i) ? i - 1 : i;
+                        updateClock(clock.id, newFilled);
+                    });
+                    svg.appendChild(path);
+                }
+                return svg;
+            }
+
+            // --- Drag and Drop Handlers ---
+            function handleDragStart(e) {
+                dragSrcEl = this;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            }
+
+            function handleDragOver(e) {
+                if (e.preventDefault) { e.preventDefault(); }
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDragEnter(e) { this.classList.add('over'); }
+            function handleDragLeave(e) { this.classList.remove('over'); }
+
+            function handleDrop(e) {
+                if (e.stopPropagation) { e.stopPropagation(); }
+                if (dragSrcEl !== this) {
+                    const srcId = dragSrcEl.dataset.id;
+                    const targetId = this.dataset.id;
+
+                    const srcIndex = clocks.findIndex(c => c.id == srcId);
+                    const targetIndex = clocks.findIndex(c => c.id == targetId);
+
+                    // Swap elements in the array
+                    const temp = clocks[srcIndex];
+                    clocks.splice(srcIndex, 1);
+                    clocks.splice(targetIndex, 0, temp);
+                    
+                    saveClocks();
+                    renderDashboard();
+                }
+                return false;
+            }
+
+            function handleDragEnd(e) {
+                [].forEach.call(dashboard.children, function (el) {
+                    el.classList.remove('over');
+                });
+            }
+
+            // --- Save/Load to Local Storage ---
+            function saveClocks() {
+                localStorage.setItem('resonanceClocks', JSON.stringify(clocks));
+            }
+
+            function loadClocks() {
+                const savedClocks = localStorage.getItem('resonanceClocks');
+                if (savedClocks) {
+                    clocks = JSON.parse(savedClocks);
+                    renderDashboard();
+                }
+            }
+
+            // --- Initial Load ---
+            loadClocks();
+        });
+    </script>
+
+</body>
+</html>
