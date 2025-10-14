@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Entity Generator</title>
+    <style>
+        /* --- Styling (Consistent with Quiz and Site Theme) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Lora&display=swap');
+
+        body {
+            background-color: #212121;
+            color: #ccc;
+            font-family: "Calibri", sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 2em;
+        }
+
+        h1, h2, h3 {
+            font-family: "Oswald", sans-serif;
+            color: #D2B48C;
+        }
+
+        #generator-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #generator-form {
+            background-color: #333;
+            padding: 2em;
+            border-radius: 8px;
+            border: 1px solid #444;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5em;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-family: "Oswald", sans-serif;
+            margin-bottom: 0.5em;
+            color: #ccc;
+        }
+
+        .form-group select, .form-group input {
+            padding: 0.8em;
+            background-color: #424242;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        #generate-btn {
+            grid-column: 1 / -1; /* Span both columns */
+            padding: 1em;
+            font-family: "Oswald", sans-serif;
+            font-size: 1.5em;
+            color: #212121;
+            background-color: #FFC107; /* Amber accent color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1em;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #generate-btn:hover {
+            background-color: #FFD54F;
+        }
+
+        #output-container {
+            display: none; /* Hidden by default */
+            margin-top: 2em;
+            padding: 2em;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+            font-family: "Lora", serif;
+        }
+        
+        #output-container h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        #output-content {
+            background-color: #212121;
+            padding: 1.5em;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Allows text to wrap */
+            font-family: monospace;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        #output-content strong {
+            color: #D2B48C;
+            font-family: "Oswald", sans-serif;
+        }
+        #output-content code {
+            color: #FFC107;
+            background-color: #424242;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="generator-container">
+        <h1>Resonance Entity Generator</h1>
+        <p>Select the parameters for the entity you wish to generate. The logic follows the rules outlined in the SRD, particularly Appendix I for progression.</p>
+        
+        <div id="generator-form">
+            <div class="form-group">
+                <label for="level">Level (0-9)</label>
+                <input type="number" id="level" min="0" max="9" value="1">
+            </div>
+            <div class="form-group">
+                <label for="entity-type">Entity Type</label>
+                <select id="entity-type">
+                    <option value="Character">Character</option>
+                    <option value="Animation">Animation</option>
+                    <option value="Item">Item</option>
+                </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="seed-keyword">Seed Keyword (Optional)</label>
+                <select id="seed-keyword">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            <button type="button" id="generate-btn">Generate Entity</button>
+        </div>
+
+        <div id="output-container">
+            <h2>Generated Entity</h2>
+            <pre id="output-content"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATA: The entire Keyword library ---
+            const keywordsData = [
+                { id: "0.0", name: "Restricted", color: "Null", category: "Flaw" }, { id: "0.1", name: "Aura", color: "Null", category: "Gift" }, { id: "0.2", name: "Specialist", color: "Null", category: "Talent" }, { id: "0.3", name: "Alert", color: "Null", category: "Quirk" }, { id: "0.4", name: "Liberate", color: "Null", category: "Boost" }, { id: "0.5", name: "Mark", color: "Null", category: "Status" }, { id: "0.6", name: "Indirect", color: "Null", category: "Form" }, { id: "0.7", name: "Adaptive", color: "Null", category: "Modifier" }, { id: "0.8", name: "Gamble", color: "Null", category: "Drive" }, { id: "0.9", name: "Edit", color: "Null", category: "Unique" },
+                { id: "1.0", name: "Bane", color: "Silver", category: "Flaw" }, { id: "1.1", name: "Traveller", color: "Silver", category: "Gift" }, { id: "1.2", name: "Martial", color: "Silver", category: "Talent" }, { id: "1.3", name: "Attuned", color: "Silver", category: "Quirk" }, { id: "1.4", name: "Augment", color: "Silver", category: "Boost" }, { id: "1.5", name: "Impair", color: "Silver", category: "Status" }, { id: "1.6", name: "Reactive", color: "Silver", category: "Form" }, { id: "1.7", name: "Phasing", color: "Silver", category: "Modifier" }, { id: "1.8", name: "Brutal", color: "Silver", category: "Drive" }, { id: "1.9", name: "Translocate", color: "Silver", category: "Unique" },
+                { id: "2.0", name: "Anxious", color: "Yellow", category: "Flaw" }, { id: "2.1", name: "Acrobatic", color: "Yellow", category: "Gift" }, { id: "2.2", name: "Sentry", color: "Yellow", category: "Talent" }, { id: "2.3", name: "Eidetic", color: "Yellow", category: "Quirk" }, { id: "2.4", name: "Haste", color: "Yellow", category: "Boost" }, { id: "2.5", name: "Slow", color: "Yellow", category: "Status" }, { id: "2.6", name: "Snap", color: "Yellow", category: "Form" }, { id: "2.7", name: "Condense", color: "Yellow", category: "Modifier" }, { id: "2.8", name: "Rapid", color: "Yellow", category: "Drive" }, { id: "2.9", name: "Reckless", color: "Yellow", category: "Unique" },
+                { id: "3.0", name: "Hesitant", color: "Green", category: "Flaw" }, { id: "3.1", name: "Sturdy", color: "Green", category: "Gift" }, { id: "3.2", name: "Brawler", color: "Green", category: "Talent" }, { id: "3.3", name: "Stubborn", color: "Green", category: "Quirk" }, { id: "3.4", name: "Ward", color: "Green", category: "Boost" }, { id: "3.5", name: "Daze", color: "Green", category: "Status" }, { id: "3.6", name: "Sculpt", color: "Green", category: "Form" }, { id: "3.7", name: "Defensive", color: "Green", category: "Modifier" }, { id: "3.8", name: "Impact", color: "Green", category: "Drive" }, { id: "3.9", name: "Shift", color: "Green", category: "Unique" },
+                { id: "4.0", name: "Feeble", color: "Black", category: "Flaw" }, { id: "4.1", name: "Survivor", color: "Black", category: "Gift" }, { id: "4.2", name: "Stoic", color: "Black", category: "Talent" }, { id: "4.3", name: "Ageless", color: "Black", category: "Quirk" }, { id: "4.4", name: "Bless", color: "Black", category: "Boost" }, { id: "4.5", name: "Curse", color: "Black", category: "Status" }, { id: "4.6", name: "Piercing", color: "Black", category: "Form" }, { id: "4.7", name: "Flux", color: "Black", category: "Modifier" }, { id: "4.8", name: "Siphon", color: "Black", category: "Drive" }, { id: "4.9", name: "Animate", color: "Black", category: "Unique" },
+                { id: "5.0", name: "Gremlins", color: "Orange", category: "Flaw" }, { id: "5.1", name: "Sensor", color: "Orange", category: "Gift" }, { id: "5.2", name: "Improvisor", color: "Orange", category: "Talent" }, { id: "5.3", name: "Crafty", color: "Orange", category: "Quirk" }, { id: "5.4", name: "Charge", color: "Orange", category: "Boost" }, { id: "5.5", name: "Bind", color: "Orange", category: "Status" }, { id: "5.6", name: "Imbue", color: "Orange", category: "Form" }, { id: "5.7", name: "Material", color: "Orange", category: "Modifier" }, { id: "5.8", name: "Leverage", color: "Orange", category: "Drive" }, { id: "5.9", name: "Manifest", color: "Orange", category: "Unique" },
+                { id: "6.0", name: "Vulnerable", color: "White", category: "Flaw" }, { id: "6.1", name: "Tolerant", color: "White", category: "Gift" }, { id: "6.2", name: "Deadeye", color: "White", category: "Talent" }, { id: "6.3", name: "Immunized", color: "White", category: "Quirk" }, { id: "6.4", name: "Cure", color: "White", category: "Boost" }, { id: "6.5", name: "Weaken", color: "White", category: "Status" }, { id: "6.6", name: "Sticky", color: "White", category: "Form" }, { id: "6.7", name: "Restore", color: "White", category: "Modifier" }, { id: "6.8", name: "Exploit", color: "White", category: "Drive" }, { id: "6.9", name: "Growth", color: "White", category: "Unique" },
+                { id: "7.0", name: "Limited", color: "Red", category: "Flaw" }, { id: "7.1", name: "Resilient", color: "Red", category: "Gift" }, { id: "7.2", name: "Font", color: "Red", category: "Talent" }, { id: "7.3", name: "Insulated", color: "Red", category: "Quirk" }, { id: "7.4", name: "Regen", color: "Red", category: "Boost" }, { id: "7.5", name: "Blight", color: "Red", category: "Status" }, { id: "7.6", name: "Area", color: "Red", category: "Form" }, { id: "7.7", name: "Ranged", color: "Red", category: "Modifier" }, { id: "7.8", name: "Multiply", color: "Red", category: "Drive" }, { id: "7.9", name: "Split", color: "Red", category: "Unique" },
+                { id: "8.0", name: "Awkward", color: "Blue", category: "Flaw" }, { id: "8.1", name: "Charismatic", color: "Blue", category: "Gift" }, { id: "8.2", name: "Leader", color: "Blue", category: "Talent" }, { id: "8.3", name: "Insightful", color: "Blue", category: "Quirk" }, { id: "8.4", name: "Enhance", color: "Blue", category: "Boost" }, { id: "8.5", name: "Silence", color: "Blue", category: "Status" }, { id: "8.6", name: "Splash", color: "Blue", category: "Form" }, { id: "8.7", name: "Lingering", color: "Blue", category: "Modifier" }, { id: "8.8", name: "Spread", color: "Blue", category: "Drive" }, { id: "8.9", name: "Potent", color: "Blue", category: "Unique" },
+                { id: "9.0", name: "Mundane", color: "Purple", category: "Flaw" }, { id: "9.1", name: "Aware", color: "Purple", category: "Gift" }, { id: "9.2", name: "Stealthy", color: "Purple", category: "Talent" }, { id: "9.3", name: "Trickster", color: "Purple", category: "Quirk" }, { id: "9.4", name: "Obscure", color: "Purple", category: "Boost" }, { id: "9.5", name: "Nullify", color: "Purple", category: "Status" }, { id: "9.6", name: "Chain", color: "Purple", category: "Form" }, { id: "9.7", name: "Natural", color: "Purple", category: "Modifier" }, { id: "9.8", name: "Ambience", color: "Purple", category: "Drive" }, { id: "9.9", name: "Channel", color: "Purple", category: "Unique" }
+            ];
+            const statNames = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
+
+            // --- UI Elements ---
+            const levelInput = document.getElementById('level');
+            const entityTypeSelect = document.getElementById('entity-type');
+            const seedKeywordSelect = document.getElementById('seed-keyword');
+            const generateBtn = document.getElementById('generate-btn');
+            const outputContainer = document.getElementById('output-container');
+            const outputContent = document.getElementById('output-content');
+
+            // --- Populate Seed Keyword Dropdown ---
+            let seedOptionsHTML = '<option value="random">Random</option>';
+            const nonFlawKeywords = keywordsData.filter(kw => kw.category !== 'Flaw');
+            nonFlawKeywords.sort((a, b) => a.name.localeCompare(b.name));
+            nonFlawKeywords.forEach(kw => {
+                seedOptionsHTML += `<option value="${kw.id}">${kw.name} (${kw.id})</option>`;
+            });
+            seedKeywordSelect.innerHTML = seedOptionsHTML;
+
+            // --- Event Listener ---
+            generateBtn.addEventListener('click', generateEntity);
+
+            // --- Helper Functions ---
+            function getRandomInt(max) { return Math.floor(Math.random() * max); }
+            
+            function getRandomKeyword(excludeList = [], excludeFlaws = false) {
+                let availableKeywords = keywordsData.filter(kw => !excludeList.find(ex => ex.id === kw.id));
+                if (excludeFlaws) {
+                    availableKeywords = availableKeywords.filter(kw => kw.category !== 'Flaw');
+                }
+                return availableKeywords[getRandomInt(availableKeywords.length)];
+            }
+
+            function findKeyword(id) {
+                return keywordsData.find(kw => kw.id === id);
+            }
+
+            // --- Main Generation Logic ---
+            function generateEntity() {
+                const level = parseInt(levelInput.value);
+                const entityType = entityTypeSelect.value;
+                const seedId = seedKeywordSelect.value;
+
+                let seedKeyword = (seedId === 'random') ? getRandomKeyword([], true) : findKeyword(seedId);
+                
+                let outputHTML = '';
+                switch (entityType) {
+                    case 'Character':
+                        outputHTML = generateCharacter(level, seedKeyword);
+                        break;
+                    case 'Animation':
+                        outputHTML = generateAnimation(level, seedKeyword);
+                        break;
+                    case 'Item':
+                        outputHTML = generateItem(level, seedKeyword);
+                        break;
+                }
+
+                outputContent.innerHTML = outputHTML;
+                outputContainer.style.display = 'block';
+            }
+
+            function generateCharacter(level, seed) {
+                let stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
+                let keywords = [seed];
+                let statPointsToDistribute = 0;
+                const progression = { 0:1, 1:4, 2:6, 3:8, 4:10, 5:12, 6:14, 7:16, 8:18, 9:20 };
+                const statPointGains = { 2:1, 3:1, 4:1, 5:1, 6:2, 7:2, 8:2, 9:2 };
+
+                if (level >= 1) {
+                    Object.keys(stats).forEach(key => stats[key] = 2);
+                    // Awakening
+                    for (let i = 0; i < 3; i++) {
+                        keywords.push(getRandomKeyword(keywords, true));
+                    }
+                }
+
+                let keywordsNeeded = progression[level] - keywords.length;
+                for (let i = 0; i < keywordsNeeded; i++) {
+                    keywords.push(getRandomKeyword(keywords, true));
+                }
+                
+                for (let i = 2; i <= level; i++) {
+                    statPointsToDistribute += statPointGains[i];
+                }
+
+                for (let i = 0; i < statPointsToDistribute; i++) {
+                    let randomStat = statNames[getRandomInt(statNames.length)];
+                    if (stats[randomStat] < 5) {
+                        stats[randomStat]++;
+                    } else {
+                        i--; // Try again if stat is maxed
+                    }
+                }
+
+                const sortedStats = Object.values(stats).sort((a, b) => b - a);
+                const resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
+
+                let html = `<strong>ENTITY TYPE:</strong> Character\n`;
+                html += `<strong>LEVEL:</strong> ${level}\n\n`;
+                html += `<strong>STATS:</strong>\n`;
+                html += `  M: ${stats.M} | A: ${stats.A} | B: ${stats.B}\n`;
+                html += `  W: ${stats.W} | E: ${stats.E} | T: ${stats.T}\n`;
+                html += `  P: ${stats.P} | I: ${stats.I} | F: ${stats.F}\n\n`;
+                html += `<strong>RESISTANCE:</strong> ${resistance}\n`;
+                html += `<strong>HP/SP/EP:</strong> 10 / 10 / 10\n\n`;
+                html += `<strong>KEYWORDS (${keywords.length} total):</strong>\n`;
+                keywords.forEach((kw, index) => {
+                    let tag = (index === 0) ? "(Seed)" : "";
+                    html += `  - <code>${kw.id}</code> ${kw.name} ${tag}\n`;
+                });
+
+                return html;
+            }
+
+            function generateAnimation(level, seed) {
+                let stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
+                let keywords = [seed];
+                let statPointsToDistribute = level;
+                let keywordsNeeded = level;
+
+                for (let i = 0; i < keywordsNeeded; i++) {
+                    keywords.push(getRandomKeyword(keywords, true));
+                }
+
+                for (let i = 0; i < statPointsToDistribute; i++) {
+                    let randomStat = statNames[getRandomInt(statNames.length)];
+                     if (stats[randomStat] < 5) {
+                        stats[randomStat]++;
+                    } else {
+                        i--; // Try again if stat is maxed
+                    }
+                }
+
+                const sortedStats = Object.values(stats).sort((a, b) => b - a);
+                const resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
+
+                let html = `<strong>ENTITY TYPE:</strong> Animation\n`;
+                html += `<strong>LEVEL:</strong> ${level}\n\n`;
+                html += `<strong>STATS:</strong>\n`;
+                html += `  M: ${stats.M} | A: ${stats.A} | B: ${stats.B}\n`;
+                html += `  W: ${stats.W} | E: ${stats.E} | T: ${stats.T}\n`;
+                html += `  P: ${stats.P} | I: ${stats.I} | F: ${stats.F}\n\n`;
+                html += `<strong>RESISTANCE:</strong> ${resistance}\n`;
+                html += `<strong>HP/SP/EP:</strong> 10 / 10 / 10\n\n`;
+                html += `<strong>KEYWORDS (${keywords.length} total):</strong>\n`;
+                keywords.forEach((kw, index) => {
+                    let tag = (index === 0) ? "(Seed)" : "";
+                    html += `  - <code>${kw.id}</code> ${kw.name} ${tag}\n`;
+                });
+
+                return html;
+            }
+
+            function generateItem(level, seed) {
+                let keywords = [seed];
+                let keywordsNeeded = Math.min(level, 4); // Max 5 keywords at L4
+
+                for (let i = 0; i < keywordsNeeded; i++) {
+                    keywords.push(getRandomKeyword(keywords, true));
+                }
+
+                let html = `<strong>ENTITY TYPE:</strong> Item\n`;
+                html += `<strong>LEVEL:</strong> ${level}\n\n`;
+                html += `<strong>DURABILITY CLOCK:</strong> [ ] [ ] (Undamaged)\n\n`;
+                html += `<strong>KEYWORDS (${keywords.length} total):</strong>\n`;
+                keywords.forEach((kw, index) => {
+                    html += `  - <code>${kw.id}</code> ${kw.name}\n`;
+                });
+
+                return html;
+            }
+        });
+    </script>
+
+</body>
+</html>
