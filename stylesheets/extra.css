@@ -9,9 +9,19 @@ body {
   font-family: "Calibri", sans-serif;
 }
 
+/* --- Custom Header Logo Size --- */
+.md-header__button.md-logo img {
+  height: 3.1rem; 
+}
+
+.md-header__button.md-logo svg {
+  height: 3.0rem;
+  width: auto;
+}
+
 /* 2. Set all header fonts to Oswald */
 /* This targets all heading levels, from h1 (the page title) down to h6. */
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4 {
   font-family: "Oswald", sans-serif;
 }
 
@@ -22,18 +32,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Lora", serif;
 }
 
-/* --- Custom Admonition Style --- */
-.md-typeset .admonition {
-  border-left: 4px solid var(--md-primary-fg-color); /* Uses your theme's primary color */
-}
-.md-typeset .admonition-title {
-  background-color: rgba(var(--md-primary-fg-color-rgb), 0.1); /* A transparent version of your primary color */
-}
 
 /* --- Custom Table Style --- */
 .md-typeset table:not([class]) th {
-  background-color: #2c2c2c; /* A dark grey for the header */
+  background-color: #dea193;
+	color: #111111;
 }
 .md-typeset table:not([class]) tr:nth-child(even) {
-  background-color: #333333; /* A slightly lighter grey for even rows */
-}
+  background-color: #111111;
+
