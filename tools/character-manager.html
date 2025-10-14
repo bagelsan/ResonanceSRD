@@ -3,521 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Character Manager</title>
+    <title>Resonance Engine & Manager</title>
     <style>
         :root {
             --bg-color: #121212; --primary-text: #EAEAEA; --secondary-text: #A0A0A0;
             --rose-gold: #B76E79; --rose-gold-glow: rgba(183, 110, 121, 0.4);
             --card-bg: #1E1E1E; --border-color: #333; --accent-bg: #2a2a2a;
-            --success-color: #2e8b57; --danger-color: #dc143c;
         }
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--primary-text); line-height: 1.6; padding: 1rem; }
         
-        /* --- Layout --- */
-        .container { max-width: 1400px; margin: 0 auto; }
-        main { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-        @media (min-width: 1000px) { main { grid-template-columns: 1fr 1fr; } }
-        @media (min-width: 1400px) { main { grid-template-columns: 1fr 1fr 1fr; } .column-span-2 { grid-column: span 2; } }
-        
-        /* --- General Components --- */
-        .section { background-color: var(--card-bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border-color); }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; cursor: pointer; }
-        .section-header h3 { color: var(--rose-gold); }
-        .section-header .toggle-icon { transition: transform 0.2s; }
-        .section.collapsed .section-content { display: none; }
-        .section.collapsed .toggle-icon { transform: rotate(-90deg); }
-        [contenteditable] { padding: 0.25rem; border-radius: 4px; transition: background-color 0.2s, box-shadow 0.2s; }
-        [contenteditable]:hover, [contenteditable]:focus { background-color: var(--accent-bg); box-shadow: 0 0 5px var(--rose-gold-glow); outline: none; }
-        
-        /* --- Header --- */
-        header { text-align: center; margin-bottom: 1rem; }
-        #char-name { font-size: 2.5rem; color: var(--rose-gold); text-shadow: 0 0 8px var(--rose-gold-glow); }
-        #char-level { font-size: 1.2rem; color: var(--secondary-text); }
-        #char-level span { font-weight: 700; color: var(--primary-text); }
+        /* --- Main Layout & Containers --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+        header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--rose-gold); padding-bottom: 1rem; }
+        header h1 { color: var(--rose-gold); font-weight: 700; text-shadow: 0 0 8px var(--rose-gold-glow); }
+        main { display: flex; flex-direction: column; gap: 2rem; }
+        .section { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .section h2 { color: var(--rose-gold); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
 
-        /* --- PC Core Sections --- */
-        .clocks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-        .clock { background-color: var(--accent-bg); padding: 1rem; border-radius: 6px; text-align: center; }
-        .clock-label { font-size: 1.2rem; font-weight: 700; color: var(--rose-gold); }
-        .clock-values { font-size: 2.5rem; font-weight: 300; margin: 0.5rem 0; }
-        .clock-buttons { display: flex; justify-content: center; gap: 0.5rem; }
-        .clock-btn { background: var(--border-color); color: var(--primary-text); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s; }
-        .clock-btn:hover { background: #444; }
+        /* --- Tab Navigation --- */
+        .tab-nav { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; }
+        .tab-button { padding: 0.75rem 1rem; cursor: pointer; background: none; border: none; color: var(--secondary-text); font-size: 1rem; border-bottom: 3px solid transparent; transition: color 0.3s, border-color 0.3s; }
+        .tab-button.active { color: var(--rose-gold); border-bottom-color: var(--rose-gold); font-weight: 700; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
 
+        /* --- Forms & Controls --- */
+        .input-group, .form-grid { display: flex; flex-direction: column; gap: 1rem; }
+        .form-control { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-control label, .builder-label { font-weight: 700; color: var(--secondary-text); }
+        input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 0.75rem; background-color: var(--accent-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--primary-text); font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--rose-gold); box-shadow: 0 0 5px var(--rose-gold-glow); }
+        textarea { resize: vertical; min-height: 80px; }
+        .button-group { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+        button { flex-grow: 1; padding: 0.75rem 1rem; background-color: var(--rose-gold); color: #FFF; border: none; border-radius: 4px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s, transform 0.1s; }
+        button:hover { background-color: #c97c88; } button:active { transform: translateY(1px); }
+        button.secondary { background-color: var(--accent-bg); border: 1px solid var(--rose-gold); color: var(--rose-gold); }
+        button.secondary:hover { background-color: var(--card-bg); }
+
+        /* --- Output Display --- */
+        .output-area { min-height: 100px; }
+        .entity-card { border: 1px solid var(--rose-gold); border-radius: 8px; padding: 1.5rem; background-color: var(--accent-bg); }
+        .entity-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .entity-header h3 { color: var(--primary-text); font-size: 1.5rem; }
+        .level-badge { background-color: var(--rose-gold); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; }
+        .entity-section h4 { color: var(--rose-gold); margin-bottom: 0.5rem; font-size: 1.1rem; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; }
-        .stat-box { background-color: var(--accent-bg); padding: 0.5rem; border-radius: 4px; }
-        .stat-label { font-size: 0.8rem; color: var(--rose-gold); font-weight: 700; }
-        .stat-value { font-size: 2rem; font-weight: 700; }
+        .stat-box { background-color: var(--bg-color); padding: 0.5rem; border-radius: 4px; }
+        .stat-label { font-size: 0.8rem; color: var(--rose-gold); font-weight: 700; } .stat-value { font-size: 1.5rem; font-weight: 700; }
         
-        .dynamic-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background-color: var(--accent-bg); border-radius: 4px; margin-bottom: 0.5rem; }
-        .remove-btn { background: none; border: none; color: var(--danger-color); font-size: 1.2rem; cursor: pointer; }
-        .add-form { display: flex; gap: 0.5rem; margin-top: 1rem; }
-        .add-form input { flex-grow: 1; padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--primary-text); border-radius: 4px; }
-        .add-form button { padding: 0.5rem 1rem; background: var(--rose-gold); border: none; color: white; border-radius: 4px; cursor: pointer; }
+        /* --- Saved Entities List --- */
+        #saved-entities-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .saved-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background-color: var(--accent-bg); border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+        .saved-item:hover { background-color: #3a3a3a; }
         
-        /* --- Asset Cards --- */
-        .asset-card { background-color: var(--accent-bg); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border-left: 4px solid var(--rose-gold); }
-        .asset-header { display: flex; justify-content: space-between; align-items: center; }
-        .asset-header h4 { color: var(--primary-text); font-size: 1.1rem; }
-        .asset-controls button { background: none; border: none; color: var(--secondary-text); font-size: 1rem; cursor: pointer; }
-        .asset-summary { font-size: 0.9rem; color: var(--secondary-text); }
-        .add-asset-btn { width: 100%; padding: 0.75rem; margin-top: 1rem; background: var(--accent-bg); border: 1px dashed var(--rose-gold); color: var(--rose-gold); font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
-        .add-asset-btn:hover { background-color: var(--border-color); }
-        
-        /* --- Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--rose-gold); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .modal-header h2 { color: var(--rose-gold); }
-        #modal-close-btn { background: none; border: none; font-size: 2rem; color: var(--secondary-text); cursor: pointer; }
-        .modal-body { display: flex; flex-direction: column; gap: 1rem; }
-        .modal-body .form-control { display: flex; flex-direction: column; gap: 0.25rem; }
-        .modal-body label { color: var(--secondary-text); font-size: 0.9rem; }
-        .modal-body input, .modal-body textarea, .modal-body select { padding: 0.5rem; font-size: 1rem; }
-        .modal-body .stat-grid { margin-top: 1rem; }
-        #modal-save-btn { margin-top: 1.5rem; width: 100%; }
-        .checkbox-group-modal { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; }
-        .checkbox-control-modal { display: flex; align-items: center; gap: 0.5rem; }
-
-        /* --- Controls --- */
-        .controls { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; background-color: var(--card-bg); padding: 1rem; border-radius: 8px; }
-        .controls button { flex: 1 1 auto; }
-        .controls input[type="file"] { display: none; }
+        @media (min-width: 900px) { main { flex-direction: row; align-items: flex-start; } .column-left { flex: 1; } .column-right { flex: 1.2; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1 id="char-name" contenteditable="true">Character Name</h1>
-        <div id="char-level">Level <span contenteditable="true">1</span></div>
-    </header>
-
-    <div class="controls">
-        <button id="export-btn">Export to File</button>
-        <button id="import-btn">Import from File</button>
-        <input type="file" id="import-file" accept=".json">
-        <button id="clear-btn" style="background-color: var(--danger-color);">Clear Sheet</button>
-    </div>
-
+    <header><h1>Resonance Engine & Manager</h1><p>A comprehensive toolkit for generating and managing Resonance entities.</p></header>
     <main>
-        <div class="column">
+        <div class="column-left">
             <section class="section">
-                <div class="section-header"><h3>Core Clocks</h3></div>
-                <div class="clocks-grid">
-                    <div class="clock"><div class="clock-label">Health (HP)</div><div class="clock-values"><span id="hp-current">10</span> / <span id="hp-max" contenteditable="true">10</span></div><div class="clock-buttons"><button class="clock-btn" data-clock="hp" data-amount="-1">-</button><button class="clock-btn" data-clock="hp" data-amount="1">+</button></div></div>
-                    <div class="clock"><div class="clock-label">Stamina (SP)</div><div class="clock-values"><span id="sp-current">10</span> / <span id="sp-max" contenteditable="true">10</span></div><div class="clock-buttons"><button class="clock-btn" data-clock="sp" data-amount="-1">-</button><button class="clock-btn" data-clock="sp" data-amount="1">+</button></div></div>
-                    <div class="clock"><div class="clock-label">Energy (EP)</div><div class="clock-values"><span id="ep-current">10</span> / <span id="ep-max" contenteditable="true">10</span></div><div class="clock-buttons"><button class="clock-btn" data-clock="ep" data-amount="-1">-</button><button class="clock-btn" data-clock="ep" data-amount="1">+</button></div></div>
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="parser">Parser</button>
+                    <button class="tab-button" data-tab="blueprint-gen">Blueprint Gen</button>
+                    <!-- other tabs can be added back here if desired -->
                 </div>
-            </section>
 
-            <section class="section">
-                <div class="section-header"><h3>Stat Grid</h3></div>
-                <div class="stat-grid">
-                    <div class="stat-box"><div class="stat-label">Movement</div><div class="stat-value" id="stat-m" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Alacrity</div><div class="stat-value" id="stat-a" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Brawn</div><div class="stat-value" id="stat-b" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Wit</div><div class="stat-value" id="stat-w" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Expertise</div><div class="stat-value" id="stat-e" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Technique</div><div class="stat-value" id="stat-t" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Power</div><div class="stat-value" id="stat-p" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Influence</div><div class="stat-value" id="stat-i" contenteditable="true">2</div></div>
-                    <div class="stat-box"><div class="stat-label">Force</div><div class="stat-value" id="stat-f" contenteditable="true">2</div></div>
+                <!-- Parser Tab -->
+                <div id="tab-parser" class="tab-content active">
+                    <h2>Blueprint Parser</h2>
+                    <div class="form-control"><label for="entity-name">Entity Name</label><input type="text" id="entity-name" placeholder="e.g., Jet, Clockwork Sentry"></div>
+                    <div class="form-control"><label for="blueprint-code">Blueprint Code</label><input type="text" id="blueprint-code" placeholder="e.g., 01-11.12.13-..."></div>
+                    <div class="form-control"><label for="entity-type">Entity Type</label><select id="entity-type"><option value="character">Character</option><option value="animation">Animation</option></select></div>
+                    <div class="button-group"><button id="parse-btn">Parse Code</button></div>
                 </div>
-            </section>
 
-            <section class="section">
-                <div class="section-header"><h3>Keywords</h3></div>
-                <div class="section-content">
-                    <ul id="keywords-list" class="dynamic-list"></ul>
-                    <form id="add-keyword-form" class="add-form"><input type="text" id="keyword-input" placeholder="Enter keyword name..."><button type="submit">Add</button></form>
-                </div>
-            </section>
-        </div>
-        <div class="column">
-             <section class="section">
-                <div class="section-header"><h3>Animations</h3> <span class="toggle-icon">▼</span></div>
-                <div class="section-content">
-                    <div id="animations-list"></div>
-                    <button id="add-animation-btn" class="add-asset-btn">+ Add Animation</button>
-                </div>
-            </section>
-
-            <section class="section">
-                <div class="section-header"><h3>Gear & Items</h3> <span class="toggle-icon">▼</span></div>
-                <div class="section-content">
-                    <div id="gear-list"></div>
-                    <button id="add-gear-btn" class="add-asset-btn">+ Add Item</button>
-                </div>
-            </section>
-
-            <section class="section">
-                <div class="section-header"><h3>Factions</h3> <span class="toggle-icon">▼</span></div>
-                <div class="section-content">
-                    <div id="factions-list"></div>
-                    <button id="add-faction-btn" class="add-asset-btn">+ Add Faction</button>
-                </div>
-            </section>
-        </div>
-        <div class="column column-span-2">
-             <section class="section">
-                <div class="section-header"><h3>Tags</h3> <span class="toggle-icon">▼</span></div>
-                 <div class="section-content" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <h4>Boost Tags</h4>
-                        <ul id="boost-tags-list" class="dynamic-list"></ul>
-                        <form id="add-boost-form" class="add-form"><input type="text" id="boost-input" placeholder="Enter boost name..."><button type="submit">Add</button></form>
-                    </div>
-                    <div style="flex: 1; min-width: 250px;">
-                        <h4>Status Tags</h4>
-                        <ul id="status-tags-list" class="dynamic-list"></ul>
-                        <form id="add-status-form" class="add-form"><input type="text" id="status-input" placeholder="Enter status name..."><button type="submit">Add</button></form>
+                <!-- Blueprint Generator Tab -->
+                <div id="tab-blueprint-gen" class="tab-content">
+                    <h2>Random Blueprint Generator</h2>
+                    <p style="font-size: 0.9em; color: var(--secondary-text); margin-bottom: 1rem;">Generates a valid, non-collapsed blueprint string for a character of a specified level.</p>
+                    <div class="form-grid">
+                        <div class="form-control">
+                            <label for="gen-level">Target Level</label>
+                            <select id="gen-level">
+                                <option value="0">Level 0</option>
+                                <option value="1" selected>Level 1</option>
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                                <option value="4">Level 4</option>
+                                <option value="5">Level 5</option>
+                                <option value="6">Level 6</option>
+                                <option value="7">Level 7</option>
+                                <option value="8">Level 8</option>
+                                <option value="9">Level 9</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>Seed Type</label>
+                            <select id="gen-seed-type">
+                                <option value="random">Random</option>
+                                <option value="standard">Standard</option>
+                                <option value="flawed">Flawed Seed</option>
+                            </select>
+                        </div>
+                        <div class="button-group">
+                            <button id="generate-blueprint-btn">Generate</button>
+                        </div>
+                        <div class="form-control">
+                            <label for="generated-blueprint-output">Generated Blueprint</label>
+                            <textarea id="generated-blueprint-output" readonly rows="4"></textarea>
+                        </div>
+                        <div class="button-group">
+                            <button id="copy-blueprint-btn" class="secondary">Copy</button>
+                            <button id="send-to-parser-btn" class="secondary">Send to Parser</button>
+                        </div>
                     </div>
                 </div>
             </section>
+        </div>
+        <div class="column-right">
+             <section class="section">
+                <h2>Output</h2>
+                <div class="output-area" id="output-area"><p style="color: var(--secondary-text);">Parsed content will appear here.</p></div>
+             </section>
         </div>
     </main>
 </div>
 
-<!-- Modal Structure -->
-<div id="modal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modal-title">Edit Asset</h2>
-            <button id="modal-close-btn">&times;</button>
-        </div>
-        <div id="modal-body" class="modal-body">
-            <!-- Content dynamically inserted by JS -->
-        </div>
-        <button id="modal-save-btn">Save Changes</button>
-    </div>
-</div>
-
 <script>
+// --- CORE DATA ---
+const KEYWORDS = { '00': { name: 'Restricted', color: 'flaw' }, '01': { name: 'Aura', color: 'null' }, '02': { name: 'Specialist', color: 'null' }, '03': { name: 'Alert', color: 'null' }, '04': { name: 'Liberate', color: 'null' }, '05': { name: 'Mark', color: 'null' }, '06': { name: 'Indirect', color: 'null' }, '07': { name: 'Adaptive', color: 'null' }, '08': { name: 'Gamble', color: 'null' }, '09': { name: 'Edit', color: 'null' }, '10': { name: 'Bane', color: 'flaw' }, '11': { name: 'Traveller', color: 'silver' }, '12': { name: 'Martial', color: 'silver' }, '13': { name: 'Attuned', color: 'silver' }, '14': { name: 'Augment', color: 'silver' }, '15': { name: 'Impair', color: 'silver' }, '16': { name: 'Reactive', color: 'silver' }, '17': { name: 'Phasing', color: 'silver' }, '18': { name: 'Brutal', color: 'silver' }, '19': { name: 'Translocate', color: 'silver' }, '20': { name: 'Anxious', color: 'flaw' }, '21': { name: 'Acrobatic', color: 'yellow' }, '22': { name: 'Sentry', color: 'yellow' }, '23': { name: 'Eidetic', color: 'yellow' }, '24': { name: 'Haste', color: 'yellow' }, '25': { name: 'Slow', color: 'yellow' }, '26': { name: 'Snap', color: 'yellow' }, '27': { name: 'Condense', color: 'yellow' }, '28': { name: 'Rapid', color: 'yellow' }, '29': { name: 'Reckless', color: 'yellow' }, '30': { name: 'Hesitant', color: 'flaw' }, '31': { name: 'Sturdy', color: 'green' }, '32': { name: 'Brawler', color: 'green' }, '33': { name: 'Stubborn', color: 'green' }, '34': { name: 'Ward', color: 'green' }, '35': { name: 'Daze', color: 'green' }, '36': { name: 'Sculpt', color: 'green' }, '37': { name: 'Defensive', color: 'green' }, '38': { name: 'Impact', color: 'green' }, '39': { name: 'Shift', color: 'green' }, '40': { name: 'Feeble', color: 'flaw' }, '41': { name: 'Survivor', color: 'black' }, '42': { name: 'Stoic', color: 'black' }, '43': { name: 'Ageless', color: 'black' }, '44': { name: 'Bless', color: 'black' }, '45': { name: 'Curse', color: 'black' }, '46': { name: 'Piercing', color: 'black' }, '47': { name: 'Flux', color: 'black' }, '48': { name: 'Siphon', color: 'black' }, '49': { name: 'Animate', color: 'black' }, '50': { name: 'Gremlins', color: 'flaw' }, '51': { name: 'Sensor', color: 'orange' }, '52': { name: 'Improvisor', color: 'orange' }, '53': { name: 'Crafty', color: 'orange' }, '54': { name: 'Charge', color: 'orange' }, '55': { name: 'Bind', color: 'orange' }, '56': { name: 'Imbue', color: 'orange' }, '57': { name: 'Material', color: 'orange' }, '58': { name: 'Leverage', color: 'orange' }, '59': { name: 'Manifest', color: 'orange' }, '60': { name: 'Vulnerable', color: 'flaw' }, '61': { name: 'Tolerant', color: 'white' }, '62': { name: 'Deadeye', color: 'white' }, '63': { name: 'Immunized', color: 'white' }, '64': { name: 'Cure', color: 'white' }, '65': { name: 'Weaken', color: 'white' }, '66': { name: 'Sticky', color: 'white' }, '67': { name: 'Restore', color: 'white' }, '68': { name: 'Exploit', color: 'white' }, '69': { name: 'Growth', color: 'white' }, '70': { name: 'Limited', color: 'flaw' }, '71': { name: 'Resilient', color: 'red' }, '72': { name: 'Font', color: 'red' }, '73': { name: 'Insulated', color: 'red' }, '74': { name: 'Regen', color: 'red' }, '75': { name: 'Blight', color: 'red' }, '76': { name: 'Area', color: 'red' }, '77': { name: 'Ranged', color: 'red' }, '78': { name: 'Multiply', color: 'red' }, '79': { name: 'Split', color: 'red' }, '80': { name: 'Awkward', color: 'flaw' }, '81': { name: 'Charismatic', color: 'blue' }, '82': { name: 'Leader', color: 'blue' }, '83': { name: 'Insightful', color: 'blue' }, '84': { name: 'Enhance', color: 'blue' }, '85': { name: 'Silence', color: 'blue' }, '86': { name: 'Splash', color: 'blue' }, '87': { name: 'Lingering', color: 'blue' }, '88': { name: 'Spread', color: 'blue' }, '89': { name: 'Potent', color: 'blue' }, '90': { name: 'Mundane', color: 'flaw' }, '91': { name: 'Aware', color: 'purple' }, '92': { name: 'Stealthy', color: 'purple' }, '93': { name: 'Trickster', color: 'purple' }, '94': { name: 'Obscure', color: 'purple' }, '95': { name: 'Nullify', color: 'purple' }, '96': { name: 'Chain', color: 'purple' }, '97': { name: 'Natural', color: 'purple' }, '98': { name: 'Ambience', color: 'purple' }, '99': { name: 'Channel', color: 'purple' }};
+const PROGRESSION_TABLE = {
+    standard: [ { level: 0, kw: 1, sp: 0 }, { level: 1, kw: 4, sp: 0 }, { level: 2, kw: 6, sp: 1 }, { level: 3, kw: 8, sp: 2 }, { level: 4, kw: 10, sp: 3 }, { level: 5, kw: 12, sp: 4 }, { level: 6, kw: 14, sp: 6 }, { level: 7, kw: 16, sp: 8 }, { level: 8, kw: 18, sp: 10 }, { level: 9, kw: 20, sp: 12 } ],
+    flawed: [ { level: 0, kw: 2, sp: 0 }, { level: 1, kw: 5, sp: 0 }, { level: 2, kw: 7, sp: 1 }, { level: 3, kw: 9, sp: 2 }, { level: 4, kw: 11, sp: 3 }, { level: 5, kw: 13, sp: 4 }, { level: 6, kw: 15, sp: 6 }, { level: 7, kw: 17, sp: 8 }, { level: 8, kw: 19, sp: 10 }, { level: 9, kw: 21, sp: 12 } ]
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DATA STRUCTURE ---
-    const defaultCharacter = {
-        name: 'New Character', level: 1,
-        clocks: { hp: { current: 10, max: 10 }, sp: { current: 10, max: 10 }, ep: { current: 10, max: 10 } },
-        stats: { m: 2, a: 2, b: 2, w: 2, e: 2, t: 2, p: 2, i: 2, f: 2 },
-        keywords: ['Attuned', 'Traveller'],
-        tags: { boost: [], status: [] },
-        gear: [], animations: [], factions: []
-    };
+    // --- DOM ELEMENTS ---
+    const outputArea = document.getElementById('output-area');
 
-    let characterData = { ...defaultCharacter };
-    const CIVIL_SYSTEMS = ["Food", "Water", "Shelter", "Infrastructure", "Humanitarian", "Education", "Healthcare", "Government", "Commerce", "Military"];
-
-    // --- RENDER FUNCTIONS ---
-    function renderAll() {
-        // Player Character Core
-        document.getElementById('char-name').textContent = characterData.name;
-        document.getElementById('char-level').querySelector('span').textContent = characterData.level;
-        for (const [key, clock] of Object.entries(characterData.clocks)) {
-            document.getElementById(`${key}-current`).textContent = clock.current;
-            document.getElementById(`${key}-max`).textContent = clock.max;
-        }
-        for (const [key, value] of Object.entries(characterData.stats)) {
-            document.getElementById(`stat-${key}`).textContent = value;
-        }
-        renderSimpleList('keywords', characterData.keywords, document.getElementById('keywords-list'));
-        renderSimpleList('boost', characterData.tags.boost, document.getElementById('boost-tags-list'));
-        renderSimpleList('status', characterData.tags.status, document.getElementById('status-tags-list'));
-
-        // Associated Assets
-        renderAssetList('animations', characterData.animations, document.getElementById('animations-list'));
-        renderAssetList('gear', characterData.gear, document.getElementById('gear-list'));
-        renderAssetList('factions', characterData.factions, document.getElementById('factions-list'));
-    }
-
-    function renderSimpleList(type, data, element) {
-        element.innerHTML = '';
-        data.forEach((item, index) => {
-            const li = document.createElement('li');
-            li.className = 'list-item';
-            li.innerHTML = `<span>${item}</span><button class="remove-btn" data-type="${type}" data-index="${index}">&times;</button>`;
-            element.appendChild(li);
+    // --- TAB NAVIGATION ---
+    document.querySelectorAll('.tab-button').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
         });
-    }
+    });
 
-    function renderAssetList(type, data, element) {
-        element.innerHTML = '';
-        data.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'asset-card';
-            let summary = '';
-            if (type === 'animations') summary = `Lvl ${item.level} | HP: ${item.clocks.hp.current}/${item.clocks.hp.max}`;
-            if (type === 'gear') summary = `Lvl ${item.level} | Dur: ${item.durability}/2`;
-            if (type === 'factions') summary = `Lvl ${item.level} | Trust: ${item.trust}`;
-            
-            card.innerHTML = `
-                <div class="asset-header">
-                    <h4>${item.name}</h4>
-                    <div class="asset-controls">
-                        <button class="edit-btn" data-type="${type}" data-index="${index}">Edit</button>
-                        <button class="remove-btn" data-type="${type}" data-index="${index}">&times;</button>
-                    </div>
-                </div>
-                <div class="asset-summary">${summary}</div>
-            `;
-            element.appendChild(card);
-        });
-    }
-
-    // --- EVENT HANDLERS ---
-    function setupEventListeners() {
-        document.body.addEventListener('blur', handleBlur, true);
-        document.body.addEventListener('click', handleClick);
-        document.body.addEventListener('submit', handleSubmit);
-        document.getElementById('export-btn').addEventListener('click', exportCharacter);
-        document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
-        document.getElementById('import-file').addEventListener('change', importCharacter);
-        document.getElementById('clear-btn').addEventListener('click', clearCharacter);
-        document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-        document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
-        document.getElementById('modal-save-btn').addEventListener('click', saveModalChanges);
-    }
+    // --- PARSER LOGIC ---
+    document.getElementById('parse-btn').addEventListener('click', () => {
+        const code = document.getElementById('blueprint-code').value.trim();
+        if (!code) { alert('Please enter a blueprint code.'); return; }
+        try {
+            const entity = parseCharacterBlueprint(code, document.getElementById('entity-type').value);
+            displayCharacter(entity);
+        } catch (error) {
+            console.error("Parsing Error:", error);
+            outputArea.innerHTML = `<p style="color:var(--rose-gold);">Error parsing blueprint: ${error.message}</p>`;
+        }
+    });
     
-    function handleBlur(e) {
-        if (e.target.matches('[contenteditable="true"]')) {
-            const el = e.target;
-            const value = el.textContent;
-            const id = el.id;
-            if (id === 'char-name') characterData.name = value;
-            else if (el.parentElement.id === 'char-level') characterData.level = parseInt(value) || 1;
-            else if (id.endsWith('-max')) characterData.clocks[id.split('-')[0]].max = parseInt(value) || 0;
-            else if (id.startsWith('stat-')) characterData.stats[id.split('-')[1]] = parseInt(value) || 0;
-            saveCharacter();
-        }
-    }
+    // --- BLUEPRINT GENERATOR LOGIC ---
+    document.getElementById('generate-blueprint-btn').addEventListener('click', () => {
+        const level = parseInt(document.getElementById('gen-level').value);
+        const seedType = document.getElementById('gen-seed-type').value;
+        const blueprint = generateRandomBlueprint(level, seedType);
+        document.getElementById('generated-blueprint-output').value = blueprint;
+    });
 
-    function handleClick(e) {
-        // Clock Buttons
-        if (e.target.matches('.clock-btn')) {
-            const { clock, amount } = e.target.dataset;
-            let { current, max } = characterData.clocks[clock];
-            characterData.clocks[clock].current = Math.max(0, Math.min(max, current + parseInt(amount)));
-            renderAll();
-            saveCharacter();
-        }
-        // Remove Buttons
-        if (e.target.matches('.remove-btn')) {
-            const { type, index } = e.target.dataset;
-            if (type === 'keywords') characterData.keywords.splice(index, 1);
-            else if (type === 'boost' || type === 'status') characterData.tags[type].splice(index, 1);
-            else characterData[type].splice(index, 1);
-            renderAll();
-            saveCharacter();
-        }
-        // Add Asset Buttons
-        if (e.target.matches('#add-animation-btn')) addAsset('animations');
-        if (e.target.matches('#add-gear-btn')) addAsset('gear');
-        if (e.target.matches('#add-faction-btn')) addAsset('factions');
-        // Edit Asset Button
-        if (e.target.matches('.edit-btn')) openModal(e.target.dataset.type, e.target.dataset.index);
-        // Section Toggles
-        if (e.target.matches('.section-header, .section-header *')) {
-            e.target.closest('.section').classList.toggle('collapsed');
-        }
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        if (e.target.id === 'add-keyword-form') handleAddSimple('keywords', 'keyword-input');
-        if (e.target.id === 'add-boost-form') handleAddSimple('boost', 'boost-input');
-        if (e.target.id === 'add-status-form') handleAddSimple('status', 'status-input');
-    }
-
-    function handleAddSimple(type, inputId) {
-        const input = document.getElementById(inputId);
-        const value = input.value.trim();
-        if (!value) return;
-        if (type === 'keywords') characterData.keywords.push(value);
-        else characterData.tags[type].push(value);
-        input.value = '';
-        renderAll();
-        saveCharacter();
-    }
-
-    function addAsset(type) {
-        let newItem;
-        if (type === 'animations') newItem = { name: 'New Animation', level: 0, isMinion: false, clocks: { hp: { current: 10, max: 10 }, sp: { current: 10, max: 10 }, ep: { current: 10, max: 10 } }, stats: { m: 1, a: 1, b: 1, w: 1, e: 1, t: 1, p: 1, i: 1, f: 1 }, keywords: [] };
-        if (type === 'gear') newItem = { name: 'New Item', level: 1, durability: 2, keywords: 'None' };
-        if (type === 'factions') newItem = { name: 'New Faction', level: 0, trust: 'Neutral', notes: '', systems: [] };
-        characterData[type].push(newItem);
-        renderAll();
-        saveCharacter();
-    }
+    document.getElementById('copy-blueprint-btn').addEventListener('click', () => {
+        const output = document.getElementById('generated-blueprint-output');
+        output.select();
+        navigator.clipboard.writeText(output.value)
+            .then(() => alert('Blueprint copied to clipboard!'))
+            .catch(err => alert('Failed to copy blueprint.'));
+    });
     
-    // --- MODAL LOGIC ---
-    const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalBody = document.getElementById('modal-body');
+    document.getElementById('send-to-parser-btn').addEventListener('click', () => {
+        const blueprint = document.getElementById('generated-blueprint-output').value;
+        if (!blueprint) {
+            alert('Generate a blueprint first!');
+            return;
+        }
+        document.querySelector('.tab-button[data-tab="parser"]').click();
+        document.getElementById('blueprint-code').value = blueprint;
+        document.getElementById('entity-name').value = "Generated Character";
+        document.getElementById('parse-btn').click();
+    });
 
-    function openModal(type, index) {
-        const item = characterData[type][index];
-        modal.dataset.type = type;
-        modal.dataset.index = index;
-        modalTitle.textContent = `Edit ${item.name}`;
+    // --- HELPER FUNCTIONS ---
+    function isFlaw(code) { return parseInt(code) % 10 === 0; }
+    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function getRandomKeywordCode(allowFlaw = true) {
+        const code = String(getRandomInt(0, 99)).padStart(2, '0');
+        if (!allowFlaw && isFlaw(code)) return getRandomKeywordCode(false);
+        return code;
+    }
+    function getFlawCompPair() {
+        const flawCode = String(getRandomInt(0, 9) * 10).padStart(2, '0');
+        const compCode = getRandomKeywordCode(false);
+        return `${flawCode}${compCode}`;
+    }
+
+    // --- CORE GENERATION & PARSING FUNCTIONS ---
+    function generateRandomBlueprint(targetLevel, seedType) {
+        let actualSeedType = seedType;
+        if (seedType === 'random') {
+            actualSeedType = Math.random() < 0.2 ? 'flawed' : 'standard';
+        }
         
-        let bodyHtml = '';
-        if (type === 'animations') bodyHtml = getAnimationModalHtml(item);
-        if (type === 'gear') bodyHtml = getGearModalHtml(item);
-        if (type === 'factions') bodyHtml = getFactionModalHtml(item);
+        const path = PROGRESSION_TABLE[actualSeedType];
+        const levelData = path.find(t => t.level === targetLevel);
+        if (!levelData) return "Invalid level selected.";
+        
+        const totalKeywordsNeeded = levelData.kw;
+        const kwCodes = [];
+        let hasFlaw = false;
 
-        modalBody.innerHTML = bodyHtml;
-        modal.classList.add('active');
-    }
-
-    function closeModal() {
-        modal.classList.remove('active');
-    }
-
-    function saveModalChanges() {
-        const { type, index } = modal.dataset;
-        const item = characterData[type][index];
-
-        if (type === 'animations') {
-            item.name = document.getElementById('modal-anim-name').value;
-            item.level = parseInt(document.getElementById('modal-anim-level').value);
-            item.isMinion = document.getElementById('modal-anim-minion').checked;
-            ['hp', 'sp', 'ep'].forEach(c => { item.clocks[c].max = parseInt(document.getElementById(`modal-anim-${c}-max`).value); });
-            ['m','a','b','w','e','t','p','i','f'].forEach(s => { item.stats[s] = parseInt(document.getElementById(`modal-anim-stat-${s}`).value); });
-            item.keywords = document.getElementById('modal-anim-keywords').value.split(',').map(k => k.trim()).filter(Boolean);
+        // Generate keywords
+        while (kwCodes.length < totalKeywordsNeeded) {
+            // Special handling for the very first keyword to set seed type
+            if (kwCodes.length === 0) {
+                if (actualSeedType === 'flawed') {
+                    const pair = getFlawCompPair();
+                    kwCodes.push(pair.substring(0, 2), pair.substring(2, 4));
+                    hasFlaw = true;
+                    // Handle flawed seed needing more than 2 KWs at level 0 (not in current rules, but robust)
+                    while (kwCodes.length < path[0].kw) {
+                         kwCodes.push(getRandomKeywordCode(false));
+                    }
+                } else { // Standard
+                    kwCodes.push(getRandomKeywordCode(false));
+                }
+            } else {
+                let newKw = getRandomKeywordCode(true);
+                // Reroll if it's a second flaw
+                if (isFlaw(newKw) && hasFlaw) {
+                    newKw = getRandomKeywordCode(false);
+                }
+                if (isFlaw(newKw) && !hasFlaw) {
+                    hasFlaw = true;
+                }
+                kwCodes.push(newKw);
+            }
         }
-        if (type === 'gear') {
-            item.name = document.getElementById('modal-gear-name').value;
-            item.level = parseInt(document.getElementById('modal-gear-level').value);
-            item.keywords = document.getElementById('modal-gear-keywords').value;
-        }
-        if (type === 'factions') {
-            item.name = document.getElementById('modal-faction-name').value;
-            item.trust = document.getElementById('modal-faction-trust').value;
-            item.notes = document.getElementById('modal-faction-notes').value;
-            item.systems = Array.from(document.querySelectorAll('.modal-faction-system:checked')).map(cb => cb.value);
-            item.level = item.systems.length;
-        }
-
-        saveCharacter();
-        renderAll();
-        closeModal();
-    }
-    
-    // --- MODAL HTML GENERATORS ---
-    function getAnimationModalHtml(anim) {
-        const resistance = Object.values(anim.stats).sort((a,b) => b-a).slice(0,3).reduce((sum, val) => sum + val, 0);
-        return `
-            <div class="form-control"><label for="modal-anim-name">Name</label><input type="text" id="modal-anim-name" value="${anim.name}"></div>
-            <div style="display:flex; gap: 1rem;">
-                <div class="form-control" style="flex:1;"><label for="modal-anim-level">Level</label><input type="number" id="modal-anim-level" value="${anim.level}"></div>
-                <div class="form-control" style="flex:1; justify-content:center;"><label><input type="checkbox" id="modal-anim-minion" ${anim.isMinion ? 'checked' : ''}> Is Minion (HP 1)</label></div>
-            </div>
-            <h4>Clocks (Max Values)</h4>
-            <div style="display:flex; gap: 1rem;">
-                <div class="form-control"><label>HP Max</label><input type="number" id="modal-anim-hp-max" value="${anim.clocks.hp.max}"></div>
-                <div class="form-control"><label>SP Max</label><input type="number" id="modal-anim-sp-max" value="${anim.clocks.sp.max}"></div>
-                <div class="form-control"><label>EP Max</label><input type="number" id="modal-anim-ep-max" value="${anim.clocks.ep.max}"></div>
-            </div>
-            <h4>Stats (Resistance: ${resistance})</h4>
-            <div class="stat-grid">
-                ${Object.entries(anim.stats).map(([key, value]) => `
-                    <div class="stat-box"><div class="stat-label">${key.toUpperCase()}</div><input type="number" class="stat-value" id="modal-anim-stat-${key}" value="${value}" style="width:100%; text-align:center;"></div>
-                `).join('')}
-            </div>
-            <div class="form-control"><label for="modal-anim-keywords">Keywords (comma-separated)</label><textarea id="modal-anim-keywords">${anim.keywords.join(', ')}</textarea></div>
-        `;
-    }
-
-    function getGearModalHtml(gear) {
-        return `
-            <div class="form-control"><label for="modal-gear-name">Item Name</label><input type="text" id="modal-gear-name" value="${gear.name}"></div>
-            <div class="form-control"><label for="modal-gear-level">Item Level</label><input type="number" id="modal-gear-level" value="${gear.level}"></div>
-            <div class="form-control"><label for="modal-gear-keywords">Keywords</label><textarea id="modal-gear-keywords">${gear.keywords}</textarea></div>
-        `;
-    }
-
-    function getFactionModalHtml(faction) {
-        return `
-            <div class="form-control"><label for="modal-faction-name">Faction Name</label><input type="text" id="modal-faction-name" value="${faction.name}"></div>
-            <div class="form-control"><label for="modal-faction-trust">Trust Level</label>
-                <select id="modal-faction-trust">
-                    <option value="Ally" ${faction.trust === 'Ally' ? 'selected' : ''}>Ally</option>
-                    <option value="Neutral" ${faction.trust === 'Neutral' ? 'selected' : ''}>Neutral</option>
-                    <option value="Enemy" ${faction.trust === 'Enemy' ? 'selected' : ''}>Enemy</option>
-                </select>
-            </div>
-            <h4>Civil Systems (Level: ${faction.systems.length})</h4>
-            <div class="checkbox-group-modal">
-                ${CIVIL_SYSTEMS.map(sys => `
-                    <label class="checkbox-control-modal"><input type="checkbox" class="modal-faction-system" value="${sys}" ${faction.systems.includes(sys) ? 'checked' : ''}> ${sys}</label>
-                `).join('')}
-            </div>
-            <div class="form-control"><label for="modal-faction-notes">Notes</label><textarea id="modal-faction-notes">${faction.notes}</textarea></div>
-        `;
-    }
-
-    // --- DATA PERSISTENCE ---
-    function saveCharacter() {
-        localStorage.setItem('resonanceCharacterSheet_v2', JSON.stringify(characterData));
-    }
-
-    function loadCharacter() {
-        const savedData = localStorage.getItem('resonanceCharacterSheet_v2');
-        if (savedData) {
-            characterData = JSON.parse(savedData);
-            // Quick migration for new properties if loading old data
-            if (!characterData.animations) characterData.animations = [];
-            if (!characterData.factions) characterData.factions = [];
+        
+        // Format into blueprint string
+        let blueprint = '';
+        let kwIndex = 0;
+        const isFlawedSeed = actualSeedType === 'flawed';
+        
+        const seedCount = path[0].kw;
+        if (isFlawedSeed) {
+            blueprint = `${kwCodes[kwIndex++]}${kwCodes[kwIndex++]}`;
+            if (seedCount > 2) blueprint += `.${kwCodes.slice(kwIndex, seedCount).join('.')}`;
+            kwIndex = seedCount;
         } else {
-            characterData = JSON.parse(JSON.stringify(defaultCharacter));
+            blueprint = kwCodes[kwIndex++];
         }
-        renderAll();
-    }
 
-    function clearCharacter() {
-        if (confirm('Are you sure you want to permanently erase this character sheet?')) {
-            characterData = JSON.parse(JSON.stringify(defaultCharacter));
-            saveCharacter();
-            renderAll();
+        for (let l = 1; l <= targetLevel; l++) {
+            const kwAtPrevLevel = path[l-1].kw;
+            const kwAtThisLevel = path[l].kw;
+            const kwForThisLevel = kwAtThisLevel - kwAtPrevLevel;
+            if (kwForThisLevel > 0) {
+                const levelKws = kwCodes.slice(kwIndex, kwIndex + kwForThisLevel);
+                if (levelKws.length > 0) blueprint += `-${levelKws.join('.')}`;
+                kwIndex += kwForThisLevel;
+            }
         }
+        return blueprint;
     }
 
-    function exportCharacter() {
-        const dataStr = JSON.stringify(characterData, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        const exportFileDefaultName = `${characterData.name.replace(/\s/g, '_')}_sheet.json`;
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-    }
-
-    function importCharacter(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.clocks && importedData.stats) {
-                    characterData = importedData;
-                    saveCharacter();
-                    renderAll();
-                    alert('Character imported successfully!');
-                } else { alert('Invalid character file.'); }
-            } catch (error) { alert('Error reading file.'); console.error(error); }
+    function parseCharacterBlueprint(code, entityType) {
+        const entity = {
+            name: document.getElementById('entity-name').value || 'Parsed Entity',
+            blueprint: code,
+            type: entityType,
+            keywords: [],
+            statPointsToAllocate: 0,
+            level: 0,
+            isFlawedSeed: false,
         };
-        reader.readAsText(file);
-        event.target.value = '';
+
+        const progressionBlocks = code.split('-');
+        const seedBlock = progressionBlocks.shift();
+        const seedParts = seedBlock.split('.');
+        
+        if (seedParts[0].length === 4) {
+            entity.isFlawedSeed = true;
+            const flawCode = seedParts[0].substring(0, 2);
+            const compCode = seedParts[0].substring(2, 4);
+            entity.keywords.push({ code: flawCode, compensation: compCode });
+            if (seedParts[1]) entity.keywords.push({ code: seedParts[1] });
+        } else {
+            entity.keywords.push({ code: seedParts[0] });
+        }
+
+        for (const block of progressionBlocks) {
+            block.split('.').forEach(kwCode => {
+                if (kwCode.length === 4) {
+                     entity.keywords.push({ code: kwCode.substring(0, 2), compensation: kwCode.substring(2, 4) });
+                } else if(kwCode) {
+                     entity.keywords.push({ code: kwCode });
+                }
+            });
+        }
+        
+        const path = entity.isFlawedSeed ? 'flawed' : 'standard';
+        const totalKeywords = entity.keywords.length;
+        
+        for (let i = PROGRESSION_TABLE[path].length - 1; i >= 0; i--) {
+            const tier = PROGRESSION_TABLE[path][i];
+            if (totalKeywords >= tier.kw) {
+                entity.level = tier.level;
+                entity.statPointsToAllocate = (entity.type === 'character') ? tier.sp : entity.level;
+                break;
+            }
+        }
+        return entity;
     }
 
-    // --- INITIALIZATION ---
-    setupEventListeners();
-    loadCharacter();
+    // --- DISPLAY FUNCTION ---
+    function displayCharacter(entity) {
+        const baseStats = entity.level > 0 ? 2 : 1;
+        let html = `<div class="entity-card">
+            <div class="entity-header">
+                <h3>${entity.name} <small>(${entity.type})</small></h3>
+                <span class="level-badge">LEVEL ${entity.level}</span>
+            </div>
+            <div class="entity-section"><h4>Core Stats</h4>
+                <p><strong>Stat Points to Allocate:</strong> ${entity.statPointsToAllocate}</p>
+                <div class="stat-grid">
+                    ${['HP','SP','EP'].map(s => `<div class="stat-box"><span class="stat-label">${s}</span><span class="stat-value">10</span></div>`).join('')}
+                    <div class="stat-box"><span class="stat-label">RES</span><span class="stat-value">${baseStats*3}+</span></div>
+                </div>
+            </div>
+            <div class="entity-section"><h4>Keywords (${entity.keywords.length} total)</h4><ul>`;
+        entity.keywords.forEach(kw => {
+            const kd = KEYWORDS[kw.code];
+            if (!kd) return;
+            let name = kd.name;
+            if (kw.compensation) name += ` (Comp: ${KEYWORDS[kw.compensation]?.name || '?'})`;
+            html += `<li><strong>${name}</strong> <small>[${kw.code}]</small></li>`;
+        });
+        html += `</ul></div></div>`;
+        outputArea.innerHTML = html;
+    }
 });
 </script>
 </body>
