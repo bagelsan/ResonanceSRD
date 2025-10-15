@@ -87,12 +87,11 @@
         .modal-content { background-color: var(--surface-color); margin: 5% auto; padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; width: 90%; max-width: 600px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
         .modal-body { display: flex; flex-direction: column; gap: 1rem; }
-        .type-selector, .roll-mode-selector { display: flex; gap: 1rem; justify-content: center; padding: 0.5rem; background-color: var(--bg-color); border-radius: 4px; }
+        .type-selector { display: flex; gap: 1rem; justify-content: center; padding: 0.5rem; background-color: var(--bg-color); border-radius: 4px; }
         .close-button { color: var(--secondary-text-color); font-size: 28px; font-weight: bold; cursor: pointer; }
         #dice-roll-result { background: var(--bg-color); padding: 1rem; border-radius: 4px; text-align: center; }
         #dice-roll-result .final-roll { font-size: 2.5rem; font-weight: bold; color: var(--accent-color); }
         #dice-roll-result .roll-breakdown { font-size: 0.9rem; color: var(--secondary-text-color); }
-        #dice-roll-result .roll-status { font-weight: bold; font-size: 1.2rem; color: var(--success-color); min-height: 1.5rem; }
         .gear-kw-adder { display: flex; gap: 0.5rem; align-items: center; }
         .gear-kw-adder select { flex-grow: 1; }
     </style>
@@ -137,13 +136,13 @@
     <div id="keyword-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Add Keyword</h2><span class="close-button">&times;</span></div><div class="modal-body"><p>Select a keyword to add to the character.</p><select id="keyword-select"></select><button id="add-keyword-submit" style="width: 100%;">Add Selected Keyword</button></div></div></div>
     <div id="compensation-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Select Compensation</h2><span class="close-button">&times;</span></div><div class="modal-body"><p id="compensation-prompt-text"></p><select id="compensation-select"></select><button id="add-compensation-submit" style="width: 100%;">Confirm Pair</button></div></div></div>
     <div id="add-tag-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Add Tag</h2><span class="close-button">&times;</span></div><div class="modal-body"><label>Tag Name</label><select id="tag-name-select"></select><label>Quantity</label><input id="tag-quantity-input" type="number" value="1" min="1" max="5"><button id="add-tag-submit" style="width: 100%;">Add Tag</button></div></div></div>
-    <div id="dice-roller-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Dice Roller</h2><span class="close-button">&times;</span></div><div class="modal-body"><div class="roll-mode-selector"><label><input type="radio" name="rollMode" value="normal" checked> Normal</label><label><input type="radio" name="rollMode" value="advantage"> Advantage</label><label><input type="radio" name="rollMode" value="disadvantage"> Disadvantage</label></div><div id="dice-roll-result"><div class="final-roll">--</div><div class="roll-breakdown">Click Roll to Start</div><div class="roll-status"></div></div><div class="button-group" style="margin-top: 1rem;"><button id="roll-sr-btn" style="width: 100%;">Roll Standard Roll (2d10)</button></div></div></div></div>
+    <div id="dice-roller-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Dice Roller</h2><span class="close-button">&times;</span></div><div class="modal-body"><div id="dice-roll-result"><div class="final-roll">--</div><div class="roll-breakdown">Click Roll to Start</div></div><div class="button-group" style="margin-top: 1rem;"><button id="roll-sr-btn" style="width: 100%;">Roll Standard Roll (2d10)</button></div></div></div></div>
     <div id="gear-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Create/Edit Gear</h2><span class="close-button">&times;</span></div><div class="modal-body"><label>Item Name</label><input type="text" id="gear-name-input"><label>Item Level (0-9)</label><input type="number" id="gear-level-input" min="0" max="9" value="0"><h4>Keywords (<span id="gear-kw-count">0</span> / <span id="gear-kw-max">0</span>)</h4><ul id="gear-keyword-list"></ul><div class="gear-kw-adder"><select id="gear-keyword-select"></select><button id="add-keyword-to-gear-btn">Add</button></div><button id="remove-last-gear-kw-btn" class="danger">Remove Last Keyword</button><button id="save-gear-btn" style="width:100%; margin-top: 1rem;">Save Gear</button></div></div></div>
     <div id="animation-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Create/Edit Animation</h2><span class="close-button">&times;</span></div><div class="modal-body"><label>Animation Name</label><input type="text" id="animation-name-input"><label>Blueprint String</label><textarea id="animation-blueprint-input" rows="3"></textarea><button id="save-animation-btn" style="width:100%">Save Animation</button></div></div></div>
 
     <script>
         // ===================================================================================
-        // FINAL VERSION: FEATURE COMPLETE & STABLE
+        // FINAL VERSION: FEATURE COMPLETE
         // ===================================================================================
         const STAT_ABBREVIATIONS = { M: "Movement", A: "Alacrity", B: "Brawn", W: "Wit", E: "Expertise", T: "Technique", P: "Power", I: "Influence", F: "Force" };
         const KEYWORD_MASTER_LIST = {'00':"Restricted",'01':"Aura",'02':"Specialist",'03':"Alert",'04':"Liberate",'05':"Mark",'06':"Indirect",'07':"Adaptive",'08':"Gamble",'09':"Edit",'10':"Bane",'11':"Traveller",'12':"Martial",'13':"Attuned",'14':"Augment",'15':"Impair",'16':"Reactive",'17':"Phasing",'18':"Brutal",'19':"Translocate",'20':"Anxious",'21':"Acrobatic",'22':"Sentry",'23':"Eidetic",'24':"Haste",'25':"Slow",'26':"Snap",'27':"Condense",'28':"Rapid",'29':"Reckless",'30':"Hesitant",'31':"Sturdy",'32':"Brawler",'33':"Stubborn",'34':"Ward",'35':"Daze",'36':"Sculpt",'37':"Defensive",'38':"Impact",'39':"Shift",'40':"Feeble",'41':"Survivor",'42':"Stoic",'43':"Ageless",'44':"Bless",'45':"Curse",'46':"Piercing",'47':"Flux",'48':"Siphon",'49':"Animate",'50':"Gremlins",'51':"Sensor",'52':"Improvisor",'53':"Crafty",'54':"Charge",'55':"Bind",'56':"Imbue",'57':"Material",'58':"Leverage",'59':"Manifest",'60':"Vulnerable",'61':"Tolerant",'62':"Deadeye",'63':"Immunized",'64':"Cure",'65':"Weaken",'66':"Sticky",'67':"Restore",'68':"Exploit",'69':"Growth",'70':"Limited",'71':"Resilient",'72':"Font",'73':"Insulated",'74':"Regen",'75':"Blight",'76':"Area",'77':"Ranged",'78':"Multiply",'79':"Split",'80':"Awkward",'81':"Charismatic",'82':"Leader",'83':"Insightful",'84':"Enhance",'85':"Silence",'86':"Splash",'87':"Lingering",'88':"Spread",'89':"Potent",'90':"Mundane",'91':"Aware",'92':"Stealthy",'93':"Trickster",'94':"Obscure",'95':"Nullify",'96':"Chain",'97':"Natural",'98':"Ambience",'99':"Channel"};
@@ -185,7 +184,6 @@
             compensationPrompt: document.getElementById('compensation-prompt-text'),
             diceResult: document.getElementById('dice-roll-result').querySelector('.final-roll'),
             diceBreakdown: document.getElementById('dice-roll-result').querySelector('.roll-breakdown'),
-            diceStatus: document.getElementById('dice-roll-result').querySelector('.roll-status'),
             gearKwCount: document.getElementById('gear-kw-count'), gearKwMax: document.getElementById('gear-kw-max'), gearKeywordList: document.getElementById('gear-keyword-list'),
         };
 
@@ -245,7 +243,7 @@
                     if (sp_idx < characterData.allocatedStatPoints.length) {
                         levelUpBlock.push(characterData.allocatedStatPoints[sp_idx++]);
                     }
-                    if(levelUpBlock.length > 0) blueprintParts.push(levelUpBlock.join('.'));
+                    blueprintParts.push(levelUpBlock.join('.'));
                 }
             } else { // Animation
                 while (kw_idx < characterData.keywords.length) {
@@ -641,7 +639,7 @@
                 if (!FLAW_IDS.includes(id)) { dom.inputs.compensationSelect.appendChild(option.cloneNode(true)); }
             });
         }
-        function performStandardRoll(mode = 'normal') {
+        function performStandardRoll() {
             let total = 0; let breakdown = []; let isCrit = false; let rollCount = 0;
             while(true) {
                 rollCount++;
@@ -649,28 +647,15 @@
                 const d2 = Math.floor(Math.random() * 10) + 1;
                 if (d1 === d2) {
                     isCrit = true; const doubleVal = d1 + d2; total += doubleVal;
-                    breakdown.push(`Chain: Double ${d1}s! (+${doubleVal})`);
+                    breakdown.push(`Double ${d1}s! (+${doubleVal})`);
                     if (rollCount > 10) { breakdown.push('Chain limit reached.'); break; }
                 } else {
-                    let finalMainDie;
-                    let finalRollText = `Final Roll: ${d1}, ${d2}`;
-                    if (mode === 'advantage') {
-                        finalMainDie = Math.max(d1, d2);
-                        finalRollText += ` (Advantage) -> Main: ${finalMainDie}`;
-                    } else if (mode === 'disadvantage') {
-                        finalMainDie = Math.min(d1, d2);
-                        finalRollText += ` (Disadvantage) -> Main: ${finalMainDie}`;
-                    } else {
-                        finalMainDie = d1;
-                        finalRollText += ` -> Main: ${finalMainDie}`;
-                    }
-                    total += finalMainDie;
-                    breakdown.push(finalRollText);
+                    const mainDie = d1; total += mainDie;
+                    breakdown.push(`Main: ${mainDie} (Lucky: ${d2})`);
                     break;
                 }
             }
-            const isSuperCrit = total >= 31;
-            return { total, breakdown: breakdown.join(' -> '), isCrit, isSuperCrit };
+            return { total, breakdown: breakdown.join(' -> '), isCrit };
         }
         function generateRandomBlueprint() {
             const targetLevel = Math.floor(Math.random() * 5) + 1;
@@ -775,34 +760,25 @@
             };
             dom.buttons.diceRoller.onclick = () => dom.modals.diceRoller.style.display = 'block';
             dom.buttons.rollSR.onclick = () => {
-                const mode = document.querySelector('input[name="rollMode"]:checked').value;
-                const result = performStandardRoll(mode);
+                const result = performStandardRoll();
                 dom.diceResult.textContent = result.total;
-                dom.diceBreakdown.textContent = result.breakdown;
-                if (result.isSuperCrit) {
-                    dom.diceStatus.textContent = 'SUPER CRITICAL!';
-                    dom.diceStatus.style.color = 'var(--accent-hover-color)';
-                } else if (result.isCrit) {
-                    dom.diceStatus.textContent = 'Critical!';
-                    dom.diceStatus.style.color = 'var(--success-color)';
-                } else {
-                    dom.diceStatus.textContent = '';
-                }
+                dom.diceBreakdown.textContent = result.breakdown + (result.isCrit ? ' (CRITICAL!)' : '');
             };
             dom.buttons.addGear.onclick = () => {
                 editingGear = { id: Date.now(), name: '', level: 0, durability: { current: 2, max: 2 }, keywords: [] };
                 renderGearModal(); dom.modals.gear.style.display = 'block';
             };
-            dom.inputs.gearLevel.oninput = () => { if (editingGear) { editingGear.level = parseInt(dom.inputs.gearLevel.value) || 0; renderGearModal(); }};
+            dom.inputs.gearLevel.oninput = () => { if (editingGear) { renderGearModal(); }};
             dom.buttons.saveGear.onclick = () => {
                 editingGear.name = dom.inputs.gearName.value || 'Unnamed Gear';
+                editingGear.level = parseInt(dom.inputs.gearLevel.value) || 0;
                 const existingIndex = characterData.assets.gear.findIndex(g => g.id === editingGear.id);
                 if (existingIndex > -1) { characterData.assets.gear[existingIndex] = editingGear; }
                 else { characterData.assets.gear.push(editingGear); }
                 handleProgressionChange(); dom.modals.gear.style.display = 'none';
             };
             dom.buttons.addKeywordToGear.onclick = () => {
-                const maxKw = Math.min(editingGear.level, 5);
+                const maxKw = Math.min(parseInt(dom.inputs.gearLevel.value) || 0, 5);
                 if (editingGear.keywords.length < maxKw) {
                     const id = dom.inputs.gearKeywordSelect.value;
                     editingGear.keywords.push({ id, name: KEYWORD_MASTER_LIST[id], isPassive: false, choice: null });
