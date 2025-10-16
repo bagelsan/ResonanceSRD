@@ -1567,6 +1567,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#17-codifying-entity-state-optional-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.7 Codifying Entity State (Optional Syntax)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.7 Codifying Entity State (Optional Syntax)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slotted-passive-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      Slotted Passive Keywords (!)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyword-option-selections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keyword Option Selections (())
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2287,6 +2320,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#17-codifying-entity-state-optional-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.7 Codifying Entity State (Optional Syntax)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.7 Codifying Entity State (Optional Syntax)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slotted-passive-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      Slotted Passive Keywords (!)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyword-option-selections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keyword Option Selections (())
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2634,6 +2700,18 @@
 <h4 id="animation">Animation</h4>
 <p>An Animation’s level is equal to its number of keywords minus 1. All entities have only a seed keyword at level 0.</p>
 <p>An Animation’s stat total is 9 + its level.</p>
+<h3 id="17-codifying-entity-state-optional-syntax">1.7 Codifying Entity State (Optional Syntax)</h3>
+<p>While the core syntax defines an entity's permanent build (stats and learned keywords), these optional modifiers allow a Curator to codify an entity's current configuration. This is especially useful for tracking major NPCs and their loadouts between sessions.</p>
+<h4 id="slotted-passive-keywords">Slotted Passive Keywords (<code>!</code>)</h4>
+<p>To denote a keyword that is currently slotted and active as a passive, prefix its two-digit code with an exclamation mark (<code>!</code>). An entity cannot have more active passives than their slots allow (determined by <code>Force</code> for innate keywords and <code>Expertise</code> for gear keywords).</p>
+<p><strong>Syntax:</strong> <code>!##</code></p>
+<h4 id="keyword-option-selections">Keyword Option Selections (<code>()</code>)</h4>
+<p>For keywords that require a permanent or semi-permanent choice (e.g., a movement type for <code>Traveller</code>, a sense for <code>Sensor</code>), the chosen option's code is appended in parentheses <code>(#)</code> immediately after the keyword's code. The number corresponds to the option listed in the keyword's description in Appendix A.</p>
+<p><strong>Syntax:</strong> <code>##(#)</code></p>
+<hr />
+<p><strong>Combined Example:</strong></p>
+<p>A Level 1 Character has <code>Alert (03)</code> as their Seed, slotted passively. For their Awakening, they learned <code>Traveller (11)</code> with Teleport (option 1), <code>Martial (12)</code>, and <code>Attuned (13)</code>, with <code>Attuned</code> also slotted passively.</p>
+<p><strong>Their keyword string would be:</strong> <code>-!03-11(1).12.!13</code></p>
 <hr />
 <h2 id="part-2-the-scene-blueprint-language">Part 2: The Scene Blueprint Language</h2>
 <p>This language allows a Curator to generate a complete <strong>Scene</strong> from a single string, populating it with challenges and entities.</p>
