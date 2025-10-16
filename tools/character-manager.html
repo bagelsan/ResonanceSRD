@@ -4,31 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance Companion</title>
+    <!-- Using web fonts as a practical compromise to avoid embedding massive base64 files -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Calibri&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- PHASE 1: THE VISUAL SHELL (CSS) -->
     <style>
-        /* FONTS */
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
-        
-        /* CSS VARIABLES (THE AESTHETIC GUIDE) */
         :root {
-            --null-color: #dea193;
-            --silver-color: #a7a9ac;
-            --yellow-color: #f5d36c;
-            --green-color: #688d4c;
-            --black-color: #414042;
-            --orange-color: #f7855d;
-            --white-color: #e3e1da;
-            --red-color: #a95b5a;
-            --blue-color: #88bfe8;
-            --purple-color: #957fa3;
+            --color-null: #dea193;
+            --color-silver: #a7a9ac;
+            --color-yellow: #f5d36c;
+            --color-green: #688d4c;
+            --color-black: #414042;
+            --color-orange: #f7855d;
+            --color-white: #e3e1da;
+            --color-red: #a95b5a;
+            --color-blue: #88bfe8;
+            --color-purple: #957fa3;
 
             --bg-dark: #2a2a2e;
-            --bg-medium: #333336;
-            --text-light: #e3e1da;
-            --text-medium: #a7a9ac;
-            --border-color: #414042;
+            --bg-medium: #3a3a3e;
+            --border-light: #555;
+            --font-main: 'Calibri', sans-serif;
+            --font-header: 'Oswald', sans-serif;
+            --font-light: var(--color-white);
+            --font-medium: var(--color-silver);
         }
 
-        /* GLOBAL STYLES */
+        /* GENERAL RESET & SETUP */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,1462 +40,1628 @@
         }
 
         html, body {
-            font-family: 'Calibri', sans-serif;
-            font-size: 12pt;
             background-color: var(--bg-dark);
-            color: var(--text-light);
+            color: var(--font-light);
+            font-family: var(--font-main);
+            font-size: 12pt;
             line-height: 1.5;
         }
 
-        h1, h2, h3, h4, summary {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            color: var(--null-color);
-            letter-spacing: 1px;
-        }
-
-        button, input, select, textarea {
-            font-family: 'Calibri', sans-serif;
-            background-color: var(--bg-medium);
-            color: var(--text-light);
-            border: 1px solid var(--border-color);
-            padding: 4px 8px;
-            font-size: 10pt;
-            border-radius: 2px;
-        }
-        
-        button {
-            cursor: pointer;
-            background-color: var(--black-color);
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--blue-color);
-            color: var(--bg-dark);
-        }
-
-        input[type="text"], input[type="number"], textarea, select {
-            width: 100%;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 50px;
-            font-family: monospace;
-            font-size: 9pt;
-            color: var(--blue-color);
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid var(--border-color);
-            margin: 1rem 0;
-        }
-
-        /* ART-DECO SUBTLETY */
-        details, .card, .stat-grid {
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            background-color: var(--bg-medium);
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        details::before, .card::before {
-            content: '';
-            position: absolute;
-            top: 3px; right: 3px; bottom: 3px; left: 3px;
-            border: 1px solid var(--border-color);
-            border-radius: 1px;
-            pointer-events: none;
-        }
-
-        /* LAYOUT (MOBILE-FIRST) */
+        /* LAYOUT & CONTAINERS */
         #app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
             max-width: 768px;
             margin: 0 auto;
-        }
-
-        #character-sheet-pane {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 8px;
-        }
-
-        /* TABS SYSTEM */
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-        }
-        .tab-button {
-            padding: 8px 16px;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-family: 'Oswald', sans-serif;
-            font-size: 12pt;
-            color: var(--text-medium);
-        }
-        .tab-button.active {
-            color: var(--null-color);
-            border-bottom-color: var(--null-color);
-            background-color: var(--bg-medium);
-        }
-        .tab-content {
-            display: none;
-            padding: 8px 0;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        /* GENERAL CARD STYLING */
-        details, .card {
-            margin-bottom: 12px;
             padding: 10px;
         }
-        summary {
-            cursor: pointer;
-            padding: 5px;
-            margin: -10px;
-            margin-bottom: 10px;
+
+        .pane {
+            background-color: var(--bg-medium);
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
         }
         
-        /* CHARACTER HEADER */
+        /* HEADERS & TYPOGRAPHY */
+        h1, h2, h3 {
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            color: var(--color-blue);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--color-blue);
+            padding-bottom: 5px;
+        }
+        
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.4em; color: var(--color-null); }
+        h3 { font-size: 1.1em; color: var(--color-silver); margin-top: 15px; border-bottom-style: dashed;}
+
+        /* FORMS & INTERACTIVE ELEMENTS */
+        input, select, button {
+            background-color: var(--bg-dark);
+            color: var(--font-light);
+            border: 1px solid var(--border-light);
+            padding: 5px;
+            font-family: var(--font-main);
+            border-radius: 3px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: var(--color-blue);
+            color: var(--bg-dark);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button.remove-btn {
+            background-color: var(--color-red);
+            padding: 2px 6px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        .small-btn {
+            padding: 1px 5px;
+            font-size: 0.9em;
+            margin: 0 2px;
+        }
+
+        /* CARD SYSTEM */
+        .card {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .collapsible > .card-header { cursor: pointer; }
+        .collapsible > .card-header::after { content: ' ▼'; float: right; }
+        .collapsible.collapsed > .card-header::after { content: ' ►'; }
+        .collapsible.collapsed > .card-content { display: none; }
+
+        /* GLOBAL CONTROLS */
+        #global-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        #entity-selector {
+            flex-grow: 1;
+        }
+
+        /* BUILD PANE: CHARACTER HEADER */
         #character-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            background-color: var(--black-color);
-            padding: 8px;
-            border-radius: 2px;
+            gap: 15px;
         }
-        #character-header input {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.5rem;
-            background: none;
+        #character-name-input {
+            font-family: var(--font-header);
+            font-size: 1.5em;
+            background: transparent;
             border: none;
-            border-bottom: 1px dashed var(--silver-color);
-            color: var(--white-color);
+            border-bottom: 1px dashed var(--color-silver);
             flex-grow: 1;
         }
-        #character-level {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.5rem;
-            background-color: var(--blue-color);
-            color: var(--bg-dark);
-            padding: 4px 10px;
-            border-radius: 50%;
-            margin-left: 10px;
+        #character-level-display {
+            font-size: 1.5em;
+            font-family: var(--font-header);
+            color: var(--color-null);
         }
 
-        /* KARMA TRACKER */
-        #karma-tracker {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border: 1px solid var(--null-color);
-        }
-        #karma-tracker label {
-            font-family: 'Oswald', sans-serif;
-            color: var(--null-color);
-        }
-        #karma-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--null-color);
-        }
-        #karma-tracker button {
-            width: 30px;
-            height: 30px;
-            font-weight: bold;
-        }
-
-        /* MOTIVATIONAL PROFILE */
-        #motivational-profile .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-        }
-        .profile-point {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px;
-            border-left: 3px solid;
-        }
-        .profile-point label {
-            font-weight: bold;
-            font-size: 9pt;
-        }
-        .profile-point span {
-            font-size: 9pt;
-            text-align: right;
-        }
-        
-        /* STATS & RESOURCES */
-        #stats-resources-card .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
+        /* BUILD PANE: STATS & RESOURCES */
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 5px;
-            padding: 10px;
-        }
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--bg-dark);
-            padding: 5px;
-            border-radius: 2px;
-        }
-        .stat-item .stat-name {
-            font-family: 'Oswald', sans-serif;
-            font-size: 8pt;
-            color: var(--text-medium);
-        }
-        .stat-item .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--white-color);
-        }
-        #resistance-display {
             text-align: center;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
         }
-        #resistance-display span {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2rem;
-            color: var(--silver-color);
-            margin-left: 10px;
+        .stat-grid-header {
+            font-weight: bold;
+            font-family: var(--font-header);
+            color: var(--color-silver);
         }
-        .resource-clocks {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .stat-box {
+            background-color: var(--bg-medium);
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 1.2em;
         }
-        .clock {
-            display: flex;
-            flex-direction: column;
-        }
-        .clock-header {
+        .stat-label { font-size: 0.8em; color: var(--color-silver); }
+
+        .resource-tracker {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             margin-bottom: 5px;
         }
-        .clock-header label {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1rem;
-        }
-        .clock-header .current-max {
-            font-size: 0.9rem;
-        }
-        .clock-header .current-max input {
-            width: 40px;
-            text-align: center;
-            -moz-appearance: textfield;
-        }
-        .clock-header .current-max input::-webkit-outer-spin-button,
-        .clock-header .current-max input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .clock-pips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px;
-        }
+        .resource-label { font-family: var(--font-header); font-size: 1.1em; }
+        .resource-pips { display: flex; gap: 2px; }
         .pip {
             width: 12px;
             height: 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-light);
             cursor: pointer;
-            transition: background-color 0.1s;
         }
-        .pip.filled { background-color: currentColor; }
-        .pip.available { background-color: rgba(128,128,128,0.2); }
-        .pip:not(.available) { display: none; }
-        
-        #hp-clock { color: var(--green-color); }
-        #sp-clock { color: var(--orange-color); }
-        #ep-clock { color: var(--purple-color); }
+        .pip.filled { background-color: var(--color-green); }
+        .resource-tracker[data-resource="SP"] .pip.filled { background-color: var(--color-orange); }
+        .resource-tracker[data-resource="EP"] .pip.filled { background-color: var(--color-purple); }
 
-        /* KEYWORDS & PROGRESSION */
-        #keywords-progression-card h4 {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .keyword-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 1rem;
-        }
-        .keyword-controls select { flex-grow: 1; }
-        .innate-keywords-list { list-style: none; }
-        .innate-keyword-item {
+        /* BUILD PANE: MOTIVATIONS */
+        .motivation-grid {
             display: grid;
-            grid-template-columns: auto 1fr auto auto;
+            grid-template-columns: 1fr 2fr;
+            gap: 5px;
+        }
+        .motivation-label { font-weight: bold; text-align: right; color: var(--color-silver); }
+
+        /* BUILD PANE: KEYWORDS */
+        #keyword-list, .item-keyword-list {
+            list-style: none;
+        }
+        .keyword-item {
+            display: flex;
             align-items: center;
             gap: 10px;
             padding: 5px;
-            border-bottom: 1px solid var(--bg-dark);
+            border-bottom: 1px solid var(--bg-medium);
         }
-        .innate-keyword-item:last-child { border-bottom: none; }
-        .innate-keyword-item .keyword-color-pip {
-            width: 10px;
-            height: 10px;
+        .passive-toggle {
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--color-silver);
             border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
         }
-        .innate-keyword-item .keyword-name { font-size: 10pt; }
-        .innate-keyword-item .keyword-slot-toggle { margin-left: auto; }
-        .innate-keyword-item .keyword-choice { font-size: 9pt; }
+        .passive-toggle.slotted {
+            background-color: var(--color-blue);
+            border-color: var(--color-blue);
+        }
+        .keyword-name { flex-grow: 1; }
+        .keyword-name .keyword-code { font-size: 0.8em; color: var(--color-silver); }
+        .keyword-name .keyword-flaw { color: var(--color-red); }
+        .keyword-name .keyword-comp { color: var(--color-yellow); }
 
-        .stat-progression-list { list-style: none; }
-        .stat-progression-item {
+        #stat-progression-list .progression-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 4px;
+            padding: 3px 0;
         }
-        .stat-progression-item select { width: 50%; }
 
-        /* PLAY PANE */
-        .tags-section { margin-bottom: 1rem; }
-        .tags-list { list-style: none; min-height: 20px; border: 1px dashed var(--border-color); padding: 5px; }
-        .tag-item {
+        /* PLAY PANE: TABS */
+        .tabs { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 10px; }
+        .tab-button {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--font-medium);
+            font-family: var(--font-header);
+            text-transform: uppercase;
+        }
+        .tab-button.active {
+            background-color: var(--bg-medium);
+            color: var(--color-null);
+            border: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--bg-medium);
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .add-item-form { display: flex; gap: 5px; margin-top: 10px; }
+        .add-item-form input { flex-grow: 1; }
+
+        /* TAGS TAB */
+        .tag-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-dark);
-            padding: 2px 8px;
-            margin-bottom: 4px;
-            border-radius: 2px;
-        }
-        .tag-item .remove-tag-btn {
-            background: none; border: none; color: var(--red-color); font-weight: bold;
-        }
-        .add-tag-form { display: flex; gap: 5px; margin-top: 5px; }
-        #inventory-list { list-style: none; }
-        .inventory-item-card {
-            border: 1px solid var(--silver-color);
+            flex-wrap: wrap;
+            gap: 5px;
             margin-bottom: 10px;
         }
-        .inventory-item-card .item-header {
+        .tag {
+            background-color: var(--bg-medium);
+            padding: 2px 8px;
+            border-radius: 10px;
             display: flex;
-            justify-content: space-between;
-            background-color: var(--black-color);
-            padding: 5px;
-        }
-
-        /* CODEX VAULT */
-        #codex-vault {
-            position: sticky;
-            bottom: 0;
-            background-color: var(--bg-dark);
-            border-top: 2px solid var(--null-color);
-            max-height: 40vh; /* Prevent it from taking over */
-        }
-        #codex-vault[open] #vault-content {
-            overflow-y: auto;
-            max-height: calc(40vh - 40px); /* Adjust based on summary height */
-        }
-        #codex-vault summary {
-            background-color: var(--black-color);
-            padding: 8px;
-            margin: 0;
-        }
-        .vault-controls {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-        }
-        #entity-list { list-style: none; }
-        .entity-list-item {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .entity-list-item:hover, .entity-list-item.active {
-            background-color: var(--blue-color);
-            color: var(--bg-dark);
-        }
-        .entity-list-item .delete-entity-btn {
-            background: none; border: none; color: var(--red-color); font-weight: bold;
+            gap: 5px;
         }
         
-        /* CURATOR TOOLS */
-        #curator-tools-card {
-            border-color: var(--blue-color);
+        /* CODEX VAULT */
+        #codex-vault-list {
+            list-style: none;
         }
-        #curator-tools-card h3 {
-            color: var(--blue-color);
+        #codex-vault-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            cursor: pointer;
         }
-        .generation-form {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            align-items: center;
+        #codex-vault-list li:hover {
+            background-color: var(--bg-medium);
         }
-        #generate-string-btn {
-            grid-column: 1 / -1;
-        }
-        #generated-string-output {
-            margin-top: 10px;
+        
+        /* MODALS (Dice Roller, etc.) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-
-        /* UTILITY */
-        .hidden { display: none !important; }
-        .color-pip-0 { background-color: var(--null-color); }
-        .color-pip-1 { background-color: var(--silver-color); }
-        .color-pip-2 { background-color: var(--yellow-color); }
-        .color-pip-3 { background-color: var(--green-color); }
-        .color-pip-4 { background-color: var(--black-color); }
-        .color-pip-5 { background-color: var(--orange-color); }
-        .color-pip-6 { background-color: var(--white-color); }
-        .color-pip-7 { background-color: var(--red-color); }
-        .color-pip-8 { background-color: var(--blue-color); }
-        .color-pip-9 { background-color: var(--purple-color); }
-
-        .profile-point.profile-goal { border-color: var(--null-color); }
-        .profile-point.profile-method { border-color: var(--silver-color); }
-        .profile-point.profile-purpose { border-color: var(--yellow-color); }
-        .profile-point.profile-ext-conflict { border-color: var(--red-color); }
-        .profile-point.profile-int-conflict { border-color: var(--blue-color); }
-
-        /* LARGER SCREENS */
-        @media (min-width: 768px) {
-            body { font-size: 11pt; }
-            #stats-resources-card .content-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-             #motivational-profile .profile-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+        .modal-content {
+            background-color: var(--bg-medium);
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            min-width: 300px;
+            text-align: center;
         }
+        #dice-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .die {
+            font-size: 3em;
+            padding: 10px 20px;
+            border: 1px solid var(--border-light);
+            background-color: var(--bg-dark);
+            width: 80px;
+        }
+        #dice-result-text { font-size: 1.2em; color: var(--color-null); margin-bottom: 15px; }
+        
+        /* UTILITIES */
+        .hidden { display: none; }
+        .color-code-0 { color: var(--color-null); }
+        .color-code-1 { color: var(--color-silver); }
+        .color-code-2 { color: var(--color-yellow); }
+        .color-code-3 { color: var(--color-green); }
+        .color-code-4 { color: var(--color-black); }
+        .color-code-5 { color: var(--color-orange); }
+        .color-code-6 { color: var(--color-white); }
+        .color-code-7 { color: var(--color-red); }
+        .color-code-8 { color: var(--color-blue); }
+        .color-code-9 { color: var(--color-purple); }
+
     </style>
 </head>
 <body>
-    <main id="app-container">
-        <!-- TOP PANE: FULL CHARACTER SHEET -->
-        <div id="character-sheet-pane">
-            <header id="character-header">
-                <input type="text" id="character-name-input" value="Character Name">
-                <span id="character-level">1</span>
-            </header>
 
-            <!-- TABS FOR BUILD/PLAY -->
-            <div class="tabs">
-                <button class="tab-button active" data-tab="build-pane">Build</button>
-                <button class="tab-button" data-tab="play-pane">Play</button>
-            </div>
-
-            <!-- BUILD PANE -->
-            <div id="build-pane" class="tab-content active">
-                <details class="card" id="karma-card" open>
-                    <summary>Karma</summary>
-                    <div id="karma-tracker">
-                        <label>Karma:</label>
-                        <span id="karma-value">0</span>
-                        <button id="karma-decrease-btn">-</button>
-                        <button id="karma-increase-btn">+</button>
-                    </div>
-                </details>
-
-                <details class="card" id="motivational-profile" open>
-                    <summary>Motivational Profile</summary>
-                    <div class="profile-grid">
-                        <div class="profile-point profile-goal"><label>Goal</label> <span id="profile-goal">...</span></div>
-                        <div class="profile-point profile-method"><label>Method</label> <span id="profile-method">...</span></div>
-                        <div class="profile-point profile-purpose"><label>Purpose</label> <span id="profile-purpose">...</span></div>
-                        <div class="profile-point profile-ext-conflict"><label>External Conflict</label> <span id="profile-ext-conflict">...</span></div>
-                        <div class="profile-point profile-int-conflict"><label>Internal Conflict</label> <span id="profile-int-conflict">...</span></div>
-                    </div>
-                </details>
-
-                <details class="card" id="stats-resources-card" open>
-                    <summary>Stats & Resources</summary>
-                    <div class="content-grid">
-                        <div>
-                            <div class="stat-grid">
-                                <div class="stat-item"><span class="stat-name">MOV</span><span class="stat-value" id="stat-m">2</span></div>
-                                <div class="stat-item"><span class="stat-name">ALA</span><span class="stat-value" id="stat-a">2</span></div>
-                                <div class="stat-item"><span class="stat-name">BRW</span><span class="stat-value" id="stat-b">2</span></div>
-                                <div class="stat-item"><span class="stat-name">WIT</span><span class="stat-value" id="stat-w">2</span></div>
-                                <div class="stat-item"><span class="stat-name">EXP</span><span class="stat-value" id="stat-e">2</span></div>
-                                <div class="stat-item"><span class="stat-name">TEC</span><span class="stat-value" id="stat-t">2</span></div>
-                                <div class="stat-item"><span class="stat-name">POW</span><span class="stat-value" id="stat-p">2</span></div>
-                                <div class="stat-item"><span class="stat-name">INF</span><span class="stat-value" id="stat-i">2</span></div>
-                                <div class="stat-item"><span class="stat-name">FOR</span><span class="stat-value" id="stat-f">2</span></div>
-                            </div>
-                            <div id="resistance-display">RESISTANCE <span id="resistance-value">6</span></div>
-                        </div>
-                        <div class="resource-clocks">
-                            <div class="clock" id="hp-clock">
-                                <div class="clock-header">
-                                    <label>HP</label>
-                                    <div class="current-max"><input type="number" id="hp-current" min="0"> / <span id="hp-max">10</span></div>
-                                </div>
-                                <div class="clock-pips" id="hp-pips"></div>
-                            </div>
-                            <div class="clock" id="sp-clock">
-                                <div class="clock-header">
-                                    <label>SP</label>
-                                    <div class="current-max"><input type="number" id="sp-current" min="0"> / <span id="sp-max">10</span></div>
-                                </div>
-                                <div class="clock-pips" id="sp-pips"></div>
-                            </div>
-                            <div class="clock" id="ep-clock">
-                                <div class="clock-header">
-                                    <label>EP</label>
-                                    <div class="current-max"><input type="number" id="ep-current" min="0"> / <span id="ep-max">10</span></div>
-                                </div>
-                                <div class="clock-pips" id="ep-pips"></div>
-                            </div>
-                        </div>
-                    </div>
-                </details>
-
-                <details class="card" id="keywords-progression-card" open>
-                    <summary>Keywords & Progression</summary>
-                    <h4>Add / Remove Keywords</h4>
-                    <div class="keyword-controls">
-                        <select id="keyword-select"></select>
-                        <button id="keyword-add-btn">Add</button>
-                        <button id="keyword-remove-last-btn">Remove Last</button>
-                    </div>
-
-                    <h4>Innate Keywords (<span id="innate-slotted-count">0</span> / <span id="innate-slotted-max">0</span> Slotted)</h4>
-                    <ul class="innate-keywords-list" id="innate-keywords-list">
-                        <!-- JS will populate up to 22 of these -->
-                    </ul>
-
-                    <h4>Stat Progression</h4>
-                    <ul class="stat-progression-list" id="stat-progression-list">
-                        <!-- JS will populate based on level -->
-                    </ul>
-                </details>
-
-                <details class="card" id="live-blueprint-card">
-                    <summary>Live Blueprint</summary>
-                    <textarea id="live-blueprint-string" spellcheck="false"></textarea>
-                    <button id="import-blueprint-btn">Update From String</button>
-                </details>
-
-                <details class="card" id="curator-tools-card">
-                    <summary>Curator's Tools</summary>
-                    <h3>Random String Generator</h3>
-                    <div class="generation-form">
-                        <label for="gen-type">Entity Type:</label>
-                        <select id="gen-type">
-                            <option value="C">Character</option>
-                            <option value="A">Animation</option>
-                            <option value="I">Item</option>
-                            <option value="F">Faction</option>
-                        </select>
-                        <label for="gen-level">Target Level:</label>
-                        <input type="number" id="gen-level" value="1" min="0" max="9">
-                        <button id="generate-string-btn">Generate</button>
-                    </div>
-                    <textarea id="generated-string-output" readonly placeholder="Generated string will appear here..."></textarea>
-                </details>
-
-            </div>
-
-            <!-- PLAY PANE -->
-            <div id="play-pane" class="tab-content">
-                 <div class="tabs" id="play-tabs-nav">
-                    <button class="tab-button active" data-tab="tags-tab-content">Tags</button>
-                    <button class="tab-button" data-tab="inventory-tab-content">Inventory</button>
-                </div>
-                
-                <div id="tags-tab-content" class="tab-content active">
-                    <div class="tags-section">
-                        <h4>Boosts (<span id="boost-count">0</span>/10)</h4>
-                        <ul class="tags-list" id="boosts-list"></ul>
-                        <form class="add-tag-form" id="add-boost-form">
-                            <input type="text" id="add-boost-input" placeholder="Enter boost name...">
-                            <button type="submit">+</button>
-                        </form>
-                    </div>
-                    <div class="tags-section">
-                        <h4>Statuses (<span id="status-count">0</span>/10)</h4>
-                        <ul class="tags-list" id="statuses-list"></ul>
-                        <form class="add-tag-form" id="add-status-form">
-                            <input type="text" id="add-status-input" placeholder="Enter status name...">
-                            <button type="submit">+</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="inventory-tab-content" class="tab-content">
-                    <h4>Inventory</h4>
-                    <ul id="inventory-list">
-                        <li class="inventory-item-card card">
-                            <div class="item-header">
-                                <span>Kinetic Gauntlet (L2)</span>
-                                <span><span id="gear-slotted-count">0</span> / <span id="gear-slotted-max">0</span></span>
-                            </div>
-                            <div class="item-body">
-                                <ul class="innate-keywords-list">
-                                    <li class="innate-keyword-item">
-                                        <div class="keyword-color-pip color-pip-3"></div>
-                                        <span class="keyword-name">Impact</span>
-                                        <input type="checkbox" class="keyword-slot-toggle">
-                                    </li>
-                                    <li class="innate-keyword-item">
-                                        <div class="keyword-color-pip color-pip-5"></div>
-                                        <span class="keyword-name">Leverage</span>
-                                        <input type="checkbox" class="keyword-slot-toggle">
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                    <p style="text-align:center; color: var(--text-medium); margin-top: 1rem;">(Inventory management coming soon)</p>
-                </div>
-            </div>
+<div id="app-container">
+    <!-- GLOBAL CONTROLS -->
+    <header class="pane">
+        <h1>Resonance Companion</h1>
+        <div id="global-controls">
+            <select id="entity-selector"></select>
+            <button id="add-new-entity-btn">New</button>
+            <button id="import-entity-btn">Import</button>
+            <button id="dice-roller-btn">Roll SR</button>
+            <button id="random-gen-btn">Generate</button>
         </div>
+    </header>
 
-        <!-- BOTTOM PANE: CODEX VAULT -->
-        <details id="codex-vault">
-            <summary>Codex Vault</summary>
-            <div id="vault-content">
-                <div class="vault-controls">
-                    <button id="add-new-character-btn">Add New Character</button>
-                </div>
-                <ul id="entity-list">
-                    <!-- JS populates this list -->
-                </ul>
+    <main id="main-content" class="hidden">
+        <!-- BUILD PANE -->
+        <section id="build-pane" class="pane">
+            <div id="character-header">
+                <input type="text" id="character-name-input" placeholder="Character Name">
+                <div id="character-level-display">LVL 0</div>
             </div>
-        </details>
-    </main>
-    
-    <script>
-    /*****************************************************************
-    ###   SRD_DATA: All Game Rules and Keywords                 ###
-    *****************************************************************/
-    const SRD_DATA = {
-        stats: {
-            'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn',
-            'W': 'Wit', 'E': 'Expertise', 'T': 'Technique',
-            'P': 'Power', 'I': 'Influence', 'F': 'Force'
-        },
-        motivations: {
-            '0': 'Discovery', '1': 'Absolution', '2': 'Ambition', '3': 'Security',
-            '4': 'Legacy', '5': 'Innovation', '6': 'Purity', '7': 'Glory',
-            '8': 'Influence', '9': 'Faith'
-        },
-        keywords: {
-            // Null
-            '00': { name: 'Restricted', color: 'Null', category: 'Flaw' },
-            '01': { name: 'Aura', color: 'Null', category: 'Gift' },
-            '02': { name: 'Specialist', color: 'Null', category: 'Talent' },
-            '03': { name: 'Alert', color: 'Null', category: 'Quirk' },
-            '04': { name: 'Liberate', color: 'Null', category: 'Boost' },
-            '05': { name: 'Mark', color: 'Null', category: 'Status' },
-            '06': { name: 'Indirect', color: 'Null', category: 'Form' },
-            '07': { name: 'Adaptive', color: 'Null', category: 'Modifier' },
-            '08': { name: 'Gamble', color: 'Null', category: 'Drive' },
-            '09': { name: 'Edit', color: 'Null', category: 'Unique' },
-            // Silver
-            '10': { name: 'Bane', color: 'Silver', category: 'Flaw' },
-            '11': { name: 'Traveller', color: 'Silver', category: 'Gift', choices: ['Walk', 'Teleport', 'Fly', 'Dig', 'Permeation', 'Jump', 'Parkour', 'Climb', 'Swim', 'Lightfoot'] },
-            '12': { name: 'Martial', color: 'Silver', category: 'Talent' },
-            '13': { name: 'Attuned', color: 'Silver', category: 'Quirk' },
-            '14': { name: 'Augment', color: 'Silver', category: 'Boost' },
-            '15': { name: 'Impair', color: 'Silver', category: 'Status' },
-            '16': { name: 'Reactive', color: 'Silver', category: 'Form' },
-            '17': { name: 'Phasing', color: 'Silver', category: 'Modifier' },
-            '18': { name: 'Brutal', color: 'Silver', category: 'Drive' },
-            '19': { name: 'Translocate', color: 'Silver', category: 'Unique' },
-            // Yellow
-            '20': { name: 'Anxious', color: 'Yellow', category: 'Flaw' },
-            '21': { name: 'Acrobatic', color: 'Yellow', category: 'Gift' },
-            '22': { name: 'Sentry', color: 'Yellow', category: 'Talent' },
-            '23': { name: 'Eidetic', color: 'Yellow', category: 'Quirk' },
-            '24': { name: 'Haste', color: 'Yellow', category: 'Boost' },
-            '25': { name: 'Slow', color: 'Yellow', category: 'Status' },
-            '26': { name: 'Snap', color: 'Yellow', category: 'Form' },
-            '27': { name: 'Condense', color: 'Yellow', category: 'Modifier' },
-            '28': { name: 'Rapid', color: 'Yellow', category: 'Drive' },
-            '29': { name: 'Reckless', color: 'Yellow', category: 'Unique' },
-            // Green
-            '30': { name: 'Hesitant', color: 'Green', category: 'Flaw' },
-            '31': { name: 'Sturdy', color: 'Green', category: 'Gift' },
-            '32': { name: 'Brawler', color: 'Green', category: 'Talent' },
-            '33': { name: 'Stubborn', color: 'Green', category: 'Quirk' },
-            '34': { name: 'Ward', color: 'Green', category: 'Boost' },
-            '35': { name: 'Daze', color: 'Green', category: 'Status' },
-            '36': { name: 'Sculpt', color: 'Green', category: 'Form' },
-            '37': { name: 'Defensive', color: 'Green', category: 'Modifier' },
-            '38': { name: 'Impact', color: 'Green', category: 'Drive' },
-            '39': { name: 'Shift', color: 'Green', category: 'Unique' },
-            // Black
-            '40': { name: 'Feeble', color: 'Black', category: 'Flaw' },
-            '41': { name: 'Survivor', color: 'Black', category: 'Gift' },
-            '42': { name: 'Stoic', color: 'Black', category: 'Talent' },
-            '43': { name: 'Ageless', color: 'Black', category: 'Quirk' },
-            '44': { name: 'Bless', color: 'Black', category: 'Boost' },
-            '45': { name: 'Curse', color: 'Black', category: 'Status' },
-            '46': { name: 'Piercing', color: 'Black', category: 'Form' },
-            '47': { name: 'Flux', color: 'Black', category: 'Modifier' },
-            '48': { name: 'Siphon', color: 'Black', category: 'Drive' },
-            '49': { name: 'Animate', color: 'Black', category: 'Unique' },
-            // Orange
-            '50': { name: 'Gremlins', color: 'Orange', category: 'Flaw' },
-            '51': { name: 'Sensor', color: 'Orange', category: 'Gift', choices: ['Karma', 'Keywords', 'Echolocation', 'Vibration', 'Energy', 'Materials', 'Life', 'Infrared', 'Emotion', 'The Weave'] },
-            '52': { name: 'Improvisor', color: 'Orange', category: 'Talent' },
-            '53': { name: 'Crafty', color: 'Orange', category: 'Quirk' },
-            '54': { name: 'Charge', color: 'Orange', category: 'Boost' },
-            '55': { name: 'Bind', color: 'Orange', category: 'Status' },
-            '56': { name: 'Imbue', color: 'Orange', category: 'Form' },
-            '57': { name: 'Material', color: 'Orange', category: 'Modifier' },
-            '58': { name: 'Leverage', color: 'Orange', category: 'Drive' },
-            '59': { name: 'Manifest', color: 'Orange', category: 'Unique' },
-            // White
-            '60': { name: 'Vulnerable', color: 'White', category: 'Flaw' },
-            '61': { name: 'Tolerant', color: 'White', category: 'Gift' },
-            '62': { name: 'Deadeye', color: 'White', category: 'Talent' },
-            '63': { name: 'Immunized', color: 'White', category: 'Quirk' },
-            '64': { name: 'Cure', color: 'White', category: 'Boost' },
-            '65': { name: 'Weaken', color: 'White', category: 'Status' },
-            '66': { name: 'Sticky', color: 'White', category: 'Form' },
-            '67': { name: 'Restore', color: 'White', category: 'Modifier' },
-            '68': { name: 'Exploit', color: 'White', category: 'Drive' },
-            '69': { name: 'Growth', color: 'White', category: 'Unique' },
-            // Red
-            '70': { name: 'Limited', color: 'Red', category: 'Flaw' },
-            '71': { name: 'Resilient', color: 'Red', category: 'Gift', choices: ['HP', 'SP', 'EP'] },
-            '72': { name: 'Font', color: 'Red', category: 'Talent' },
-            '73': { name: 'Insulated', color: 'Red', category: 'Quirk' },
-            '74': { name: 'Regen', color: 'Red', category: 'Boost' },
-            '75': { name: 'Blight', color: 'Red', category: 'Status' },
-            '76': { name: 'Area', color: 'Red', category: 'Form' },
-            '77': { name: 'Ranged', color: 'Red', category: 'Modifier' },
-            '78': { name: 'Multiply', color: 'Red', category: 'Drive' },
-            '79': { name: 'Split', color: 'Red', category: 'Unique' },
-            // Blue
-            '80': { name: 'Awkward', color: 'Blue', category: 'Flaw' },
-            '81': { name: 'Charismatic', color: 'Blue', category: 'Gift' },
-            '82': { name: 'Leader', color: 'Blue', category: 'Talent' },
-            '83': { name: 'Insightful', color: 'Blue', category: 'Quirk' },
-            '84': { name: 'Enhance', color: 'Blue', category: 'Boost' },
-            '85': { name: 'Silence', color: 'Blue', category: 'Status' },
-            '86': { name: 'Splash', color: 'Blue', category: 'Form' },
-            '87': { name: 'Lingering', color: 'Blue', category: 'Modifier' },
-            '88': { name: 'Spread', color: 'Blue', category: 'Drive' },
-            '89': { name: 'Potent', color: 'Blue', category: 'Unique' },
-            // Purple
-            '90': { name: 'Mundane', color: 'Purple', category: 'Flaw' },
-            '91': { name: 'Aware', color: 'Purple', category: 'Gift' },
-            '92': { name: 'Stealthy', color: 'Purple', category: 'Talent' },
-            '93': { name: 'Trickster', color: 'Purple', category: 'Quirk' },
-            '94': { name: 'Obscure', color: 'Purple', category: 'Boost' },
-            '95': { name: 'Nullify', color: 'Purple', category: 'Status' },
-            '96': { name: 'Chain', color: 'Purple', category: 'Form' },
-            '97': { name: 'Natural', color: 'Purple', category: 'Modifier' },
-            '98': { name: 'Ambience', color: 'Purple', category: 'Drive' },
-            '99': { name: 'Channel', color: 'Purple', category: 'Unique' },
-        }
-    };
 
-    /*****************************************************************
-    ###   CodexEngine: Pure Logic for Parsing & Calculation   ###
-    *****************************************************************/
-    const CodexEngine = {
-        parse(blueprintString) {
-            if (!blueprintString || typeof blueprintString !== 'string') {
-                return { error: 'Invalid blueprint string' };
-            }
+            <div class="card collapsible" id="motivations-card">
+                <div class="card-header"><h3>Motivational Profile</h3></div>
+                <div class="card-content">
+                    <div class="motivation-grid">
+                        <div class="motivation-label">Goal:</div> <div id="motivation-goal"></div>
+                        <div class="motivation-label">Method:</div> <div id="motivation-method"></div>
+                        <div class="motivation-label">Purpose:</div> <div id="motivation-purpose"></div>
+                        <div class="motivation-label">External Conflict:</div> <div id="motivation-external"></div>
+                        <div class="motivation-label">Internal Conflict:</div> <div id="motivation-internal"></div>
+                    </div>
+                </div>
+            </div>
             
-            const entityType = blueprintString.substring(0, 2);
-            let coreString = blueprintString.substring(2);
+            <div class="card">
+                <h3>Stats & Resources</h3>
+                <div class="stat-grid">
+                    <div class="stat-grid-header"></div>
+                    <div class="stat-grid-header">Control</div>
+                    <div class="stat-grid-header">Execution</div>
+                    <div class="stat-grid-header">Foundation</div>
 
-            let parsed = { type: 'Unknown', raw: blueprintString };
+                    <div class="stat-grid-header">Body</div>
+                    <div class="stat-box"><span id="stat-m">0</span><div class="stat-label">M</div></div>
+                    <div class="stat-box"><span id="stat-a">0</span><div class="stat-label">A</div></div>
+                    <div class="stat-box"><span id="stat-b">0</span><div class="stat-label">B</div></div>
 
-            if (entityType === 'C:') {
-                parsed.type = 'Character';
+                    <div class="stat-grid-header">Mind</div>
+                    <div class="stat-box"><span id="stat-w">0</span><div class="stat-label">W</div></div>
+                    <div class="stat-box"><span id="stat-e">0</span><div class="stat-label">E</div></div>
+                    <div class="stat-box"><span id="stat-t">0</span><div class="stat-label">T</div></div>
+
+                    <div class="stat-grid-header">Essence</div>
+                    <div class="stat-box"><span id="stat-p">0</span><div class="stat-label">P</div></div>
+                    <div class="stat-box"><span id="stat-i">0</span><div class="stat-label">I</div></div>
+                    <div class="stat-box"><span id="stat-f">0</span><div class="stat-label">F</div></div>
+                </div>
+                <p><strong>Resistance:</strong> <span id="resistance-value">0</span></p>
+
+                <div class="resource-tracker" data-resource="HP">
+                    <div class="resource-label" style="color: var(--color-green);">HP</div>
+                    <div id="hp-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="hp-current">10</span> / <span id="hp-max">10</span></div>
+                </div>
+                <div class="resource-tracker" data-resource="SP">
+                    <div class="resource-label" style="color: var(--color-orange);">SP</div>
+                    <div id="sp-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="sp-current">10</span> / <span id="sp-max">10</span></div>
+                </div>
+                <div class="resource-tracker" data-resource="EP">
+                    <div class="resource-label" style="color: var(--color-purple);">EP</div>
+                    <div id="ep-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="ep-current">10</span> / <span id="ep-max">10</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Keywords & Progression (<span id="innate-passive-count">0</span>/<span id="innate-passive-max">0</span>)</h3>
+                <div id="add-keyword-form">
+                    <select id="keyword-select"></select>
+                    <button id="add-keyword-btn">Add Keyword</button>
+                    <button id="remove-last-keyword-btn" class="remove-btn">Remove Last</button>
+                </div>
+                <ul id="keyword-list"></ul>
                 
-                // Profile
-                const profileMatch = coreString.match(/^(\d{5})/);
-                if (profileMatch) {
-                    parsed.profile = profileMatch[1].split('');
-                    coreString = coreString.substring(5);
-                }
+                <h3>Stat Progression</h3>
+                <ul id="stat-progression-list"></ul>
+            </div>
 
-                // Flaw Package
-                const flawMatch = coreString.match(/\+(\d{4})/);
-                if (flawMatch) {
-                    parsed.flaw = {
-                        flawCode: flawMatch[1].substring(0, 2),
-                        compCode: flawMatch[1].substring(2, 4)
-                    };
-                    coreString = coreString.replace(flawMatch[0], '');
-                }
+            <div class="card collapsible collapsed" id="blueprint-card">
+                <div class="card-header"><h3>Live Blueprint</h3></div>
+                <div class="card-content">
+                    <input type="text" id="live-blueprint-string" style="width: 100%;">
+                </div>
+            </div>
+        </section>
 
-                // Keywords and Progression
-                parsed.keywords = [];
-                parsed.statProgression = [];
-                const progressionParts = coreString.split('-');
+        <!-- PLAY PANE -->
+        <section id="play-pane" class="pane">
+            <nav class="tabs">
+                <button class="tab-button active" data-tab="inventory">Inventory</button>
+                <button class="tab-button" data-tab="companions">Companions</button>
+                <button class="tab-button" data-tab="factions">Factions</button>
+                <button class="tab-button" data-tab="tags">Tags</button>
+            </nav>
 
-                progressionParts.forEach(part => {
-                    if (!part) return;
-                    const keywordChunks = part.split('.');
-                    keywordChunks.forEach(chunk => {
-                        if (!chunk) return;
-                        if (SRD_DATA.stats[chunk]) {
-                            parsed.statProgression.push(chunk);
-                        } else {
-                            const kwMatch = chunk.match(/^(!?)(\d{2})(\((\d+)\))?$/);
-                            if (kwMatch) {
-                                parsed.keywords.push({
-                                    isSlotted: kwMatch[1] === '!',
-                                    code: kwMatch[2],
-                                    choice: kwMatch[4] || null
-                                });
-                            }
-                        }
-                    });
+            <div id="inventory" class="tab-content active">
+                <h3>Inventory (<span id="gear-passive-count">0</span>/<span id="gear-passive-max">0</span>)</h3>
+                <div id="inventory-list"></div>
+                <div class="add-item-form">
+                    <input type="text" id="add-item-string" placeholder="Paste Item Blueprint String...">
+                    <button id="add-item-btn">Add Item</button>
+                </div>
+            </div>
+
+            <div id="companions" class="tab-content">
+                <h3>Companions</h3>
+                <div id="companions-list"></div>
+                <div class="add-item-form">
+                    <input type="text" id="add-companion-string" placeholder="Paste Animation Blueprint String...">
+                    <button id="add-companion-btn">Add Companion</button>
+                </div>
+            </div>
+
+            <div id="factions" class="tab-content">
+                <h3>Factions</h3>
+                <div id="factions-list"></div>
+                 <div class="add-item-form">
+                    <input type="text" id="add-faction-string" placeholder="Paste Faction Blueprint String...">
+                    <button id="add-faction-btn">Add Faction</button>
+                </div>
+            </div>
+
+            <div id="tags" class="tab-content">
+                <h3>Boosts (<span id="boost-tag-count">0</span>/10)</h3>
+                <div class="add-item-form">
+                    <select id="add-boost-select"></select>
+                    <button id="add-boost-btn">+</button>
+                </div>
+                <div id="boost-tag-list" class="tag-container"></div>
+
+                <h3>Statuses (<span id="status-tag-count">0</span>/10)</h3>
+                <div class="add-item-form">
+                    <select id="add-status-select"></select>
+                    <button id="add-status-btn">+</button>
+                </div>
+                <div id="status-tag-list" class="tag-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CODEX VAULT -->
+    <footer id="codex-vault" class="pane card collapsible collapsed">
+        <div class="card-header"><h2>Codex Vault</h2></div>
+        <div class="card-content">
+            <ul id="codex-vault-list"></ul>
+        </div>
+    </footer>
+</div>
+
+<!-- MODALS -->
+<div id="dice-roller-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Standard Roll</h2>
+        <div id="dice-display">
+            <div id="main-die" class="die">?</div>
+            <div id="lucky-die" class="die">?</div>
+        </div>
+        <div id="dice-result-text">Ready to roll...</div>
+        <div>
+            <input type="checkbox" id="advantage-toggle"> <label for="advantage-toggle">Advantage</label>
+            <input type="checkbox" id="disadvantage-toggle"> <label for="disadvantage-toggle">Disadvantage</label>
+        </div>
+        <div style="margin-top: 10px;">
+             <button id="roll-sr-btn">Roll</button>
+             <button id="roll-ev-btn">Roll EV/ER</button>
+             <button id="close-dice-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="random-gen-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Generate Random Entity</h2>
+        <div style="margin: 15px 0;">
+            <label for="gen-type-select">Type:</label>
+            <select id="gen-type-select">
+                <option value="C">Character</option>
+                <option value="A">Animation</option>
+                <option value="I">Item</option>
+                <option value="F">Faction</option>
+            </select>
+            <label for="gen-level-input">Level:</label>
+            <input type="number" id="gen-level-input" value="1" min="0" max="9" style="width: 50px;">
+        </div>
+        <textarea id="generated-string-output" rows="4" style="width: 100%;" readonly></textarea>
+        <div>
+            <button id="generate-string-btn">Generate</button>
+            <button id="close-gen-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Wait for the DOM to be fully loaded before running the app script
+document.addEventListener('DOMContentLoaded', () => {
+
+// #################################################################
+// ### PHASE 2: THE LOGIC CORE (SRD_DATA & CodexEngine)          ###
+// #################################################################
+
+const SRD_DATA = {
+    motivations: {
+        '0': { name: 'Discovery', color: 0 }, '1': { name: 'Absolution', color: 1 },
+        '2': { name: 'Ambition', color: 2 }, '3': { name: 'Security', color: 3 },
+        '4': { name: 'Legacy', color: 4 }, '5': { name: 'Innovation', color: 5 },
+        '6': { name: 'Purity', color: 6 }, '7': { name: 'Glory', color: 7 },
+        '8': { name: 'Influence', color: 8 }, '9': { name: 'Faith', color: 9 }
+    },
+    stats: ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'],
+    statProgression: [
+        { level: 2, points: 1 }, { level: 3, points: 1 },
+        { level: 4, points: 1 }, { level: 5, points: 1 },
+        { level: 6, points: 2 }, { level: 7, points: 2 },
+        { level: 8, points: 2 }, { level: 9, points: 2 }
+    ],
+    tags: {
+        boosts: [
+            { name: "Liberate", color: 0 }, { name: "Augment", color: 1 },
+            { name: "Haste", color: 2 }, { name: "Ward", color: 3 },
+            { name: "Bless", color: 4 }, { name: "Charge", color: 5 },
+            { name: "Cure", color: 6 }, { name: "Regen", color: 7 },
+            { name: "Enhance", color: 8 }, { name: "Obscure", color: 9 }
+        ],
+        statuses: [
+            { name: "Mark", color: 0 }, { name: "Impair", color: 1 },
+            { name: "Slow", color: 2 }, { name: "Daze", color: 3 },
+            { name: "Curse", color: 4 }, { name: "Bind", color: 5 },
+            { name: "Weaken", color: 6 }, { name: "Blight", color: 7 },
+            { name: "Silence", color: 8 }, { name: "Nullify", color: 9 }
+        ]
+    },
+    keywords: {
+        '00': { name: 'Restricted', color: 0, type: 'Flaw' }, '01': { name: 'Aura', color: 0, type: 'Gift' },
+        '02': { name: 'Specialist', color: 0, type: 'Talent' }, '03': { name: 'Alert', color: 0, type: 'Quirk' },
+        '04': { name: 'Liberate', color: 0, type: 'Boost' }, '05': { name: 'Mark', color: 0, type: 'Status' },
+        '06': { name: 'Indirect', color: 0, type: 'Form' }, '07': { name: 'Adaptive', color: 0, type: 'Modifier' },
+        '08': { name: 'Gamble', color: 0, type: 'Drive' }, '09': { name: 'Edit', color: 0, type: 'Unique' },
+        '10': { name: 'Bane', color: 1, type: 'Flaw' }, '11': { name: 'Traveller', color: 1, type: 'Gift' },
+        '12': { name: 'Martial', color: 1, type: 'Talent' }, '13': { name: 'Attuned', color: 1, type: 'Quirk' },
+        '14': { name: 'Augment', color: 1, type: 'Boost' }, '15': { name: 'Impair', color: 1, type: 'Status' },
+        '16': { name: 'Reactive', color: 1, type: 'Form' }, '17': { name: 'Phasing', color: 1, type: 'Modifier' },
+        '18': { name: 'Brutal', color: 1, type: 'Drive' }, '19': { name: 'Translocate', color: 1, type: 'Unique' },
+        '20': { name: 'Anxious', color: 2, type: 'Flaw' }, '21': { name: 'Acrobatic', color: 2, type: 'Gift' },
+        '22': { name: 'Sentry', color: 2, type: 'Talent' }, '23': { name: 'Eidetic', color: 2, type: 'Quirk' },
+        '24': { name: 'Haste', color: 2, type: 'Boost' }, '25': { name: 'Slow', color: 2, type: 'Status' },
+        '26': { name: 'Snap', color: 2, type: 'Form' }, '27': { name: 'Condense', color: 2, type: 'Modifier' },
+        '28': { name: 'Rapid', color: 2, type: 'Drive' }, '29': { name: 'Reckless', color: 2, type: 'Unique' },
+        '30': { name: 'Hesitant', color: 3, type: 'Flaw' }, '31': { name: 'Sturdy', color: 3, type: 'Gift' },
+        '32': { name: 'Brawler', color: 3, type: 'Talent' }, '33': { name: 'Stubborn', color: 3, type: 'Quirk' },
+        '34': { name: 'Ward', color: 3, type: 'Boost' }, '35': { name: 'Daze', color: 3, type: 'Status' },
+        '36': { name: 'Sculpt', color: 3, type: 'Form' }, '37': { name: 'Defensive', color: 3, type: 'Modifier' },
+        '38': { name: 'Impact', color: 3, type: 'Drive' }, '39': { name: 'Shift', color: 3, type: 'Unique' },
+        '40': { name: 'Feeble', color: 4, type: 'Flaw' }, '41': { name: 'Survivor', color: 4, type: 'Gift' },
+        '42': { name: 'Stoic', color: 4, type: 'Talent' }, '43': { name: 'Ageless', color: 4, type: 'Quirk' },
+        '44': { name: 'Bless', color: 4, type: 'Boost' }, '45': { name: 'Curse', color: 4, type: 'Status' },
+        '46': { name: 'Piercing', color: 4, type: 'Form' }, '47': { name: 'Flux', color: 4, type: 'Modifier' },
+        '48': { name: 'Siphon', color: 4, type: 'Drive' }, '49': { name: 'Animate', color: 4, type: 'Unique' },
+        '50': { name: 'Gremlins', color: 5, type: 'Flaw' }, '51': { name: 'Sensor', color: 5, type: 'Gift' },
+        '52': { name: 'Improvisor', color: 5, type: 'Talent' }, '53': { name: 'Crafty', color: 5, type: 'Quirk' },
+        '54': { name: 'Charge', color: 5, type: 'Boost' }, '55': { name: 'Bind', color: 5, type: 'Status' },
+        '56': { name: 'Imbue', color: 5, type: 'Form' }, '57': { name: 'Material', color: 5, type: 'Modifier' },
+        '58': { name: 'Leverage', color: 5, type: 'Drive' }, '59': { name: 'Manifest', color: 5, type: 'Unique' },
+        '60': { name: 'Vulnerable', color: 6, type: 'Flaw' }, '61': { name: 'Tolerant', color: 6, type: 'Gift' },
+        '62': { name: 'Deadeye', color: 6, type: 'Talent' }, '63': { name: 'Immunized', color: 6, type: 'Quirk' },
+        '64': { name: 'Cure', color: 6, type: 'Boost' }, '65': { name: 'Weaken', color: 6, type: 'Status' },
+        '66': { name: 'Sticky', color: 6, type: 'Form' }, '67': { name: 'Restore', color: 6, type: 'Modifier' },
+        '68': { name: 'Exploit', color: 6, type: 'Drive' }, '69': { name: 'Growth', color: 6, type: 'Unique' },
+        '70': { name: 'Limited', color: 7, type: 'Flaw' }, '71': { name: 'Resilient', color: 7, type: 'Gift' },
+        '72': { name: 'Font', color: 7, type: 'Talent' }, '73': { name: 'Insulated', color: 7, type: 'Quirk' },
+        '74': { name: 'Regen', color: 7, type: 'Boost' }, '75': { name: 'Blight', color: 7, type: 'Status' },
+        '76': { name: 'Area', color: 7, type: 'Form' }, '77': { name: 'Ranged', color: 7, type: 'Modifier' },
+        '78': { name: 'Multiply', color: 7, type: 'Drive' }, '79': { name: 'Split', color: 7, type: 'Unique' },
+        '80': { name: 'Awkward', color: 8, type: 'Flaw' }, '81': { name: 'Charismatic', color: 8, type: 'Gift' },
+        '82': { name: 'Leader', color: 8, type: 'Talent' }, '83': { name: 'Insightful', color: 8, type: 'Quirk' },
+        '84': { name: 'Enhance', color: 8, type: 'Boost' }, '85': { name: 'Silence', color: 8, type: 'Status' },
+        '86': { name: 'Splash', color: 8, type: 'Form' }, '87': { name: 'Lingering', color: 8, type: 'Modifier' },
+        '88': { name: 'Spread', color: 8, type: 'Drive' }, '89': { name: 'Potent', color: 8, type: 'Unique' },
+        '90': { name: 'Mundane', color: 9, type: 'Flaw' }, '91': { name: 'Aware', color: 9, type: 'Gift' },
+        '92': { name: 'Stealthy', color: 9, type: 'Talent' }, '93': { name: 'Trickster', color: 9, type: 'Quirk' },
+        '94': { name: 'Obscure', color: 9, type: 'Boost' }, '95': { name: 'Nullify', color: 9, type: 'Status' },
+        '96': { name: 'Chain', color: 9, type: 'Form' }, '97': { name: 'Natural', color: 9, type: 'Modifier' },
+        '98': { name: 'Ambience', color: 9, type: 'Drive' }, '99': { name: 'Channel', color: 9, type: 'Unique' }
+    }
+};
+
+const CodexEngine = {
+    parseBlueprint: function(blueprintString) {
+        if (!blueprintString || typeof blueprintString !== 'string') return null;
+        const type = blueprintString.substring(0, 2);
+        switch(type) {
+            case 'C:': return this.parseCharacter(blueprintString);
+            case 'A:': return this.parseAnimation(blueprintString);
+            case 'I:': return this.parseItem(blueprintString);
+            case 'F:': return this.parseFaction(blueprintString);
+            default: return null;
+        }
+    },
+
+    parseCharacter: function(str) {
+        let entity = { type: 'Character', keywords: [], flawPackage: null, statAllocs: [] };
+        const parts = str.substring(2).split('-');
+        
+        entity.profile = parts.shift();
+        
+        parts.forEach(part => {
+            if (part.startsWith('+')) {
+                entity.flawPackage = {
+                    flaw: part.substring(1, 3),
+                    compensation: part.substring(3, 5)
+                };
+            } else {
+                const subParts = part.split('.');
+                subParts.forEach(sub => {
+                    if (SRD_DATA.stats.includes(sub)) {
+                        entity.statAllocs.push(sub);
+                    } else if (sub) {
+                        entity.keywords.push(sub);
+                    }
                 });
             }
-            // Add parsers for A:, I:, F: here if needed
-            return parsed;
-        },
-
-        calculate(parsedObject) {
-            if (!parsedObject || parsedObject.type !== 'Character') {
-                 return { level: 0, stats: {}, resistance: 0, maxHp: 10, maxSp: 10, maxEp: 10, innatePassiveSlots: 0, gearPassiveSlots: 0 };
-            }
-
-            const calculated = {};
-            const keywordCount = parsedObject.keywords ? parsedObject.keywords.length : 0;
-            
-            // Level
-            if (keywordCount >= 20) calculated.level = 9;
-            else if (keywordCount >= 18) calculated.level = 8;
-            else if (keywordCount >= 16) calculated.level = 7;
-            else if (keywordCount >= 14) calculated.level = 6;
-            else if (keywordCount >= 12) calculated.level = 5;
-            else if (keywordCount >= 10) calculated.level = 4;
-            else if (keywordCount >= 8) calculated.level = 3;
-            else if (keywordCount >= 6) calculated.level = 2;
-            else if (keywordCount >= 4) calculated.level = 1;
-            else calculated.level = 0;
-
-            // Stats
-            calculated.stats = {};
-            const baseStat = calculated.level === 0 ? 1 : 2;
-            Object.keys(SRD_DATA.stats).forEach(key => calculated.stats[key] = baseStat);
-
-            const statPointsPerLevel = {
-                2: 1, 3: 1, 4: 1, 5: 1,
-                6: 2, 7: 2, 8: 2, 9: 2
-            };
-            
-            let statPointsToAllocate = 0;
-            for (let i = 2; i <= calculated.level; i++) {
-                statPointsToAllocate += statPointsPerLevel[i];
-            }
-
-            parsedObject.statProgression.slice(0, statPointsToAllocate).forEach(statKey => {
-                if (calculated.stats[statKey] < 5) {
-                    calculated.stats[statKey]++;
-                }
-            });
-
-            // Resistance
-            const statValues = Object.values(calculated.stats);
-            statValues.sort((a, b) => b - a);
-            calculated.resistance = statValues.slice(0, 3).reduce((sum, val) => sum + val, 0);
-
-            // Resources (HP, SP, EP)
-            calculated.maxHp = 10;
-            calculated.maxSp = 10;
-            calculated.maxEp = 10;
-
-            parsedObject.keywords.forEach(kw => {
-                if (kw.code === '71') { // Resilient
-                    if (kw.choice === '0') calculated.maxHp += 5;
-                    if (kw.choice === '1') calculated.maxSp += 5;
-                    if (kw.choice === '2') calculated.maxEp += 5;
-                }
-                if (kw.code === '70') { // Limited
-                    if (parsedObject.flaw && parsedObject.flaw.flawCode === '70') { // Check it's from flaw
-                        const compKw = SRD_DATA.keywords[parsedObject.flaw.compCode];
-                        if (compKw && compKw.name === 'Resilient') {
-                            if (compKw.choices[0] === 'HP') calculated.maxHp -= 5;
-                            if (compKw.choices[1] === 'SP') calculated.maxSp -= 5;
-                            if (compKw.choices[2] === 'EP') calculated.maxEp -= 5;
-                        }
-                    }
-                }
-            });
-
-
-            // Slot limits
-            calculated.innatePassiveSlots = calculated.stats.F;
-            calculated.gearPassiveSlots = calculated.stats.E;
-
-            return calculated;
-        },
-
-        stringify(parsedObject) {
-            if (parsedObject.type !== 'Character') return '';
-            
-            let str = 'C:';
-            str += parsedObject.profile.join('');
-            
-            const keywordParts = [];
-            let currentStatIndex = 0;
-
-            if (parsedObject.keywords.length > 0) {
-                // Seed
-                const seed = parsedObject.keywords[0];
-                keywordParts.push(`${seed.isSlotted ? '!' : ''}${seed.code}${seed.choice ? `(${seed.choice})` : ''}`);
-            }
-
-            if (parsedObject.keywords.length >= 4) {
-                // Awakening
-                const awakeningKws = parsedObject.keywords.slice(1, 4).map(kw => `${kw.isSlotted ? '!' : ''}${kw.code}${kw.choice ? `(${kw.choice})` : ''}`).join('.');
-                keywordParts.push(awakeningKws);
-            }
-
-            // Progression
-            for (let i = 4; i < parsedObject.keywords.length; i += 2) {
-                const kw1 = parsedObject.keywords[i];
-                const kw2 = parsedObject.keywords[i+1];
-                let part = `${kw1.isSlotted ? '!' : ''}${kw1.code}${kw1.choice ? `(${kw1.choice})` : ''}`;
-                if (kw2) {
-                    part += `.${kw2.isSlotted ? '!' : ''}${kw2.code}${kw2.choice ? `(${kw2.choice})` : ''}`;
-                }
-                if(parsedObject.statProgression[currentStatIndex]) {
-                    part += `.${parsedObject.statProgression[currentStatIndex]}`;
-                    currentStatIndex++;
-                }
-                keywordParts.push(part);
-            }
-
-            str += '-' + keywordParts.join('-');
-
-            if (parsedObject.flaw) {
-                str += `+${parsedObject.flaw.flawCode}${parsedObject.flaw.compCode}`;
-            }
-
-            return str;
-        },
+        });
+        return this.calculateCharacter(entity);
+    },
+    
+    parseAnimation: function(str) {
+        let entity = { type: 'Animation', keywords: [], flawPackage: null };
+        const parts = str.substring(2).split(/[.-]/);
         
-        generateRandomString(type, level) {
-            if (type === 'C') {
-                const charObj = { type: 'Character', profile: [], keywords: [], statProgression: [], flaw: null };
-                
-                // Profile
-                for (let i=0; i<5; i++) charObj.profile.push(Math.floor(Math.random() * 10).toString());
-
-                // Keywords based on level
-                const keywordCounts = {0:1, 1:4, 2:6, 3:8, 4:10, 5:12, 6:14, 7:16, 8:18, 9:20};
-                const numKeywords = keywordCounts[level] || 1;
-                const allKeywordCodes = Object.keys(SRD_DATA.keywords).filter(k => SRD_DATA.keywords[k].category !== 'Flaw');
-
-                for (let i = 0; i < numKeywords; i++) {
-                    const code = allKeywordCodes[Math.floor(Math.random() * allKeywordCodes.length)];
-                    const kwData = SRD_DATA.keywords[code];
-                    const choice = kwData.choices ? Math.floor(Math.random() * kwData.choices.length).toString() : null;
-                    charObj.keywords.push({ isSlotted: false, code, choice });
-                }
-
-                // Stat points based on level
-                const statPointsPerLevel = { 2: 1, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2 };
-                let totalStatPoints = 0;
-                for (let i = 2; i <= level; i++) totalStatPoints += statPointsPerLevel[i];
-                const statKeys = Object.keys(SRD_DATA.stats);
-                for (let i = 0; i < totalStatPoints; i++) {
-                     charObj.statProgression.push(statKeys[Math.floor(Math.random() * statKeys.length)]);
-                }
-                
-                return this.stringify(charObj);
+        parts.forEach(part => {
+             if (part.startsWith('+')) {
+                entity.flawPackage = { flaw: part.substring(1, 3), compensation: part.substring(3, 5) };
+            } else if (part) {
+                entity.keywords.push(part);
             }
-            // Add generators for A, I, F here
-            return `${type}:(Not implemented yet)`;
+        });
+        return this.calculateAnimation(entity);
+    },
+    
+    parseItem: function(str) {
+        let entity = { type: 'Item', keywords: [], flawPackage: null };
+        const levelMatch = str.match(/^I:L(\d)/);
+        if (!levelMatch) return null;
+        entity.level = parseInt(levelMatch[1], 10);
+        
+        const parts = str.substring(levelMatch[0].length).split(/[.-]/);
+        parts.forEach(part => {
+             if (part.startsWith('+')) {
+                entity.flawPackage = { flaw: part.substring(1, 3), compensation: part.substring(3, 5) };
+            } else if (part) {
+                entity.keywords.push(part);
+            }
+        });
+        return entity;
+    },
+
+    parseFaction: function(str) {
+        // F:#####-L#[S#.S#...]-[K##.##...]
+        // Not implemented in detail for this version, but parser structure is here.
+        return { type: 'Faction', raw: str };
+    },
+
+    calculateCharacter: function(entity) {
+        const keywordCount = entity.keywords.length;
+        
+        if (keywordCount < 1) {
+            entity.level = 0;
+        } else if (keywordCount < 4) {
+            entity.level = 0; // Still Seed
+        } else if (keywordCount < 6) {
+            entity.level = 1;
+        } else if (keywordCount < 8) {
+            entity.level = 2;
+        } else if (keywordCount < 10) {
+            entity.level = 3;
+        } else if (keywordCount < 12) {
+            entity.level = 4;
+        } else if (keywordCount < 14) {
+            entity.level = 5;
+        } else if (keywordCount < 16) {
+            entity.level = 6;
+        } else if (keywordCount < 18) {
+            entity.level = 7;
+        } else if (keywordCount < 20) {
+            entity.level = 8;
+        } else {
+            entity.level = 9;
         }
-    };
 
-    /*****************************************************************
-    ###   App: UI Orchestration and Event Handling                ###
-    *****************************************************************/
-    const App = {
-        db: {},
-        activeCharacterId: null,
-
-        init() {
-            this.load();
-            if (Object.keys(this.db).length === 0) {
-                this.createNewCharacter('Sparks', 'C:13824-03-11(1).83.93');
+        // Calculate Stats
+        const baseStat = entity.level === 0 ? 1 : 2;
+        entity.stats = { M: baseStat, A: baseStat, B: baseStat, W: baseStat, E: baseStat, T: baseStat, P: baseStat, I: baseStat, F: baseStat };
+        
+        entity.statAllocs.forEach(statKey => {
+            if(entity.stats[statKey] < 5) {
+                entity.stats[statKey]++;
             }
-            this.activeCharacterId = this.activeCharacterId || Object.keys(this.db)[0];
-            
-            this.populateKeywordSelect();
-            this.render();
-            this.bindEvents();
-        },
+        });
+
+        // Calculate Derived Values
+        const sortedStats = Object.values(entity.stats).sort((a, b) => b - a);
+        entity.resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
         
-        save() {
-            localStorage.setItem('resonanceCompanionDb', JSON.stringify(this.db));
-        },
+        entity.maxHP = 10;
+        entity.maxSP = 10;
+        entity.maxEP = 10;
         
-        load() {
-            const data = localStorage.getItem('resonanceCompanionDb');
-            this.db = data ? JSON.parse(data) : {};
-            this.activeCharacterId = localStorage.getItem('activeCharacterId');
-        },
+        // Handle 'Resilient' keyword if present
+        entity.keywords.forEach(kwStr => {
+           const kwCode = kwStr.substring(0, 2);
+           if (kwCode === '71') { // Resilient
+               const optionMatch = kwStr.match(/\((\d)\)/);
+               if (optionMatch) {
+                   const option = parseInt(optionMatch[1]);
+                   if(option === 1) entity.maxHP += 5;
+                   if(option === 2) entity.maxSP += 5;
+                   if(option === 3) entity.maxEP += 5;
+               }
+           }
+        });
+
+        entity.maxInnatePassives = entity.stats.F;
+        entity.maxGearPassives = entity.stats.E;
+
+        return entity;
+    },
+
+    calculateAnimation: function(entity) {
+        const keywordCount = entity.keywords.length;
+        entity.level = keywordCount > 0 ? keywordCount - 1 : 0;
+        // Simplified for this version - full stat distribution would require more UI/logic
+        entity.stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
+        entity.resistance = 3; 
+        entity.maxHP = 10;
+        entity.maxSP = 10;
+        entity.maxEP = 10;
+        return entity;
+    },
+    
+    stringifyCharacter: function(parsedData) {
+        let str = `C:${parsedData.profile}-`;
         
-        // --- DATA MANIPULATION ---
-        createNewCharacter(name = 'New Character', blueprint = 'C:00000-01') {
-            const id = `char_${Date.now()}`;
-            this.db[id] = {
-                id,
-                name: name,
-                type: 'Character',
-                blueprint,
-                runtime: {
-                    karma: 0,
-                    hp: 10, sp: 10, ep: 10,
-                    boosts: [], statuses: [],
+        let kwParts = [];
+        
+        if (parsedData.keywords.length > 0) {
+            kwParts.push(parsedData.keywords[0]); // Seed
+        }
+        if (parsedData.keywords.length > 3) {
+            kwParts.push(parsedData.keywords.slice(1, 4).join('.')); // Awakening
+        }
+        if (parsedData.keywords.length > 4) {
+             for (let i = 4; i < parsedData.keywords.length; i += 2) {
+                let pair = parsedData.keywords.slice(i, i + 2);
+                if (pair.length > 0) {
+                    let statIndex = (i - 4) / 2;
+                    let stat = parsedData.statAllocs[statIndex] || '';
+                    kwParts.push(pair.join('.') + (stat ? '.' + stat : ''));
                 }
-            };
-            this.activeCharacterId = id;
-            this.save();
-            this.render();
-        },
-
-        updateBlueprint(newBlueprint) {
-            if (!this.activeCharacterId) return;
-            this.db[this.activeCharacterId].blueprint = newBlueprint;
-            this.save();
-            this.render();
-        },
+            }
+        }
         
-        updateRuntime(key, value) {
-             if (!this.activeCharacterId) return;
-             this.db[this.activeCharacterId].runtime[key] = value;
-             this.save();
-             // No full re-render for simple runtime changes
-             this.renderRuntime();
-        },
+        str += kwParts.join('-');
 
-        // --- RENDERING ---
-        render() {
-            if (!this.activeCharacterId || !this.db[this.activeCharacterId]) {
-                 // Handle empty state
-                document.getElementById('character-sheet-pane').classList.add('hidden');
+        if (parsedData.flawPackage) {
+            str += `-+${parsedData.flawPackage.flaw}${parsedData.flawPackage.compensation}`;
+        }
+
+        return str.replace(/--/g, '-').replace(/-$/g, '');
+    }
+};
+
+
+// #################################################################
+// ### PHASE 3: THE APP CONTROLLER (Event Handling & Rendering)  ###
+// #################################################################
+
+const App = {
+    state: {
+        entities: {},
+        activeEntityId: null,
+    },
+
+    init: function() {
+        this.cacheDOMElements();
+        this.loadState();
+        this.populateStaticDropdowns();
+        this.setupEventListeners();
+        this.render();
+    },
+
+    cacheDOMElements: function() {
+        this.dom = {
+            // Global
+            mainContent: document.getElementById('main-content'),
+            entitySelector: document.getElementById('entity-selector'),
+            addNewEntityBtn: document.getElementById('add-new-entity-btn'),
+            importEntityBtn: document.getElementById('import-entity-btn'),
+            diceRollerBtn: document.getElementById('dice-roller-btn'),
+            randomGenBtn: document.getElementById('random-gen-btn'),
+            
+            // Build Pane
+            charName: document.getElementById('character-name-input'),
+            charLevel: document.getElementById('character-level-display'),
+            motivations: {
+                goal: document.getElementById('motivation-goal'),
+                method: document.getElementById('motivation-method'),
+                purpose: document.getElementById('motivation-purpose'),
+                external: document.getElementById('motivation-external'),
+                internal: document.getElementById('motivation-internal'),
+            },
+            stats: {
+                M: document.getElementById('stat-m'), A: document.getElementById('stat-a'),
+                B: document.getElementById('stat-b'), W: document.getElementById('stat-w'),
+                E: document.getElementById('stat-e'), T: document.getElementById('stat-t'),
+                P: document.getElementById('stat-p'), I: document.getElementById('stat-i'),
+                F: document.getElementById('stat-f'),
+            },
+            resistance: document.getElementById('resistance-value'),
+            resources: {
+                hp: { current: document.getElementById('hp-current'), max: document.getElementById('hp-max'), pips: document.getElementById('hp-pips') },
+                sp: { current: document.getElementById('sp-current'), max: document.getElementById('sp-max'), pips: document.getElementById('sp-pips') },
+                ep: { current: document.getElementById('ep-current'), max: document.getElementById('ep-max'), pips: document.getElementById('ep-pips') },
+            },
+            keyword: {
+                select: document.getElementById('keyword-select'),
+                addBtn: document.getElementById('add-keyword-btn'),
+                removeBtn: document.getElementById('remove-last-keyword-btn'),
+                list: document.getElementById('keyword-list'),
+            },
+            progressionList: document.getElementById('stat-progression-list'),
+            innatePassives: {
+                count: document.getElementById('innate-passive-count'),
+                max: document.getElementById('innate-passive-max'),
+            },
+            liveBlueprint: document.getElementById('live-blueprint-string'),
+
+            // Play Pane
+            tabs: document.querySelectorAll('.tab-button'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            inventory: {
+                list: document.getElementById('inventory-list'),
+                addString: document.getElementById('add-item-string'),
+                addBtn: document.getElementById('add-item-btn'),
+                passiveCount: document.getElementById('gear-passive-count'),
+                passiveMax: document.getElementById('gear-passive-max'),
+            },
+            tags: {
+                boostSelect: document.getElementById('add-boost-select'),
+                boostBtn: document.getElementById('add-boost-btn'),
+                boostList: document.getElementById('boost-tag-list'),
+                boostCount: document.getElementById('boost-tag-count'),
+                statusSelect: document.getElementById('add-status-select'),
+                statusBtn: document.getElementById('add-status-btn'),
+                statusList: document.getElementById('status-tag-list'),
+                statusCount: document.getElementById('status-tag-count'),
+            },
+            
+            // Vault
+            codexVault: document.getElementById('codex-vault'),
+            codexVaultList: document.getElementById('codex-vault-list'),
+            
+            // Modals
+            diceModal: document.getElementById('dice-roller-modal'),
+            diceDisplay: {
+                main: document.getElementById('main-die'),
+                lucky: document.getElementById('lucky-die'),
+                resultText: document.getElementById('dice-result-text'),
+            },
+            diceControls: {
+                adv: document.getElementById('advantage-toggle'),
+                dis: document.getElementById('disadvantage-toggle'),
+                rollSrBtn: document.getElementById('roll-sr-btn'),
+                rollEvBtn: document.getElementById('roll-ev-btn'),
+                closeBtn: document.getElementById('close-dice-modal-btn'),
+            },
+            genModal: document.getElementById('random-gen-modal'),
+            genControls: {
+                type: document.getElementById('gen-type-select'),
+                level: document.getElementById('gen-level-input'),
+                output: document.getElementById('generated-string-output'),
+                generateBtn: document.getElementById('generate-string-btn'),
+                closeBtn: document.getElementById('close-gen-modal-btn'),
+            }
+        };
+    },
+
+    populateStaticDropdowns: function() {
+        Object.entries(SRD_DATA.keywords).forEach(([code, kw]) => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = `${kw.name} (${code})`;
+            this.dom.keyword.select.appendChild(option);
+        });
+
+        SRD_DATA.tags.boosts.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.name;
+            option.textContent = tag.name;
+            this.dom.tags.boostSelect.appendChild(option);
+        });
+        
+        SRD_DATA.tags.statuses.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.name;
+            option.textContent = tag.name;
+            this.dom.tags.statusSelect.appendChild(option);
+        });
+    },
+
+    setupEventListeners: function() {
+        // Global
+        this.dom.entitySelector.addEventListener('change', e => {
+            this.state.activeEntityId = e.target.value;
+            this.saveState();
+            this.render();
+        });
+        this.dom.addNewEntityBtn.addEventListener('click', () => this.addNewEntity());
+        this.dom.importEntityBtn.addEventListener('click', () => this.importEntity());
+
+        // Collapsibles
+        document.querySelectorAll('.collapsible .card-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.parentElement.classList.toggle('collapsed');
+            });
+        });
+
+        // Character Build
+        this.dom.charName.addEventListener('change', e => {
+            if (this.getActiveEntity()) {
+                this.getActiveEntity().name = e.target.value;
+                this.saveState();
+                this.renderVault(); // Just update the lists
+            }
+        });
+        this.dom.liveBlueprint.addEventListener('change', e => this.updateBlueprint(e.target.value));
+        this.dom.keyword.addBtn.addEventListener('click', () => this.addKeyword());
+        this.dom.keyword.removeBtn.addEventListener('click', () => this.removeLastKeyword());
+        
+        // Resource Pips
+        ['hp', 'sp', 'ep'].forEach(res => {
+            this.dom.resources[res].pips.addEventListener('click', e => {
+                if (e.target.classList.contains('pip')) {
+                    const newValue = parseInt(e.target.dataset.index) + 1;
+                    this.getActiveEntity().runtime.resources[res.toUpperCase()] = newValue;
+                    this.saveState();
+                    this.renderResources();
+                }
+            });
+        });
+
+        // Tabs
+        this.dom.tabs.forEach(button => {
+            button.addEventListener('click', () => {
+                this.dom.tabs.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                this.dom.tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if(content.id === button.dataset.tab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Inventory
+        this.dom.inventory.addBtn.addEventListener('click', () => {
+            const bp = this.dom.inventory.addString.value;
+            if (bp && bp.startsWith('I:')) {
+                const entity = this.getActiveEntity();
+                const item = {
+                    id: `item_${Date.now()}`,
+                    name: "New Item",
+                    blueprint: bp,
+                    runtime: { slottedPassives: [] }
+                };
+                entity.runtime.inventory.push(item);
+                this.dom.inventory.addString.value = '';
+                this.saveState();
+                this.renderInventory();
+            } else {
+                alert("Invalid Item blueprint string. Must start with 'I:'.");
+            }
+        });
+
+        // Tags
+        this.dom.tags.boostBtn.addEventListener('click', () => this.addTag('boosts'));
+        this.dom.tags.statusBtn.addEventListener('click', () => this.addTag('statuses'));
+        
+        // Modals
+        this.dom.diceRollerBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'flex');
+        this.dom.diceControls.closeBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'none');
+        this.dom.diceControls.rollSrBtn.addEventListener('click', () => this.rollDice(false));
+        this.dom.diceControls.rollEvBtn.addEventListener('click', () => this.rollDice(true));
+        
+        this.dom.randomGenBtn.addEventListener('click', () => this.dom.genModal.style.display = 'flex');
+        this.dom.genControls.closeBtn.addEventListener('click', () => this.dom.genModal.style.display = 'none');
+        this.dom.genControls.generateBtn.addEventListener('click', () => this.generateRandomString());
+
+    },
+
+    getActiveEntity: function() {
+        return this.state.entities[this.state.activeEntityId] || null;
+    },
+
+    saveState: function() {
+        localStorage.setItem('resonanceCompanionState', JSON.stringify(this.state));
+    },
+
+    loadState: function() {
+        const savedState = localStorage.getItem('resonanceCompanionState');
+        if (savedState) {
+            this.state = JSON.parse(savedState);
+        } else {
+            // Create a default character if none exist
+            this.addNewEntity("Sparks", "C:13829-13-11.83.93");
+        }
+    },
+    
+    addNewEntity: function(name = "New Character", blueprint = "C:01234-03") {
+        const newId = `char_${Date.now()}`;
+        this.state.entities[newId] = {
+            id: newId,
+            name: name,
+            blueprint: blueprint,
+            runtime: this.createDefaultRuntimeState()
+        };
+        this.state.activeEntityId = newId;
+        this.saveState();
+        this.render();
+    },
+
+    importEntity: function() {
+        const blueprint = prompt("Paste the full entity blueprint string:");
+        if (blueprint) {
+            this.updateBlueprint(blueprint);
+        }
+    },
+    
+    updateBlueprint: function(newBlueprint) {
+        const entity = this.getActiveEntity();
+        if (entity) {
+            // Validate blueprint string before applying
+            const parsed = CodexEngine.parseBlueprint(newBlueprint);
+            if (parsed) {
+                entity.blueprint = newBlueprint;
+                this.saveState();
+                this.render();
+            } else {
+                alert("Invalid blueprint string.");
+                this.render(); // Re-render to show original string
+            }
+        }
+    },
+    
+    addKeyword: function() {
+        const entity = this.getActiveEntity();
+        if (!entity || !entity.parsed.level < 9) return;
+        
+        let newKwCode = this.dom.keyword.select.value;
+        let blueprint = entity.blueprint;
+
+        if (entity.parsed.keywords.length % 2 !== 0 && entity.parsed.keywords.length > 3) {
+             // Expecting a stat
+            alert("Please allocate a stat point for the current level before adding new keywords.");
+            return;
+        }
+
+        if (entity.parsed.keywords.length < 4) {
+             blueprint += `.${newKwCode}`;
+        } else {
+             blueprint += `-${newKwCode}`;
+        }
+        
+        this.updateBlueprint(blueprint);
+    },
+
+    removeLastKeyword: function() {
+        const entity = this.getActiveEntity();
+        if (!entity || entity.parsed.keywords.length <= 1) return;
+        if (!confirm("Are you sure you want to remove the last keyword? This may affect your level and stats.")) return;
+
+        let blueprint = entity.blueprint;
+        let parts = blueprint.split(/([.-])/);
+        
+        // Simple removal: pop last two parts (delimiter and keyword)
+        parts.pop();
+        parts.pop();
+        
+        this.updateBlueprint(parts.join(''));
+    },
+    
+    allocateStat: function(level, stat) {
+        const entity = this.getActiveEntity();
+        if (!entity) return;
+        
+        // Rebuild string from parsed data to ensure correctness
+        let parsed = entity.parsed;
+        let statAllocIndex = SRD_DATA.statProgression.findIndex(p => p.level === level);
+        
+        parsed.statAllocs[statAllocIndex] = stat;
+        
+        // Prune any future stat allocations if level changes
+        const requiredAllocs = SRD_DATA.statProgression.filter(p => p.level <= parsed.level).length;
+        parsed.statAllocs = parsed.statAllocs.slice(0, requiredAllocs);
+
+        const newBlueprint = CodexEngine.stringifyCharacter(parsed);
+        this.updateBlueprint(newBlueprint);
+    },
+    
+    addTag: function(type) {
+        const entity = this.getActiveEntity();
+        if(!entity) return;
+        
+        const select = type === 'boosts' ? this.dom.tags.boostSelect : this.dom.tags.statusSelect;
+        const tagName = select.value;
+        const tagList = entity.runtime.tags[type];
+        
+        const existingTag = tagList.find(t => t.name === tagName);
+        if (existingTag) {
+            if (existingTag.quantity < 5) existingTag.quantity++;
+        } else {
+            if (tagList.length < 10) {
+                tagList.push({ name: tagName, quantity: 1 });
+            }
+        }
+        
+        this.saveState();
+        this.renderTags();
+    },
+
+    createDefaultRuntimeState: function() {
+        return {
+            resources: { HP: 10, SP: 10, EP: 10 },
+            slottedInnatePassives: [],
+            inventory: [],
+            companions: [],
+            factions: [],
+            tags: { boosts: [], statuses: [] }
+        };
+    },
+
+    // RENDER FUNCTIONS
+    render: function() {
+        const entity = this.getActiveEntity();
+
+        if (entity) {
+            this.dom.mainContent.classList.remove('hidden');
+            entity.parsed = CodexEngine.parseBlueprint(entity.blueprint);
+            if (!entity.parsed) {
+                console.error("Failed to parse blueprint:", entity.blueprint);
+                alert("Error parsing the active entity's blueprint string. Check console for details.");
                 return;
             }
-            
-            document.getElementById('character-sheet-pane').classList.remove('hidden');
-
-            const character = this.db[this.activeCharacterId];
-            const parsed = CodexEngine.parse(character.blueprint);
-            const derived = CodexEngine.calculate(parsed);
-
-            // Header
-            document.getElementById('character-name-input').value = character.name;
-            document.getElementById('character-level').textContent = derived.level;
-
-            // Blueprint String
-            document.getElementById('live-blueprint-string').value = character.blueprint;
-
-            // Profile
-            const profilePoints = ['goal', 'method', 'purpose', 'ext-conflict', 'int-conflict'];
-            profilePoints.forEach((point, i) => {
-                const code = parsed.profile ? parsed.profile[i] : '?';
-                document.getElementById(`profile-${point}`).textContent = SRD_DATA.motivations[code] || 'N/A';
-            });
-            
-            // Stats
-            Object.keys(derived.stats).forEach(key => {
-                document.getElementById(`stat-${key.toLowerCase()}`).textContent = derived.stats[key];
-            });
-            document.getElementById('resistance-value').textContent = derived.resistance;
-            
-            // Resources
-            document.getElementById('hp-max').textContent = derived.maxHp;
-            document.getElementById('sp-max').textContent = derived.maxSp;
-            document.getElementById('ep-max').textContent = derived.maxEp;
-            
-            // Keywords
-            this.renderKeywords(parsed, derived);
-
-            // Stat Progression
-            this.renderStatProgression(parsed, derived);
-
-            // Render runtime state (karma, clocks, tags)
-            this.renderRuntime();
-            
-            // Render Vault
-            this.renderVault();
-        },
+            this.renderCharacterHeader(entity);
+            this.renderMotivations(entity);
+            this.renderStats(entity);
+            this.renderResources(entity);
+            this.renderKeywords(entity);
+            this.renderProgression(entity);
+            this.renderLiveBlueprint(entity);
+            this.renderInventory(entity);
+            this.renderTags(); // Add other play pane renders here
+        } else {
+            this.dom.mainContent.classList.add('hidden');
+        }
         
-        renderRuntime() {
-            if (!this.activeCharacterId) return;
-            const runtime = this.db[this.activeCharacterId].runtime;
-            const derived = CodexEngine.calculate(CodexEngine.parse(this.db[this.activeCharacterId].blueprint));
+        this.renderEntitySelector();
+        this.renderVault();
+    },
 
-            // Karma
-            document.getElementById('karma-value').textContent = runtime.karma;
+    renderCharacterHeader: function(entity) {
+        this.dom.charName.value = entity.name;
+        this.dom.charLevel.textContent = `LVL ${entity.parsed.level}`;
+    },
+
+    renderMotivations: function(entity) {
+        const profile = entity.parsed.profile || "?????";
+        const getMot = (index) => SRD_DATA.motivations[profile[index]] || { name: 'N/A', color: 1 };
+
+        const goal = getMot(0);
+        this.dom.motivations.goal.textContent = goal.name;
+        this.dom.motivations.goal.className = `color-code-${goal.color}`;
+
+        const method = getMot(1);
+        this.dom.motivations.method.textContent = method.name;
+        this.dom.motivations.method.className = `color-code-${method.color}`;
+
+        const purpose = getMot(2);
+        this.dom.motivations.purpose.textContent = purpose.name;
+        this.dom.motivations.purpose.className = `color-code-${purpose.color}`;
+
+        const external = getMot(3);
+        this.dom.motivations.external.textContent = external.name;
+        this.dom.motivations.external.className = `color-code-${external.color}`;
+
+        const internal = getMot(4);
+        this.dom.motivations.internal.textContent = internal.name;
+        this.dom.motivations.internal.className = `color-code-${internal.color}`;
+    },
+
+    renderStats: function(entity) {
+        Object.entries(entity.parsed.stats).forEach(([key, value]) => {
+            this.dom.stats[key].textContent = value;
+        });
+        this.dom.resistance.textContent = entity.parsed.resistance;
+    },
+
+    renderResources: function(entity = this.getActiveEntity()) {
+        if (!entity) return;
+        const renderPipGroup = (resKey, color) => {
+            const resData = entity.parsed[`max${resKey}`];
+            const current = entity.runtime.resources[resKey];
+            const container = this.dom.resources[resKey.toLowerCase()].pips;
             
-            // Clocks
-            this.renderClock('hp', runtime.hp, derived.maxHp);
-            this.renderClock('sp', runtime.sp, derived.maxSp);
-            this.renderClock('ep', runtime.ep, derived.maxEp);
+            this.dom.resources[resKey.toLowerCase()].current.textContent = current;
+            this.dom.resources[resKey.toLowerCase()].max.textContent = resData;
 
-            // Tags
-            this.renderTagList('boosts', runtime.boosts);
-            this.renderTagList('statuses', runtime.statuses);
-        },
-
-        renderClock(type, current, max) {
-            document.getElementById(`${type}-current`).value = current;
-            const pipsContainer = document.getElementById(`${type}-pips`);
-            let pipsHtml = '';
-            for(let i = 1; i <= 20; i++) { // Max possible pips
-                const isAvailable = i <= max;
-                const isFilled = i <= current;
-                pipsHtml += `<div class="pip ${isAvailable ? 'available' : ''} ${isFilled ? 'filled' : ''}" data-value="${i}"></div>`;
+            container.innerHTML = '';
+            for (let i = 0; i < resData; i++) {
+                const pip = document.createElement('div');
+                pip.className = 'pip';
+                pip.dataset.index = i;
+                if (i < current) {
+                    pip.classList.add('filled');
+                }
+                container.appendChild(pip);
             }
-            pipsContainer.innerHTML = pipsHtml;
-        },
+        };
+        renderPipGroup('HP');
+        renderPipGroup('SP');
+        renderPipGroup('EP');
+    },
+    
+    renderKeywords: function(entity) {
+        const list = this.dom.keyword.list;
+        list.innerHTML = '';
 
-        renderTagList(type, tags) {
-            const listEl = document.getElementById(`${type}-list`);
-            const countEl = document.getElementById(`${type.slice(0, -1)}-count`);
-            listEl.innerHTML = '';
-            tags.forEach((tag, index) => {
-                listEl.innerHTML += `
-                    <li class="tag-item">
-                        <span>${tag}</span>
-                        <button class="remove-tag-btn" data-type="${type}" data-index="${index}">&times;</button>
-                    </li>
-                `;
-            });
-            countEl.textContent = tags.length;
-        },
+        const slottedPassives = entity.runtime.slottedInnatePassives;
+        this.dom.innatePassives.count.textContent = slottedPassives.length;
+        this.dom.innatePassives.max.textContent = entity.parsed.maxInnatePassives;
 
-        renderKeywords(parsed, derived) {
-            const listEl = document.getElementById('innate-keywords-list');
-            listEl.innerHTML = '';
-            
-            let slottedCount = 0;
-            const maxKeywords = 22;
+        entity.parsed.keywords.forEach((kwString, index) => {
+            const kwCode = kwString.substring(0, 2);
+            const kwData = SRD_DATA.keywords[kwCode];
+            if (!kwData) return;
 
-            for (let i = 0; i < maxKeywords; i++) {
-                const kw = parsed.keywords[i];
-                if (kw) {
-                    const kwData = SRD_DATA.keywords[kw.code];
-                    if (kw.isSlotted) slottedCount++;
-                    
-                    let choiceHtml = '';
-                    if (kwData.choices) {
-                        choiceHtml = `<select class="keyword-choice" data-index="${i}">`;
-                        kwData.choices.forEach((choiceName, choiceIndex) => {
-                            choiceHtml += `<option value="${choiceIndex}" ${kw.choice == choiceIndex ? 'selected' : ''}>${choiceName}</option>`;
-                        });
-                        choiceHtml += `</select>`;
-                    }
+            const li = document.createElement('li');
+            li.className = 'keyword-item';
 
-                    listEl.innerHTML += `
-                        <li class="innate-keyword-item">
-                            <div class="keyword-color-pip color-pip-${kw.code.charAt(0)}"></div>
-                            <span class="keyword-name">${kwData.name}</span>
-                            ${choiceHtml}
-                            <input type="checkbox" class="keyword-slot-toggle" data-index="${i}" ${kw.isSlotted ? 'checked' : ''}>
-                        </li>
-                    `;
+            const toggle = document.createElement('div');
+            toggle.className = 'passive-toggle';
+            if (slottedPassives.includes(kwCode)) {
+                toggle.classList.add('slotted');
+            }
+            toggle.addEventListener('click', () => {
+                const index = slottedPassives.indexOf(kwCode);
+                if (index > -1) {
+                    slottedPassives.splice(index, 1);
                 } else {
-                     listEl.innerHTML += `<li class="innate-keyword-item hidden"></li>`;
-                }
-            }
-            
-            document.getElementById('innate-slotted-count').textContent = slottedCount;
-            document.getElementById('innate-slotted-max').textContent = derived.innatePassiveSlots;
-        },
-        
-        renderStatProgression(parsed, derived) {
-            const listEl = document.getElementById('stat-progression-list');
-            listEl.innerHTML = '';
-            const statPointsPerLevel = { 2: 1, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2 };
-            let allocatedPoints = 0;
-
-            for (let level = 2; level <= 9; level++) {
-                if (derived.level >= level) {
-                    const pointsForLevel = statPointsPerLevel[level];
-                    for (let p = 0; p < pointsForLevel; p++) {
-                        const pointIndex = allocatedPoints;
-                        let optionsHtml = '<option value="">-</option>';
-                        Object.entries(SRD_DATA.stats).forEach(([key, name]) => {
-                           const isSelected = parsed.statProgression[pointIndex] === key;
-                           optionsHtml += `<option value="${key}" ${isSelected ? 'selected' : ''}>${name}</option>`;
-                        });
-
-                        listEl.innerHTML += `
-                            <li class="stat-progression-item">
-                                <span>Level ${level} Point ${p+1}:</span>
-                                <select class="stat-progression-select" data-index="${pointIndex}">${optionsHtml}</select>
-                            </li>
-                        `;
-                        allocatedPoints++;
+                    if (slottedPassives.length < entity.parsed.maxInnatePassives) {
+                        slottedPassives.push(kwCode);
                     }
                 }
-            }
-        },
-
-        renderVault() {
-            const listEl = document.getElementById('entity-list');
-            listEl.innerHTML = '';
-            Object.values(this.db).forEach(char => {
-                const isActive = char.id === this.activeCharacterId;
-                listEl.innerHTML += `
-                    <li class="entity-list-item ${isActive ? 'active' : ''}" data-id="${char.id}">
-                        <span>${char.name}</span>
-                        <button class="delete-entity-btn" data-id="${char.id}">&times;</button>
-                    </li>
-                `;
+                this.saveState();
+                this.renderKeywords(entity);
             });
-        },
 
-        populateKeywordSelect() {
-            const select = document.getElementById('keyword-select');
-            select.innerHTML = '';
-            Object.entries(SRD_DATA.keywords)
-                .filter(([code, data]) => data.category !== 'Flaw')
-                .sort((a,b) => a[1].name.localeCompare(b[1].name))
-                .forEach(([code, data]) => {
-                    select.innerHTML += `<option value="${code}">${data.name} (${data.color})</option>`;
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'keyword-name';
+            
+            let nameContent = `<span class="color-code-${kwData.color}">${kwData.name}</span> <span class="keyword-code">(${kwCode})</span>`;
+            if (entity.parsed.flawPackage) {
+                if (kwCode === entity.parsed.flawPackage.flaw) {
+                    nameContent += ' <span class="keyword-flaw">[FLAW]</span>';
+                }
+                if (kwCode === entity.parsed.flawPackage.compensation) {
+                     nameContent += ' <span class="keyword-comp">[COMPENSATION]</span>';
+                }
+            }
+            nameSpan.innerHTML = nameContent;
+
+            li.appendChild(toggle);
+            li.appendChild(nameSpan);
+            // Add dropdowns for choice keywords like Traveller or Resilient here if needed
+            list.appendChild(li);
+        });
+    },
+
+    renderProgression: function(entity) {
+        const list = this.dom.progressionList;
+        list.innerHTML = '';
+        SRD_DATA.statProgression.forEach((prog, index) => {
+            if (entity.parsed.level >= prog.level) {
+                const li = document.createElement('li');
+                li.className = 'progression-item';
+                
+                const label = document.createElement('span');
+                label.textContent = `Level ${prog.level} (+${prog.points} Stat)`;
+                
+                const select = document.createElement('select');
+                SRD_DATA.stats.forEach(stat => {
+                    const option = document.createElement('option');
+                    option.value = stat;
+                    option.textContent = stat;
+                    if (entity.parsed.statAllocs[index] === stat) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
                 });
-        },
+                
+                select.addEventListener('change', (e) => this.allocateStat(prog.level, e.target.value));
 
-        // --- EVENT BINDING & HANDLERS ---
-        bindEvents() {
-            // Tab switching
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', e => this.handleTabSwitch(e));
-            });
+                li.appendChild(label);
+                li.appendChild(select);
+                list.appendChild(li);
+            }
+        });
+    },
+    
+    renderLiveBlueprint: function(entity) {
+        this.dom.liveBlueprint.value = entity.blueprint;
+    },
+    
+    renderInventory: function(entity = this.getActiveEntity()) {
+        if(!entity) return;
+        const list = this.dom.inventory.list;
+        list.innerHTML = '';
+
+        const slottedGearPassives = entity.runtime.inventory.flatMap(item => item.runtime.slottedPassives);
+        this.dom.inventory.passiveCount.textContent = slottedGearPassives.length;
+        this.dom.inventory.passiveMax.textContent = entity.parsed.maxGearPassives;
+        
+        entity.runtime.inventory.forEach(item => {
+            const itemData = CodexEngine.parseBlueprint(item.blueprint);
+            if (!itemData) return;
             
-            // Character Management
-            document.getElementById('add-new-character-btn').addEventListener('click', () => {
-                const name = prompt('Enter character name:');
-                if(name) this.createNewCharacter(name);
-            });
-            document.getElementById('entity-list').addEventListener('click', e => this.handleVaultClick(e));
-            document.getElementById('character-name-input').addEventListener('change', e => this.handleNameChange(e));
-
-            // Blueprint Import
-            document.getElementById('import-blueprint-btn').addEventListener('click', () => this.handleBlueprintImport());
-
-            // Karma
-            document.getElementById('karma-increase-btn').addEventListener('click', () => this.handleKarmaChange(1));
-            document.getElementById('karma-decrease-btn').addEventListener('click', () => this.handleKarmaChange(-1));
+            const card = document.createElement('div');
+            card.className = 'card';
             
-            // Clocks
-            document.getElementById('hp-pips').addEventListener('click', e => this.handlePipClick(e, 'hp'));
-            document.getElementById('sp-pips').addEventListener('click', e => this.handlePipClick(e, 'sp'));
-            document.getElementById('ep-pips').addEventListener('click', e => this.handlePipClick(e, 'ep'));
-            document.getElementById('hp-current').addEventListener('change', e => this.handleCurrentValueChange(e, 'hp'));
-            document.getElementById('sp-current').addEventListener('change', e => this.handleCurrentValueChange(e, 'sp'));
-            document.getElementById('ep-current').addEventListener('change', e => this.handleCurrentValueChange(e, 'ep'));
-
-            // Keywords
-            document.getElementById('keyword-add-btn').addEventListener('click', () => this.handleAddKeyword());
-            document.getElementById('keyword-remove-last-btn').addEventListener('click', () => this.handleRemoveKeyword());
-            document.getElementById('innate-keywords-list').addEventListener('change', e => this.handleKeywordChange(e));
+            const header = document.createElement('h3');
+            header.textContent = `L${itemData.level} ${item.name}`;
             
-            // Stat Progression
-            document.getElementById('stat-progression-list').addEventListener('change', e => this.handleStatProgChange(e));
+            const kwList = document.createElement('ul');
+            kwList.className = 'item-keyword-list';
             
-            // Tags
-            document.getElementById('add-boost-form').addEventListener('submit', e => this.handleAddTag(e, 'boosts'));
-            document.getElementById('add-status-form').addEventListener('submit', e => this.handleAddTag(e, 'statuses'));
-            document.getElementById('boosts-list').addEventListener('click', e => this.handleRemoveTag(e));
-            document.getElementById('statuses-list').addEventListener('click', e => this.handleRemoveTag(e));
+            itemData.keywords.forEach(kwString => {
+                 const kwCode = kwString.substring(0, 2);
+                 const kwData = SRD_DATA.keywords[kwCode];
+                 if (!kwData) return;
+                 
+                 const li = document.createElement('li');
+                 li.className = 'keyword-item';
 
-            // Curator Tools
-            document.getElementById('generate-string-btn').addEventListener('click', () => this.handleGenerateString());
-        },
+                 const toggle = document.createElement('div');
+                 toggle.className = 'passive-toggle';
+                 if(item.runtime.slottedPassives.includes(kwCode)) {
+                    toggle.classList.add('slotted');
+                 }
 
-        handleTabSwitch(event) {
-            const targetId = event.target.dataset.tab;
-            const parent = event.target.parentElement;
-            
-            parent.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            parent.nextElementSibling.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-                if (content.id === targetId) {
-                    content.classList.add('active');
-                }
-            });
-        },
-
-        handleVaultClick(event) {
-            const target = event.target;
-            if (target.closest('.entity-list-item')) {
-                const id = target.closest('.entity-list-item').dataset.id;
-                if (target.classList.contains('delete-entity-btn')) {
-                    if (confirm(`Are you sure you want to delete ${this.db[id].name}?`)) {
-                        delete this.db[id];
-                        if (this.activeCharacterId === id) {
-                            this.activeCharacterId = Object.keys(this.db)[0] || null;
-                        }
-                        this.save();
-                        this.render();
+                 toggle.addEventListener('click', () => {
+                    const index = item.runtime.slottedPassives.indexOf(kwCode);
+                    if (index > -1) {
+                       item.runtime.slottedPassives.splice(index, 1);
+                    } else {
+                       if (slottedGearPassives.length < entity.parsed.maxGearPassives) {
+                           item.runtime.slottedPassives.push(kwCode);
+                       }
                     }
-                } else {
-                    this.activeCharacterId = id;
-                    localStorage.setItem('activeCharacterId', id);
+                    this.saveState();
+                    this.renderInventory();
+                 });
+                 
+                 const name = document.createElement('span');
+                 name.innerHTML = `<span class="color-code-${kwData.color}">${kwData.name}</span>`;
+                 
+                 li.appendChild(toggle);
+                 li.appendChild(name);
+                 kwList.appendChild(li);
+            });
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.className = 'remove-btn';
+            removeBtn.onclick = () => {
+                entity.runtime.inventory = entity.runtime.inventory.filter(i => i.id !== item.id);
+                this.saveState();
+                this.renderInventory();
+            };
+
+            card.appendChild(header);
+            card.appendChild(kwList);
+            card.appendChild(removeBtn);
+            list.appendChild(card);
+        });
+    },
+
+    renderTags: function(entity = this.getActiveEntity()) {
+        if(!entity) return;
+        
+        const renderTagGroup = (type) => {
+            const list = this.dom.tags[`${type.slice(0, -1)}List`];
+            const countSpan = this.dom.tags[`${type.slice(0, -1)}Count`];
+            const tagData = entity.runtime.tags[type];
+            
+            list.innerHTML = '';
+            let totalTags = 0;
+            tagData.forEach(tag => {
+                totalTags += tag.quantity;
+                
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag';
+                const tagInfo = SRD_DATA.tags[type].find(t => t.name === tag.name);
+                tagEl.innerHTML = `
+                    <span class="color-code-${tagInfo.color}">${tag.name}</span>
+                    <span>(x${tag.quantity})</span>
+                    <button class="small-btn remove-btn">-</button>
+                `;
+                tagEl.querySelector('.remove-btn').addEventListener('click', () => {
+                    tag.quantity--;
+                    if(tag.quantity <= 0) {
+                        entity.runtime.tags[type] = tagData.filter(t => t.name !== tag.name);
+                    }
+                    this.saveState();
+                    this.renderTags();
+                });
+                
+                list.appendChild(tagEl);
+            });
+            countSpan.textContent = totalTags;
+        };
+        
+        renderTagGroup('boosts');
+        renderTagGroup('statuses');
+    },
+
+    renderEntitySelector: function() {
+        this.dom.entitySelector.innerHTML = '';
+        Object.values(this.state.entities).forEach(entity => {
+            const option = document.createElement('option');
+            option.value = entity.id;
+            option.textContent = entity.name;
+            if (entity.id === this.state.activeEntityId) {
+                option.selected = true;
+            }
+            this.dom.entitySelector.appendChild(option);
+        });
+    },
+
+    renderVault: function() {
+        this.dom.codexVaultList.innerHTML = '';
+        Object.values(this.state.entities).forEach(entity => {
+            const li = document.createElement('li');
+            li.textContent = entity.name;
+            li.dataset.id = entity.id;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.className = 'remove-btn';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete ${entity.name}?`)) {
+                    delete this.state.entities[entity.id];
+                    if (this.state.activeEntityId === entity.id) {
+                        this.state.activeEntityId = Object.keys(this.state.entities)[0] || null;
+                    }
+                    this.saveState();
                     this.render();
                 }
-            }
-        },
-        
-        handleNameChange(event) {
-            if (!this.activeCharacterId) return;
-            this.db[this.activeCharacterId].name = event.target.value;
-            this.save();
-            this.renderVault(); // Only need to re-render the list
-        },
-
-        handleKarmaChange(amount) {
-            if (!this.activeCharacterId) return;
-            const currentKarma = this.db[this.activeCharacterId].runtime.karma;
-            const newKarma = Math.max(0, currentKarma + amount);
-            this.updateRuntime('karma', newKarma);
-        },
-        
-        handlePipClick(event, type) {
-            if (event.target.classList.contains('pip')) {
-                const value = parseInt(event.target.dataset.value, 10);
-                this.updateRuntime(type, value);
-            }
-        },
-        handleCurrentValueChange(event, type) {
-            const max = parseInt(document.getElementById(`${type}-max`).textContent, 10);
-            let value = parseInt(event.target.value, 10);
-            if (isNaN(value)) value = 0;
-            value = Math.max(0, Math.min(max, value));
-            this.updateRuntime(type, value);
-        },
-
-        handleAddKeyword() {
-            const code = document.getElementById('keyword-select').value;
-            let parsed = CodexEngine.parse(this.db[this.activeCharacterId].blueprint);
-            parsed.keywords.push({ isSlotted: false, code: code, choice: null });
-            this.updateBlueprint(CodexEngine.stringify(parsed));
-        },
-
-        handleRemoveKeyword() {
-            if (!confirm('Are you sure you want to remove the last keyword? This cannot be undone.')) return;
-            let parsed = CodexEngine.parse(this.db[this.activeCharacterId].blueprint);
-            if (parsed.keywords.length > 1) { // Can't remove seed
-                parsed.keywords.pop();
-                this.updateBlueprint(CodexEngine.stringify(parsed));
-            } else {
-                alert('Cannot remove the Seed keyword.');
-            }
-        },
-        
-        handleKeywordChange(event) {
-            const target = event.target;
-            const index = parseInt(target.dataset.index, 10);
-            let parsed = CodexEngine.parse(this.db[this.activeCharacterId].blueprint);
-
-            if (target.classList.contains('keyword-slot-toggle')) {
-                parsed.keywords[index].isSlotted = target.checked;
-            } else if (target.classList.contains('keyword-choice')) {
-                parsed.keywords[index].choice = target.value;
-            }
-
-            this.updateBlueprint(CodexEngine.stringify(parsed));
-        },
-        
-        handleStatProgChange(event) {
-            const index = parseInt(event.target.dataset.index, 10);
-            const statKey = event.target.value;
-            let parsed = CodexEngine.parse(this.db[this.activeCharacterId].blueprint);
+            };
+            li.appendChild(deleteBtn);
             
-            parsed.statProgression[index] = statKey;
-            // Trim trailing empty values
-            while(parsed.statProgression.length > 0 && !parsed.statProgression[parsed.statProgression.length-1]) {
-                parsed.statProgression.pop();
+            li.addEventListener('click', () => {
+                this.state.activeEntityId = entity.id;
+                this.saveState();
+                this.render();
+            });
+
+            this.dom.codexVaultList.appendChild(li);
+        });
+    },
+    
+// #################################################################
+// ### PHASE 4: QOL & CURATOR'S TOOLS                          ###
+// #################################################################
+
+    rollDice: function(isEV) {
+        let chainTotal = 0;
+        let main, lucky;
+        let rolls = 0;
+
+        const animateRoll = (dieElement) => {
+            let count = 0;
+            const interval = setInterval(() => {
+                dieElement.textContent = Math.ceil(Math.random() * 10);
+                count++;
+                if (count > 10) {
+                    clearInterval(interval);
+                    dieElement.textContent = dieElement.dataset.finalValue;
+                }
+            }, 50);
+        };
+        
+        const performRoll = () => {
+            main = Math.ceil(Math.random() * 10);
+            lucky = Math.ceil(Math.random() * 10);
+            rolls++;
+            if (main === lucky && rolls < 10) { // Safety break for infinite loops
+                chainTotal += main + lucky;
+                setTimeout(performRoll, 100); // Small delay for chained rolls
+            } else {
+                finalizeRoll();
             }
+        };
 
-            this.updateBlueprint(CodexEngine.stringify(parsed));
-        },
+        const finalizeRoll = () => {
+            this.dom.diceDisplay.main.dataset.finalValue = main;
+            this.dom.diceDisplay.lucky.dataset.finalValue = lucky;
+            animateRoll(this.dom.diceDisplay.main);
+            animateRoll(this.dom.diceDisplay.lucky);
 
-        handleAddTag(event, type) {
-            event.preventDefault();
-            const input = document.getElementById(`add-${type.slice(0,-1)}-input`);
-            const tagName = input.value.trim();
-            if (tagName) {
-                const currentTags = this.db[this.activeCharacterId].runtime[type];
-                if (currentTags.length < 10) {
-                    currentTags.push(tagName);
-                    this.updateRuntime(type, currentTags);
-                    input.value = '';
-                } else {
-                    alert(`Maximum of 10 ${type} reached.`);
+            const adv = this.dom.diceControls.adv.checked;
+            const dis = this.dom.diceControls.dis.checked;
+            
+            let baseResult = main;
+            if (adv && !dis) baseResult = Math.max(main, lucky);
+            if (dis && !adv) baseResult = Math.min(main, lucky);
+
+            let sr = chainTotal + baseResult;
+            let resultText = `SR: ${sr}`;
+            
+            if (chainTotal > 0 || (main === lucky)) resultText += " - CRITICAL!";
+            if (sr >= 31) resultText += " - SUPER CRITICAL!";
+
+            if (isEV) {
+                const entity = this.getActiveEntity();
+                if (entity) {
+                    const statChoice = prompt(`EV/ER Roll. Choose a stat to add (M, A, B, W, E, T, P, I, F):`, 'B').toUpperCase();
+                    if (SRD_DATA.stats.includes(statChoice)) {
+                        const statValue = entity.parsed.stats[statChoice];
+                        const level = entity.parsed.level;
+                        const total = sr + level + statValue;
+                        resultText += ` (EV/ER: ${sr} + ${level} Lvl + ${statValue} ${statChoice} = ${total})`;
+                    }
                 }
             }
-        },
+            this.dom.diceDisplay.resultText.textContent = resultText;
+        };
 
-        handleRemoveTag(event) {
-            if (event.target.classList.contains('remove-tag-btn')) {
-                const type = event.target.dataset.type;
-                const index = parseInt(event.target.dataset.index, 10);
-                const currentTags = this.db[this.activeCharacterId].runtime[type];
-                currentTags.splice(index, 1);
-                this.updateRuntime(type, currentTags);
-            }
-        },
-
-        handleBlueprintImport() {
-            const newString = document.getElementById('live-blueprint-string').value;
-            const parsed = CodexEngine.parse(newString);
-            if (parsed.error || parsed.type !== 'Character') {
-                alert('Invalid Character Blueprint String.');
-                // Revert to original
-                document.getElementById('live-blueprint-string').value = this.db[this.activeCharacterId].blueprint;
-            } else {
-                this.updateBlueprint(newString);
-            }
-        },
+        performRoll();
+    },
+    
+    generateRandomString: function() {
+        const type = this.dom.genControls.type.value;
+        const level = parseInt(this.dom.genControls.level.value);
+        let blueprint = '';
         
-        handleGenerateString() {
-            const type = document.getElementById('gen-type').value;
-            const level = parseInt(document.getElementById('gen-level').value, 10);
-            const randomString = CodexEngine.generateRandomString(type, level);
-            document.getElementById('generated-string-output').value = randomString;
+        const rand = (max) => Math.floor(Math.random() * max);
+        const randKw = () => String(rand(100)).padStart(2, '0');
+
+        if (type === 'C') {
+            let profile = '';
+            for(let i = 0; i < 5; i++) profile += rand(10);
+            
+            let keywords = [randKw()]; // Seed
+            while(keywords.length < 4) keywords.push(randKw()); // Awakening
+            
+            let targetKwCount = 4;
+            if (level >= 2) targetKwCount = 6;
+            if (level >= 3) targetKwCount = 8;
+            if (level >= 4) targetKwCount = 10;
+            if (level >= 5) targetKwCount = 12;
+            if (level >= 6) targetKwCount = 14;
+            if (level >= 7) targetKwCount = 16;
+            if (level >= 8) targetKwCount = 18;
+            if (level >= 9) targetKwCount = 20;
+
+            while(keywords.length < targetKwCount) keywords.push(randKw());
+            
+            let statAllocs = [];
+            SRD_DATA.statProgression.forEach(prog => {
+                if (level >= prog.level) {
+                   for (let i = 0; i < prog.points; i++) {
+                       statAllocs.push(SRD_DATA.stats[rand(9)]);
+                   }
+                }
+            });
+            
+            const parsed = { profile, keywords, statAllocs, flawPackage: null };
+            blueprint = CodexEngine.stringifyCharacter(parsed);
+
+        } else if (type === 'I') {
+            let itemLevel = level > 4 ? rand(5) + 1 : level;
+            if (itemLevel === 0) itemLevel = 1;
+            blueprint = `I:L${itemLevel}-`;
+            let kws = [];
+            for (let i = 0; i < itemLevel; i++) kws.push(randKw());
+            blueprint += kws.join('.');
+        } else {
+             blueprint = "Generator for this type not yet implemented.";
         }
+        
+        this.dom.genControls.output.value = blueprint;
+    }
+};
 
-    };
+// Start the application
+App.init();
 
-    // Start the application once the DOM is ready
-    document.addEventListener('DOMContentLoaded', () => App.init());
-
-    </script>
+});
+</script>
 </body>
 </html>
