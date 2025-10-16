@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Companion v2.1</title>
+    <title>Resonance Companion</title>
     <style>
-        /* FONT IMPORT */
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
-
-        /* CSS VARIABLES */
         :root {
             --null-color: #dea193;
             --silver-color: #a7a9ac;
@@ -21,1614 +17,1998 @@
             --blue-color: #88bfe8;
             --purple-color: #957fa3;
             --bg-dark: #2a2a2e;
-            --bg-medium: #333337;
-            --font-header: 'Oswald', sans-serif;
-            --font-body: 'Calibri', sans-serif;
-            --border-color: #555;
-            --border-radius: 3px;
+            --bg-card: #333338;
+            --border-color: #4f4f55;
+            --font-main: Calibri, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-size-sm: 10pt;
+            --font-size-md: 12pt;
         }
 
-        /* GENERAL STYLES */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        html {
-            font-size: 12pt;
-        }
-
-        body {
+        html, body {
             background-color: var(--bg-dark);
             color: var(--white-color);
-            font-family: var(--font-body);
+            font-family: var(--font-main);
+            font-size: var(--font-size-sm);
             line-height: 1.5;
-            padding: 0.5rem;
-            overscroll-behavior: contain;
         }
 
-        h1, h2, h3, h4, h5, h6, summary {
-            font-family: var(--font-header);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--null-color);
-        }
-
-        button, input, select, textarea {
-            font-family: var(--font-body);
-            background-color: var(--bg-medium);
-            color: var(--white-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 0.25rem 0.5rem;
-            font-size: 10pt;
-        }
-
-        button {
-            cursor: pointer;
-            background-color: var(--black-color);
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--border-color);
-        }
-        
-        button.small-btn {
-            padding: 0.1rem 0.4rem;
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="number"], textarea, select {
-            width: 100%;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 50px;
-            font-family: monospace;
-            color: var(--blue-color);
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid var(--border-color);
-            margin: 0.5rem 0;
-        }
-
-        .card {
-            background-color: var(--bg-medium);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .card-header {
-            font-family: var(--font-header);
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.25rem;
-        }
-
-        .collapsible > summary {
-            cursor: pointer;
-            padding: 0.5rem;
-            background-color: var(--black-color);
-            border-radius: var(--border-radius);
-            margin: -0.75rem -0.75rem 0.5rem -0.75rem;
-        }
-        
-        .collapsible[open] > summary {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* LAYOUT */
         #app-container {
-            max-width: 768px;
+            max-width: 450px;
             margin: 0 auto;
-        }
-
-        .pane {
-            margin-bottom: 1rem;
-        }
-
-        /* GLOBAL PANE */
-        #global-pane {
-            background-color: var(--null-color);
-            color: var(--bg-dark);
-            padding: 0.5rem;
-            border-radius: var(--border-radius);
-        }
-        #global-pane h2 {
-            color: var(--bg-dark);
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        #global-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.5rem;
-        }
-        #global-controls button {
-            background-color: var(--bg-dark);
-            color: var(--null-color);
-            border-color: var(--bg-dark);
-        }
-        #global-controls button:hover {
-            background-color: #5c4a46;
-        }
-
-        /* BUILD PANE */
-        #character-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        #character-header input {
-            font-family: var(--font-header);
-            font-size: 1.5rem;
-            background: transparent;
-            border: none;
-            border-bottom: 1px dashed var(--border-color);
-            padding: 0;
-            color: var(--white-color);
-        }
-        #character-level {
-            font-family: var(--font-header);
-            font-size: 1.5rem;
-            color: var(--blue-color);
-        }
-
-        #karma-tracker {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        #karma-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--null-color);
-            min-width: 30px;
-            text-align: center;
-        }
-
-        #motivational-profile .profile-grid {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 0.25rem 0.5rem;
-            font-size: 9pt;
-        }
-        #motivational-profile .profile-grid div:nth-child(odd) {
-            font-weight: bold;
-            text-align: right;
-        }
-        .profile-point-primary { color: var(--green-color); }
-        .profile-point-secondary { color: var(--orange-color); }
-        .profile-point-tertiary { color: var(--purple-color); }
-        .profile-point-conflict-primary { color: var(--red-color); }
-        .profile-point-conflict-secondary { color: var(--yellow-color); }
-
-        #stats-resources-card .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        #stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            text-align: center;
-        }
-        .stat-box {
-            background-color: var(--black-color);
-            padding: 0.25rem;
-            border-radius: var(--border-radius);
-        }
-        .stat-box .stat-name {
-            font-family: var(--font-header);
-            font-size: 8pt;
-            color: var(--silver-color);
-        }
-        .stat-box .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        #resistance-display {
-            text-align: center;
-            background-color: var(--black-color);
-            padding: 0.5rem;
-            border-radius: var(--border-radius);
-        }
-        #resistance-display .res-label {
-            font-family: var(--font-header);
-            color: var(--silver-color);
-        }
-        #resistance-display .res-value {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .resource-clock {
-            margin-bottom: 0.5rem;
-        }
-        .resource-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 0.25rem;
-        }
-        .resource-header h4 {
-            font-size: 1rem;
-        }
-        .resource-header .value-display {
-            font-size: 10pt;
-        }
-        .resource-header .value-display .current {
-            font-weight: bold;
-            font-size: 12pt;
-        }
-        .resource-pips {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 2px;
-            height: 20px;
-        }
-        .pip {
-            background-color: var(--black-color);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #hp-pips .pip.filled { background-color: var(--green-color); }
-        #sp-pips .pip.filled { background-color: var(--orange-color); }
-        #ep-pips .pip.filled { background-color: var(--purple-color); }
-
-        #keywords-progression-card .add-keyword-form {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        #keywords-progression-card .add-keyword-form select {
-            flex-grow: 1;
-        }
-        #keywords-progression-card .remove-keyword-btn {
-            background-color: var(--red-color);
-        }
-
-        #keyword-list {
-            margin-bottom: 1rem;
-        }
-        .keyword-entry {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem;
-            border-bottom: 1px solid var(--black-color);
-            font-size: 10pt;
-        }
-        .keyword-entry:last-child {
-            border-bottom: none;
-        }
-        .keyword-name {
-            flex-grow: 1;
-        }
-        .keyword-name.flaw {
-            color: var(--red-color);
-        }
-        .keyword-name.compensation {
-            color: var(--green-color);
-            font-style: italic;
-        }
-        .keyword-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .keyword-toggle input[type="checkbox"] {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            cursor: pointer;
-            position: relative;
-        }
-        .keyword-toggle input[type="checkbox"]:checked {
-            background-color: var(--blue-color);
-            border-color: var(--blue-color);
-        }
-        .keyword-toggle input[type="checkbox"]:checked::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--bg-dark);
-        }
-
-        #passive-slots-display {
-            text-align: right;
-            font-size: 9pt;
-            color: var(--silver-color);
-            margin-top: 0.5rem;
-        }
-
-        #stat-progression-list .milestone {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.25rem;
-            font-size: 10pt;
-        }
-        #stat-progression-list .milestone select {
-            width: 150px;
-        }
-        #stat-progression-list .milestone select:disabled {
-            opacity: 0.5;
-        }
-
-        /* PLAY PANE */
-        #play-pane-tabs {
-            display: flex;
-            margin-bottom: 0.5rem;
-        }
-        .play-tab-btn {
-            flex-grow: 1;
-            border-radius: 0;
-            border-bottom: 2px solid transparent;
-        }
-        .play-tab-btn.active {
-            background-color: var(--bg-medium);
-            border-bottom-color: var(--null-color);
-        }
-        .play-tab-content {
-            display: none;
-        }
-        .play-tab-content.active {
-            display: block;
-        }
-
-        #tags-tab .tag-section {
-            margin-bottom: 1rem;
-        }
-        .tag-list {
+            padding: 8px;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 12px;
         }
-        .tag-entry {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--black-color);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--border-radius);
+        
+        @media (min-width: 768px) {
+            #app-container { max-width: 600px; }
         }
-        .tag-name {
-            flex-grow: 1;
-        }
-        .tag-quantity {
-            font-weight: bold;
-            min-width: 20px;
-            text-align: center;
-        }
-        .add-tag-form {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+        
+        @media (min-width: 1024px) {
+            #app-container { max-width: 800px; }
         }
 
-        .item-card, .companion-card, .faction-card {
+        /* --- Global Elements --- */
+        .card, details {
+            background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            background-color: var(--black-color);
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            border-radius: var(--border-radius);
-        }
-        .card-controls {
-            float: right;
-        }
-        .card-controls button {
-            background-color: var(--red-color);
-            padding: 0 0.3rem;
-        }
-        .item-card-header, .companion-card-header, .faction-card-header {
+            border-radius: 4px;
+            padding: 8px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .item-card-header input, .companion-card-header input, .faction-card-header input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px dashed var(--border-color);
-            font-family: var(--font-header);
-            font-size: 1rem;
-            color: var(--white-color);
-        }
-        #gear-passive-slots-display {
-            text-align: right;
-            font-size: 9pt;
-            color: var(--silver-color);
-            margin-top: 0.5rem;
-        }
-        .companion-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            font-size: 9pt;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        .faction-trust {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        /* CODEX VAULT */
-        #codex-vault-list .codex-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background-color: var(--black-color);
-            margin-bottom: 0.25rem;
-            border-radius: var(--border-radius);
-        }
-        .codex-entry-name {
+        summary {
+            font-weight: bold;
             cursor: pointer;
+            list-style: none;
+            color: var(--blue-color);
         }
-        .codex-entry-name:hover {
-            color: var(--null-color);
+        summary::-webkit-details-marker { display: none; }
+
+        button, select, input[type="text"] {
+            background-color: var(--black-color);
+            color: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 4px 6px;
+            font-family: var(--font-main);
+            font-size: var(--font-size-sm);
+            vertical-align: middle;
         }
-        .codex-entry-controls button {
-            margin-left: 0.5rem;
-        }
-        .codex-entry-controls .delete-btn {
-            background-color: var(--red-color);
+        button:hover { background-color: #555; }
+        button { cursor: pointer; }
+        input:focus, select:focus {
+            outline: 1px solid var(--blue-color);
         }
 
-        /* DICE ROLLER MODAL */
-        #dice-roller-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .row-start { justify-content: flex-start; }
+        
+        .hidden { display: none !important; }
+
+        /* --- Global Header --- */
+        #global-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        #entity-selector { width: 100%; grid-column: 1 / -1; }
+
+        /* --- Dice Roller --- */
+        #dice-roller-card { align-items: center; }
+        #dice-roller-output {
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-        }
-        #dice-roller-content {
-            background-color: var(--bg-dark);
-            border: 2px solid var(--null-color);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-        #dice-result-display {
-            font-size: 4rem;
+            gap: 10px;
+            font-size: var(--font-size-md);
             font-weight: bold;
-            margin-bottom: 1rem;
-            min-height: 5rem;
+            min-height: 40px;
         }
-        #dice-roller-content .crit-indicator {
-            color: var(--yellow-color);
-            font-family: var(--font-header);
+        #dice-roller-main, #dice-roller-lucky {
+            padding: 5px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
         }
-        #dice-roller-content .super-crit-indicator {
-            color: var(--red-color);
-            font-family: var(--font-header);
+        #dice-roller-total { color: var(--blue-color); }
+        #dice-roller-crit-indicator { color: var(--yellow-color); font-size: var(--font-size-sm); }
+        .dice-roller-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        #dice-roller-stat-selector { min-width: 80px; }
+
+        /* --- Build Pane --- */
+        #character-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
         }
-        #dice-roller-ev-er {
-            margin-top: 1rem;
-            font-size: 1.5rem;
+        #character-name-input {
+            background: none;
+            border: none;
+            border-bottom: 1px dashed var(--silver-color);
+            border-radius: 0;
+            font-size: var(--font-size-md);
+            font-weight: bold;
+            width: 70%;
         }
-        #dice-roller-controls {
+        #character-level-display {
+            font-size: var(--font-size-md);
+            color: var(--null-color);
+        }
+
+        #karma-tracker .value {
+            font-weight: bold;
+            color: var(--null-color);
+            min-width: 20px;
+            text-align: center;
+        }
+        #karma-tracker button { width: 25px; height: 25px; }
+
+        #motivation-profile-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            grid-template-columns: auto 1fr;
+            gap: 4px 8px;
+            font-size: var(--font-size-sm);
         }
-        #dice-roller-controls select {
+        .motivation-label { font-weight: bold; text-align: right; }
+        .motivation-value { padding-left: 8px; border-left: 2px solid; }
+
+        #stats-resources-card .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .stat-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+        }
+        .stat-display .name { font-weight: bold; }
+        #resistance-display {
+            text-align: center;
+            font-weight: bold;
+            font-size: var(--font-size-md);
             grid-column: 1 / -1;
+        }
+        #resistance-display .value { color: var(--blue-color); }
+        .resource-clock {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            grid-column: 1 / -1;
+        }
+        .resource-clock .header { display: flex; justify-content: space-between; }
+        .resource-clock .pips { display: flex; gap: 2px; }
+        .resource-clock .pip {
+            flex-grow: 1;
+            height: 12px;
+            background-color: var(--black-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        #hp-clock .pip.filled { background-color: var(--green-color); }
+        #sp-clock .pip.filled { background-color: var(--orange-color); }
+        #ep-clock .pip.filled { background-color: var(--purple-color); }
+        
+        #keyword-progression-card .add-keyword-form {
+            display: flex;
+            gap: 8px;
+        }
+        #add-keyword-selector { flex-grow: 1; }
+        
+        #innate-keywords-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .keyword-item {
+            display: grid;
+            grid-template-columns: 24px 1fr auto;
+            align-items: center;
+            gap: 8px;
+        }
+        .keyword-toggle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--silver-color);
+            cursor: pointer;
+            position: relative;
+        }
+        .keyword-toggle.slotted {
+            background-color: var(--null-color);
+            border-color: var(--null-color);
+        }
+        .keyword-toggle.slotted::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 8px; height: 8px;
+            background: var(--bg-card);
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        
+        #live-blueprint-textarea {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        #stat-progression-list {
+            list-style: none;
+        }
+
+        /* --- Play Pane --- */
+        #play-pane-tabs { display: flex; }
+        .tab-button {
+            flex-grow: 1;
+            border-radius: 3px 3px 0 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tab-button.active {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--bg-card);
+            color: var(--blue-color);
+        }
+        .tab-content {
+            border-top: none;
+            border-radius: 0 0 3px 3px;
+        }
+        
+        .tag-section { border-top: 1px solid var(--border-color); padding-top: 8px; }
+        .tag-section:first-child { border-top: none; padding-top: 0; }
+        .tag-list { list-style: none; }
+        .tag-item { display: flex; align-items: center; justify-content: space-between; }
+        .tag-item .name { flex-grow: 1; }
+        .tag-item .quantity { min-width: 20px; text-align: center; }
+        .tag-item button { width: 25px; height: 25px; }
+
+        .play-pane-card-list { display: flex; flex-direction: column; gap: 8px; }
+        .inventory-item-card, .companion-card, .faction-card {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            border-radius: 3px;
+            background: var(--bg-dark);
+        }
+        .item-header { display: flex; justify-content: space-between; }
+        .item-name-input { width: 70%; background: none; border: none; font-weight: bold; }
+        .item-keywords-list {
+            list-style: none;
+            padding-top: 4px;
+            margin-top: 4px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .companion-card .header { font-weight: bold; }
+        .companion-card .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            font-size: var(--font-size-sm);
         }
     </style>
 </head>
 <body>
-
     <div id="app-container">
-        <!-- GLOBAL PANE -->
-        <div id="global-pane" class="pane">
-            <h2>RESONANCE COMPANION</h2>
-            <div id="global-controls">
-                <button id="add-new-btn">Add New Character</button>
-                <button id="import-blueprint-btn">Import Blueprint</button>
-                <button id="dice-roller-btn">Dice Roller</button>
-                <button id="random-gen-btn">Random Generator</button>
-            </div>
+        <!-- GLOBAL HEADER -->
+        <div id="global-header" class="card">
+            <select id="entity-selector"></select>
+            <button id="add-entity-btn">New</button>
+            <button id="import-entity-btn">Import</button>
+            <button id="delete-entity-btn">Delete</button>
+            <button id="random-entity-btn">Random</button>
         </div>
 
-        <!-- BUILD PANE -->
-        <div id="build-pane" class="pane">
-            <div id="character-header">
-                <input type="text" id="character-name-input" placeholder="Character Name">
-                <div id="character-level">LVL 0</div>
+        <!-- DICE ROLLER -->
+        <details id="dice-roller-card" class="card">
+            <summary>Dice Roller</summary>
+            <div id="dice-roller-output">
+                <span>SR:</span>
+                <span id="dice-roller-main">--</span>
+                <span>+</span>
+                <span id="dice-roller-lucky">--</span>
+                <span>=</span>
+                <span id="dice-roller-total">--</span>
             </div>
-            <div id="karma-tracker">
-                <h3>KARMA</h3>
-                <button id="karma-minus-btn" class="small-btn">-</button>
-                <span id="karma-value">0</span>
-                <button id="karma-plus-btn" class="small-btn">+</button>
+            <div id="dice-roller-crit-indicator">&nbsp;</div>
+            <div class="dice-roller-controls">
+                <button id="roll-sr-btn">Roll SR</button>
+                <button id="roll-ev-btn">Roll EV/ER</button>
+                <select id="dice-roller-stat-selector"></select>
+            </div>
+        </details>
+
+        <!-- BUILD PANE -->
+        <div id="build-pane">
+            <div class="card">
+                <div id="character-header">
+                    <input type="text" id="character-name-input" placeholder="Character Name">
+                    <span id="character-level-display">Lvl --</span>
+                </div>
+                <div class="row" id="karma-tracker">
+                    <span>Karma</span>
+                    <div class="row row-start">
+                        <button id="karma-dec-btn">-</button>
+                        <span class="value" id="karma-value">0</span>
+                        <button id="karma-inc-btn">+</button>
+                    </div>
+                </div>
             </div>
 
-            <div id="motivational-profile" class="card">
-                <details class="collapsible">
-                    <summary>Motivational Profile</summary>
-                    <div class="profile-grid">
-                        <div class="profile-point-primary">Goal</div><div id="profile-goal">...</div>
-                        <div class="profile-point-secondary">Method</div><div id="profile-method">...</div>
-                        <div class="profile-point-tertiary">Purpose</div><div id="profile-purpose">...</div>
-                        <div class="profile-point-conflict-primary">External</div><div id="profile-external">...</div>
-                        <div class="profile-point-conflict-secondary">Internal</div><div id="profile-internal">...</div>
-                    </div>
-                </details>
-            </div>
+            <details class="card">
+                <summary>Motivational Profile</summary>
+                <div id="motivation-profile-grid">
+                    <div class="motivation-label">Goal</div><div class="motivation-value" id="profile-goal">--</div>
+                    <div class="motivation-label">Method</div><div class="motivation-value" id="profile-method">--</div>
+                    <div class="motivation-label">Purpose</div><div class="motivation-value" id="profile-purpose">--</div>
+                    <div class="motivation-label">External</div><div class="motivation-value" id="profile-external">--</div>
+                    <div class="motivation-label">Internal</div><div class="motivation-value" id="profile-internal">--</div>
+                </div>
+            </details>
 
             <div id="stats-resources-card" class="card">
-                <div class="grid-container">
-                    <div>
-                        <div id="stat-grid">
-                            <div class="stat-box"><div class="stat-name">MOV</div><div class="stat-value" id="stat-M">0</div></div>
-                            <div class="stat-box"><div class="stat-name">ALA</div><div class="stat-value" id="stat-A">0</div></div>
-                            <div class="stat-box"><div class="stat-name">BRN</div><div class="stat-value" id="stat-B">0</div></div>
-                            <div class="stat-box"><div class="stat-name">WIT</div><div class="stat-value" id="stat-W">0</div></div>
-                            <div class="stat-box"><div class="stat-name">EXP</div><div class="stat-value" id="stat-E">0</div></div>
-                            <div class="stat-box"><div class="stat-name">TEC</div><div class="stat-value" id="stat-T">0</div></div>
-                            <div class="stat-box"><div class="stat-name">POW</div><div class="stat-value" id="stat-P">0</div></div>
-                            <div class="stat-box"><div class="stat-name">INF</div><div class="stat-value" id="stat-I">0</div></div>
-                            <div class="stat-box"><div class="stat-name">FOR</div><div class="stat-value" id="stat-F">0</div></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div id="resistance-display">
-                            <div class="res-label">RESISTANCE</div>
-                            <div class="res-value" id="resistance-value">0</div>
-                        </div>
-                        <hr>
-                        <div class="resource-clock">
-                            <div class="resource-header">
-                                <h4 style="color: var(--green-color);">HP</h4>
-                                <div class="value-display"><span class="current" id="hp-current">0</span> / <span id="hp-max">0</span></div>
-                            </div>
-                            <div class="resource-pips" id="hp-pips"></div>
-                        </div>
-                        <div class="resource-clock">
-                            <div class="resource-header">
-                                <h4 style="color: var(--orange-color);">SP</h4>
-                                <div class="value-display"><span class="current" id="sp-current">0</span> / <span id="sp-max">0</span></div>
-                            </div>
-                            <div class="resource-pips" id="sp-pips"></div>
-                        </div>
-                        <div class="resource-clock">
-                            <div class="resource-header">
-                                <h4 style="color: var(--purple-color);">EP</h4>
-                                <div class="value-display"><span class="current" id="ep-current">0</span> / <span id="ep-max">0</span></div>
-                            </div>
-                            <div class="resource-pips" id="ep-pips"></div>
-                        </div>
-                    </div>
+                <div class="grid">
+                    <div class="stat-display"><span class="name">M</span><span class="value" id="stat-m">0</span></div>
+                    <div class="stat-display"><span class="name">A</span><span class="value" id="stat-a">0</span></div>
+                    <div class="stat-display"><span class="name">B</span><span class="value" id="stat-b">0</span></div>
+                    <div class="stat-display"><span class="name">W</span><span class="value" id="stat-w">0</span></div>
+                    <div class="stat-display"><span class="name">E</span><span class="value" id="stat-e">0</span></div>
+                    <div class="stat-display"><span class="name">T</span><span class="value" id="stat-t">0</span></div>
+                    <div class="stat-display"><span class="name">P</span><span class="value" id="stat-p">0</span></div>
+                    <div class="stat-display"><span class="name">I</span><span class="value" id="stat-i">0</span></div>
+                    <div class="stat-display"><span class="name">F</span><span class="value" id="stat-f">0</span></div>
+                    <div id="resistance-display">Resistance: <span class="value" id="resistance-value">0</span></div>
+                </div>
+                <div class="resource-clock" id="hp-clock">
+                    <div class="header"><span>HP</span><span id="hp-display">0/0</span></div>
+                    <div class="pips"></div>
+                </div>
+                <div class="resource-clock" id="sp-clock">
+                    <div class="header"><span>SP</span><span id="sp-display">0/0</span></div>
+                    <div class="pips"></div>
+                </div>
+                <div class="resource-clock" id="ep-clock">
+                    <div class="header"><span>EP</span><span id="ep-display">0/0</span></div>
+                    <div class="pips"></div>
                 </div>
             </div>
 
-            <div id="keywords-progression-card" class="card">
-                <h3 class="card-header">Keywords & Progression</h3>
+            <details id="keyword-progression-card" class="card" open>
+                <summary>Keywords & Progression</summary>
                 <div class="add-keyword-form">
-                    <select id="add-keyword-select"></select>
-                    <button id="add-keyword-btn">Add</button>
-                    <button id="remove-keyword-btn">Remove Last</button>
+                    <select id="add-keyword-selector"></select>
+                    <button id="add-keyword-btn">+</button>
+                    <button id="remove-keyword-btn">-</button>
                 </div>
-                <div id="keyword-list"></div>
-                <div id="passive-slots-display">Innate Passives: <span id="innate-passives-slotted">0</span> / <span id="innate-passives-max">0</span></div>
-                <hr>
-                <h4>Stat Progression</h4>
-                <div id="stat-progression-list">
-                    <div class="milestone" data-level="2"><span>Level 2: +1 Stat</span><select data-level="2" disabled><option>---</option></select></div>
-                    <div class="milestone" data-level="3"><span>Level 3: +1 Stat</span><select data-level="3" disabled><option>---</option></select></div>
-                    <div class="milestone" data-level="4"><span>Level 4: +1 Stat</span><select data-level="4" disabled><option>---</option></select></div>
-                    <div class="milestone" data-level="5"><span>Level 5: +1 Stat</span><select data-level="5" disabled><option>---</option></select></div>
-                    <div class="milestone" data-level="6"><span>Level 6: +2 Stats</span><div><select data-level="6" data-index="0" disabled><option>---</option></select><select data-level="6" data-index="1" disabled><option>---</option></select></div></div>
-                    <div class="milestone" data-level="7"><span>Level 7: +2 Stats</span><div><select data-level="7" data-index="0" disabled><option>---</option></select><select data-level="7" data-index="1" disabled><option>---</option></select></div></div>
-                    <div class="milestone" data-level="8"><span>Level 8: +2 Stats</span><div><select data-level="8" data-index="0" disabled><option>---</option></select><select data-level="8" data-index="1" disabled><option>---</option></select></div></div>
-                    <div class="milestone" data-level="9"><span>Level 9: +2 Stats</span><div><select data-level="9" data-index="0" disabled><option>---</option></select><select data-level="9" data-index="1" disabled><option>---</option></select></div></div>
+                <div class="row">
+                    <span>Innate Passives: <span id="innate-passives-count">0/0</span></span>
                 </div>
-            </div>
+                <ul id="innate-keywords-list"></ul>
+                <div>
+                    <strong>Stat Progression:</strong>
+                    <ul id="stat-progression-list"></ul>
+                </div>
+            </details>
 
-            <div id="live-blueprint-card" class="card">
-                 <details class="collapsible">
-                    <summary>Live Blueprint</summary>
-                    <textarea id="live-blueprint-string" spellcheck="false"></textarea>
-                </details>
-            </div>
+            <details class="card">
+                <summary>Live Blueprint</summary>
+                <textarea id="live-blueprint-textarea"></textarea>
+            </details>
         </div>
 
         <!-- PLAY PANE -->
-        <div id="play-pane" class="pane">
+        <div id="play-pane">
             <div id="play-pane-tabs">
-                <button class="play-tab-btn active" data-tab="tags">Tags</button>
-                <button class="play-tab-btn" data-tab="inventory">Inventory</button>
-                <button class="play-tab-btn" data-tab="companions">Companions</button>
-                <button class="play-tab-btn" data-tab="factions">Factions</button>
+                <button class="tab-button active" data-tab="tags">Tags</button>
+                <button class="tab-button" data-tab="inventory">Inventory</button>
+                <button class="tab-button" data-tab="companions">Companions</button>
+                <button class="tab-button" data-tab="factions">Factions</button>
             </div>
-            <div id="play-pane-content">
-                <div id="tags-tab" class="play-tab-content active">
-                    <div class="tag-section">
-                        <h4>Boosts ( <span id="boost-count">0</span> / 10 )</h4>
-                        <div id="boost-tag-list" class="tag-list"></div>
-                        <div class="add-tag-form">
-                            <select id="add-boost-select"></select>
-                            <button id="add-boost-btn">+</button>
+
+            <!-- TAGS TAB -->
+            <div id="tab-content-tags" class="tab-content card">
+                <div id="boost-tags-section" class="tag-section">
+                    <div class="row">
+                        <strong>Boosts (<span id="boost-tag-pool-count">0</span>/10)</strong>
+                        <div class="row row-start">
+                            <select id="add-boost-tag-selector"></select>
+                            <button id="add-boost-tag-btn">+</button>
                         </div>
                     </div>
-                    <hr>
-                    <div class="tag-section">
-                        <h4>Statuses ( <span id="status-count">0</span> / 10 )</h4>
-                        <div id="status-tag-list" class="tag-list"></div>
-                        <div class="add-tag-form">
-                            <select id="add-status-select"></select>
-                            <button id="add-status-btn">+</button>
-                        </div>
-                    </div>
+                    <ul id="boost-tag-list" class="tag-list"></ul>
                 </div>
-                <div id="inventory-tab" class="play-tab-content">
-                    <div id="inventory-list"></div>
+                <div id="status-tags-section" class="tag-section">
+                    <div class="row">
+                        <strong>Statuses (<span id="status-tag-pool-count">0</span>/10)</strong>
+                        <div class="row row-start">
+                            <select id="add-status-tag-selector"></select>
+                            <button id="add-status-tag-btn">+</button>
+                        </div>
+                    </div>
+                    <ul id="status-tag-list" class="tag-list"></ul>
+                </div>
+            </div>
+
+            <!-- INVENTORY TAB -->
+            <div id="tab-content-inventory" class="tab-content card hidden">
+                <div class="row">
+                    <strong>Inventory (Gear Passives: <span id="gear-passives-count">0/0</span>)</strong>
                     <button id="add-inventory-item-btn">Add Item</button>
-                    <div id="gear-passive-slots-display">Gear Passives: <span id="gear-passives-slotted">0</span> / <span id="gear-passives-max">0</span></div>
                 </div>
-                <div id="companions-tab" class="play-tab-content">
-                    <div id="companion-list"></div>
+                <div id="inventory-list" class="play-pane-card-list"></div>
+            </div>
+
+            <!-- COMPANIONS TAB -->
+            <div id="tab-content-companions" class="tab-content card hidden">
+                <div class="row">
+                    <strong>Companions</strong>
                     <button id="add-companion-btn">Add Companion</button>
                 </div>
-                <div id="factions-tab" class="play-tab-content">
-                    <div id="faction-list"></div>
+                <div id="companion-list" class="play-pane-card-list"></div>
+            </div>
+            
+            <!-- FACTIONS TAB -->
+            <div id="tab-content-factions" class="tab-content card hidden">
+                 <div class="row">
+                    <strong>Factions</strong>
                     <button id="add-faction-btn">Add Faction</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- CODEX VAULT -->
-        <div id="codex-vault" class="pane">
-            <details class="collapsible">
-                <summary>Codex Vault</summary>
-                <div id="codex-vault-list"></div>
-            </details>
-        </div>
-    </div>
-
-    <!-- DICE ROLLER MODAL -->
-    <div id="dice-roller-modal" class="hidden">
-        <div id="dice-roller-content">
-            <div id="dice-result-display">--</div>
-            <div id="dice-roller-ev-er">EV/ER: --</div>
-            <div id="dice-roller-controls">
-                <select id="dice-roller-stat-select">
-                    <option value="none">No Stat</option>
-                </select>
-                <button id="roll-dice-btn">Roll SR</button>
-                <button id="close-roller-btn">Close</button>
+                <div id="faction-list" class="play-pane-card-list"></div>
             </div>
         </div>
     </div>
 
-<script>
-// #################################################################
-// ###   Part 1: SRD DATA (System Reference Document)            ###
-// #################################################################
-const SRD_DATA = {
-    stats: {
-        M: "Movement", A: "Alacrity", B: "Brawn",
-        W: "Wit", E: "Expertise", T: "Technique",
-        P: "Power", I: "Influence", F: "Force"
-    },
-    motivations: [
-        "Discovery", "Absolution", "Ambition", "Security", "Legacy",
-        "Innovation", "Purity", "Glory", "Influence", "Faith"
-    ],
-    tags: {
-        boosts: {
-            "Liberate": { color: "null", id: "04" },
-            "Augment": { color: "silver", id: "14" },
-            "Haste": { color: "yellow", id: "24" },
-            "Ward": { color: "green", id: "34" },
-            "Bless": { color: "black", id: "44" },
-            "Charge": { color: "orange", id: "54" },
-            "Cure": { color: "white", id: "64" },
-            "Regen": { color: "red", id: "74" },
-            "Enhance": { color: "blue", id: "84" },
-            "Obscure": { color: "purple", id: "94" }
+    <script>
+        const SRD_DATA = {
+            // Data will be injected here
+        };
+
+        const CodexEngine = {
+            // Engine logic will be injected here
+        };
+
+        const App = {
+            // App logic will be injected here
+        };
+        
+        // This is where the massive data objects and logic will go.
+        // To keep the initial HTML clean, it's all appended below.
+    </script>
+    <script>
+    // SRD DATA OBJECT
+    const srd_data_string = `
+    {
+        "motivations": {
+            "0": "Discovery", "1": "Absolution", "2": "Ambition", "3": "Security", "4": "Legacy",
+            "5": "Innovation", "6": "Purity", "7": "Glory", "8": "Influence", "9": "Faith"
         },
-        statuses: {
-            "Mark": { color: "null", id: "05" },
-            "Impair": { color: "silver", id: "15" },
-            "Slow": { color: "yellow", id: "25" },
-            "Daze": { color: "green", id: "35" },
-            "Curse": { color: "black", id: "45" },
-            "Bind": { color: "orange", id: "55" },
-            "Weaken": { color: "white", id: "65" },
-            "Blight": { color: "red", id: "75" },
-            "Silence": { color: "blue", id: "85" },
-            "Nullify": { color: "purple", id: "95" }
-        }
-    },
-    keywords: {
-        "00": { name: "Restricted", type: "Flaw" }, "01": { name: "Aura", type: "Gift" }, "02": { name: "Specialist", type: "Talent" }, "03": { name: "Alert", type: "Quirk" }, "04": { name: "Liberate", type: "Boost" }, "05": { name: "Mark", type: "Status" }, "06": { name: "Indirect", type: "Form" }, "07": { name: "Adaptive", type: "Modifier" }, "08": { name: "Gamble", type: "Drive" }, "09": { name: "Edit", type: "Unique" },
-        "10": { name: "Bane", type: "Flaw" }, "11": { name: "Traveller", type: "Gift", choices: ["Walk", "Teleport", "Fly", "Dig", "Permeation", "Jump", "Parkour", "Climb", "Swim", "Lightfoot"] }, "12": { name: "Martial", type: "Talent" }, "13": { name: "Attuned", type: "Quirk" }, "14": { name: "Augment", type: "Boost" }, "15": { name: "Impair", type: "Status" }, "16": { name: "Reactive", type: "Form" }, "17": { name: "Phasing", type: "Modifier" }, "18": { name: "Brutal", type: "Drive" }, "19": { name: "Translocate", type: "Unique" },
-        "20": { name: "Anxious", type: "Flaw" }, "21": { name: "Acrobatic", type: "Gift" }, "22": { name: "Sentry", type: "Talent" }, "23": { name: "Eidetic", type: "Quirk" }, "24": { name: "Haste", type: "Boost" }, "25": { name: "Slow", type: "Status" }, "26": { name: "Snap", type: "Form" }, "27": { name: "Condense", type: "Modifier" }, "28": { name: "Rapid", type: "Drive" }, "29": { name: "Reckless", type: "Unique" },
-        "30": { name: "Hesitant", type: "Flaw" }, "31": { name: "Sturdy", type: "Gift" }, "32": { name: "Brawler", type: "Talent" }, "33": { name: "Stubborn", type: "Quirk" }, "34": { name: "Ward", type: "Boost" }, "35": { name: "Daze", type: "Status" }, "36": { name: "Sculpt", type: "Form" }, "37": { name: "Defensive", type: "Modifier" }, "38": { name: "Impact", type: "Drive" }, "39": { name: "Shift", type: "Unique" },
-        "40": { name: "Feeble", type: "Flaw" }, "41": { name: "Survivor", type: "Gift" }, "42": { name: "Stoic", type: "Talent" }, "43": { name: "Ageless", type: "Quirk" }, "44": { name: "Bless", type: "Boost" }, "45": { name: "Curse", type: "Status" }, "46": { name: "Piercing", type: "Form" }, "47": { name: "Flux", type: "Modifier" }, "48": { name: "Siphon", type: "Drive" }, "49": { name: "Animate", type: "Unique" },
-        "50": { name: "Gremlins", type: "Flaw" }, "51": { name: "Sensor", type: "Gift", choices: ["Karma", "Keywords", "Echolocation", "Vibration", "Energy", "Materials", "Life", "Infrared", "Emotion", "The Weave"] }, "52": { name: "Improvisor", type: "Talent" }, "53": { name: "Crafty", type: "Quirk" }, "54": { name: "Charge", type: "Boost" }, "55": { name: "Bind", type: "Status" }, "56": { name: "Imbue", type: "Form" }, "57": { name: "Material", type: "Modifier" }, "58": { name: "Leverage", type: "Drive" }, "59": { name: "Manifest", type: "Unique" },
-        "60": { name: "Vulnerable", type: "Flaw" }, "61": { name: "Tolerant", type: "Gift" }, "62": { name: "Deadeye", type: "Talent" }, "63": { name: "Immunized", type: "Quirk" }, "64": { name: "Cure", type: "Boost" }, "65": { name: "Weaken", type: "Status" }, "66": { name: "Sticky", type: "Form" }, "67": { name: "Restore", type: "Modifier" }, "68": { name: "Exploit", type: "Drive" }, "69": { name: "Growth", type: "Unique" },
-        "70": { name: "Limited", type: "Flaw" }, "71": { name: "Resilient", type: "Gift", choices: ["HP", "SP", "EP"] }, "72": { name: "Font", type: "Talent" }, "73": { name: "Insulated", type: "Quirk" }, "74": { name: "Regen", type: "Boost" }, "75": { name: "Blight", type: "Status" }, "76": { name: "Area", type: "Form" }, "77": { name: "Ranged", type: "Modifier" }, "78": { name: "Multiply", type: "Drive" }, "79": { name: "Split", type: "Unique" },
-        "80": { name: "Awkward", type: "Flaw" }, "81": { name: "Charismatic", type: "Gift" }, "82": { name: "Leader", type: "Talent" }, "83": { name: "Insightful", type: "Quirk" }, "84": { name: "Enhance", type: "Boost" }, "85": { name: "Silence", type: "Status" }, "86": { name: "Splash", type: "Form" }, "87": { name: "Lingering", type: "Modifier" }, "88": { name: "Spread", type: "Drive" }, "89": { name: "Potent", type: "Unique" },
-        "90": { name: "Mundane", type: "Flaw" }, "91": { name: "Aware", type: "Gift" }, "92": { name: "Stealthy", type: "Talent" }, "93": { name: "Trickster", type: "Quirk" }, "94": { name: "Obscure", type: "Boost" }, "95": { name: "Nullify", type: "Status" }, "96": { name: "Chain", type: "Form" }, "97": { name: "Natural", type: "Modifier" }, "98": { name: "Ambience", type: "Drive" }, "99": { name: "Channel", type: "Unique" }
-    }
-};
-
-// #################################################################
-// ###   Part 2: CodexEngine (Pure Logic)                        ###
-// #################################################################
-const CodexEngine = {
-    parse(blueprintString) {
-        if (!blueprintString || typeof blueprintString !== 'string') return null;
-        const entityStrings = blueprintString.split(';').map(s => s.trim()).filter(Boolean);
-        if (entityStrings.length === 0) return null;
-
-        const mainEntityString = entityStrings[0];
-        const typePrefix = mainEntityString.substring(0, 2);
-        let dataString = mainEntityString.substring(2);
-
-        let entity = {};
-
-        try {
-            switch (typePrefix) {
-                case 'C:': entity = this.parseCharacter(dataString); break;
-                case 'A:': entity = this.parseAnimation(dataString); break;
-                case 'I:': entity = this.parseItem(dataString); break;
-                case 'F:': entity = this.parseFaction(dataString); break;
-                default: return null;
+        "civilSystems": {
+            "S0": "Food", "S1": "Water", "S2": "Shelter", "S3": "Infrastructure", "S4": "Humanitarian",
+            "S5": "Education", "S6": "Healthcare", "S7": "Government", "S8": "Commerce", "S9": "Military"
+        },
+        "stats": {
+            "M": "Movement", "A": "Alacrity", "B": "Brawn", "W": "Wit", "E": "Expertise",
+            "T": "Technique", "P": "Power", "I": "Influence", "F": "Force"
+        },
+        "statOrder": ["M", "A", "B", "W", "E", "T", "P", "I", "F"],
+        "colors": {
+            "0": {"name": "Null", "hex": "#dea193"}, "1": {"name": "Silver", "hex": "#a7a9ac"},
+            "2": {"name": "Yellow", "hex": "#f5d36c"}, "3": {"name": "Green", "hex": "#688d4c"},
+            "4": {"name": "Black", "hex": "#414042"}, "5": {"name": "Orange", "hex": "#f7855d"},
+            "6": {"name": "White", "hex": "#e3e1da"}, "7": {"name": "Red", "hex": "#a95b5a"},
+            "8": {"name": "Blue", "hex": "#88bfe8"}, "9": {"name": "Purple", "hex": "#957fa3"}
+        },
+        "tags": {
+            "boosts": {
+                "04": "Liberate", "14": "Augment", "24": "Haste", "34": "Ward", "44": "Bless",
+                "54": "Charge", "64": "Cure", "74": "Regen", "84": "Enhance", "94": "Obscure"
+            },
+            "statuses": {
+                "05": "Mark", "15": "Impair", "25": "Slow", "35": "Daze", "45": "Curse",
+                "55": "Bind", "65": "Weaken", "75": "Blight", "85": "Silence", "95": "Nullify"
             }
-        } catch (e) {
-            console.error("Parsing failed:", e);
-            return null;
+        },
+        "keywords": {
+            "00": {"name": "Restricted", "category": "flaw", "color": "0"},
+            "01": {"name": "Aura", "category": "gift", "color": "0", "options": null},
+            "02": {"name": "Specialist", "category": "talent", "color": "0", "options": null},
+            "03": {"name": "Alert", "category": "quirk", "color": "0", "options": null},
+            "04": {"name": "Liberate", "category": "boost", "color": "0", "options": null},
+            "05": {"name": "Mark", "category": "status", "color": "0", "options": null},
+            "06": {"name": "Indirect", "category": "form", "color": "0", "options": null},
+            "07": {"name": "Adaptive", "category": "modifier", "color": "0", "options": null},
+            "08": {"name": "Gamble", "category": "drive", "color": "0", "options": null},
+            "09": {"name": "Edit", "category": "unique", "color": "0", "options": null},
+            "10": {"name": "Bane", "category": "flaw", "color": "1"},
+            "11": {"name": "Traveller", "category": "gift", "color": "1", "options": ["Walk", "Teleport", "Fly", "Dig", "Permeation", "Jump", "Parkour", "Climb", "Swim", "Lightfoot"]},
+            "12": {"name": "Martial", "category": "talent", "color": "1", "options": null},
+            "13": {"name": "Attuned", "category": "quirk", "color": "1", "options": null},
+            "14": {"name": "Augment", "category": "boost", "color": "1", "options": null},
+            "15": {"name": "Impair", "category": "status", "color": "1", "options": null},
+            "16": {"name": "Reactive", "category": "form", "color": "1", "options": null},
+            "17": {"name": "Phasing", "category": "modifier", "color": "1", "options": null},
+            "18": {"name": "Brutal", "category": "drive", "color": "1", "options": null},
+            "19": {"name": "Translocate", "category": "unique", "color": "1", "options": null},
+            "20": {"name": "Anxious", "category": "flaw", "color": "2"},
+            "21": {"name": "Acrobatic", "category": "gift", "color": "2", "options": null},
+            "22": {"name": "Sentry", "category": "talent", "color": "2", "options": null},
+            "23": {"name": "Eidetic", "category": "quirk", "color": "2", "options": null},
+            "24": {"name": "Haste", "category": "boost", "color": "2", "options": null},
+            "25": {"name": "Slow", "category": "status", "color": "2", "options": null},
+            "26": {"name": "Snap", "category": "form", "color": "2", "options": null},
+            "27": {"name": "Condense", "category": "modifier", "color": "2", "options": null},
+            "28": {"name": "Rapid", "category": "drive", "color": "2", "options": null},
+            "29": {"name": "Reckless", "category": "unique", "color": "2", "options": null},
+            "30": {"name": "Hesitant", "category": "flaw", "color": "3"},
+            "31": {"name": "Sturdy", "category": "gift", "color": "3", "options": null},
+            "32": {"name": "Brawler", "category": "talent", "color": "3", "options": null},
+            "33": {"name": "Stubborn", "category": "quirk", "color": "3", "options": null},
+            "34": {"name": "Ward", "category": "boost", "color": "3", "options": null},
+            "35": {"name": "Daze", "category": "status", "color": "3", "options": null},
+            "36": {"name": "Sculpt", "category": "form", "color": "3", "options": null},
+            "37": {"name": "Defensive", "category": "modifier", "color": "3", "options": null},
+            "38": {"name": "Impact", "category": "drive", "color": "3", "options": null},
+            "39": {"name": "Shift", "category": "unique", "color": "3", "options": null},
+            "40": {"name": "Feeble", "category": "flaw", "color": "4"},
+            "41": {"name": "Survivor", "category": "gift", "color": "4", "options": null},
+            "42": {"name": "Stoic", "category": "talent", "color": "4", "options": null},
+            "43": {"name": "Ageless", "category": "quirk", "color": "4", "options": null},
+            "44": {"name": "Bless", "category": "boost", "color": "4", "options": null},
+            "45": {"name": "Curse", "category": "status", "color": "4", "options": null},
+            "46": {"name": "Piercing", "category": "form", "color": "4", "options": null},
+            "47": {"name": "Flux", "category": "modifier", "color": "4", "options": null},
+            "48": {"name": "Siphon", "category": "drive", "color": "4", "options": null},
+            "49": {"name": "Animate", "category": "unique", "color": "4", "options": null},
+            "50": {"name": "Gremlins", "category": "flaw", "color": "5"},
+            "51": {"name": "Sensor", "category": "gift", "color": "5", "options": ["Karma", "Keywords", "Echolocation", "Vibration", "Energy", "Materials", "Life", "Infrared", "Emotion", "The Weave"]},
+            "52": {"name": "Improvisor", "category": "talent", "color": "5", "options": null},
+            "53": {"name": "Crafty", "category": "quirk", "color": "5", "options": null},
+            "54": {"name": "Charge", "category": "boost", "color": "5", "options": null},
+            "55": {"name": "Bind", "category": "status", "color": "5", "options": null},
+            "56": {"name": "Imbue", "category": "form", "color": "5", "options": null},
+            "57": {"name": "Material", "category": "modifier", "color": "5", "options": null},
+            "58": {"name": "Leverage", "category": "drive", "color": "5", "options": null},
+            "59": {"name": "Manifest", "category": "unique", "color": "5", "options": null},
+            "60": {"name": "Vulnerable", "category": "flaw", "color": "6"},
+            "61": {"name": "Tolerant", "category": "gift", "color": "6", "options": null},
+            "62": {"name": "Deadeye", "category": "talent", "color": "6", "options": null},
+            "63": {"name": "Immunized", "category": "quirk", "color": "6", "options": null},
+            "64": {"name": "Cure", "category": "boost", "color": "6", "options": null},
+            "65": {"name": "Weaken", "category": "status", "color": "6", "options": null},
+            "66": {"name": "Sticky", "category": "form", "color": "6", "options": null},
+            "67": {"name": "Restore", "category": "modifier", "color": "6", "options": null},
+            "68": {"name": "Exploit", "category": "drive", "color": "6", "options": null},
+            "69": {"name": "Growth", "category": "unique", "color": "6", "options": null},
+            "70": {"name": "Limited", "category": "flaw", "color": "7"},
+            "71": {"name": "Resilient", "category": "gift", "color": "7", "options": ["HP", "SP", "EP"]},
+            "72": {"name": "Font", "category": "talent", "color": "7", "options": null},
+            "73": {"name": "Insulated", "category": "quirk", "color": "7", "options": null},
+            "74": {"name": "Regen", "category": "boost", "color": "7", "options": null},
+            "75": {"name": "Blight", "category": "status", "color": "7", "options": null},
+            "76": {"name": "Area", "category": "form", "color": "7", "options": null},
+            "77": {"name": "Ranged", "category": "modifier", "color": "7", "options": null},
+            "78": {"name": "Multiply", "category": "drive", "color": "7", "options": null},
+            "79": {"name": "Split", "category": "unique", "color": "7", "options": null},
+            "80": {"name": "Awkward", "category": "flaw", "color": "8"},
+            "81": {"name": "Charismatic", "category": "gift", "color": "8", "options": null},
+            "82": {"name": "Leader", "category": "talent", "color": "8", "options": null},
+            "83": {"name": "Insightful", "category": "quirk", "color": "8", "options": null},
+            "84": {"name": "Enhance", "category": "boost", "color": "8", "options": null},
+            "85": {"name": "Silence", "category": "status", "color": "8", "options": null},
+            "86": {"name": "Splash", "category": "form", "color": "8", "options": null},
+            "87": {"name": "Lingering", "category": "modifier", "color": "8", "options": null},
+            "88": {"name": "Spread", "category": "drive", "color": "8", "options": null},
+            "89": {"name": "Potent", "category": "unique", "color": "8", "options": null},
+            "90": {"name": "Mundane", "category": "flaw", "color": "9"},
+            "91": {"name": "Aware", "category": "gift", "color": "9", "options": null},
+            "92": {"name": "Stealthy", "category": "talent", "color": "9", "options": null},
+            "93": {"name": "Trickster", "category": "quirk", "color": "9", "options": null},
+            "94": {"name": "Obscure", "category": "boost", "color": "9", "options": null},
+            "95": {"name": "Nullify", "category": "status", "color": "9", "options": null},
+            "96": {"name": "Chain", "category": "form", "color": "9", "options": null},
+            "97": {"name": "Natural", "category": "modifier", "color": "9", "options": null},
+            "98": {"name": "Ambience", "category": "drive", "color": "9", "options": null},
+            "99": {"name": "Channel", "category": "unique", "color": "9", "options": null}
         }
-        
-        return entity;
-    },
-
-    parseCharacter(dataString) {
-        const entity = { type: 'Character', profile: [], flaw: null, keywords: [], statProgression: [] };
-        let remainingString = dataString;
-
-        // 1. Parse Profile (#####)
-        entity.profile = remainingString.substring(0, 5).split('').map(Number);
-        remainingString = remainingString.substring(5);
-
-        // 2. Parse Optional Flaw (+####)
-        if (remainingString.startsWith('+')) {
-            const flawCode = remainingString.substring(1, 5);
-            entity.flaw = {
-                id: flawCode.substring(0, 2),
-                compensationId: flawCode.substring(2, 4)
-            };
-            remainingString = remainingString.substring(5);
-        }
-
-        // 3. Parse Keywords (-##-##.##.##-##.##S...)
-        if (remainingString.startsWith('-')) {
-            remainingString = remainingString.substring(1); // Remove leading hyphen
-        }
-        
-        const keywordGroups = remainingString.split('-');
-
-        keywordGroups.forEach(group => {
-            if (!group) return;
-            
-            const statMatch = group.match(/[MABWETPIF]$/);
-            let statProgKey = null;
-            if (statMatch) {
-                statProgKey = statMatch[0];
-                group = group.slice(0, -1);
-            }
-
-            const keywordChunks = group.split('.');
-            keywordChunks.forEach(chunk => {
-                if (!chunk) return;
-                
-                const slotted = chunk.startsWith('!');
-                if (slotted) chunk = chunk.substring(1);
-
-                const choiceMatch = chunk.match(/\((\d+)\)/);
-                const choice = choiceMatch ? parseInt(choiceMatch[1], 10) : null;
-                const id = choiceMatch ? chunk.substring(0, choiceMatch.index) : chunk;
-
-                if (SRD_DATA.keywords[id]) {
-                    entity.keywords.push({ id, slotted, choice });
-                }
-            });
-            
-            if (statProgKey) {
-                entity.statProgression.push(statProgKey);
-            }
-        });
-
-        return entity;
-    },
+    }`;
     
-    parseAnimation(dataString) {
-        return { type: 'Animation', keywords: [] };
-    },
-    
-    parseItem(dataString) {
-        return { type: 'Item', level: 0, keywords: [] };
-    },
-    
-    parseFaction(dataString) {
-        return { type: 'Faction', profile: [], level: 0, systems: [], keywords: [] };
-    },
+    // Inject SRD_DATA
+    Object.assign(SRD_DATA, JSON.parse(srd_data_string));
 
-    calculate(parsedData) {
-        if (!parsedData) return null;
-        const calc = {};
+    // CODEX ENGINE
+    Object.assign(CodexEngine, {
+        parse(blueprintString) {
+            if (!blueprintString || typeof blueprintString !== 'string') return null;
 
-        // Level Calculation
-        const kwCount = parsedData.keywords.length;
-        if (kwCount < 1) calc.level = 0;
-        else if (kwCount < 4) calc.level = 0;
-        else if (kwCount < 6) calc.level = 1;
-        else if (kwCount < 8) calc.level = 2;
-        else if (kwCount < 10) calc.level = 3;
-        else if (kwCount < 12) calc.level = 4;
-        else if (kwCount < 14) calc.level = 5;
-        else if (kwCount < 16) calc.level = 6;
-        else if (kwCount < 18) calc.level = 7;
-        else if (kwCount < 20) calc.level = 8;
-        else calc.level = 9;
+            const entities = blueprintString.split(';').map(s => s.trim()).filter(Boolean);
+            const parsedEntities = {};
 
-        // Stat Calculation
-        calc.stats = {};
-        const baseStat = calc.level === 0 ? 1 : 2;
-        Object.keys(SRD_DATA.stats).forEach(key => calc.stats[key] = baseStat);
+            entities.forEach(entityStr => {
+                const [prefix, data] = entityStr.split(/:(.+)/);
+                if (!data) return;
 
-        let statPointsPerLevel = [0, 0, 1, 2, 3, 4, 6, 8, 10, 12];
-        let totalPointsToAllocate = statPointsPerLevel[calc.level] || 0;
-        
-        let allocatedCount = 0;
-        for (const statKey of parsedData.statProgression) {
-            if (allocatedCount >= totalPointsToAllocate) break;
-            if (calc.stats[statKey] < 5) {
-                calc.stats[statKey]++;
-                allocatedCount++;
-            }
-        }
-
-        // Resistance
-        const statValues = Object.values(calc.stats).sort((a, b) => b - a);
-        calc.resistance = statValues.slice(0, 3).reduce((sum, val) => sum + val, 0);
-
-        // Resources
-        calc.maxHp = 10;
-        calc.maxSp = 10;
-        calc.maxEp = 10;
-        
-        const limitedKeyword = parsedData.keywords.find(k => k.id === '70');
-        if (limitedKeyword && limitedKeyword.choice !== null) {
-            if (limitedKeyword.choice === 0) calc.maxHp -= 5;
-            if (limitedKeyword.choice === 1) calc.maxSp -= 5;
-            if (limitedKeyword.choice === 2) calc.maxEp -= 5;
-        }
-        
-        const resilientKeywords = parsedData.keywords.filter(k => k.id === '71');
-        resilientKeywords.forEach(k => {
-            if (k.choice === 0) calc.maxHp += 5;
-            if (k.choice === 1) calc.maxSp += 5;
-            if (k.choice === 2) calc.maxEp += 5;
-        });
-
-        // Passive Slots
-        calc.innatePassiveSlots = calc.stats.F;
-        calc.gearPassiveSlots = calc.stats.E;
-
-        return calc;
-    },
-
-    stringify(parsedData) {
-        if (!parsedData) return '';
-        let parts = [];
-
-        if (parsedData.type === 'Character') {
-            parts.push(`C:${parsedData.profile.join('')}`);
-            
-            if (parsedData.flaw) {
-                parts.push(`+${parsedData.flaw.id}${parsedData.flaw.compensationId}`);
-            }
-
-            let keywordGroups = [];
-            let statIndex = 0;
-            
-            const kwToChunk = (kw) => {
-                let chunk = kw.id;
-                if (kw.choice !== null && kw.choice !== undefined) chunk += `(${kw.choice})`;
-                if (kw.slotted) chunk = `!${chunk}`;
-                return chunk;
-            };
-
-            if (parsedData.keywords.length > 0) {
-                // Seed
-                keywordGroups.push(kwToChunk(parsedData.keywords[0]));
-            }
-            if (parsedData.keywords.length >= 4) {
-                // Awakening
-                keywordGroups.push(`${kwToChunk(parsedData.keywords[1])}.${kwToChunk(parsedData.keywords[2])}.${kwToChunk(parsedData.keywords[3])}`);
-            }
-
-            // Progression
-            for (let i = 4; i < parsedData.keywords.length; i += 2) {
-                let group = kwToChunk(parsedData.keywords[i]);
-                if (parsedData.keywords[i+1]) {
-                    group += `.${kwToChunk(parsedData.keywords[i+1])}`;
+                let parsed;
+                switch (prefix) {
+                    case 'C': parsed = this.parseCharacter(data); break;
+                    case 'A': parsed = this.parseAnimation(data); break;
+                    case 'I': parsed = this.parseItem(data); break;
+                    case 'F': parsed = this.parseFaction(data); break;
                 }
                 
-                const levelForStat = Math.floor(i / 2) + 1;
-                if (levelForStat >= 2 && levelForStat <= 5) {
-                    if (parsedData.statProgression[statIndex]) {
-                        group += parsedData.statProgression[statIndex];
-                        statIndex++;
-                    }
-                } else if (levelForStat >= 6 && levelForStat <= 9) {
-                    if (parsedData.statProgression[statIndex]) {
-                        group += parsedData.statProgression[statIndex];
-                        statIndex++;
-                    }
-                    if (parsedData.statProgression[statIndex]) {
-                        group += parsedData.statProgression[statIndex];
-                        statIndex++;
-                    }
+                if(parsed) {
+                    if (!parsedEntities[parsed.type]) parsedEntities[parsed.type] = [];
+                    parsedEntities[parsed.type].push(parsed);
                 }
-                keywordGroups.push(group);
-            }
-            parts.push(`-${keywordGroups.join('-')}`);
-        }
-        
-        return parts.join('');
-    }
-};
-
-// #################################################################
-// ###   Part 3: App (UI Orchestration & Event Handling)         ###
-// #################################################################
-const App = {
-    db: {
-        characters: {},
-        activeCharacterId: null
-    },
-    elements: {},
-    liveBlueprint: '',
-    runtimeState: {},
-
-    init() {
-        this.cacheElements();
-        this.loadDatabase();
-        this.populateDropdowns();
-        this.attachEventListeners();
-
-        if (!this.db.activeCharacterId || !this.db.characters[this.db.activeCharacterId]) {
-            this.createNewCharacter("Sparks (Example)", "C:12345-13-11(1).83.93", true);
-        }
-        
-        this.loadCharacter(this.db.activeCharacterId);
-    },
-
-    cacheElements() {
-        const ids = [
-            'app-container', 'global-pane', 'add-new-btn', 'import-blueprint-btn', 'dice-roller-btn', 'random-gen-btn',
-            'build-pane', 'character-header', 'character-name-input', 'character-level', 'karma-tracker', 'karma-minus-btn',
-            'karma-value', 'karma-plus-btn', 'motivational-profile', 'profile-goal', 'profile-method', 'profile-purpose',
-            'profile-external', 'profile-internal', 'stats-resources-card', 'stat-grid', 'resistance-display',
-            'resistance-value', 'hp-pips', 'sp-pips', 'ep-pips', 'hp-current', 'hp-max', 'sp-current', 'sp-max',
-            'ep-current', 'ep-max', 'keywords-progression-card', 'add-keyword-form', 'add-keyword-select', 'add-keyword-btn',
-            'remove-keyword-btn', 'keyword-list', 'passive-slots-display', 'innate-passives-slotted', 'innate-passives-max',
-            'stat-progression-list', 'live-blueprint-card', 'live-blueprint-string', 'play-pane', 'play-pane-tabs',
-            'play-pane-content', 'tags-tab', 'boost-tag-list', 'add-boost-select', 'add-boost-btn', 'status-tag-list',
-            'add-status-select', 'add-status-btn', 'inventory-tab', 'inventory-list', 'add-inventory-item-btn',
-            'gear-passive-slots-display', 'gear-passives-slotted', 'gear-passives-max', 'companions-tab', 'companion-list',
-            'add-companion-btn', 'factions-tab', 'faction-list', 'add-faction-btn', 'codex-vault', 'codex-vault-list',
-            'dice-roller-modal', 'dice-roller-content', 'dice-result-display', 'dice-roller-ev-er', 'dice-roller-controls',
-            'dice-roller-stat-select', 'roll-dice-btn', 'close-roller-btn', 'boost-count', 'status-count'
-        ];
-        ids.forEach(id => this.elements[id] = document.getElementById(id));
-        
-        this.elements.stats = {};
-        Object.keys(SRD_DATA.stats).forEach(key => {
-            this.elements.stats[key] = document.getElementById(`stat-${key}`);
-        });
-    },
-
-    populateDropdowns() {
-        const keywordOptions = Object.entries(SRD_DATA.keywords)
-            .map(([id, data]) => `<option value="${id}">${id}: ${data.name} (${data.type})</option>`)
-            .join('');
-        this.elements['add-keyword-select'].innerHTML = keywordOptions;
-
-        const boostOptions = Object.keys(SRD_DATA.tags.boosts)
-            .map(name => `<option value="${name}">${name}</option>`)
-            .join('');
-        this.elements['add-boost-select'].innerHTML = boostOptions;
-
-        const statusOptions = Object.keys(SRD_DATA.tags.statuses)
-            .map(name => `<option value="${name}">${name}</option>`)
-            .join('');
-        this.elements['add-status-select'].innerHTML = statusOptions;
-        
-        const statOptions = Object.entries(SRD_DATA.stats)
-            .map(([key, name]) => `<option value="${key}">${name} (${key})</option>`)
-            .join('');
-        document.querySelectorAll('#stat-progression-list select').forEach(sel => {
-            sel.innerHTML = `<option value="">---</option>${statOptions}`;
-        });
-        this.elements['dice-roller-stat-select'].innerHTML = `<option value="none">No Stat</option>${statOptions}`;
-    },
-
-    attachEventListeners() {
-        this.elements['add-new-btn'].addEventListener('click', () => this.createNewCharacter());
-        this.elements['import-blueprint-btn'].addEventListener('click', () => this.importBlueprint());
-        this.elements['dice-roller-btn'].addEventListener('click', () => this.elements['dice-roller-modal'].classList.remove('hidden'));
-        this.elements['close-roller-btn'].addEventListener('click', () => this.elements['dice-roller-modal'].classList.add('hidden'));
-        this.elements['roll-dice-btn'].addEventListener('click', () => this.performDiceRoll());
-        this.elements['random-gen-btn'].addEventListener('click', () => this.generateRandomEntity());
-        this.elements['character-name-input'].addEventListener('change', e => {
-            if (this.db.characters[this.db.activeCharacterId]) {
-                this.db.characters[this.db.activeCharacterId].name = e.target.value;
-                this.saveDatabase();
-                this.renderCodexVault();
-            }
-        });
-        this.elements['live-blueprint-string'].addEventListener('input', e => this.handleBlueprintEdit(e.target.value));
-        this.elements['karma-plus-btn'].addEventListener('click', () => { this.runtimeState.karma++; this.render(); });
-        this.elements['karma-minus-btn'].addEventListener('click', () => { if (this.runtimeState.karma > 0) this.runtimeState.karma--; this.render(); });
-        this.elements['add-keyword-btn'].addEventListener('click', () => this.addKeyword());
-        this.elements['remove-keyword-btn'].addEventListener('click', () => this.removeLastKeyword());
-        this.elements['play-pane-tabs'].addEventListener('click', e => {
-            if (e.target.classList.contains('play-tab-btn')) {
-                this.switchPlayTab(e.target.dataset.tab);
-            }
-        });
-        this.elements['add-boost-btn'].addEventListener('click', () => this.addTag('boosts'));
-        this.elements['add-status-btn'].addEventListener('click', () => this.addTag('statuses'));
-        this.elements['boost-tag-list'].addEventListener('click', e => this.handleTagQuantity(e, 'boosts'));
-        this.elements['status-tag-list'].addEventListener('click', e => this.handleTagQuantity(e, 'statuses'));
-        this.elements['codex-vault-list'].addEventListener('click', e => {
-            const entry = e.target.closest('.codex-entry');
-            if (!entry) return;
-            const id = entry.dataset.id;
-            if (e.target.classList.contains('codex-entry-name')) {
-                this.loadCharacter(id);
-            } else if (e.target.classList.contains('delete-btn')) {
-                this.deleteCharacter(id);
-            }
-        });
-    },
-
-    loadDatabase() {
-        const data = localStorage.getItem('resonanceCompanionDB');
-        if (data) {
-            this.db = JSON.parse(data);
-        } else {
-            this.saveDatabase();
-        }
-    },
-
-    saveDatabase() {
-        if (this.db.activeCharacterId && this.db.characters[this.db.activeCharacterId]) {
-            this.db.characters[this.db.activeCharacterId].blueprint = this.liveBlueprint;
-            this.db.characters[this.db.activeCharacterId].runtimeState = this.runtimeState;
-        }
-        localStorage.setItem('resonanceCompanionDB', JSON.stringify(this.db));
-    },
-
-    createNewCharacter(name = null, blueprint = null, setActive = true) {
-        const charName = name || prompt("Enter new character name:", "New Character");
-        if (!charName) return;
-
-        const id = `char_${Date.now()}`;
-        this.db.characters[id] = {
-            id: id,
-            name: charName,
-            blueprint: blueprint || "C:00000-01",
-            runtimeState: {
-                karma: 0,
-                hp: 10, sp: 10, ep: 10,
-                tags: { boosts: {}, statuses: {} },
-                inventory: [], companions: [], factions: []
-            }
-        };
-
-        if (setActive) {
-            this.db.activeCharacterId = id;
-            this.loadCharacter(id);
-        }
-        this.saveDatabase();
-        this.renderCodexVault();
-    },
-    
-    deleteCharacter(id) {
-        if (!confirm(`Are you sure you want to delete "${this.db.characters[id].name}"?`)) return;
-        
-        delete this.db.characters[id];
-        if (this.db.activeCharacterId === id) {
-            const remainingIds = Object.keys(this.db.characters);
-            this.db.activeCharacterId = remainingIds.length > 0 ? remainingIds[0] : null;
-            if (this.db.activeCharacterId) {
-                this.loadCharacter(this.db.activeCharacterId);
-            } else {
-                this.createNewCharacter("New Character", "C:00000-01", true);
-            }
-        }
-        this.saveDatabase();
-        this.renderCodexVault();
-    },
-
-    importBlueprint() {
-        const newBlueprint = prompt("Paste blueprint string to update current character:");
-        if (newBlueprint) {
-            this.handleBlueprintEdit(newBlueprint);
-        }
-    },
-
-    loadCharacter(id) {
-        if (!this.db.characters[id]) return;
-        this.saveDatabase(); 
-        this.db.activeCharacterId = id;
-        const charData = this.db.characters[id];
-        this.liveBlueprint = charData.blueprint;
-        this.runtimeState = charData.runtimeState;
-        this.render();
-        this.renderCodexVault();
-    },
-
-    handleBlueprintEdit(newBlueprint) {
-        const parsed = CodexEngine.parse(newBlueprint);
-        if (parsed) {
-            this.liveBlueprint = newBlueprint;
-            this.render();
-        }
-    },
-    
-    updateBlueprintFromUI() {
-        const parsed = CodexEngine.parse(this.liveBlueprint);
-        if (!parsed) return;
-        
-        document.querySelectorAll('#keyword-list .keyword-toggle input').forEach(input => {
-            const id = input.dataset.id;
-            const kw = parsed.keywords.find(k => k.id === id);
-            if (kw) kw.slotted = input.checked;
-        });
-        
-        document.querySelectorAll('#keyword-list .keyword-choice-select').forEach(select => {
-            const id = select.dataset.id;
-            const kw = parsed.keywords.find(k => k.id === id);
-            if (kw) kw.choice = parseInt(select.value, 10);
-        });
-        
-        parsed.statProgression = [];
-        document.querySelectorAll('#stat-progression-list select').forEach(select => {
-            if (select.value && !select.disabled) {
-                parsed.statProgression.push(select.value);
-            }
-        });
-
-        this.liveBlueprint = CodexEngine.stringify(parsed);
-        this.render();
-    },
-
-    render() {
-        const parsedData = CodexEngine.parse(this.liveBlueprint);
-        const calculatedData = parsedData ? CodexEngine.calculate(parsedData) : null;
-
-        if (!parsedData || !calculatedData) {
-            this.elements['live-blueprint-string'].style.borderColor = 'var(--red-color)';
-            return;
-        }
-        this.elements['live-blueprint-string'].style.borderColor = 'var(--border-color)';
-
-        this.elements['character-name-input'].value = this.db.characters[this.db.activeCharacterId]?.name || '';
-        this.elements['character-level'].textContent = `LVL ${calculatedData.level}`;
-        this.elements['karma-value'].textContent = this.runtimeState.karma;
-
-        const profileElements = ['profile-goal', 'profile-method', 'profile-purpose', 'profile-external', 'profile-internal'];
-        parsedData.profile.forEach((code, i) => {
-            this.elements[profileElements[i]].textContent = `${SRD_DATA.motivations[code]}`;
-        });
-
-        Object.entries(calculatedData.stats).forEach(([key, value]) => {
-            this.elements.stats[key].textContent = value;
-        });
-        this.elements['resistance-value'].textContent = calculatedData.resistance;
-
-        this.renderResourceClock('hp', this.runtimeState.hp, calculatedData.maxHp);
-        this.renderResourceClock('sp', this.runtimeState.sp, calculatedData.maxSp);
-        this.renderResourceClock('ep', this.runtimeState.ep, calculatedData.maxEp);
-
-        this.renderKeywords(parsedData, calculatedData);
-        this.renderStatProgression(parsedData, calculatedData);
-
-        this.elements['live-blueprint-string'].value = this.liveBlueprint;
-        
-        this.renderTags();
-        this.elements['gear-passives-max'].textContent = calculatedData.gearPassiveSlots;
-        
-        this.saveDatabase();
-    },
-
-    renderResourceClock(type, current, max) {
-        this.elements[`${type}-current`].textContent = current;
-        this.elements[`${type}-max`].textContent = max;
-        const pipsContainer = this.elements[`${type}-pips`];
-        pipsContainer.innerHTML = '';
-        for (let i = 1; i <= max; i++) {
-            const pip = document.createElement('div');
-            pip.className = 'pip';
-            if (i <= current) {
-                pip.classList.add('filled');
-            }
-            pip.dataset.value = i;
-            pip.addEventListener('click', () => {
-                this.runtimeState[type] = i;
-                this.render();
             });
-            pipsContainer.appendChild(pip);
-        }
-    },
 
-    renderKeywords(parsedData, calculatedData) {
-        const listEl = this.elements['keyword-list'];
-        listEl.innerHTML = '';
-        let slottedCount = 0;
+            return parsedEntities.Character ? parsedEntities.Character[0] : null; // For now, sheet focuses on the character
+        },
 
-        const renderKeyword = (kw, isFlaw = false, isComp = false) => {
-            const kwData = SRD_DATA.keywords[kw.id];
-            if (!kwData) return;
-
-            const entry = document.createElement('div');
-            entry.className = 'keyword-entry';
-
-            let nameClass = 'keyword-name';
-            if (isFlaw) nameClass += ' flaw';
-            if (isComp) nameClass += ' compensation';
+        parseCharacter(data) {
+            const parsed = { type: 'Character', profile: '', flaw: null, keywords: [], statAllocs: [] };
             
-            let nameHTML = `<div class="${nameClass}">${kw.id}: ${kwData.name}</div>`;
+            // Regex to capture all parts
+            const match = data.match(/^(\d{5})?(\+?\d{4})?((?:-!?\d{2}(?:\(\d+\))?(?:\.[A-Z])?)*)$/);
+            if (!match) return this.parseLegacyCharacter(data); // Fallback for older/simpler format
+
+            parsed.profile = match[1] || '';
             
-            let choiceHTML = '';
-            if (kwData.choices) {
-                const options = kwData.choices.map((c, i) => `<option value="${i}" ${kw.choice === i ? 'selected' : ''}>${c}</option>`).join('');
-                choiceHTML = `<select class="keyword-choice-select" data-id="${kw.id}">${options}</select>`;
-            }
-            
-            let toggleHTML = '';
-            if (kwData.type !== 'Flaw') {
-                toggleHTML = `
-                    <label class="keyword-toggle">
-                        <span>Slot</span>
-                        <input type="checkbox" data-id="${kw.id}" ${kw.slotted ? 'checked' : ''}>
-                    </label>
-                `;
-                if (kw.slotted) slottedCount++;
+            if (match[2]) {
+                parsed.flaw = {
+                    flawCode: match[2].slice(1, 3),
+                    compCode: match[2].slice(3, 5),
+                };
             }
 
-            entry.innerHTML = nameHTML + choiceHTML + toggleHTML;
-            listEl.appendChild(entry);
-        };
+            const progression = match[3] || '';
+            const segments = progression.split('-').filter(Boolean);
 
-        if (parsedData.flaw) {
-            renderKeyword({ id: parsedData.flaw.id }, true);
-            renderKeyword({ id: parsedData.flaw.compensationId }, false, true);
-        }
-
-        parsedData.keywords.forEach(kw => renderKeyword(kw));
-        
-        listEl.querySelectorAll('input[type="checkbox"], select').forEach(el => {
-            el.addEventListener('change', () => this.updateBlueprintFromUI());
-        });
-
-        this.elements['innate-passives-slotted'].textContent = slottedCount;
-        this.elements['innate-passives-max'].textContent = calculatedData.innatePassiveSlots;
-    },
-    
-    renderStatProgression(parsedData, calculatedData) {
-        const statPointsPerLevel = [0, 0, 1, 2, 3, 4, 6, 8, 10, 12];
-        let allocatedIndex = 0;
-
-        document.querySelectorAll('#stat-progression-list .milestone').forEach(milestone => {
-            const level = parseInt(milestone.dataset.level, 10);
-            const selects = milestone.querySelectorAll('select');
-            
-            if (calculatedData.level >= level) {
-                selects.forEach(select => {
-                    select.disabled = false;
-                    if (parsedData.statProgression[allocatedIndex]) {
-                        select.value = parsedData.statProgression[allocatedIndex];
+            segments.forEach(segment => {
+                const parts = segment.split('.').filter(Boolean);
+                parts.forEach(part => {
+                     if (SRD_DATA.stats[part]) {
+                        parsed.statAllocs.push(part);
                     } else {
-                        select.value = "";
+                        const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
+                        if (kwMatch) {
+                            parsed.keywords.push({
+                                code: kwMatch[2],
+                                slotted: kwMatch[1] === '!',
+                                choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                            });
+                        }
                     }
-                    allocatedIndex++;
                 });
-            } else {
-                selects.forEach(select => {
-                    select.disabled = true;
-                    select.value = "";
-                });
-            }
-        });
-        
-        document.querySelectorAll('#stat-progression-list select').forEach(select => {
-            select.removeEventListener('change', this.handleStatProgressionChange);
-            select.addEventListener('change', this.handleStatProgressionChange.bind(this));
-        });
-    },
-    
-    handleStatProgressionChange() {
-        this.updateBlueprintFromUI();
-    },
+            });
 
-    renderCodexVault() {
-        const listEl = this.elements['codex-vault-list'];
-        listEl.innerHTML = '';
-        Object.values(this.db.characters).forEach(char => {
-            const entry = document.createElement('div');
-            entry.className = 'codex-entry';
-            entry.dataset.id = char.id;
-            if (char.id === this.db.activeCharacterId) {
-                entry.style.borderLeft = `3px solid var(--null-color)`;
+            return parsed;
+        },
+
+        parseLegacyCharacter(data) { // Keep for compatibility with simpler strings
+            const parsed = { type: 'Character', profile: '', flaw: null, keywords: [], statAllocs: [] };
+            const parts = data.split('-');
+
+            parsed.profile = parts.shift();
+
+            // Handle flaw
+            const flawIndex = parts.findIndex(p => p.startsWith('+'));
+            if (flawIndex !== -1) {
+                const flawPart = parts.splice(flawIndex, 1)[0];
+                parsed.flaw = {
+                    flawCode: flawPart.slice(1, 3),
+                    compCode: flawPart.slice(3, 5),
+                };
             }
-            entry.innerHTML = `
-                <span class="codex-entry-name">${char.name}</span>
-                <div class="codex-entry-controls">
-                    <button class="delete-btn" data-id="${char.id}">Delete</button>
-                </div>
-            `;
-            listEl.appendChild(entry);
-        });
-    },
-    
-    renderTags() {
-        const renderTagList = (type, containerId) => {
-            const listEl = this.elements[containerId];
-            listEl.innerHTML = '';
-            let totalCount = 0;
-            Object.entries(this.runtimeState.tags[type]).forEach(([name, quantity]) => {
-                if (quantity > 0) {
-                    const entry = document.createElement('div');
-                    entry.className = 'tag-entry';
-                    entry.innerHTML = `
-                        <span class="tag-name">${name}</span>
-                        <button class="small-btn tag-minus-btn" data-name="${name}">-</button>
-                        <span class="tag-quantity">${quantity}</span>
-                        <button class="small-btn tag-plus-btn" data-name="${name}">+</button>
-                    `;
-                    listEl.appendChild(entry);
-                    totalCount += quantity;
+
+            parts.forEach(part => {
+                const kws = part.split('.');
+                kws.forEach(kw => {
+                    if (SRD_DATA.stats[kw]) {
+                        parsed.statAllocs.push(kw);
+                    } else if (kw) {
+                         const kwMatch = kw.match(/(!?)(\d{2})(?:\((\d+)\))?/);
+                        if (kwMatch) {
+                             parsed.keywords.push({
+                                code: kwMatch[2],
+                                slotted: kwMatch[1] === '!',
+                                choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                            });
+                        }
+                    }
+                });
+            });
+
+            return parsed;
+        },
+        
+        parseAnimation(data) {
+            // Simplified parser for Animations
+            const parsed = { type: 'Animation', flaw: null, keywords: [] };
+            const parts = data.split('.').filter(Boolean);
+
+            parts.forEach(part => {
+                const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
+                if (kwMatch) {
+                    parsed.keywords.push({
+                        code: kwMatch[2],
+                        slotted: kwMatch[1] === '!',
+                        choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                    });
                 }
             });
-            this.elements[`${type.slice(0,-1)}-count`].textContent = totalCount;
-        };
-        renderTagList('boosts', 'boost-tag-list');
-        renderTagList('statuses', 'status-tag-list');
-    },
-    
-    switchPlayTab(tabId) {
-        this.elements['play-pane-tabs'].querySelectorAll('.play-tab-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.tab === tabId);
-        });
-        this.elements['play-pane-content'].querySelectorAll('.play-tab-content').forEach(content => {
-            content.classList.toggle('active', content.id === `${tabId}-tab`);
-        });
-    },
-    
-    addKeyword() {
-        const kwId = this.elements['add-keyword-select'].value;
-        if (!kwId) return;
-        
-        const parsed = CodexEngine.parse(this.liveBlueprint);
-        if (!parsed) return;
-        
-        if (parsed.keywords.length >= 20) {
-            alert("Character has reached the maximum number of keywords.");
-            return;
-        }
-        
-        const newKw = { id: kwId, slotted: false, choice: null };
-        const kwData = SRD_DATA.keywords[kwId];
-        if (kwData.choices) {
-            newKw.choice = 0;
-        }
-        
-        parsed.keywords.push(newKw);
-        this.liveBlueprint = CodexEngine.stringify(parsed);
-        this.render();
-    },
-    
-    removeLastKeyword() {
-        if (!confirm("Are you sure you want to remove the last keyword? This cannot be undone.")) return;
-        
-        const parsed = CodexEngine.parse(this.liveBlueprint);
-        if (!parsed || parsed.keywords.length <= 1) return;
-        
-        parsed.keywords.pop();
-        
-        const calculated = CodexEngine.calculate(parsed);
-        let statPointsPerLevel = [0, 0, 1, 2, 3, 4, 6, 8, 10, 12];
-        let totalPointsToAllocate = statPointsPerLevel[calculated.level] || 0;
-        parsed.statProgression = parsed.statProgression.slice(0, totalPointsToAllocate);
+            return parsed;
+        },
 
-        this.liveBlueprint = CodexEngine.stringify(parsed);
-        this.render();
-    },
-    
-    addTag(type) {
-        const selectEl = this.elements[`add-${type.slice(0,-1)}-select`];
-        const tagName = selectEl.value;
-        if (!tagName) return;
-        
-        if (!this.runtimeState.tags[type][tagName]) {
-            this.runtimeState.tags[type][tagName] = 0;
-        }
-        
-        const totalTags = Object.values(this.runtimeState.tags[type]).reduce((a, b) => a + b, 0);
-        if (totalTags < 10 && this.runtimeState.tags[type][tagName] < 5) {
-            this.runtimeState.tags[type][tagName]++;
-        } else {
-            alert(`Maximum tags reached for this type or pool.`);
-        }
-        
-        this.renderTags();
-        this.saveDatabase();
-    },
-    
-    handleTagQuantity(event, type) {
-        const tagName = event.target.dataset.name;
-        if (!tagName) return;
-        
-        if (event.target.classList.contains('tag-plus-btn')) {
-            const totalTags = Object.values(this.runtimeState.tags[type]).reduce((a, b) => a + b, 0);
-            if (totalTags < 10 && this.runtimeState.tags[type][tagName] < 5) {
-                this.runtimeState.tags[type][tagName]++;
+        parseItem(data) {
+            // Parser for Items
+            const parsed = { type: 'Item', level: 0, flaw: null, keywords: [] };
+            const match = data.match(/^L(\d)/);
+            if (match) {
+                parsed.level = parseInt(match[1]);
+                const remaining = data.substring(2);
+                const parts = remaining.split('.').filter(Boolean);
+                 parts.forEach(part => {
+                    const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
+                    if (kwMatch) {
+                        parsed.keywords.push({
+                            code: kwMatch[2],
+                            slotted: kwMatch[1] === '!',
+                            choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                        });
+                    }
+                });
             }
-        } else if (event.target.classList.contains('tag-minus-btn')) {
-            this.runtimeState.tags[type][tagName]--;
-            if (this.runtimeState.tags[type][tagName] <= 0) {
-                delete this.runtimeState.tags[type][tagName];
-            }
-        }
-        this.renderTags();
-        this.saveDatabase();
-    },
-    
-    performDiceRoll() {
-        const display = this.elements['dice-result-display'];
-        const evErDisplay = this.elements['dice-roller-ev-er'];
-        display.innerHTML = '';
-        evErDisplay.textContent = 'EV/ER: --';
-        
-        let jumbleCount = 0;
-        const jumbleInterval = setInterval(() => {
-            display.textContent = Math.floor(Math.random() * 10) + 1;
-            jumbleCount++;
-            if (jumbleCount > 10) {
-                clearInterval(jumbleInterval);
-                this.resolveDiceRoll();
-            }
-        }, 50);
-    },
-    
-    resolveDiceRoll() {
-        let total = 0;
-        let isCritical = false;
-        let mainDie;
+            return parsed;
+        },
 
-        while (true) {
-            const d1 = Math.floor(Math.random() * 10) + 1;
-            const d2 = Math.floor(Math.random() * 10) + 1;
+        parseFaction(data) {
+            const parsed = { type: 'Faction', profile: '', level: 0, systems: [], keywords: [] };
+            const parts = data.split('-');
+            if (parts.length > 0) parsed.profile = parts[0];
+            if (parts.length > 1) {
+                const levelMatch = parts[1].match(/L(\d)/);
+                if(levelMatch) parsed.level = parseInt(levelMatch[1]);
+            }
+            if (parts.length > 2) {
+                 const systemMatch = parts[2].match(/\[(.*?)\]/);
+                 if(systemMatch) parsed.systems = systemMatch[1].split('.').filter(Boolean);
+            }
+            if (parts.length > 3) {
+                const keywordMatch = parts[3].match(/\[(.*?)\]/);
+                if(keywordMatch) parsed.keywords = keywordMatch[1].split('.').filter(Boolean);
+            }
+            return parsed;
+        },
+
+
+        calculate(parsed) {
+            if (!parsed) return null;
+
+            const calc = {
+                level: 0,
+                stats: {},
+                resistance: 0,
+                maxHP: 10,
+                maxSP: 10,
+                maxEP: 10,
+                innatePassiveSlots: 0,
+                gearPassiveSlots: 0,
+                statPointsEarned: 0,
+                statPointsPerLevel: {}
+            };
             
-            if (d1 === d2) {
-                total += d1 + d2;
-                isCritical = true;
-            } else {
-                mainDie = d1;
-                total += mainDie;
-                break;
+            const kwCount = parsed.keywords.length;
+
+            // Level Calculation
+            if (kwCount === 0) calc.level = 0;
+            else if (kwCount >= 1 && kwCount <= 3) calc.level = 0;
+            else if (kwCount >= 4 && kwCount <= 5) calc.level = 1;
+            else if (kwCount > 5) {
+                calc.level = Math.floor((kwCount - 4) / 2) + 1;
             }
-        }
+
+            // Stat Point Calculation
+            if (calc.level >= 2 && calc.level <= 5) {
+                calc.statPointsEarned = calc.level - 1;
+            } else if (calc.level >= 6 && calc.level <= 9) {
+                calc.statPointsEarned = 4 + (calc.level - 5) * 2;
+            }
+            
+            // Map earned points to levels for UI
+            let points = 0;
+            for(let i=2; i<=9; i++) {
+                if(i <= 5) points += 1;
+                else points += 2;
+                calc.statPointsPerLevel[i] = points;
+            }
+
+
+            // Stat Calculation
+            const baseStat = calc.level === 0 ? 1 : 2;
+            SRD_DATA.statOrder.forEach(s => calc.stats[s] = baseStat);
+            
+            parsed.statAllocs.forEach(s => {
+                if (calc.stats[s] < 5) {
+                    calc.stats[s]++;
+                }
+            });
+
+            // Resistance Calculation
+            const statValues = Object.values(calc.stats).sort((a, b) => b - a);
+            calc.resistance = statValues[0] + statValues[1] + statValues[2];
+
+            // Resource Calculation
+            parsed.keywords.forEach(kw => {
+                if (kw.code === '71' && kw.choice !== null) { // Resilient
+                    const choiceMap = {0: 'maxHP', 1: 'maxSP', 2: 'maxEP'};
+                    calc[choiceMap[kw.choice]] += 5;
+                }
+                 if (kw.code === '70' && kw.choice !== null) { // Limited
+                    const choiceMap = {0: 'maxHP', 1: 'maxSP', 2: 'maxEP'};
+                    calc[choiceMap[kw.choice]] -= 5;
+                }
+            });
+
+            // Passive Slot Calculation
+            calc.innatePassiveSlots = calc.stats.F;
+            calc.gearPassiveSlots = calc.stats.E;
+            
+            return calc;
+        },
+
+        stringify(parsed) {
+            if (!parsed) return '';
+
+            let str = 'C:';
+            str += parsed.profile;
+
+            if (parsed.flaw) {
+                str += `+${parsed.flaw.flawCode}${parsed.flaw.compCode}`;
+            }
+
+            let kwIndex = 0;
+            let statIndex = 0;
+            let currentSegment = '';
+            
+            const addSegment = () => {
+                if(currentSegment) str += `-${currentSegment}`;
+                currentSegment = '';
+            }
+
+            // Seed
+            if (kwIndex < parsed.keywords.length) {
+                currentSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                addSegment();
+            }
+
+            // Awakening
+            for (let i = 0; i < 3 && kwIndex < parsed.keywords.length; i++) {
+                currentSegment += (i > 0 ? '.' : '') + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+            }
+            addSegment();
+            
+            // Progression
+            let pointsAtLastLevel = 0;
+            for (let level = 2; level <= 9; level++) {
+                if (kwIndex >= parsed.keywords.length) break;
+
+                // Keywords for this level
+                currentSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                if (kwIndex < parsed.keywords.length) {
+                    currentSegment += '.' + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                }
+                
+                // Stat points for this level
+                const pointsThisLevel = (level <= 5) ? 1 : 2;
+                for(let i=0; i<pointsThisLevel && statIndex < parsed.statAllocs.length; i++) {
+                     currentSegment += '.' + parsed.statAllocs[statIndex++];
+                }
+                addSegment();
+            }
+
+            return str;
+        },
         
-        let critText = '';
-        if (isCritical) critText = '<div class="crit-indicator">CRITICAL!</div>';
-        if (total >= 31) critText += '<div class="super-crit-indicator">SUPER CRITICAL!</div>';
+        stringifyKeyword(kw) {
+            let s = '';
+            if (kw.slotted) s += '!';
+            s += kw.code;
+            if (kw.choice !== null && kw.choice !== undefined) s += `(${kw.choice})`;
+            return s;
+        },
+
+    });
+
+    // APP LOGIC
+    Object.assign(App, {
+        db: {
+            entities: {},
+            currentEntityId: null,
+        },
+        state: {
+            parsed: null,
+            calculated: null,
+        },
+        dom: {},
+
+        init() {
+            this.selectElements();
+            this.populateSelectors();
+            this.bindEvents();
+            this.loadDatabase();
+            this.renderCharacterSheet();
+        },
+
+        selectElements() {
+            this.dom.appContainer = document.getElementById('app-container');
+            // Global
+            this.dom.entitySelector = document.getElementById('entity-selector');
+            this.dom.addEntityBtn = document.getElementById('add-entity-btn');
+            this.dom.importEntityBtn = document.getElementById('import-entity-btn');
+            this.dom.deleteEntityBtn = document.getElementById('delete-entity-btn');
+            this.dom.randomEntityBtn = document.getElementById('random-entity-btn');
+            // Dice Roller
+            this.dom.rollSrBtn = document.getElementById('roll-sr-btn');
+            this.dom.rollEvBtn = document.getElementById('roll-ev-btn');
+            this.dom.diceMain = document.getElementById('dice-roller-main');
+            this.dom.diceLucky = document.getElementById('dice-roller-lucky');
+            this.dom.diceTotal = document.getElementById('dice-roller-total');
+            this.dom.diceCrit = document.getElementById('dice-roller-crit-indicator');
+            this.dom.diceStatSelector = document.getElementById('dice-roller-stat-selector');
+            // Build Pane
+            this.dom.characterNameInput = document.getElementById('character-name-input');
+            this.dom.levelDisplay = document.getElementById('character-level-display');
+            this.dom.karmaValue = document.getElementById('karma-value');
+            this.dom.karmaIncBtn = document.getElementById('karma-inc-btn');
+            this.dom.karmaDecBtn = document.getElementById('karma-dec-btn');
+            this.dom.profileGoal = document.getElementById('profile-goal');
+            this.dom.profileMethod = document.getElementById('profile-method');
+            this.dom.profilePurpose = document.getElementById('profile-purpose');
+            this.dom.profileExternal = document.getElementById('profile-external');
+            this.dom.profileInternal = document.getElementById('profile-internal');
+            // Stats
+            SRD_DATA.statOrder.forEach(s => {
+                this.dom[`stat${s}`] = document.getElementById(`stat-${s.toLowerCase()}`);
+            });
+            this.dom.resistanceValue = document.getElementById('resistance-value');
+            // Resources
+            this.dom.hpDisplay = document.getElementById('hp-display');
+            this.dom.spDisplay = document.getElementById('sp-display');
+            this.dom.epDisplay = document.getElementById('ep-display');
+            this.dom.hpPips = document.querySelector('#hp-clock .pips');
+            this.dom.spPips = document.querySelector('#sp-clock .pips');
+            this.dom.epPips = document.querySelector('#ep-clock .pips');
+            // Keywords
+            this.dom.addKeywordSelector = document.getElementById('add-keyword-selector');
+            this.dom.addKeywordBtn = document.getElementById('add-keyword-btn');
+            this.dom.removeKeywordBtn = document.getElementById('remove-keyword-btn');
+            this.dom.innateKeywordsList = document.getElementById('innate-keywords-list');
+            this.dom.innatePassivesCount = document.getElementById('innate-passives-count');
+            this.dom.statProgressionList = document.getElementById('stat-progression-list');
+            // Blueprint
+            this.dom.liveBlueprintTextarea = document.getElementById('live-blueprint-textarea');
+            // Play Pane
+            this.dom.playPaneTabs = document.getElementById('play-pane-tabs');
+            this.dom.tabContents = document.querySelectorAll('.tab-content');
+            // Tags
+            this.dom.addBoostTagSelector = document.getElementById('add-boost-tag-selector');
+            this.dom.addBoostTagBtn = document.getElementById('add-boost-tag-btn');
+            this.dom.boostTagList = document.getElementById('boost-tag-list');
+            this.dom.boostTagPoolCount = document.getElementById('boost-tag-pool-count');
+            this.dom.addStatusTagSelector = document.getElementById('add-status-tag-selector');
+            this.dom.addStatusTagBtn = document.getElementById('add-status-tag-btn');
+            this.dom.statusTagList = document.getElementById('status-tag-list');
+            this.dom.statusTagPoolCount = document.getElementById('status-tag-pool-count');
+            // Inventory
+            this.dom.addInventoryItemBtn = document.getElementById('add-inventory-item-btn');
+            this.dom.inventoryList = document.getElementById('inventory-list');
+            this.dom.gearPassivesCount = document.getElementById('gear-passives-count');
+            //Companions
+            this.dom.addCompanionBtn = document.getElementById('add-companion-btn');
+            this.dom.companionList = document.getElementById('companion-list');
+            //Factions
+            this.dom.addFactionBtn = document.getElementById('add-faction-btn');
+            this.dom.factionList = document.getElementById('faction-list');
+        },
+
+        populateSelectors() {
+            // Keywords
+            Object.entries(SRD_DATA.keywords).forEach(([code, kw]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${code}: ${kw.name}`;
+                this.dom.addKeywordSelector.appendChild(option);
+            });
+            // Tags
+            Object.entries(SRD_DATA.tags.boosts).forEach(([code, name]) => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                this.dom.addBoostTagSelector.appendChild(option);
+            });
+            Object.entries(SRD_DATA.tags.statuses).forEach(([code, name]) => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                this.dom.addStatusTagSelector.appendChild(option);
+            });
+            // Stats for dice roller
+            Object.entries(SRD_DATA.stats).forEach(([code, name]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = name;
+                this.dom.diceStatSelector.appendChild(option);
+            })
+        },
+
+        bindEvents() {
+            // Global
+            this.dom.entitySelector.addEventListener('change', () => this.handleSelectEntity());
+            this.dom.addEntityBtn.addEventListener('click', () => this.handleAddEntity());
+            this.dom.importEntityBtn.addEventListener('click', () => this.handleImportEntity());
+            this.dom.deleteEntityBtn.addEventListener('click', () => this.handleDeleteEntity());
+            this.dom.randomEntityBtn.addEventListener('click', () => this.handleRandomEntity());
+            
+            // Dice Roller
+            this.dom.rollSrBtn.addEventListener('click', () => this.rollSR());
+            this.dom.rollEvBtn.addEventListener('click', () => this.rollEV());
+
+            // Name & Blueprint
+            this.dom.characterNameInput.addEventListener('input', (e) => this.handleNameChange(e.target.value));
+            this.dom.liveBlueprintTextarea.addEventListener('input', (e) => this.handleBlueprintChange(e.target.value));
+            
+            // Karma
+            this.dom.karmaIncBtn.addEventListener('click', () => this.updateKarma(1));
+            this.dom.karmaDecBtn.addEventListener('click', () => this.updateKarma(-1));
+            
+            // Keywords
+            this.dom.addKeywordBtn.addEventListener('click', () => this.handleAddKeyword());
+            this.dom.removeKeywordBtn.addEventListener('click', () => this.handleRemoveKeyword());
+            
+            // Resources
+            this.dom.hpPips.addEventListener('click', (e) => this.handlePipClick(e, 'hp'));
+            this.dom.spPips.addEventListener('click', (e) => this.handlePipClick(e, 'sp'));
+            this.dom.epPips.addEventListener('click', (e) => this.handlePipClick(e, 'ep'));
+
+            // Play Pane Tabs
+            this.dom.playPaneTabs.addEventListener('click', (e) => this.handleTabClick(e));
+
+            // Tags
+            this.dom.addBoostTagBtn.addEventListener('click', () => this.handleAddTag('boost'));
+            this.dom.addStatusTagBtn.addEventListener('click', () => this.handleAddTag('status'));
+            
+            // Inventory
+            this.dom.addInventoryItemBtn.addEventListener('click', () => this.handleAddItem());
+            // Companions
+            this.dom.addCompanionBtn.addEventListener('click', () => this.handleAddCompanion());
+            // Factions
+            this.dom.addFactionBtn.addEventListener('click', () => this.handleAddFaction());
+        },
+
+        // --- Event Handlers ---
+        handleSelectEntity() {
+            this.db.currentEntityId = this.dom.entitySelector.value;
+            this.saveDatabase();
+            this.renderCharacterSheet();
+        },
         
-        this.elements['dice-result-display'].innerHTML = `${total} ${critText}`;
+        handleAddEntity() {
+            const name = prompt("Enter new character name:", "New Agent");
+            if (!name) return;
+            const id = `entity_${Date.now()}`;
+            this.db.entities[id] = {
+                id: id,
+                name: name,
+                blueprint: "C:00000-01",
+                runtime: this.getNewRuntimeState()
+            };
+            this.db.currentEntityId = id;
+            this.updateEntitySelector();
+            this.saveDatabase();
+            this.renderCharacterSheet();
+        },
         
-        const statKey = this.elements['dice-roller-stat-select'].value;
-        if (statKey !== 'none') {
-            const parsed = CodexEngine.parse(this.liveBlueprint);
-            const calculated = CodexEngine.calculate(parsed);
-            const evEr = total + calculated.level + calculated.stats[statKey];
-            this.elements['dice-roller-ev-er'].textContent = `EV/ER: ${evEr}`;
-        }
-    },
-    
-    generateRandomEntity() {
-        const type = prompt("Enter entity type (character, animation, item, faction):")?.toLowerCase();
-        if (!type) return;
+        handleImportEntity() {
+            const bp = prompt("Paste blueprint string:");
+            if (!bp) return;
+            const currentEntity = this.getCurrentEntity();
+            if(currentEntity) {
+                currentEntity.blueprint = bp.trim();
+                this.saveDatabase();
+                this.renderCharacterSheet();
+            }
+        },
         
-        let level = 0;
-        if (type !== 'faction') {
-            level = parseInt(prompt("Enter target level (0-9):", "1"), 10);
-            if (isNaN(level) || level < 0 || level > 9) {
-                alert("Invalid level.");
+        handleDeleteEntity() {
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity || !confirm(`Are you sure you want to delete "${currentEntity.name}"?`)) return;
+            
+            delete this.db.entities[currentEntity.id];
+            const remainingIds = Object.keys(this.db.entities);
+            this.db.currentEntityId = remainingIds.length > 0 ? remainingIds[0] : null;
+            
+            this.updateEntitySelector();
+            this.saveDatabase();
+            this.renderCharacterSheet();
+        },
+        
+        handleRandomEntity() {
+            const type = prompt("Generate what type? (character, animation, item, faction)", "character")?.toLowerCase();
+            const levelStr = prompt("Enter target level (0-9):", "1");
+            const level = parseInt(levelStr);
+            
+            if (!type || isNaN(level)) return;
+            
+            let blueprint = this.generateRandomBlueprint(type, level);
+            if (blueprint) {
+                const currentEntity = this.getCurrentEntity();
+                 if(currentEntity) {
+                    currentEntity.blueprint = blueprint;
+                    this.saveDatabase();
+                    this.renderCharacterSheet();
+                 } else {
+                     alert("Create a character first to apply the random blueprint.");
+                 }
+            } else {
+                alert("Invalid type for random generation.");
+            }
+        },
+
+        handleNameChange(newName) {
+            const currentEntity = this.getCurrentEntity();
+            if (currentEntity) {
+                currentEntity.name = newName;
+                this.dom.entitySelector.querySelector(`option[value="${currentEntity.id}"]`).textContent = newName;
+                this.saveDatabase();
+            }
+        },
+
+        handleBlueprintChange(newBlueprint) {
+            const currentEntity = this.getCurrentEntity();
+            if (currentEntity) {
+                currentEntity.blueprint = newBlueprint.trim();
+                this.saveDatabase();
+                this.renderCharacterSheet();
+            }
+        },
+        
+        updateKarma(delta) {
+            const currentEntity = this.getCurrentEntity();
+            if(currentEntity) {
+                currentEntity.runtime.karma = Math.max(0, currentEntity.runtime.karma + delta);
+                this.dom.karmaValue.textContent = currentEntity.runtime.karma;
+                this.saveDatabase();
+            }
+        },
+
+        handleAddKeyword() {
+            const code = this.dom.addKeywordSelector.value;
+            if (!code || !this.state.parsed) return;
+            
+            const kwData = SRD_DATA.keywords[code];
+            const newKw = { code: code, slotted: false, choice: null };
+            
+            if(kwData.category === 'flaw') {
+                const compCode = prompt("Enter the 2-digit code for the Compensation keyword:");
+                if(!compCode || compCode.length !== 2 || isNaN(parseInt(compCode))) {
+                    alert("Invalid compensation code.");
+                    return;
+                }
+                this.state.parsed.flaw = { flawCode: code, compCode: compCode };
+            } else {
+                if(this.state.parsed.keywords.length >= 20) {
+                    alert("Maximum of 20 keywords reached.");
+                    return;
+                }
+                this.state.parsed.keywords.push(newKw);
+            }
+
+            this.updateBlueprintFromState();
+        },
+
+        handleRemoveKeyword() {
+            if (!this.state.parsed || this.state.parsed.keywords.length === 0) return;
+            if (!confirm("Remove the last added keyword?")) return;
+
+            this.state.parsed.keywords.pop();
+            this.updateBlueprintFromState();
+        },
+
+        handlePipClick(event, resource) {
+            if (!event.target.classList.contains('pip')) return;
+
+            const pips = Array.from(event.currentTarget.children);
+            const index = pips.indexOf(event.target);
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+
+            const currentValue = currentEntity.runtime[resource].current;
+            // If clicking the same pip as the current value, set to zero.
+            const newValue = (currentValue === index + 1) ? index : index + 1;
+            
+            currentEntity.runtime[resource].current = newValue;
+            this.saveDatabase();
+            this.renderResources();
+        },
+
+        handleTabClick(event) {
+            if (!event.target.classList.contains('tab-button')) return;
+
+            this.dom.playPaneTabs.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            this.dom.tabContents.forEach(content => content.classList.add('hidden'));
+            const tabId = `tab-content-${event.target.dataset.tab}`;
+            document.getElementById(tabId)?.classList.remove('hidden');
+        },
+        
+        handleAddTag(type) {
+            const selector = type === 'boost' ? this.dom.addBoostTagSelector : this.dom.addStatusTagSelector;
+            const tagName = selector.value;
+            if(!tagName) return;
+
+            const currentEntity = this.getCurrentEntity();
+            if(!currentEntity) return;
+
+            const pool = currentEntity.runtime.tags[type + 's'];
+            const totalInPool = Object.values(pool).reduce((sum, tag) => sum + tag.quantity, 0);
+
+            if (totalInPool >= 10) {
+                alert(`Maximum of 10 ${type} tags reached.`);
                 return;
             }
-        }
 
-        let blueprint = '';
-        const d100 = () => {
-            const roll = Math.floor(Math.random() * 100);
-            return roll < 10 ? `0${roll}` : `${roll}`;
-        };
-        const d10 = () => Math.floor(Math.random() * 10);
-        const statKey = () => ['M','A','B','W','E','T','P','I','F'][d10()-1] || 'M';
+            if(pool[tagName]) {
+                if(pool[tagName].quantity < 5) {
+                    pool[tagName].quantity++;
+                } else {
+                     alert(`Maximum of 5 stacks for ${tagName}.`);
+                }
+            } else {
+                pool[tagName] = { name: tagName, quantity: 1 };
+            }
 
-        if (type === 'character') {
-            const profile = `${d10()}${d10()}${d10()}${d10()}${d10()}`;
-            let keywords = [];
-            let statProg = [];
-            const kwCount = [1, 4, 6, 8, 10, 12, 14, 16, 18, 20][level];
-            for (let i = 0; i < kwCount; i++) keywords.push({id: d100(), slotted: false, choice: null});
-            
-            const statPointsPerLevel = [0, 0, 1, 2, 3, 4, 6, 8, 10, 12];
-            for (let i = 0; i < statPointsPerLevel[level]; i++) statProg.push(statKey());
-            
-            const parsed = { type: 'Character', profile: profile.split('').map(Number), flaw: null, keywords, statProgression: statProg };
-            blueprint = CodexEngine.stringify(parsed);
-        } else {
-            alert("Only random character generation is currently implemented.");
-            return;
-        }
+            this.saveDatabase();
+            this.renderTags();
+        },
         
-        prompt("Generated Blueprint (Copy this):", blueprint);
-    }
-};
+        handleTagQuantityChange(type, tagName, delta) {
+             const currentEntity = this.getCurrentEntity();
+             if(!currentEntity) return;
+             const pool = currentEntity.runtime.tags[type + 's'];
+             
+             if(pool[tagName]) {
+                 pool[tagName].quantity += delta;
+                 if(pool[tagName].quantity <= 0) {
+                     delete pool[tagName];
+                 }
+             }
+             this.saveDatabase();
+             this.renderTags();
+        },
 
-document.addEventListener('DOMContentLoaded', () => {
-    App.init();
-});
+        handleAddItem() {
+            const blueprint = prompt("Enter item blueprint string (e.g., L2-38.58):");
+            if (!blueprint) return;
+            
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
 
-</script>
+            const newItem = {
+                id: `item_${Date.now()}`,
+                name: "New Item",
+                blueprint: blueprint
+            };
+            currentEntity.runtime.inventory.push(newItem);
+            this.saveDatabase();
+            this.renderInventory();
+        },
+        
+        handleItemChange(itemId, field, value) {
+             const currentEntity = this.getCurrentEntity();
+             if (!currentEntity) return;
+             const item = currentEntity.runtime.inventory.find(i => i.id === itemId);
+             if (item) {
+                 item[field] = value;
+                 this.saveDatabase();
+                 if(field === 'blueprint') this.renderInventory();
+             }
+        },
+
+        handleDeleteItem(itemId) {
+            if(!confirm("Delete this item?")) return;
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+            currentEntity.runtime.inventory = currentEntity.runtime.inventory.filter(i => i.id !== itemId);
+            this.saveDatabase();
+            this.renderInventory();
+        },
+        
+        handleCompanionChange(compId, field, value) {
+             const currentEntity = this.getCurrentEntity();
+             if (!currentEntity) return;
+             const comp = currentEntity.runtime.companions.find(c => c.id === compId);
+             if (comp) {
+                 comp[field] = value;
+                 this.saveDatabase();
+                 if(field === 'blueprint') this.renderCompanions();
+             }
+        },
+        
+        handleDeleteCompanion(compId) {
+            if(!confirm("Delete this companion?")) return;
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+            currentEntity.runtime.companions = currentEntity.runtime.companions.filter(c => c.id !== compId);
+            this.saveDatabase();
+            this.renderCompanions();
+        },
+
+        handleAddCompanion() {
+            const blueprint = prompt("Enter companion blueprint string (e.g., A:21.22):");
+            if (!blueprint) return;
+            
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+
+            const newComp = {
+                id: `comp_${Date.now()}`,
+                name: "New Companion",
+                blueprint: blueprint
+            };
+            currentEntity.runtime.companions.push(newComp);
+            this.saveDatabase();
+            this.renderCompanions();
+        },
+        
+        handleAddFaction() {
+            const blueprint = prompt("Enter faction blueprint string (e.g., F:03817-L3[S0.S2.S3]-[K01.12...]):");
+            if (!blueprint) return;
+            
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+
+            const newFact = {
+                id: `fact_${Date.now()}`,
+                name: "New Faction",
+                blueprint: blueprint,
+                trust: "Neutral"
+            };
+            currentEntity.runtime.factions.push(newFact);
+            this.saveDatabase();
+            this.renderFactions();
+        },
+        
+        handleFactionChange(factId, field, value) {
+             const currentEntity = this.getCurrentEntity();
+             if (!currentEntity) return;
+             const fact = currentEntity.runtime.factions.find(f => f.id === factId);
+             if (fact) {
+                 fact[field] = value;
+                 this.saveDatabase();
+                 if(field === 'blueprint') this.renderFactions();
+             }
+        },
+        
+        handleDeleteFaction(factId) {
+            if(!confirm("Delete this faction?")) return;
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+            currentEntity.runtime.factions = currentEntity.runtime.factions.filter(f => f.id !== factId);
+            this.saveDatabase();
+            this.renderFactions();
+        },
+
+        updateBlueprintFromState() {
+            const newBlueprint = CodexEngine.stringify(this.state.parsed);
+            const currentEntity = this.getCurrentEntity();
+            if (currentEntity && newBlueprint) {
+                currentEntity.blueprint = newBlueprint;
+                this.saveDatabase();
+                this.renderCharacterSheet();
+            }
+        },
+        
+        // --- Rendering ---
+        renderCharacterSheet() {
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) {
+                this.dom.appContainer.classList.add('hidden');
+                return;
+            }
+            this.dom.appContainer.classList.remove('hidden');
+
+            this.state.parsed = CodexEngine.parse(currentEntity.blueprint);
+            this.state.calculated = CodexEngine.calculate(this.state.parsed);
+            
+            if (!this.state.parsed || !this.state.calculated) {
+                console.error("Failed to parse or calculate blueprint:", currentEntity.blueprint);
+                this.dom.liveBlueprintTextarea.style.borderColor = 'red';
+                return;
+            }
+             this.dom.liveBlueprintTextarea.style.borderColor = '';
+
+            // Render all sections
+            this.dom.characterNameInput.value = currentEntity.name;
+            this.dom.liveBlueprintTextarea.value = currentEntity.blueprint;
+            this.dom.levelDisplay.textContent = `Lvl ${this.state.calculated.level}`;
+            this.dom.karmaValue.textContent = currentEntity.runtime.karma;
+
+            this.renderProfile();
+            this.renderStats();
+            this.renderResources();
+            this.renderKeywordsAndProgression();
+            this.renderTags();
+            this.renderInventory();
+            this.renderCompanions();
+            this.renderFactions();
+        },
+
+        renderProfile() {
+            const { profile } = this.state.parsed;
+            const motivations = SRD_DATA.motivations;
+            const colors = SRD_DATA.colors;
+
+            const goal = profile[0] ? motivations[profile[0]] : '--';
+            const method = profile[1] ? motivations[profile[1]] : '--';
+            const purpose = profile[2] ? motivations[profile[2]] : '--';
+            const external = profile[3] ? motivations[profile[3]] : '--';
+            const internal = profile[4] ? motivations[profile[4]] : '--';
+
+            const getColor = (code) => {
+                 const colorMap = {'0':'0', '1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9'};
+                 return colors[colorMap[code]]?.hex || 'var(--silver-color)';
+            }
+            
+            this.dom.profileGoal.textContent = goal;
+            this.dom.profileGoal.style.borderColor = getColor(profile[0]);
+            this.dom.profileMethod.textContent = method;
+            this.dom.profileMethod.style.borderColor = getColor(profile[1]);
+            this.dom.profilePurpose.textContent = purpose;
+            this.dom.profilePurpose.style.borderColor = getColor(profile[2]);
+            this.dom.profileExternal.textContent = external;
+            this.dom.profileExternal.style.borderColor = getColor(profile[3]);
+            this.dom.profileInternal.textContent = internal;
+            this.dom.profileInternal.style.borderColor = getColor(profile[4]);
+        },
+
+        renderStats() {
+            const { stats, resistance } = this.state.calculated;
+            SRD_DATA.statOrder.forEach(s => {
+                this.dom[`stat${s}`].textContent = stats[s];
+            });
+            this.dom.resistanceValue.textContent = resistance;
+        },
+
+        renderResources() {
+            const { maxHP, maxSP, maxEP } = this.state.calculated;
+            const currentEntity = this.getCurrentEntity();
+            if(!currentEntity) return;
+
+            const {hp, sp, ep} = currentEntity.runtime;
+            
+            this.dom.hpDisplay.textContent = `${hp.current}/${maxHP}`;
+            this.dom.spDisplay.textContent = `${sp.current}/${maxSP}`;
+            this.dom.epDisplay.textContent = `${ep.current}/${maxEP}`;
+
+            const renderPips = (container, current, max) => {
+                container.innerHTML = '';
+                for (let i = 0; i < max; i++) {
+                    const pip = document.createElement('div');
+                    pip.className = 'pip';
+                    if (i < current) pip.classList.add('filled');
+                    container.appendChild(pip);
+                }
+            };
+
+            renderPips(this.dom.hpPips, hp.current, maxHP);
+            renderPips(this.dom.spPips, sp.current, maxSP);
+            renderPips(this.dom.epPips, ep.current, maxEP);
+        },
+        
+        renderKeywordsAndProgression() {
+            this.dom.innateKeywordsList.innerHTML = '';
+            const { keywords, flaw } = this.state.parsed;
+            const { innatePassiveSlots } = this.state.calculated;
+            
+            let slottedCount = 0;
+            keywords.forEach((kw, index) => {
+                if(kw.slotted) slottedCount++;
+                const kwData = SRD_DATA.keywords[kw.code];
+                if(!kwData) return;
+                
+                const li = document.createElement('li');
+                li.className = 'keyword-item';
+
+                const toggle = document.createElement('div');
+                toggle.className = 'keyword-toggle';
+                if(kw.slotted) toggle.classList.add('slotted');
+                toggle.addEventListener('click', () => {
+                    const currentSlotted = this.state.parsed.keywords.filter(k=>k.slotted).length;
+                    if(!kw.slotted && currentSlotted >= innatePassiveSlots) {
+                        alert('No more innate passive slots available.');
+                        return;
+                    }
+                    kw.slotted = !kw.slotted;
+                    this.updateBlueprintFromState();
+                });
+                
+                const nameSpan = document.createElement('span');
+                let nameText = `${kw.code}: ${kwData.name}`;
+                if (flaw && kwData.code === flaw.compCode) {
+                    nameText += ` (Comp.)`;
+                }
+                nameSpan.textContent = nameText;
+                
+                li.appendChild(toggle);
+                li.appendChild(nameSpan);
+
+                if (kwData.options) {
+                    const select = document.createElement('select');
+                    kwData.options.forEach((opt, optIndex) => {
+                        const option = document.createElement('option');
+                        option.value = optIndex;
+                        option.textContent = opt;
+                        if (kw.choice === optIndex) option.selected = true;
+                        select.appendChild(option);
+                    });
+                    select.addEventListener('change', (e) => {
+                       kw.choice = parseInt(e.target.value);
+                       this.updateBlueprintFromState();
+                    });
+                    li.appendChild(select);
+                }
+
+                this.dom.innateKeywordsList.appendChild(li);
+            });
+            
+            if(flaw) {
+                 const li = document.createElement('li');
+                 li.className = 'keyword-item';
+                 li.innerHTML = `<span></span><span>${flaw.flawCode}: ${SRD_DATA.keywords[flaw.flawCode].name} (Flaw)</span>`;
+                 this.dom.innateKeywordsList.prepend(li);
+            }
+            
+            this.dom.innatePassivesCount.textContent = `${slottedCount}/${innatePassiveSlots}`;
+            
+            // Stat Progression UI
+            this.dom.statProgressionList.innerHTML = '';
+            const { statPointsEarned, statPointsPerLevel } = this.state.calculated;
+            const allocatedPoints = this.state.parsed.statAllocs.length;
+            
+            if (allocatedPoints < statPointsEarned) {
+                const pointsToAllocate = statPointsEarned - allocatedPoints;
+                const li = document.createElement('li');
+                
+                let currentLevel = 2;
+                while(this.state.calculated.statPointsPerLevel[currentLevel] <= allocatedPoints && currentLevel < 9) {
+                    currentLevel++;
+                }
+                
+                li.textContent = `Allocate ${pointsToAllocate} point(s) for Lvl ${currentLevel}+: `;
+                
+                const select = document.createElement('select');
+                 SRD_DATA.statOrder.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s;
+                    option.textContent = SRD_DATA.stats[s];
+                    select.appendChild(option);
+                });
+                
+                const button = document.createElement('button');
+                button.textContent = 'Allocate';
+                button.onclick = () => {
+                    this.state.parsed.statAllocs.push(select.value);
+                    this.updateBlueprintFromState();
+                };
+                
+                li.appendChild(select);
+                li.appendChild(button);
+                this.dom.statProgressionList.appendChild(li);
+            }
+        },
+
+        renderTags() {
+            const currentEntity = this.getCurrentEntity();
+            if (!currentEntity) return;
+
+            const renderList = (type, listEl, pool) => {
+                listEl.innerHTML = '';
+                Object.values(pool).forEach(tag => {
+                    const li = document.createElement('li');
+                    li.className = 'tag-item';
+                    
+                    const name = document.createElement('span');
+                    name.className = 'name';
+                    name.textContent = tag.name;
+
+                    const decBtn = document.createElement('button');
+                    decBtn.textContent = '-';
+                    decBtn.onclick = () => this.handleTagQuantityChange(type, tag.name, -1);
+
+                    const quantity = document.createElement('span');
+                    quantity.className = 'quantity';
+                    quantity.textContent = tag.quantity;
+
+                    const incBtn = document.createElement('button');
+                    incBtn.textContent = '+';
+                    incBtn.onclick = () => this.handleTagQuantityChange(type, tag.name, 1);
+
+                    li.append(name, decBtn, quantity, incBtn);
+                    listEl.appendChild(li);
+                });
+            };
+            
+            const boosts = currentEntity.runtime.tags.boosts;
+            const statuses = currentEntity.runtime.tags.statuses;
+            
+            renderList('boost', this.dom.boostTagList, boosts);
+            renderList('status', this.dom.statusTagList, statuses);
+            
+            this.dom.boostTagPoolCount.textContent = Object.values(boosts).reduce((sum,t) => sum + t.quantity, 0);
+            this.dom.statusTagPoolCount.textContent = Object.values(statuses).reduce((sum,t) => sum + t.quantity, 0);
+        },
+        
+        renderInventory() {
+            this.dom.inventoryList.innerHTML = '';
+            const currentEntity = this.getCurrentEntity();
+            if(!currentEntity || !this.state.calculated) return;
+
+            let slottedGearPassives = 0;
+            currentEntity.runtime.inventory.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'inventory-item-card';
+
+                const parsedItem = CodexEngine.parseItem(item.blueprint.substring(2)); // remove I:
+                
+                const header = document.createElement('div');
+                header.className = 'item-header';
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'item-name-input';
+                nameInput.value = item.name;
+                nameInput.oninput = (e) => this.handleItemChange(item.id, 'name', e.target.value);
+                
+                const bpInput = document.createElement('input');
+                bpInput.type = 'text';
+                bpInput.value = item.blueprint;
+                bpInput.style.width = '25%';
+                bpInput.oninput = (e) => this.handleItemChange(item.id, 'blueprint', e.target.value);
+
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'X';
+                delBtn.onclick = () => this.handleDeleteItem(item.id);
+                
+                header.append(nameInput, bpInput, delBtn);
+                itemCard.appendChild(header);
+
+                if (parsedItem && parsedItem.keywords.length > 0) {
+                    const kwList = document.createElement('ul');
+                    kwList.className = 'item-keywords-list';
+                    parsedItem.keywords.forEach(kw => {
+                        const kwData = SRD_DATA.keywords[kw.code];
+                        if(!kwData) return;
+                        if(kw.slotted) slottedGearPassives++;
+
+                        const li = document.createElement('li');
+                        li.className = 'keyword-item';
+
+                        const toggle = document.createElement('div');
+                        toggle.className = 'keyword-toggle';
+                        if(kw.slotted) toggle.classList.add('slotted');
+                        toggle.onclick = () => {
+                             const currentSlotted = currentEntity.runtime.inventory.flatMap(i => CodexEngine.parseItem(i.blueprint.substring(2)).keywords).filter(k=>k.slotted).length;
+                            if(!kw.slotted && currentSlotted >= this.state.calculated.gearPassiveSlots) {
+                                alert('No more gear passive slots available.');
+                                return;
+                            }
+                            kw.slotted = !kw.slotted;
+                            
+                            // Rebuild item blueprint string
+                            let newBp = `I:L${parsedItem.level}`;
+                            parsedItem.keywords.forEach(k => newBp += `.${CodexEngine.stringifyKeyword(k)}`);
+                            item.blueprint = newBp;
+                            this.saveDatabase();
+                            this.renderInventory();
+                        };
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.textContent = `${kw.code}: ${kwData.name}`;
+
+                        li.append(toggle, nameSpan);
+                        kwList.appendChild(li);
+                    });
+                    itemCard.appendChild(kwList);
+                }
+                this.dom.inventoryList.appendChild(itemCard);
+            });
+            this.dom.gearPassivesCount.textContent = `${slottedGearPassives}/${this.state.calculated.gearPassiveSlots}`;
+        },
+        
+        renderCompanions() {
+            this.dom.companionList.innerHTML = '';
+            const currentEntity = this.getCurrentEntity();
+            if(!currentEntity) return;
+
+            currentEntity.runtime.companions.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'companion-card';
+
+                const parsedComp = CodexEngine.parseAnimation(comp.blueprint.substring(2));
+                const calcComp = CodexEngine.calculate(parsedComp); // Need to adapt calculate for animations
+                
+                // Quick fix for animation calculation
+                let compLevel = parsedComp.keywords.length - 1;
+                if (compLevel < 0) compLevel = 0;
+                let compStatsTotal = 9 + compLevel;
+                // Distribute stats evenly for display - this is a simplification
+                let baseStat = Math.floor(compStatsTotal / 9);
+                let rem = compStatsTotal % 9;
+                let compStats = {};
+                SRD_DATA.statOrder.forEach(s => {
+                    compStats[s] = baseStat + (rem-- > 0 ? 1 : 0);
+                });
+                const sortedStats = Object.values(compStats).sort((a,b)=>b-a);
+                const compRes = sortedStats[0]+sortedStats[1]+sortedStats[2];
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        <input type="text" class="item-name-input" value="${comp.name}" data-id="${comp.id}" data-field="name">
+                        <button data-id="${comp.id}" class="delete-companion-btn">X</button>
+                    </div>
+                     <input type="text" value="${comp.blueprint}" style="width:100%" data-id="${comp.id}" data-field="blueprint">
+                    <div class="details">
+                        <span>Lvl: ${compLevel}</span>
+                        <span>Res: ${compRes}</span>
+                        <span>HP/SP/EP: 10</span>
+                        <span>Keywords: ${parsedComp.keywords.map(k=>k.code).join(', ')}</span>
+                    </div>
+                `;
+                
+                card.querySelector('.item-name-input').oninput = (e) => this.handleCompanionChange(e.target.dataset.id, 'name', e.target.value);
+                 card.querySelector('input[type="text"][data-field="blueprint"]').oninput = (e) => this.handleCompanionChange(e.target.dataset.id, 'blueprint', e.target.value);
+                card.querySelector('.delete-companion-btn').onclick = (e) => this.handleDeleteCompanion(e.target.dataset.id);
+                this.dom.companionList.appendChild(card);
+            });
+        },
+        
+        renderFactions() {
+            this.dom.factionList.innerHTML = '';
+            const currentEntity = this.getCurrentEntity();
+            if(!currentEntity) return;
+
+            currentEntity.runtime.factions.forEach(fact => {
+                 const card = document.createElement('div');
+                 card.className = 'faction-card';
+                 const parsedFact = CodexEngine.parseFaction(fact.blueprint.substring(2));
+                 
+                 card.innerHTML = `
+                    <div class="item-header">
+                        <input type="text" class="item-name-input" value="${fact.name}" data-id="${fact.id}" data-field="name">
+                        <select data-id="${fact.id}" data-field="trust">
+                            <option value="Ally" ${fact.trust === 'Ally' ? 'selected' : ''}>Ally</option>
+                            <option value="Neutral" ${fact.trust === 'Neutral' ? 'selected' : ''}>Neutral</option>
+                            <option value="Enemy" ${fact.trust === 'Enemy' ? 'selected' : ''}>Enemy</option>
+                        </select>
+                        <button data-id="${fact.id}" class="delete-faction-btn">X</button>
+                    </div>
+                    <input type="text" value="${fact.blueprint}" style="width:100%" data-id="${fact.id}" data-field="blueprint">
+                    <div>Lvl: ${parsedFact.level} | Goal: ${SRD_DATA.motivations[parsedFact.profile[0]] || 'N/A'}</div>
+                 `;
+                
+                card.querySelector('.item-name-input').oninput = (e) => this.handleFactionChange(e.target.dataset.id, 'name', e.target.value);
+                card.querySelector('select').onchange = (e) => this.handleFactionChange(e.target.dataset.id, 'trust', e.target.value);
+                card.querySelector('input[type="text"][data-field="blueprint"]').oninput = (e) => this.handleFactionChange(e.target.dataset.id, 'blueprint', e.target.value);
+                card.querySelector('.delete-faction-btn').onclick = (e) => this.handleDeleteFaction(e.target.dataset.id);
+                this.dom.factionList.appendChild(card);
+            });
+        },
+
+
+        // --- Database & State ---
+        getCurrentEntity() {
+            return this.db.entities[this.db.currentEntityId] || null;
+        },
+
+        getNewRuntimeState() {
+            return {
+                karma: 0,
+                hp: { current: 10, max: 10 },
+                sp: { current: 10, max: 10 },
+                ep: { current: 10, max: 10 },
+                tags: { boosts: {}, statuses: {} },
+                inventory: [],
+                companions: [],
+                factions: [],
+            };
+        },
+
+        loadDatabase() {
+            const dbString = localStorage.getItem('resonanceCompanionDb_v2');
+            if (dbString) {
+                this.db = JSON.parse(dbString);
+            } else {
+                // Create a default character if DB is empty
+                const id = 'entity_default';
+                this.db.entities[id] = {
+                    id: id,
+                    name: "Sparks (Example)",
+                    blueprint: "C:00000-13-11(1).83.93",
+                    runtime: this.getNewRuntimeState()
+                };
+                this.db.currentEntityId = id;
+            }
+            this.updateEntitySelector();
+        },
+        
+        saveDatabase() {
+            localStorage.setItem('resonanceCompanionDb_v2', JSON.stringify(this.db));
+        },
+        
+        updateEntitySelector() {
+            this.dom.entitySelector.innerHTML = '';
+            const ids = Object.keys(this.db.entities);
+            if (ids.length === 0) {
+                 this.db.currentEntityId = null;
+                 return;
+            }
+
+            ids.forEach(id => {
+                const entity = this.db.entities[id];
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = entity.name;
+                if (id === this.db.currentEntityId) {
+                    option.selected = true;
+                }
+                this.dom.entitySelector.appendChild(option);
+            });
+            
+            if (!this.db.currentEntityId || !this.db.entities[this.db.currentEntityId]) {
+                this.db.currentEntityId = ids[0];
+            }
+        },
+
+        // --- Utils ---
+        rollSR(isSubRoll = false) {
+            let runningTotal = 0;
+            let finalMain, finalLucky;
+            let isCrit = false;
+            let isSuperCrit = false;
+
+            const rollOnce = () => {
+                const main = Math.floor(Math.random() * 10) + 1;
+                const lucky = Math.floor(Math.random() * 10) + 1;
+                return { main, lucky };
+            };
+
+            let { main, lucky } = rollOnce();
+            while (main === lucky) {
+                isCrit = true;
+                runningTotal += main + lucky;
+                ({ main, lucky } = rollOnce());
+            }
+
+            finalMain = main;
+            finalLucky = lucky;
+            const finalSR = runningTotal + finalMain;
+            if (finalSR >= 31) isSuperCrit = true;
+            if (main === lucky && !isCrit) isCrit = true; // For the final roll if it's doubles
+
+            if (!isSubRoll) {
+                this.animateDice(finalMain, finalLucky, finalSR, isCrit, isSuperCrit);
+            }
+            return { sr: finalSR, isCrit, isSuperCrit };
+        },
+
+        rollEV() {
+            if (!this.state.calculated) return;
+            const { sr, isCrit, isSuperCrit } = this.rollSR(true);
+            const statCode = this.dom.diceStatSelector.value;
+            const statValue = this.state.calculated.stats[statCode];
+            const level = this.state.calculated.level;
+            
+            const totalEV = sr + level + statValue;
+
+            this.animateDice(null, null, totalEV, isCrit, isSuperCrit, `SR(${sr})+L(${level})+${statCode}(${statValue})`);
+        },
+        
+        animateDice(finalMain, finalLucky, finalTotal, isCrit, isSuperCrit, formula = "") {
+            let jumbleCount = 0;
+            const jumbleInterval = setInterval(() => {
+                this.dom.diceMain.textContent = Math.floor(Math.random() * 10) + 1;
+                this.dom.diceLucky.textContent = Math.floor(Math.random() * 10) + 1;
+                this.dom.diceTotal.textContent = Math.floor(Math.random() * 30) + 1;
+                jumbleCount++;
+                if (jumbleCount > 10) {
+                    clearInterval(jumbleInterval);
+                    if(finalMain) this.dom.diceMain.textContent = finalMain;
+                    if(finalLucky) this.dom.diceLucky.textContent = finalLucky;
+                    this.dom.diceTotal.textContent = finalTotal;
+                    let critText = '';
+                    if (isSuperCrit) critText = "SUPER CRITICAL!";
+                    else if (isCrit) critText = "Critical!";
+                    this.dom.diceCrit.textContent = critText + (formula ? ` [${formula}]` : '');
+                }
+            }, 50);
+        },
+        
+        generateRandomBlueprint(type, level) {
+            const rand = (max) => Math.floor(Math.random() * max);
+            const d100 = () => {
+                const n = rand(100);
+                return n < 10 ? '0' + n : '' + n;
+            }
+
+            if (type === 'character') {
+                let bp = 'C:';
+                // Profile
+                for (let i = 0; i < 5; i++) bp += rand(10);
+                
+                let kwCount = 0;
+                if(level === 0) kwCount = 1;
+                else if (level === 1) kwCount = 4;
+                else kwCount = 4 + (level-1) * 2;
+                
+                let statPoints = 0;
+                if(level >= 2 && level <= 5) statPoints = level - 1;
+                if(level >= 6) statPoints = 4 + (level-5) * 2;
+                
+                let statAllocs = [];
+                for(let i=0; i<statPoints; i++) {
+                    statAllocs.push(SRD_DATA.statOrder[rand(9)]);
+                }
+
+                let keywords = [];
+                for(let i=0; i<kwCount; i++) {
+                    let code;
+                    do {
+                        code = d100();
+                    } while (SRD_DATA.keywords[code].category === 'flaw');
+                    keywords.push({code: code, slotted: false, choice: null});
+                }
+                
+                const parsed = {type: 'Character', profile: bp.substring(2), flaw: null, keywords: keywords, statAllocs: statAllocs};
+                return CodexEngine.stringify(parsed);
+
+            } else if (type === 'item') {
+                 let itemLevel = Math.min(5, level);
+                 if (itemLevel === 0) itemLevel = 1;
+                 let bp = `I:L${itemLevel}`;
+                 for(let i=0; i<itemLevel; i++) {
+                     let code;
+                     do { code = d100(); } while (SRD_DATA.keywords[code].category === 'flaw');
+                     bp += `.${code}`;
+                 }
+                 return bp;
+            }
+            // Add other types later
+            return null;
+        }
+
+    });
+
+    document.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
 </body>
 </html>
