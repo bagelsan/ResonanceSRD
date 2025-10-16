@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Companion</title>
+    <!-- Using web fonts as a practical compromise to avoid embedding massive base64 files -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Calibri&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- PHASE 1: THE VISUAL SHELL (CSS) -->
+    <style>
+        :root {
+            --color-null: #dea193;
+            --color-silver: #a7a9ac;
+            --color-yellow: #f5d36c;
+            --color-green: #688d4c;
+            --color-black: #414042;
+            --color-orange: #f7855d;
+            --color-white: #e3e1da;
+            --color-red: #a95b5a;
+            --color-blue: #88bfe8;
+            --color-purple: #957fa3;
+
+            --bg-dark: #2a2a2e;
+            --bg-medium: #3a3a3e;
+            --border-light: #555;
+            --font-main: 'Calibri', sans-serif;
+            --font-header: 'Oswald', sans-serif;
+            --font-light: var(--color-white);
+            --font-medium: var(--color-silver);
+        }
+
+        /* GENERAL RESET & SETUP */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: var(--bg-dark);
+            color: var(--font-light);
+            font-family: var(--font-main);
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+
+        /* LAYOUT & CONTAINERS */
+        #app-container {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .pane {
+            background-color: var(--bg-medium);
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        
+        /* HEADERS & TYPOGRAPHY */
+        h1, h2, h3 {
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            color: var(--color-blue);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--color-blue);
+            padding-bottom: 5px;
+        }
+        
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.4em; color: var(--color-null); }
+        h3 { font-size: 1.1em; color: var(--color-silver); margin-top: 15px; border-bottom-style: dashed;}
+
+        /* FORMS & INTERACTIVE ELEMENTS */
+        input, select, button {
+            background-color: var(--bg-dark);
+            color: var(--font-light);
+            border: 1px solid var(--border-light);
+            padding: 5px;
+            font-family: var(--font-main);
+            border-radius: 3px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: var(--color-blue);
+            color: var(--bg-dark);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button.remove-btn {
+            background-color: var(--color-red);
+            padding: 2px 6px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        .small-btn {
+            padding: 1px 5px;
+            font-size: 0.9em;
+            margin: 0 2px;
+        }
+
+        /* CARD SYSTEM */
+        .card {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .collapsible > .card-header { cursor: pointer; }
+        .collapsible > .card-header::after { content: ' ▼'; float: right; }
+        .collapsible.collapsed > .card-header::after { content: ' ►'; }
+        .collapsible.collapsed > .card-content { display: none; }
+
+        /* GLOBAL CONTROLS */
+        #global-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        #entity-selector {
+            flex-grow: 1;
+        }
+
+        /* BUILD PANE: CHARACTER HEADER */
+        #character-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        #character-name-input {
+            font-family: var(--font-header);
+            font-size: 1.5em;
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--color-silver);
+            flex-grow: 1;
+        }
+        #character-level-display {
+            font-size: 1.5em;
+            font-family: var(--font-header);
+            color: var(--color-null);
+        }
+
+        /* BUILD PANE: STATS & RESOURCES */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .stat-grid-header {
+            font-weight: bold;
+            font-family: var(--font-header);
+            color: var(--color-silver);
+        }
+        .stat-box {
+            background-color: var(--bg-medium);
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 1.2em;
+        }
+        .stat-label { font-size: 0.8em; color: var(--color-silver); }
+
+        .resource-tracker {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .resource-label { font-family: var(--font-header); font-size: 1.1em; }
+        .resource-pips { display: flex; gap: 2px; }
+        .pip {
+            width: 12px;
+            height: 12px;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+        }
+        .pip.filled { background-color: var(--color-green); }
+        .resource-tracker[data-resource="SP"] .pip.filled { background-color: var(--color-orange); }
+        .resource-tracker[data-resource="EP"] .pip.filled { background-color: var(--color-purple); }
+
+        /* BUILD PANE: MOTIVATIONS */
+        .motivation-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 5px;
+        }
+        .motivation-label { font-weight: bold; text-align: right; color: var(--color-silver); }
+
+        /* BUILD PANE: KEYWORDS */
+        #keyword-list, .item-keyword-list {
+            list-style: none;
+        }
+        .keyword-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            border-bottom: 1px solid var(--bg-medium);
+        }
+        .passive-toggle {
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--color-silver);
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .passive-toggle.slotted {
+            background-color: var(--color-blue);
+            border-color: var(--color-blue);
+        }
+        .keyword-name { flex-grow: 1; }
+        .keyword-name .keyword-code { font-size: 0.8em; color: var(--color-silver); }
+        .keyword-name .keyword-flaw { color: var(--color-red); }
+        .keyword-name .keyword-comp { color: var(--color-yellow); }
+
+        #stat-progression-list .progression-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        /* PLAY PANE: TABS */
+        .tabs { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 10px; }
+        .tab-button {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--font-medium);
+            font-family: var(--font-header);
+            text-transform: uppercase;
+        }
+        .tab-button.active {
+            background-color: var(--bg-medium);
+            color: var(--color-null);
+            border: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--bg-medium);
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .add-item-form { display: flex; gap: 5px; margin-top: 10px; }
+        .add-item-form input { flex-grow: 1; }
+
+        /* TAGS TAB */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .tag {
+            background-color: var(--bg-medium);
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* CODEX VAULT */
+        #codex-vault-list {
+            list-style: none;
+        }
+        #codex-vault-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            cursor: pointer;
+        }
+        #codex-vault-list li:hover {
+            background-color: var(--bg-medium);
+        }
+        
+        /* MODALS (Dice Roller, etc.) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: var(--bg-medium);
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            min-width: 300px;
+            text-align: center;
+        }
+        #dice-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .die {
+            font-size: 3em;
+            padding: 10px 20px;
+            border: 1px solid var(--border-light);
+            background-color: var(--bg-dark);
+            width: 80px;
+        }
+        #dice-result-text { font-size: 1.2em; color: var(--color-null); margin-bottom: 15px; }
+        
+        /* UTILITIES */
+        .hidden { display: none; }
+        .color-code-0 { color: var(--color-null); }
+        .color-code-1 { color: var(--color-silver); }
+        .color-code-2 { color: var(--color-yellow); }
+        .color-code-3 { color: var(--color-green); }
+        .color-code-4 { color: var(--color-black); }
+        .color-code-5 { color: var(--color-orange); }
+        .color-code-6 { color: var(--color-white); }
+        .color-code-7 { color: var(--color-red); }
+        .color-code-8 { color: var(--color-blue); }
+        .color-code-9 { color: var(--color-purple); }
+
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- GLOBAL CONTROLS -->
+    <header class="pane">
+        <h1>Resonance Companion</h1>
+        <div id="global-controls">
+            <select id="entity-selector"></select>
+            <button id="add-new-entity-btn">New</button>
+            <button id="import-entity-btn">Import</button>
+            <button id="dice-roller-btn">Roll SR</button>
+            <button id="random-gen-btn">Generate</button>
+        </div>
+    </header>
+
+    <main id="main-content" class="hidden">
+        <!-- BUILD PANE -->
+        <section id="build-pane" class="pane">
+            <div id="character-header">
+                <input type="text" id="character-name-input" placeholder="Character Name">
+                <div id="character-level-display">LVL 0</div>
+            </div>
+
+            <div class="card collapsible" id="motivations-card">
+                <div class="card-header"><h3>Motivational Profile</h3></div>
+                <div class="card-content">
+                    <div class="motivation-grid">
+                        <div class="motivation-label">Goal:</div> <div id="motivation-goal"></div>
+                        <div class="motivation-label">Method:</div> <div id="motivation-method"></div>
+                        <div class="motivation-label">Purpose:</div> <div id="motivation-purpose"></div>
+                        <div class="motivation-label">External Conflict:</div> <div id="motivation-external"></div>
+                        <div class="motivation-label">Internal Conflict:</div> <div id="motivation-internal"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Stats & Resources</h3>
+                <div class="stat-grid">
+                    <div class="stat-grid-header"></div>
+                    <div class="stat-grid-header">Control</div>
+                    <div class="stat-grid-header">Execution</div>
+                    <div class="stat-grid-header">Foundation</div>
+
+                    <div class="stat-grid-header">Body</div>
+                    <div class="stat-box"><span id="stat-m">0</span><div class="stat-label">M</div></div>
+                    <div class="stat-box"><span id="stat-a">0</span><div class="stat-label">A</div></div>
+                    <div class="stat-box"><span id="stat-b">0</span><div class="stat-label">B</div></div>
+
+                    <div class="stat-grid-header">Mind</div>
+                    <div class="stat-box"><span id="stat-w">0</span><div class="stat-label">W</div></div>
+                    <div class="stat-box"><span id="stat-e">0</span><div class="stat-label">E</div></div>
+                    <div class="stat-box"><span id="stat-t">0</span><div class="stat-label">T</div></div>
+
+                    <div class="stat-grid-header">Essence</div>
+                    <div class="stat-box"><span id="stat-p">0</span><div class="stat-label">P</div></div>
+                    <div class="stat-box"><span id="stat-i">0</span><div class="stat-label">I</div></div>
+                    <div class="stat-box"><span id="stat-f">0</span><div class="stat-label">F</div></div>
+                </div>
+                <p><strong>Resistance:</strong> <span id="resistance-value">0</span></p>
+
+                <div class="resource-tracker" data-resource="HP">
+                    <div class="resource-label" style="color: var(--color-green);">HP</div>
+                    <div id="hp-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="hp-current">10</span> / <span id="hp-max">10</span></div>
+                </div>
+                <div class="resource-tracker" data-resource="SP">
+                    <div class="resource-label" style="color: var(--color-orange);">SP</div>
+                    <div id="sp-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="sp-current">10</span> / <span id="sp-max">10</span></div>
+                </div>
+                <div class="resource-tracker" data-resource="EP">
+                    <div class="resource-label" style="color: var(--color-purple);">EP</div>
+                    <div id="ep-pips" class="resource-pips"></div>
+                    <div class="resource-values"><span id="ep-current">10</span> / <span id="ep-max">10</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Keywords & Progression (<span id="innate-passive-count">0</span>/<span id="innate-passive-max">0</span>)</h3>
+                <div id="add-keyword-form">
+                    <select id="keyword-select"></select>
+                    <button id="add-keyword-btn">Add Keyword</button>
+                    <button id="remove-last-keyword-btn" class="remove-btn">Remove Last</button>
+                </div>
+                <ul id="keyword-list"></ul>
+                
+                <h3>Stat Progression</h3>
+                <ul id="stat-progression-list"></ul>
+            </div>
+
+            <div class="card collapsible collapsed" id="blueprint-card">
+                <div class="card-header"><h3>Live Blueprint</h3></div>
+                <div class="card-content">
+                    <input type="text" id="live-blueprint-string" style="width: 100%;">
+                </div>
+            </div>
+        </section>
+
+        <!-- PLAY PANE -->
+        <section id="play-pane" class="pane">
+            <nav class="tabs">
+                <button class="tab-button active" data-tab="inventory">Inventory</button>
+                <button class="tab-button" data-tab="companions">Companions</button>
+                <button class="tab-button" data-tab="factions">Factions</button>
+                <button class="tab-button" data-tab="tags">Tags</button>
+            </nav>
+
+            <div id="inventory" class="tab-content active">
+                <h3>Inventory (<span id="gear-passive-count">0</span>/<span id="gear-passive-max">0</span>)</h3>
+                <div id="inventory-list"></div>
+                <div class="add-item-form">
+                    <input type="text" id="add-item-string" placeholder="Paste Item Blueprint String...">
+                    <button id="add-item-btn">Add Item</button>
+                </div>
+            </div>
+
+            <div id="companions" class="tab-content">
+                <h3>Companions</h3>
+                <div id="companions-list"></div>
+                <div class="add-item-form">
+                    <input type="text" id="add-companion-string" placeholder="Paste Animation Blueprint String...">
+                    <button id="add-companion-btn">Add Companion</button>
+                </div>
+            </div>
+
+            <div id="factions" class="tab-content">
+                <h3>Factions</h3>
+                <div id="factions-list"></div>
+                 <div class="add-item-form">
+                    <input type="text" id="add-faction-string" placeholder="Paste Faction Blueprint String...">
+                    <button id="add-faction-btn">Add Faction</button>
+                </div>
+            </div>
+
+            <div id="tags" class="tab-content">
+                <h3>Boosts (<span id="boost-tag-count">0</span>/10)</h3>
+                <div class="add-item-form">
+                    <select id="add-boost-select"></select>
+                    <button id="add-boost-btn">+</button>
+                </div>
+                <div id="boost-tag-list" class="tag-container"></div>
+
+                <h3>Statuses (<span id="status-tag-count">0</span>/10)</h3>
+                <div class="add-item-form">
+                    <select id="add-status-select"></select>
+                    <button id="add-status-btn">+</button>
+                </div>
+                <div id="status-tag-list" class="tag-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CODEX VAULT -->
+    <footer id="codex-vault" class="pane card collapsible collapsed">
+        <div class="card-header"><h2>Codex Vault</h2></div>
+        <div class="card-content">
+            <ul id="codex-vault-list"></ul>
+        </div>
+    </footer>
+</div>
+
+<!-- MODALS -->
+<div id="dice-roller-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Standard Roll</h2>
+        <div id="dice-display">
+            <div id="main-die" class="die">?</div>
+            <div id="lucky-die" class="die">?</div>
+        </div>
+        <div id="dice-result-text">Ready to roll...</div>
+        <div>
+            <input type="checkbox" id="advantage-toggle"> <label for="advantage-toggle">Advantage</label>
+            <input type="checkbox" id="disadvantage-toggle"> <label for="disadvantage-toggle">Disadvantage</label>
+        </div>
+        <div style="margin-top: 10px;">
+             <button id="roll-sr-btn">Roll</button>
+             <button id="roll-ev-btn">Roll EV/ER</button>
+             <button id="close-dice-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="random-gen-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Generate Random Entity</h2>
+        <div style="margin: 15px 0;">
+            <label for="gen-type-select">Type:</label>
+            <select id="gen-type-select">
+                <option value="C">Character</option>
+                <option value="A">Animation</option>
+                <option value="I">Item</option>
+                <option value="F">Faction</option>
+            </select>
+            <label for="gen-level-input">Level:</label>
+            <input type="number" id="gen-level-input" value="1" min="0" max="9" style="width: 50px;">
+        </div>
+        <textarea id="generated-string-output" rows="4" style="width: 100%;" readonly></textarea>
+        <div>
+            <button id="generate-string-btn">Generate</button>
+            <button id="close-gen-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Wait for the DOM to be fully loaded before running the app script
+document.addEventListener('DOMContentLoaded', () => {
+
+// #################################################################
+// ### PHASE 2: THE LOGIC CORE (SRD_DATA & CodexEngine)          ###
+// #################################################################
+
+const SRD_DATA = {
+    motivations: {
+        '0': { name: 'Discovery', color: 0 }, '1': { name: 'Absolution', color: 1 },
+        '2': { name: 'Ambition', color: 2 }, '3': { name: 'Security', color: 3 },
+        '4': { name: 'Legacy', color: 4 }, '5': { name: 'Innovation', color: 5 },
+        '6': { name: 'Purity', color: 6 }, '7': { name: 'Glory', color: 7 },
+        '8': { name: 'Influence', color: 8 }, '9': { name: 'Faith', color: 9 }
+    },
+    stats: ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'],
+    statProgression: [
+        { level: 2, points: 1 }, { level: 3, points: 1 },
+        { level: 4, points: 1 }, { level: 5, points: 1 },
+        { level: 6, points: 2 }, { level: 7, points: 2 },
+        { level: 8, points: 2 }, { level: 9, points: 2 }
+    ],
+    tags: {
+        boosts: [
+            { name: "Liberate", color: 0 }, { name: "Augment", color: 1 },
+            { name: "Haste", color: 2 }, { name: "Ward", color: 3 },
+            { name: "Bless", color: 4 }, { name: "Charge", color: 5 },
+            { name: "Cure", color: 6 }, { name: "Regen", color: 7 },
+            { name: "Enhance", color: 8 }, { name: "Obscure", color: 9 }
+        ],
+        statuses: [
+            { name: "Mark", color: 0 }, { name: "Impair", color: 1 },
+            { name: "Slow", color: 2 }, { name: "Daze", color: 3 },
+            { name: "Curse", color: 4 }, { name: "Bind", color: 5 },
+            { name: "Weaken", color: 6 }, { name: "Blight", color: 7 },
+            { name: "Silence", color: 8 }, { name: "Nullify", color: 9 }
+        ]
+    },
+    keywords: {
+        '00': { name: 'Restricted', color: 0, type: 'Flaw' }, '01': { name: 'Aura', color: 0, type: 'Gift' },
+        '02': { name: 'Specialist', color: 0, type: 'Talent' }, '03': { name: 'Alert', color: 0, type: 'Quirk' },
+        '04': { name: 'Liberate', color: 0, type: 'Boost' }, '05': { name: 'Mark', color: 0, type: 'Status' },
+        '06': { name: 'Indirect', color: 0, type: 'Form' }, '07': { name: 'Adaptive', color: 0, type: 'Modifier' },
+        '08': { name: 'Gamble', color: 0, type: 'Drive' }, '09': { name: 'Edit', color: 0, type: 'Unique' },
+        '10': { name: 'Bane', color: 1, type: 'Flaw' }, '11': { name: 'Traveller', color: 1, type: 'Gift' },
+        '12': { name: 'Martial', color: 1, type: 'Talent' }, '13': { name: 'Attuned', color: 1, type: 'Quirk' },
+        '14': { name: 'Augment', color: 1, type: 'Boost' }, '15': { name: 'Impair', color: 1, type: 'Status' },
+        '16': { name: 'Reactive', color: 1, type: 'Form' }, '17': { name: 'Phasing', color: 1, type: 'Modifier' },
+        '18': { name: 'Brutal', color: 1, type: 'Drive' }, '19': { name: 'Translocate', color: 1, type: 'Unique' },
+        '20': { name: 'Anxious', color: 2, type: 'Flaw' }, '21': { name: 'Acrobatic', color: 2, type: 'Gift' },
+        '22': { name: 'Sentry', color: 2, type: 'Talent' }, '23': { name: 'Eidetic', color: 2, type: 'Quirk' },
+        '24': { name: 'Haste', color: 2, type: 'Boost' }, '25': { name: 'Slow', color: 2, type: 'Status' },
+        '26': { name: 'Snap', color: 2, type: 'Form' }, '27': { name: 'Condense', color: 2, type: 'Modifier' },
+        '28': { name: 'Rapid', color: 2, type: 'Drive' }, '29': { name: 'Reckless', color: 2, type: 'Unique' },
+        '30': { name: 'Hesitant', color: 3, type: 'Flaw' }, '31': { name: 'Sturdy', color: 3, type: 'Gift' },
+        '32': { name: 'Brawler', color: 3, type: 'Talent' }, '33': { name: 'Stubborn', color: 3, type: 'Quirk' },
+        '34': { name: 'Ward', color: 3, type: 'Boost' }, '35': { name: 'Daze', color: 3, type: 'Status' },
+        '36': { name: 'Sculpt', color: 3, type: 'Form' }, '37': { name: 'Defensive', color: 3, type: 'Modifier' },
+        '38': { name: 'Impact', color: 3, type: 'Drive' }, '39': { name: 'Shift', color: 3, type: 'Unique' },
+        '40': { name: 'Feeble', color: 4, type: 'Flaw' }, '41': { name: 'Survivor', color: 4, type: 'Gift' },
+        '42': { name: 'Stoic', color: 4, type: 'Talent' }, '43': { name: 'Ageless', color: 4, type: 'Quirk' },
+        '44': { name: 'Bless', color: 4, type: 'Boost' }, '45': { name: 'Curse', color: 4, type: 'Status' },
+        '46': { name: 'Piercing', color: 4, type: 'Form' }, '47': { name: 'Flux', color: 4, type: 'Modifier' },
+        '48': { name: 'Siphon', color: 4, type: 'Drive' }, '49': { name: 'Animate', color: 4, type: 'Unique' },
+        '50': { name: 'Gremlins', color: 5, type: 'Flaw' }, '51': { name: 'Sensor', color: 5, type: 'Gift' },
+        '52': { name: 'Improvisor', color: 5, type: 'Talent' }, '53': { name: 'Crafty', color: 5, type: 'Quirk' },
+        '54': { name: 'Charge', color: 5, type: 'Boost' }, '55': { name: 'Bind', color: 5, type: 'Status' },
+        '56': { name: 'Imbue', color: 5, type: 'Form' }, '57': { name: 'Material', color: 5, type: 'Modifier' },
+        '58': { name: 'Leverage', color: 5, type: 'Drive' }, '59': { name: 'Manifest', color: 5, type: 'Unique' },
+        '60': { name: 'Vulnerable', color: 6, type: 'Flaw' }, '61': { name: 'Tolerant', color: 6, type: 'Gift' },
+        '62': { name: 'Deadeye', color: 6, type: 'Talent' }, '63': { name: 'Immunized', color: 6, type: 'Quirk' },
+        '64': { name: 'Cure', color: 6, type: 'Boost' }, '65': { name: 'Weaken', color: 6, type: 'Status' },
+        '66': { name: 'Sticky', color: 6, type: 'Form' }, '67': { name: 'Restore', color: 6, type: 'Modifier' },
+        '68': { name: 'Exploit', color: 6, type: 'Drive' }, '69': { name: 'Growth', color: 6, type: 'Unique' },
+        '70': { name: 'Limited', color: 7, type: 'Flaw' }, '71': { name: 'Resilient', color: 7, type: 'Gift' },
+        '72': { name: 'Font', color: 7, type: 'Talent' }, '73': { name: 'Insulated', color: 7, type: 'Quirk' },
+        '74': { name: 'Regen', color: 7, type: 'Boost' }, '75': { name: 'Blight', color: 7, type: 'Status' },
+        '76': { name: 'Area', color: 7, type: 'Form' }, '77': { name: 'Ranged', color: 7, type: 'Modifier' },
+        '78': { name: 'Multiply', color: 7, type: 'Drive' }, '79': { name: 'Split', color: 7, type: 'Unique' },
+        '80': { name: 'Awkward', color: 8, type: 'Flaw' }, '81': { name: 'Charismatic', color: 8, type: 'Gift' },
+        '82': { name: 'Leader', color: 8, type: 'Talent' }, '83': { name: 'Insightful', color: 8, type: 'Quirk' },
+        '84': { name: 'Enhance', color: 8, type: 'Boost' }, '85': { name: 'Silence', color: 8, type: 'Status' },
+        '86': { name: 'Splash', color: 8, type: 'Form' }, '87': { name: 'Lingering', color: 8, type: 'Modifier' },
+        '88': { name: 'Spread', color: 8, type: 'Drive' }, '89': { name: 'Potent', color: 8, type: 'Unique' },
+        '90': { name: 'Mundane', color: 9, type: 'Flaw' }, '91': { name: 'Aware', color: 9, type: 'Gift' },
+        '92': { name: 'Stealthy', color: 9, type: 'Talent' }, '93': { name: 'Trickster', color: 9, type: 'Quirk' },
+        '94': { name: 'Obscure', color: 9, type: 'Boost' }, '95': { name: 'Nullify', color: 9, type: 'Status' },
+        '96': { name: 'Chain', color: 9, type: 'Form' }, '97': { name: 'Natural', color: 9, type: 'Modifier' },
+        '98': { name: 'Ambience', color: 9, type: 'Drive' }, '99': { name: 'Channel', color: 9, type: 'Unique' }
+    }
+};
+
+const CodexEngine = {
+    parseBlueprint: function(blueprintString) {
+        if (!blueprintString || typeof blueprintString !== 'string') return null;
+        const type = blueprintString.substring(0, 2);
+        switch(type) {
+            case 'C:': return this.parseCharacter(blueprintString);
+            case 'A:': return this.parseAnimation(blueprintString);
+            case 'I:': return this.parseItem(blueprintString);
+            case 'F:': return this.parseFaction(blueprintString);
+            default: return null;
+        }
+    },
+
+    parseCharacter: function(str) {
+        let entity = { type: 'Character', keywords: [], flawPackage: null, statAllocs: [] };
+        const parts = str.substring(2).split('-');
+        
+        entity.profile = parts.shift();
+        
+        parts.forEach(part => {
+            if (part.startsWith('+')) {
+                entity.flawPackage = {
+                    flaw: part.substring(1, 3),
+                    compensation: part.substring(3, 5)
+                };
+            } else {
+                const subParts = part.split('.');
+                subParts.forEach(sub => {
+                    if (SRD_DATA.stats.includes(sub)) {
+                        entity.statAllocs.push(sub);
+                    } else if (sub) {
+                        entity.keywords.push(sub);
+                    }
+                });
+            }
+        });
+        return this.calculateCharacter(entity);
+    },
+    
+    parseAnimation: function(str) {
+        let entity = { type: 'Animation', keywords: [], flawPackage: null };
+        const parts = str.substring(2).split(/[.-]/);
+        
+        parts.forEach(part => {
+             if (part.startsWith('+')) {
+                entity.flawPackage = { flaw: part.substring(1, 3), compensation: part.substring(3, 5) };
+            } else if (part) {
+                entity.keywords.push(part);
+            }
+        });
+        return this.calculateAnimation(entity);
+    },
+    
+    parseItem: function(str) {
+        let entity = { type: 'Item', keywords: [], flawPackage: null };
+        const levelMatch = str.match(/^I:L(\d)/);
+        if (!levelMatch) return null;
+        entity.level = parseInt(levelMatch[1], 10);
+        
+        const parts = str.substring(levelMatch[0].length).split(/[.-]/);
+        parts.forEach(part => {
+             if (part.startsWith('+')) {
+                entity.flawPackage = { flaw: part.substring(1, 3), compensation: part.substring(3, 5) };
+            } else if (part) {
+                entity.keywords.push(part);
+            }
+        });
+        return entity;
+    },
+
+    parseFaction: function(str) {
+        // F:#####-L#[S#.S#...]-[K##.##...]
+        // Not implemented in detail for this version, but parser structure is here.
+        return { type: 'Faction', raw: str };
+    },
+
+    calculateCharacter: function(entity) {
+        const keywordCount = entity.keywords.length;
+        
+        if (keywordCount < 1) {
+            entity.level = 0;
+        } else if (keywordCount < 4) {
+            entity.level = 0; // Still Seed
+        } else if (keywordCount < 6) {
+            entity.level = 1;
+        } else if (keywordCount < 8) {
+            entity.level = 2;
+        } else if (keywordCount < 10) {
+            entity.level = 3;
+        } else if (keywordCount < 12) {
+            entity.level = 4;
+        } else if (keywordCount < 14) {
+            entity.level = 5;
+        } else if (keywordCount < 16) {
+            entity.level = 6;
+        } else if (keywordCount < 18) {
+            entity.level = 7;
+        } else if (keywordCount < 20) {
+            entity.level = 8;
+        } else {
+            entity.level = 9;
+        }
+
+        // Calculate Stats
+        const baseStat = entity.level === 0 ? 1 : 2;
+        entity.stats = { M: baseStat, A: baseStat, B: baseStat, W: baseStat, E: baseStat, T: baseStat, P: baseStat, I: baseStat, F: baseStat };
+        
+        entity.statAllocs.forEach(statKey => {
+            if(entity.stats[statKey] < 5) {
+                entity.stats[statKey]++;
+            }
+        });
+
+        // Calculate Derived Values
+        const sortedStats = Object.values(entity.stats).sort((a, b) => b - a);
+        entity.resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
+        
+        entity.maxHP = 10;
+        entity.maxSP = 10;
+        entity.maxEP = 10;
+        
+        // Handle 'Resilient' keyword if present
+        entity.keywords.forEach(kwStr => {
+           const kwCode = kwStr.substring(0, 2);
+           if (kwCode === '71') { // Resilient
+               const optionMatch = kwStr.match(/\((\d)\)/);
+               if (optionMatch) {
+                   const option = parseInt(optionMatch[1]);
+                   if(option === 1) entity.maxHP += 5;
+                   if(option === 2) entity.maxSP += 5;
+                   if(option === 3) entity.maxEP += 5;
+               }
+           }
+        });
+
+        entity.maxInnatePassives = entity.stats.F;
+        entity.maxGearPassives = entity.stats.E;
+
+        return entity;
+    },
+
+    calculateAnimation: function(entity) {
+        const keywordCount = entity.keywords.length;
+        entity.level = keywordCount > 0 ? keywordCount - 1 : 0;
+        // Simplified for this version - full stat distribution would require more UI/logic
+        entity.stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
+        entity.resistance = 3; 
+        entity.maxHP = 10;
+        entity.maxSP = 10;
+        entity.maxEP = 10;
+        return entity;
+    },
+    
+    stringifyCharacter: function(parsedData) {
+        let str = `C:${parsedData.profile}-`;
+        
+        let kwParts = [];
+        
+        if (parsedData.keywords.length > 0) {
+            kwParts.push(parsedData.keywords[0]); // Seed
+        }
+        if (parsedData.keywords.length > 3) {
+            kwParts.push(parsedData.keywords.slice(1, 4).join('.')); // Awakening
+        }
+        if (parsedData.keywords.length > 4) {
+             for (let i = 4; i < parsedData.keywords.length; i += 2) {
+                let pair = parsedData.keywords.slice(i, i + 2);
+                if (pair.length > 0) {
+                    let statIndex = (i - 4) / 2;
+                    let stat = parsedData.statAllocs[statIndex] || '';
+                    kwParts.push(pair.join('.') + (stat ? '.' + stat : ''));
+                }
+            }
+        }
+        
+        str += kwParts.join('-');
+
+        if (parsedData.flawPackage) {
+            str += `-+${parsedData.flawPackage.flaw}${parsedData.flawPackage.compensation}`;
+        }
+
+        return str.replace(/--/g, '-').replace(/-$/g, '');
+    }
+};
+
+
+// #################################################################
+// ### PHASE 3: THE APP CONTROLLER (Event Handling & Rendering)  ###
+// #################################################################
+
+const App = {
+    state: {
+        entities: {},
+        activeEntityId: null,
+    },
+
+    init: function() {
+        this.cacheDOMElements();
+        this.loadState();
+        this.populateStaticDropdowns();
+        this.setupEventListeners();
+        this.render();
+    },
+
+    cacheDOMElements: function() {
+        this.dom = {
+            // Global
+            mainContent: document.getElementById('main-content'),
+            entitySelector: document.getElementById('entity-selector'),
+            addNewEntityBtn: document.getElementById('add-new-entity-btn'),
+            importEntityBtn: document.getElementById('import-entity-btn'),
+            diceRollerBtn: document.getElementById('dice-roller-btn'),
+            randomGenBtn: document.getElementById('random-gen-btn'),
+            
+            // Build Pane
+            charName: document.getElementById('character-name-input'),
+            charLevel: document.getElementById('character-level-display'),
+            motivations: {
+                goal: document.getElementById('motivation-goal'),
+                method: document.getElementById('motivation-method'),
+                purpose: document.getElementById('motivation-purpose'),
+                external: document.getElementById('motivation-external'),
+                internal: document.getElementById('motivation-internal'),
+            },
+            stats: {
+                M: document.getElementById('stat-m'), A: document.getElementById('stat-a'),
+                B: document.getElementById('stat-b'), W: document.getElementById('stat-w'),
+                E: document.getElementById('stat-e'), T: document.getElementById('stat-t'),
+                P: document.getElementById('stat-p'), I: document.getElementById('stat-i'),
+                F: document.getElementById('stat-f'),
+            },
+            resistance: document.getElementById('resistance-value'),
+            resources: {
+                hp: { current: document.getElementById('hp-current'), max: document.getElementById('hp-max'), pips: document.getElementById('hp-pips') },
+                sp: { current: document.getElementById('sp-current'), max: document.getElementById('sp-max'), pips: document.getElementById('sp-pips') },
+                ep: { current: document.getElementById('ep-current'), max: document.getElementById('ep-max'), pips: document.getElementById('ep-pips') },
+            },
+            keyword: {
+                select: document.getElementById('keyword-select'),
+                addBtn: document.getElementById('add-keyword-btn'),
+                removeBtn: document.getElementById('remove-last-keyword-btn'),
+                list: document.getElementById('keyword-list'),
+            },
+            progressionList: document.getElementById('stat-progression-list'),
+            innatePassives: {
+                count: document.getElementById('innate-passive-count'),
+                max: document.getElementById('innate-passive-max'),
+            },
+            liveBlueprint: document.getElementById('live-blueprint-string'),
+
+            // Play Pane
+            tabs: document.querySelectorAll('.tab-button'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            inventory: {
+                list: document.getElementById('inventory-list'),
+                addString: document.getElementById('add-item-string'),
+                addBtn: document.getElementById('add-item-btn'),
+                passiveCount: document.getElementById('gear-passive-count'),
+                passiveMax: document.getElementById('gear-passive-max'),
+            },
+            tags: {
+                boostSelect: document.getElementById('add-boost-select'),
+                boostBtn: document.getElementById('add-boost-btn'),
+                boostList: document.getElementById('boost-tag-list'),
+                boostCount: document.getElementById('boost-tag-count'),
+                statusSelect: document.getElementById('add-status-select'),
+                statusBtn: document.getElementById('add-status-btn'),
+                statusList: document.getElementById('status-tag-list'),
+                statusCount: document.getElementById('status-tag-count'),
+            },
+            
+            // Vault
+            codexVault: document.getElementById('codex-vault'),
+            codexVaultList: document.getElementById('codex-vault-list'),
+            
+            // Modals
+            diceModal: document.getElementById('dice-roller-modal'),
+            diceDisplay: {
+                main: document.getElementById('main-die'),
+                lucky: document.getElementById('lucky-die'),
+                resultText: document.getElementById('dice-result-text'),
+            },
+            diceControls: {
+                adv: document.getElementById('advantage-toggle'),
+                dis: document.getElementById('disadvantage-toggle'),
+                rollSrBtn: document.getElementById('roll-sr-btn'),
+                rollEvBtn: document.getElementById('roll-ev-btn'),
+                closeBtn: document.getElementById('close-dice-modal-btn'),
+            },
+            genModal: document.getElementById('random-gen-modal'),
+            genControls: {
+                type: document.getElementById('gen-type-select'),
+                level: document.getElementById('gen-level-input'),
+                output: document.getElementById('generated-string-output'),
+                generateBtn: document.getElementById('generate-string-btn'),
+                closeBtn: document.getElementById('close-gen-modal-btn'),
+            }
+        };
+    },
+
+    populateStaticDropdowns: function() {
+        Object.entries(SRD_DATA.keywords).forEach(([code, kw]) => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = `${kw.name} (${code})`;
+            this.dom.keyword.select.appendChild(option);
+        });
+
+        SRD_DATA.tags.boosts.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.name;
+            option.textContent = tag.name;
+            this.dom.tags.boostSelect.appendChild(option);
+        });
+        
+        SRD_DATA.tags.statuses.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.name;
+            option.textContent = tag.name;
+            this.dom.tags.statusSelect.appendChild(option);
+        });
+    },
+
+    setupEventListeners: function() {
+        // Global
+        this.dom.entitySelector.addEventListener('change', e => {
+            this.state.activeEntityId = e.target.value;
+            this.saveState();
+            this.render();
+        });
+        this.dom.addNewEntityBtn.addEventListener('click', () => this.addNewEntity());
+        this.dom.importEntityBtn.addEventListener('click', () => this.importEntity());
+
+        // Collapsibles
+        document.querySelectorAll('.collapsible .card-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.parentElement.classList.toggle('collapsed');
+            });
+        });
+
+        // Character Build
+        this.dom.charName.addEventListener('change', e => {
+            if (this.getActiveEntity()) {
+                this.getActiveEntity().name = e.target.value;
+                this.saveState();
+                this.renderVault(); // Just update the lists
+            }
+        });
+        this.dom.liveBlueprint.addEventListener('change', e => this.updateBlueprint(e.target.value));
+        this.dom.keyword.addBtn.addEventListener('click', () => this.addKeyword());
+        this.dom.keyword.removeBtn.addEventListener('click', () => this.removeLastKeyword());
+        
+        // Resource Pips
+        ['hp', 'sp', 'ep'].forEach(res => {
+            this.dom.resources[res].pips.addEventListener('click', e => {
+                if (e.target.classList.contains('pip')) {
+                    const newValue = parseInt(e.target.dataset.index) + 1;
+                    this.getActiveEntity().runtime.resources[res.toUpperCase()] = newValue;
+                    this.saveState();
+                    this.renderResources();
+                }
+            });
+        });
+
+        // Tabs
+        this.dom.tabs.forEach(button => {
+            button.addEventListener('click', () => {
+                this.dom.tabs.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                this.dom.tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if(content.id === button.dataset.tab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Inventory
+        this.dom.inventory.addBtn.addEventListener('click', () => {
+            const bp = this.dom.inventory.addString.value;
+            if (bp && bp.startsWith('I:')) {
+                const entity = this.getActiveEntity();
+                const item = {
+                    id: `item_${Date.now()}`,
+                    name: "New Item",
+                    blueprint: bp,
+                    runtime: { slottedPassives: [] }
+                };
+                entity.runtime.inventory.push(item);
+                this.dom.inventory.addString.value = '';
+                this.saveState();
+                this.renderInventory();
+            } else {
+                alert("Invalid Item blueprint string. Must start with 'I:'.");
+            }
+        });
+
+        // Tags
+        this.dom.tags.boostBtn.addEventListener('click', () => this.addTag('boosts'));
+        this.dom.tags.statusBtn.addEventListener('click', () => this.addTag('statuses'));
+        
+        // Modals
+        this.dom.diceRollerBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'flex');
+        this.dom.diceControls.closeBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'none');
+        this.dom.diceControls.rollSrBtn.addEventListener('click', () => this.rollDice(false));
+        this.dom.diceControls.rollEvBtn.addEventListener('click', () => this.rollDice(true));
+        
+        this.dom.randomGenBtn.addEventListener('click', () => this.dom.genModal.style.display = 'flex');
+        this.dom.genControls.closeBtn.addEventListener('click', () => this.dom.genModal.style.display = 'none');
+        this.dom.genControls.generateBtn.addEventListener('click', () => this.generateRandomString());
+
+    },
+
+    getActiveEntity: function() {
+        return this.state.entities[this.state.activeEntityId] || null;
+    },
+
+    saveState: function() {
+        localStorage.setItem('resonanceCompanionState', JSON.stringify(this.state));
+    },
+
+    loadState: function() {
+        const savedState = localStorage.getItem('resonanceCompanionState');
+        if (savedState) {
+            this.state = JSON.parse(savedState);
+        } else {
+            // Create a default character if none exist
+            this.addNewEntity("Sparks", "C:13829-13-11.83.93");
+        }
+    },
+    
+    addNewEntity: function(name = "New Character", blueprint = "C:01234-03") {
+        const newId = `char_${Date.now()}`;
+        this.state.entities[newId] = {
+            id: newId,
+            name: name,
+            blueprint: blueprint,
+            runtime: this.createDefaultRuntimeState()
+        };
+        this.state.activeEntityId = newId;
+        this.saveState();
+        this.render();
+    },
+
+    importEntity: function() {
+        const blueprint = prompt("Paste the full entity blueprint string:");
+        if (blueprint) {
+            this.updateBlueprint(blueprint);
+        }
+    },
+    
+    updateBlueprint: function(newBlueprint) {
+        const entity = this.getActiveEntity();
+        if (entity) {
+            // Validate blueprint string before applying
+            const parsed = CodexEngine.parseBlueprint(newBlueprint);
+            if (parsed) {
+                entity.blueprint = newBlueprint;
+                this.saveState();
+                this.render();
+            } else {
+                alert("Invalid blueprint string.");
+                this.render(); // Re-render to show original string
+            }
+        }
+    },
+    
+    addKeyword: function() {
+        const entity = this.getActiveEntity();
+        if (!entity || !entity.parsed.level < 9) return;
+        
+        let newKwCode = this.dom.keyword.select.value;
+        let blueprint = entity.blueprint;
+
+        if (entity.parsed.keywords.length % 2 !== 0 && entity.parsed.keywords.length > 3) {
+             // Expecting a stat
+            alert("Please allocate a stat point for the current level before adding new keywords.");
+            return;
+        }
+
+        if (entity.parsed.keywords.length < 4) {
+             blueprint += `.${newKwCode}`;
+        } else {
+             blueprint += `-${newKwCode}`;
+        }
+        
+        this.updateBlueprint(blueprint);
+    },
+
+    removeLastKeyword: function() {
+        const entity = this.getActiveEntity();
+        if (!entity || entity.parsed.keywords.length <= 1) return;
+        if (!confirm("Are you sure you want to remove the last keyword? This may affect your level and stats.")) return;
+
+        let blueprint = entity.blueprint;
+        let parts = blueprint.split(/([.-])/);
+        
+        // Simple removal: pop last two parts (delimiter and keyword)
+        parts.pop();
+        parts.pop();
+        
+        this.updateBlueprint(parts.join(''));
+    },
+    
+    allocateStat: function(level, stat) {
+        const entity = this.getActiveEntity();
+        if (!entity) return;
+        
+        // Rebuild string from parsed data to ensure correctness
+        let parsed = entity.parsed;
+        let statAllocIndex = SRD_DATA.statProgression.findIndex(p => p.level === level);
+        
+        parsed.statAllocs[statAllocIndex] = stat;
+        
+        // Prune any future stat allocations if level changes
+        const requiredAllocs = SRD_DATA.statProgression.filter(p => p.level <= parsed.level).length;
+        parsed.statAllocs = parsed.statAllocs.slice(0, requiredAllocs);
+
+        const newBlueprint = CodexEngine.stringifyCharacter(parsed);
+        this.updateBlueprint(newBlueprint);
+    },
+    
+    addTag: function(type) {
+        const entity = this.getActiveEntity();
+        if(!entity) return;
+        
+        const select = type === 'boosts' ? this.dom.tags.boostSelect : this.dom.tags.statusSelect;
+        const tagName = select.value;
+        const tagList = entity.runtime.tags[type];
+        
+        const existingTag = tagList.find(t => t.name === tagName);
+        if (existingTag) {
+            if (existingTag.quantity < 5) existingTag.quantity++;
+        } else {
+            if (tagList.length < 10) {
+                tagList.push({ name: tagName, quantity: 1 });
+            }
+        }
+        
+        this.saveState();
+        this.renderTags();
+    },
+
+    createDefaultRuntimeState: function() {
+        return {
+            resources: { HP: 10, SP: 10, EP: 10 },
+            slottedInnatePassives: [],
+            inventory: [],
+            companions: [],
+            factions: [],
+            tags: { boosts: [], statuses: [] }
+        };
+    },
+
+    // RENDER FUNCTIONS
+    render: function() {
+        const entity = this.getActiveEntity();
+
+        if (entity) {
+            this.dom.mainContent.classList.remove('hidden');
+            entity.parsed = CodexEngine.parseBlueprint(entity.blueprint);
+            if (!entity.parsed) {
+                console.error("Failed to parse blueprint:", entity.blueprint);
+                alert("Error parsing the active entity's blueprint string. Check console for details.");
+                return;
+            }
+            this.renderCharacterHeader(entity);
+            this.renderMotivations(entity);
+            this.renderStats(entity);
+            this.renderResources(entity);
+            this.renderKeywords(entity);
+            this.renderProgression(entity);
+            this.renderLiveBlueprint(entity);
+            this.renderInventory(entity);
+            this.renderTags(); // Add other play pane renders here
+        } else {
+            this.dom.mainContent.classList.add('hidden');
+        }
+        
+        this.renderEntitySelector();
+        this.renderVault();
+    },
+
+    renderCharacterHeader: function(entity) {
+        this.dom.charName.value = entity.name;
+        this.dom.charLevel.textContent = `LVL ${entity.parsed.level}`;
+    },
+
+    renderMotivations: function(entity) {
+        const profile = entity.parsed.profile || "?????";
+        const getMot = (index) => SRD_DATA.motivations[profile[index]] || { name: 'N/A', color: 1 };
+
+        const goal = getMot(0);
+        this.dom.motivations.goal.textContent = goal.name;
+        this.dom.motivations.goal.className = `color-code-${goal.color}`;
+
+        const method = getMot(1);
+        this.dom.motivations.method.textContent = method.name;
+        this.dom.motivations.method.className = `color-code-${method.color}`;
+
+        const purpose = getMot(2);
+        this.dom.motivations.purpose.textContent = purpose.name;
+        this.dom.motivations.purpose.className = `color-code-${purpose.color}`;
+
+        const external = getMot(3);
+        this.dom.motivations.external.textContent = external.name;
+        this.dom.motivations.external.className = `color-code-${external.color}`;
+
+        const internal = getMot(4);
+        this.dom.motivations.internal.textContent = internal.name;
+        this.dom.motivations.internal.className = `color-code-${internal.color}`;
+    },
+
+    renderStats: function(entity) {
+        Object.entries(entity.parsed.stats).forEach(([key, value]) => {
+            this.dom.stats[key].textContent = value;
+        });
+        this.dom.resistance.textContent = entity.parsed.resistance;
+    },
+
+    renderResources: function(entity = this.getActiveEntity()) {
+        if (!entity) return;
+        const renderPipGroup = (resKey, color) => {
+            const resData = entity.parsed[`max${resKey}`];
+            const current = entity.runtime.resources[resKey];
+            const container = this.dom.resources[resKey.toLowerCase()].pips;
+            
+            this.dom.resources[resKey.toLowerCase()].current.textContent = current;
+            this.dom.resources[resKey.toLowerCase()].max.textContent = resData;
+
+            container.innerHTML = '';
+            for (let i = 0; i < resData; i++) {
+                const pip = document.createElement('div');
+                pip.className = 'pip';
+                pip.dataset.index = i;
+                if (i < current) {
+                    pip.classList.add('filled');
+                }
+                container.appendChild(pip);
+            }
+        };
+        renderPipGroup('HP');
+        renderPipGroup('SP');
+        renderPipGroup('EP');
+    },
+    
+    renderKeywords: function(entity) {
+        const list = this.dom.keyword.list;
+        list.innerHTML = '';
+
+        const slottedPassives = entity.runtime.slottedInnatePassives;
+        this.dom.innatePassives.count.textContent = slottedPassives.length;
+        this.dom.innatePassives.max.textContent = entity.parsed.maxInnatePassives;
+
+        entity.parsed.keywords.forEach((kwString, index) => {
+            const kwCode = kwString.substring(0, 2);
+            const kwData = SRD_DATA.keywords[kwCode];
+            if (!kwData) return;
+
+            const li = document.createElement('li');
+            li.className = 'keyword-item';
+
+            const toggle = document.createElement('div');
+            toggle.className = 'passive-toggle';
+            if (slottedPassives.includes(kwCode)) {
+                toggle.classList.add('slotted');
+            }
+            toggle.addEventListener('click', () => {
+                const index = slottedPassives.indexOf(kwCode);
+                if (index > -1) {
+                    slottedPassives.splice(index, 1);
+                } else {
+                    if (slottedPassives.length < entity.parsed.maxInnatePassives) {
+                        slottedPassives.push(kwCode);
+                    }
+                }
+                this.saveState();
+                this.renderKeywords(entity);
+            });
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'keyword-name';
+            
+            let nameContent = `<span class="color-code-${kwData.color}">${kwData.name}</span> <span class="keyword-code">(${kwCode})</span>`;
+            if (entity.parsed.flawPackage) {
+                if (kwCode === entity.parsed.flawPackage.flaw) {
+                    nameContent += ' <span class="keyword-flaw">[FLAW]</span>';
+                }
+                if (kwCode === entity.parsed.flawPackage.compensation) {
+                     nameContent += ' <span class="keyword-comp">[COMPENSATION]</span>';
+                }
+            }
+            nameSpan.innerHTML = nameContent;
+
+            li.appendChild(toggle);
+            li.appendChild(nameSpan);
+            // Add dropdowns for choice keywords like Traveller or Resilient here if needed
+            list.appendChild(li);
+        });
+    },
+
+    renderProgression: function(entity) {
+        const list = this.dom.progressionList;
+        list.innerHTML = '';
+        SRD_DATA.statProgression.forEach((prog, index) => {
+            if (entity.parsed.level >= prog.level) {
+                const li = document.createElement('li');
+                li.className = 'progression-item';
+                
+                const label = document.createElement('span');
+                label.textContent = `Level ${prog.level} (+${prog.points} Stat)`;
+                
+                const select = document.createElement('select');
+                SRD_DATA.stats.forEach(stat => {
+                    const option = document.createElement('option');
+                    option.value = stat;
+                    option.textContent = stat;
+                    if (entity.parsed.statAllocs[index] === stat) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+                
+                select.addEventListener('change', (e) => this.allocateStat(prog.level, e.target.value));
+
+                li.appendChild(label);
+                li.appendChild(select);
+                list.appendChild(li);
+            }
+        });
+    },
+    
+    renderLiveBlueprint: function(entity) {
+        this.dom.liveBlueprint.value = entity.blueprint;
+    },
+    
+    renderInventory: function(entity = this.getActiveEntity()) {
+        if(!entity) return;
+        const list = this.dom.inventory.list;
+        list.innerHTML = '';
+
+        const slottedGearPassives = entity.runtime.inventory.flatMap(item => item.runtime.slottedPassives);
+        this.dom.inventory.passiveCount.textContent = slottedGearPassives.length;
+        this.dom.inventory.passiveMax.textContent = entity.parsed.maxGearPassives;
+        
+        entity.runtime.inventory.forEach(item => {
+            const itemData = CodexEngine.parseBlueprint(item.blueprint);
+            if (!itemData) return;
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const header = document.createElement('h3');
+            header.textContent = `L${itemData.level} ${item.name}`;
+            
+            const kwList = document.createElement('ul');
+            kwList.className = 'item-keyword-list';
+            
+            itemData.keywords.forEach(kwString => {
+                 const kwCode = kwString.substring(0, 2);
+                 const kwData = SRD_DATA.keywords[kwCode];
+                 if (!kwData) return;
+                 
+                 const li = document.createElement('li');
+                 li.className = 'keyword-item';
+
+                 const toggle = document.createElement('div');
+                 toggle.className = 'passive-toggle';
+                 if(item.runtime.slottedPassives.includes(kwCode)) {
+                    toggle.classList.add('slotted');
+                 }
+
+                 toggle.addEventListener('click', () => {
+                    const index = item.runtime.slottedPassives.indexOf(kwCode);
+                    if (index > -1) {
+                       item.runtime.slottedPassives.splice(index, 1);
+                    } else {
+                       if (slottedGearPassives.length < entity.parsed.maxGearPassives) {
+                           item.runtime.slottedPassives.push(kwCode);
+                       }
+                    }
+                    this.saveState();
+                    this.renderInventory();
+                 });
+                 
+                 const name = document.createElement('span');
+                 name.innerHTML = `<span class="color-code-${kwData.color}">${kwData.name}</span>`;
+                 
+                 li.appendChild(toggle);
+                 li.appendChild(name);
+                 kwList.appendChild(li);
+            });
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.className = 'remove-btn';
+            removeBtn.onclick = () => {
+                entity.runtime.inventory = entity.runtime.inventory.filter(i => i.id !== item.id);
+                this.saveState();
+                this.renderInventory();
+            };
+
+            card.appendChild(header);
+            card.appendChild(kwList);
+            card.appendChild(removeBtn);
+            list.appendChild(card);
+        });
+    },
+
+    renderTags: function(entity = this.getActiveEntity()) {
+        if(!entity) return;
+        
+        const renderTagGroup = (type) => {
+            const list = this.dom.tags[`${type.slice(0, -1)}List`];
+            const countSpan = this.dom.tags[`${type.slice(0, -1)}Count`];
+            const tagData = entity.runtime.tags[type];
+            
+            list.innerHTML = '';
+            let totalTags = 0;
+            tagData.forEach(tag => {
+                totalTags += tag.quantity;
+                
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag';
+                const tagInfo = SRD_DATA.tags[type].find(t => t.name === tag.name);
+                tagEl.innerHTML = `
+                    <span class="color-code-${tagInfo.color}">${tag.name}</span>
+                    <span>(x${tag.quantity})</span>
+                    <button class="small-btn remove-btn">-</button>
+                `;
+                tagEl.querySelector('.remove-btn').addEventListener('click', () => {
+                    tag.quantity--;
+                    if(tag.quantity <= 0) {
+                        entity.runtime.tags[type] = tagData.filter(t => t.name !== tag.name);
+                    }
+                    this.saveState();
+                    this.renderTags();
+                });
+                
+                list.appendChild(tagEl);
+            });
+            countSpan.textContent = totalTags;
+        };
+        
+        renderTagGroup('boosts');
+        renderTagGroup('statuses');
+    },
+
+    renderEntitySelector: function() {
+        this.dom.entitySelector.innerHTML = '';
+        Object.values(this.state.entities).forEach(entity => {
+            const option = document.createElement('option');
+            option.value = entity.id;
+            option.textContent = entity.name;
+            if (entity.id === this.state.activeEntityId) {
+                option.selected = true;
+            }
+            this.dom.entitySelector.appendChild(option);
+        });
+    },
+
+    renderVault: function() {
+        this.dom.codexVaultList.innerHTML = '';
+        Object.values(this.state.entities).forEach(entity => {
+            const li = document.createElement('li');
+            li.textContent = entity.name;
+            li.dataset.id = entity.id;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.className = 'remove-btn';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete ${entity.name}?`)) {
+                    delete this.state.entities[entity.id];
+                    if (this.state.activeEntityId === entity.id) {
+                        this.state.activeEntityId = Object.keys(this.state.entities)[0] || null;
+                    }
+                    this.saveState();
+                    this.render();
+                }
+            };
+            li.appendChild(deleteBtn);
+            
+            li.addEventListener('click', () => {
+                this.state.activeEntityId = entity.id;
+                this.saveState();
+                this.render();
+            });
+
+            this.dom.codexVaultList.appendChild(li);
+        });
+    },
+    
+// #################################################################
+// ### PHASE 4: QOL & CURATOR'S TOOLS                          ###
+// #################################################################
+
+    rollDice: function(isEV) {
+        let chainTotal = 0;
+        let main, lucky;
+        let rolls = 0;
+
+        const animateRoll = (dieElement) => {
+            let count = 0;
+            const interval = setInterval(() => {
+                dieElement.textContent = Math.ceil(Math.random() * 10);
+                count++;
+                if (count > 10) {
+                    clearInterval(interval);
+                    dieElement.textContent = dieElement.dataset.finalValue;
+                }
+            }, 50);
+        };
+        
+        const performRoll = () => {
+            main = Math.ceil(Math.random() * 10);
+            lucky = Math.ceil(Math.random() * 10);
+            rolls++;
+            if (main === lucky && rolls < 10) { // Safety break for infinite loops
+                chainTotal += main + lucky;
+                setTimeout(performRoll, 100); // Small delay for chained rolls
+            } else {
+                finalizeRoll();
+            }
+        };
+
+        const finalizeRoll = () => {
+            this.dom.diceDisplay.main.dataset.finalValue = main;
+            this.dom.diceDisplay.lucky.dataset.finalValue = lucky;
+            animateRoll(this.dom.diceDisplay.main);
+            animateRoll(this.dom.diceDisplay.lucky);
+
+            const adv = this.dom.diceControls.adv.checked;
+            const dis = this.dom.diceControls.dis.checked;
+            
+            let baseResult = main;
+            if (adv && !dis) baseResult = Math.max(main, lucky);
+            if (dis && !adv) baseResult = Math.min(main, lucky);
+
+            let sr = chainTotal + baseResult;
+            let resultText = `SR: ${sr}`;
+            
+            if (chainTotal > 0 || (main === lucky)) resultText += " - CRITICAL!";
+            if (sr >= 31) resultText += " - SUPER CRITICAL!";
+
+            if (isEV) {
+                const entity = this.getActiveEntity();
+                if (entity) {
+                    const statChoice = prompt(`EV/ER Roll. Choose a stat to add (M, A, B, W, E, T, P, I, F):`, 'B').toUpperCase();
+                    if (SRD_DATA.stats.includes(statChoice)) {
+                        const statValue = entity.parsed.stats[statChoice];
+                        const level = entity.parsed.level;
+                        const total = sr + level + statValue;
+                        resultText += ` (EV/ER: ${sr} + ${level} Lvl + ${statValue} ${statChoice} = ${total})`;
+                    }
+                }
+            }
+            this.dom.diceDisplay.resultText.textContent = resultText;
+        };
+
+        performRoll();
+    },
+    
+    generateRandomString: function() {
+        const type = this.dom.genControls.type.value;
+        const level = parseInt(this.dom.genControls.level.value);
+        let blueprint = '';
+        
+        const rand = (max) => Math.floor(Math.random() * max);
+        const randKw = () => String(rand(100)).padStart(2, '0');
+
+        if (type === 'C') {
+            let profile = '';
+            for(let i = 0; i < 5; i++) profile += rand(10);
+            
+            let keywords = [randKw()]; // Seed
+            while(keywords.length < 4) keywords.push(randKw()); // Awakening
+            
+            let targetKwCount = 4;
+            if (level >= 2) targetKwCount = 6;
+            if (level >= 3) targetKwCount = 8;
+            if (level >= 4) targetKwCount = 10;
+            if (level >= 5) targetKwCount = 12;
+            if (level >= 6) targetKwCount = 14;
+            if (level >= 7) targetKwCount = 16;
+            if (level >= 8) targetKwCount = 18;
+            if (level >= 9) targetKwCount = 20;
+
+            while(keywords.length < targetKwCount) keywords.push(randKw());
+            
+            let statAllocs = [];
+            SRD_DATA.statProgression.forEach(prog => {
+                if (level >= prog.level) {
+                   for (let i = 0; i < prog.points; i++) {
+                       statAllocs.push(SRD_DATA.stats[rand(9)]);
+                   }
+                }
+            });
+            
+            const parsed = { profile, keywords, statAllocs, flawPackage: null };
+            blueprint = CodexEngine.stringifyCharacter(parsed);
+
+        } else if (type === 'I') {
+            let itemLevel = level > 4 ? rand(5) + 1 : level;
+            if (itemLevel === 0) itemLevel = 1;
+            blueprint = `I:L${itemLevel}-`;
+            let kws = [];
+            for (let i = 0; i < itemLevel; i++) kws.push(randKw());
+            blueprint += kws.join('.');
+        } else {
+             blueprint = "Generator for this type not yet implemented.";
+        }
+        
+        this.dom.genControls.output.value = blueprint;
+    }
+};
+
+// Start the application
+App.init();
+
+});
+</script>
+</body>
+</html>
