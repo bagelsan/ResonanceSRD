@@ -4,821 +4,2008 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance Companion</title>
-    <!-- Using web fonts as a practical compromise to avoid embedding massive base64 files -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- PHASE 1: THE VISUAL SHELL (CSS) -->
     <style>
+        /* FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+
+        /* CSS VARIABLES & THEME */
         :root {
-            --color-null: #dea193;
-            --color-silver: #a7a9ac;
-            --color-yellow: #f5d36c;
-            --color-green: #688d4c;
-            --color-black: #414042;
-            --color-orange: #f7855d;
-            --color-white: #e3e1da;
-            --color-red: #a95b5a;
-            --color-blue: #88bfe8;
-            --color-purple: #957fa3;
+            --null-color: #dea193;
+            --silver-color: #a7a9ac;
+            --yellow-color: #f5d36c;
+            --green-color: #688d4c;
+            --black-color: #414042;
+            --orange-color: #f7855d;
+            --white-color: #e3e1da;
+            --red-color: #a95b5a;
+            --blue-color: #88bfe8;
+            --purple-color: #957fa3;
 
-            --bg-dark: #2a2a2e;
-            --bg-medium: #3a3a3e;
-            --border-light: #555;
-            --font-main: 'Roboto', 'Calibri', sans-serif;
-            --font-header: 'Oswald', sans-serif;
-            --font-light: var(--color-white);
-            --font-medium: var(--color-silver);
+            --bg-color: #2a2a2e;
+            --card-bg: #333337;
+            --text-light: #e3e1da;
+            --text-dark: #414042;
+            --border-color: #555;
+            --header-font: 'Oswald', sans-serif;
+            --body-font: 'Calibri', sans-serif;
         }
 
-        /* GENERAL RESET & SETUP */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body {
-            background-color: var(--bg-dark);
-            color: var(--font-light);
-            font-family: var(--font-main);
-            font-size: 12pt;
-            line-height: 1.5;
+        /* GENERAL STYLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* LAYOUT & CONTAINERS */
-        #app-container { max-width: 768px; margin: 0 auto; padding: 10px; }
-        .pane {
-            background-color: var(--bg-medium);
-            border: 1px solid var(--border-light);
-            border-radius: 5px;
-            margin-bottom: 15px;
-            padding: 10px;
+        body {
+            font-family: var(--body-font);
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-size: 11pt;
+            padding: 8px;
+            overscroll-behavior-y: contain;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--header-font);
+            text-transform: uppercase;
+            color: var(--null-color);
+            letter-spacing: 1px;
+        }
+
+        button, input, select {
+            font-family: var(--body-font);
+            background-color: var(--silver-color);
+            color: var(--text-dark);
+            border: 1px solid var(--black-color);
+            border-radius: 3px;
+            padding: 4px 8px;
+            font-size: 10pt;
+            cursor: pointer;
         }
         
-        /* HEADERS & TYPography */
-        h1, h2, h3 { font-family: var(--font-header); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; }
-        h1 { font-size: 1.8em; color: var(--color-blue); }
-        h2 { font-size: 1.4em; color: var(--color-null); }
-        h3 { font-size: 1.1em; color: var(--color-silver); margin-top: 15px; border-bottom-style: dashed;}
-
-        /* FORMS & INTERACTIVE ELEMENTS */
-        input, select, button, textarea {
-            background-color: var(--bg-dark);
-            color: var(--font-light);
-            border: 1px solid var(--border-light);
-            padding: 5px;
-            font-family: var(--font-main);
-            border-radius: 3px;
-            font-size: 1em;
+        button:hover {
+            filter: brightness(1.1);
         }
-        button { cursor: pointer; background-color: var(--color-blue); color: var(--bg-dark); font-weight: bold; text-transform: uppercase; }
-        button:hover { opacity: 0.9; }
-        button.remove-btn { background-color: var(--color-red); padding: 2px 6px; font-size: 0.8em; margin-left: 5px; }
-        .small-btn { padding: 1px 5px; font-size: 0.9em; margin: 0 2px; }
+        
+        button:active {
+            filter: brightness(0.9);
+        }
 
-        /* CARD SYSTEM */
-        .card { background-color: var(--bg-dark); border: 1px solid var(--border-light); border-radius: 4px; padding: 10px; margin-bottom: 10px; }
-        .collapsible > .card-header { cursor: pointer; }
-        .collapsible > .card-header::after { content: ' ▼'; float: right; }
-        .collapsible.collapsed > .card-header::after { content: ' ►'; }
-        .collapsible.collapsed > .card-content { display: none; }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+        }
+        
+        textarea {
+            width: 100%;
+            background: var(--bg-color);
+            color: var(--blue-color);
+            border: 1px solid var(--blue-color);
+            font-family: monospace;
+            font-size: 9pt;
+            resize: vertical;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
-        /* GLOBAL CONTROLS */
-        #global-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-        #entity-selector { flex-grow: 1; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .card-header h3 {
+            font-size: 12pt;
+        }
+        
+        .card-content {
+            display: grid;
+            gap: 10px;
+        }
+
+        .collapsible-content {
+            max-height: 5000px; /* high value */
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .collapsed .collapsible-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: -10px;
+        }
+        
+        /* GLOBAL UI */
+        #global-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        #global-controls select {
+            flex-grow: 1;
+        }
 
         /* BUILD PANE */
-        #character-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
-        #character-name-input { font-family: var(--font-header); font-size: 1.5em; background: transparent; border: none; border-bottom: 1px dashed var(--color-silver); flex-grow: 1; }
-        #character-level-display { font-size: 1.5em; font-family: var(--font-header); color: var(--color-null); }
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; text-align: center; margin-bottom: 10px; }
-        .stat-grid-header { font-weight: bold; font-family: var(--font-header); color: var(--color-silver); }
-        .stat-box { background-color: var(--bg-medium); padding: 5px; border-radius: 3px; font-size: 1.2em; }
-        .stat-label { font-size: 0.8em; color: var(--color-silver); }
-        .resource-tracker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .resource-label { font-family: var(--font-header); font-size: 1.1em; }
-        .resource-pips { display: flex; gap: 2px; }
-        .pip { width: 12px; height: 12px; border: 1px solid var(--border-light); cursor: pointer; }
-        .pip.filled { background-color: var(--color-green); }
-        .resource-tracker[data-resource="SP"] .pip.filled { background-color: var(--color-orange); }
-        .resource-tracker[data-resource="EP"] .pip.filled { background-color: var(--color-purple); }
-        .motivation-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 5px; }
-        .motivation-label { font-weight: bold; text-align: right; color: var(--color-silver); }
-        #keyword-list, .item-keyword-list { list-style: none; }
-        .keyword-item { display: flex; align-items: center; gap: 10px; padding: 5px; border-bottom: 1px solid var(--bg-medium); }
-        .passive-toggle { width: 15px; height: 15px; border: 2px solid var(--color-silver); border-radius: 50%; cursor: pointer; flex-shrink: 0; }
-        .passive-toggle.slotted { background-color: var(--color-blue); border-color: var(--color-blue); }
-        .keyword-name { flex-grow: 1; }
-        .keyword-name .keyword-code { font-size: 0.8em; color: var(--color-silver); }
-        .keyword-name .keyword-flaw { color: var(--color-red); font-weight: bold; }
-        .keyword-name .keyword-comp { color: var(--color-yellow); font-weight: bold; }
-        #stat-progression-list .progression-item { display: flex; justify-content: space-between; padding: 3px 0; }
+        #character-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        #char-name-input {
+            font-family: var(--header-font);
+            font-size: 18pt;
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--null-color);
+            color: var(--text-light);
+            flex-grow: 1;
+            padding: 0;
+        }
+
+        #char-level-display {
+            font-family: var(--header-font);
+            font-size: 20pt;
+            color: var(--yellow-color);
+            background: var(--black-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        #karma-tracker {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        #karma-tracker button {
+            width: 25px;
+            height: 25px;
+            font-weight: bold;
+            padding: 0;
+            background-color: var(--null-color);
+        }
+
+        /* MOTIVATIONAL PROFILE */
+        #motivational-profile .profile-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 8px;
+            font-size: 9pt;
+        }
+        .profile-grid > div {
+            padding: 3px;
+            border-radius: 3px;
+        }
+        .profile-label {
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        /* STATS & RESOURCES */
+        #stats-resources-card .card-content {
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .stat-box {
+            background-color: var(--black-color);
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .stat-name {
+            font-family: var(--header-font);
+            font-size: 8pt;
+            color: var(--silver-color);
+        }
+
+        .stat-value {
+            font-size: 16pt;
+            font-weight: bold;
+        }
+
+        .resistance-display {
+            text-align: center;
+            background: var(--black-color);
+            padding: 8px;
+            border-radius: 3px;
+        }
+        
+        .resistance-display h4 { color: var(--silver-color); }
+        #resistance-value { font-size: 18pt; font-weight: bold; color: var(--yellow-color); }
+
+        .resource-clocks {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .resource-clock {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .clock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .clock-header h4 { font-size: 10pt; }
+        .clock-values { font-size: 10pt; }
+        
+        .hp-header h4 { color: var(--green-color); }
+        .sp-header h4 { color: var(--orange-color); }
+        .ep-header h4 { color: var(--purple-color); }
+
+        .pips-container {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+
+        .pip {
+            height: 12px;
+            flex: 1;
+            background-color: var(--black-color);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        #hp-pips-container .pip.filled { background-color: var(--green-color); border-color: var(--green-color); }
+        #sp-pips-container .pip.filled { background-color: var(--orange-color); border-color: var(--orange-color); }
+        #ep-pips-container .pip.filled { background-color: var(--purple-color); border-color: var(--purple-color); }
+
+        /* KEYWORDS & PROGRESSION */
+        .innate-keywords-list {
+            display: grid;
+            gap: 5px;
+        }
+        
+        .keyword-row {
+            display: grid;
+            grid-template-columns: 20px 1fr auto;
+            align-items: center;
+            gap: 8px;
+            padding: 4px;
+            background-color: var(--black-color);
+            border-radius: 3px;
+            font-size: 10pt;
+        }
+        
+        .keyword-toggle {
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--silver-color);
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .keyword-toggle.slotted {
+            background-color: var(--yellow-color);
+            border-color: var(--yellow-color);
+        }
+        
+        .keyword-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .keyword-choice-select {
+            padding: 2px;
+            font-size: 9pt;
+            background-color: #555;
+            color: var(--text-light);
+            border-color: var(--border-color);
+        }
+
+        #keyword-adder {
+            display: flex;
+            gap: 5px;
+        }
+        #add-keyword-select {
+            flex-grow: 1;
+        }
+        #remove-last-keyword {
+            background-color: var(--red-color);
+        }
+        
+        .stat-progression-list {
+            display: grid;
+            gap: 4px;
+        }
+        
+        .progression-row {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            align-items: center;
+            font-size: 10pt;
+        }
+        
+        .progression-label {
+            font-weight: bold;
+        }
 
         /* PLAY PANE */
-        .tabs { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 10px; }
-        .tab-button { padding: 8px 12px; cursor: pointer; background: transparent; border: none; color: var(--font-medium); font-family: var(--font-header); text-transform: uppercase; }
-        .tab-button.active { background-color: var(--bg-medium); color: var(--color-null); border: 1px solid var(--border-light); border-bottom: 1px solid var(--bg-medium); border-top-left-radius: 5px; border-top-right-radius: 5px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .add-item-form { display: flex; gap: 5px; margin-top: 10px; }
-        .add-item-form input { flex-grow: 1; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-        .tag { background-color: var(--bg-medium); padding: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 5px; }
+        .tab-nav {
+            display: flex;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab-button {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--silver-color);
+            font-family: var(--header-font);
+            font-size: 11pt;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            color: var(--null-color);
+            border-bottom-color: var(--null-color);
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* TAGS TAB */
+        .tags-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .tag-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .tag-list {
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px;
+            font-size: 9pt;
+            background-color: var(--black-color);
+            border-radius: 3px;
+        }
+        
+        .tag-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .tag-controls button {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            font-weight: bold;
+        }
+        
+        .tag-adder {
+            display: flex;
+            gap: 4px;
+            margin-top: 5px;
+        }
+        
+        .tag-adder select {
+            flex-grow: 1;
+        }
+        
+        .tag-adder button {
+            width: 30px;
+        }
+        
+        /* INVENTORY, COMPANIONS, FACTIONS */
+        .play-card-list {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .play-card {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 3px;
+            background: #2f2f33;
+        }
+        
+        .play-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .play-card-name {
+            background: none;
+            border: none;
+            border-bottom: 1px dashed var(--silver-color);
+            color: var(--text-light);
+            font-size: 11pt;
+            font-weight: bold;
+        }
+        
+        .play-card-delete {
+            background-color: var(--red-color);
+            color: var(--text-light);
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            line-height: 20px;
+        }
+        
+        .play-card-adder {
+            margin-top: 8px;
+        }
+        .play-card-adder input { margin-bottom: 4px; }
         
         /* CODEX VAULT */
-        #codex-vault-list { list-style: none; }
-        #codex-vault-list li { display: flex; justify-content: space-between; padding: 5px; cursor: pointer; }
-        #codex-vault-list li:hover { background-color: var(--bg-medium); }
+        #codex-vault {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border-top: 2px solid var(--null-color);
+            box-shadow: 0 -3px 6px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease-in-out;
+        }
         
-        /* MODALS */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background-color: var(--bg-medium); padding: 20px; border-radius: 5px; border: 1px solid var(--border-light); min-width: 300px; text-align: center; }
-        #dice-display { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        .die { font-size: 3em; padding: 10px 20px; border: 1px solid var(--border-light); background-color: var(--bg-dark); width: 80px; }
-        #dice-result-text { font-size: 1.2em; color: var(--color-null); margin-bottom: 15px; min-height: 1.5em; }
+        #codex-vault.collapsed {
+            transform: translateY(calc(100% - 35px));
+        }
         
-        /* UTILITIES */
-        .hidden { display: none; }
-        .color-code-0 { color: var(--color-null); } .color-code-1 { color: var(--color-silver); } .color-code-2 { color: var(--color-yellow); } .color-code-3 { color: var(--color-green); } .color-code-4 { color: var(--color-black); } .color-code-5 { color: var(--color-orange); } .color-code-6 { color: var(--color-white); } .color-code-7 { color: var(--color-red); } .color-code-8 { color: var(--color-blue); } .color-code-9 { color: var(--color-purple); }
+        #codex-header {
+            padding: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        #codex-content {
+            padding: 0 8px 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #codex-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #codex-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #codex-list li:hover {
+            background-color: #444;
+        }
+        
+        .codex-name {
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .codex-delete {
+            background-color: var(--red-color);
+            margin-left: 8px;
+        }
+        
+        /* DICE ROLLER MODAL */
+        #dice-roller-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .dice-roller-content {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        #dice-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .die {
+            width: 80px;
+            height: 80px;
+            background-color: var(--white-color);
+            color: var(--black-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+        
+        #dice-results {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14pt;
+        }
+        
+        #dice-roller-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        #roll-button { grid-column: span 2; background-color: var(--null-color); font-size: 14pt; }
+        
+        /* Art Deco Subtle Touches */
+        .card-header::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--null-color));
+            margin-left: 10px;
+        }
+
+        .card-header h3 {
+            border-bottom: 1px solid transparent;
+        }
+
     </style>
 </head>
 <body>
 
-<div id="app-container">
     <!-- GLOBAL CONTROLS -->
-    <header class="pane">
-        <h1>Resonance Companion</h1>
-        <div id="global-controls">
-            <select id="entity-selector"></select>
-            <button id="add-new-entity-btn">New</button>
-            <button id="import-entity-btn">Import</button>
-            <button id="dice-roller-btn">Roll SR</button>
-            <button id="random-gen-btn">Generate</button>
-        </div>
-    </header>
+    <div id="global-controls" class="card">
+        <button id="new-char-btn">New</button>
+        <button id="import-btn">Import</button>
+        <select id="entity-selector"></select>
+        <button id="save-btn">Save</button>
+        <button id="dice-roller-btn">🎲</button>
+        <button id="random-gen-btn">⚡</button>
+    </div>
 
-    <main id="main-content" class="hidden">
+    <!-- MAIN APP CONTAINER -->
+    <main id="app-container">
         <!-- BUILD PANE -->
-        <section id="build-pane" class="pane">
+        <div id="build-pane">
             <div id="character-header">
-                <input type="text" id="character-name-input" placeholder="Character Name">
-                <div id="character-level-display">LVL 0</div>
+                <input type="text" id="char-name-input" value="Character Name">
+                <div id="char-level-display">-</div>
             </div>
 
-            <div class="card collapsible" id="motivations-card">
-                <div class="card-header"><h3>Motivational Profile</h3></div>
+            <div id="karma-tracker">
+                <button id="karma-minus">-</button>
+                <span>Karma: <b id="karma-value">0</b></span>
+                <button id="karma-plus">+</button>
+            </div>
+
+            <div class="card collapsible" id="motivational-profile">
+                <div class="card-header">
+                    <h3>Motivational Profile</h3>
+                </div>
+                <div class="collapsible-content card-content profile-grid">
+                    <div class="profile-label">Goal:</div>      <div id="profile-goal" style="color:#688d4c">Security</div>
+                    <div class="profile-label">Method:</div>    <div id="profile-method" style="color:#e3e1da">Purity</div>
+                    <div class="profile-label">Purpose:</div>   <div id="profile-purpose" style="color:#957fa3">Faith</div>
+                    <div class="profile-label">External:</div>  <div id="profile-external" style="color:#a95b5a">Glory</div>
+                    <div class="profile-label">Internal:</div>  <div id="profile-internal" style="color:#f5d36c">Ambition</div>
+                </div>
+            </div>
+
+            <div class="card" id="stats-resources-card">
                 <div class="card-content">
-                    <div class="motivation-grid">
-                        <div class="motivation-label">Goal:</div> <div id="motivation-goal"></div>
-                        <div class="motivation-label">Method:</div> <div id="motivation-method"></div>
-                        <div class="motivation-label">Purpose:</div> <div id="motivation-purpose"></div>
-                        <div class="motivation-label">External Conflict:</div> <div id="motivation-external"></div>
-                        <div class="motivation-label">Internal Conflict:</div> <div id="motivation-internal"></div>
+                    <div class="stat-grid">
+                        <div class="stat-box"><div class="stat-name">MOV</div><div class="stat-value" id="stat-m">-</div></div>
+                        <div class="stat-box"><div class="stat-name">ALA</div><div class="stat-value" id="stat-a">-</div></div>
+                        <div class="stat-box"><div class="stat-name">BRW</div><div class="stat-value" id="stat-b">-</div></div>
+                        <div class="stat-box"><div class="stat-name">WIT</div><div class="stat-value" id="stat-w">-</div></div>
+                        <div class="stat-box"><div class="stat-name">EXP</div><div class="stat-value" id="stat-e">-</div></div>
+                        <div class="stat-box"><div class="stat-name">TEC</div><div class="stat-value" id="stat-t">-</div></div>
+                        <div class="stat-box"><div class="stat-name">POW</div><div class="stat-value" id="stat-p">-</div></div>
+                        <div class="stat-box"><div class="stat-name">INF</div><div class="stat-value" id="stat-i">-</div></div>
+                        <div class="stat-box"><div class="stat-name">FOR</div><div class="stat-value" id="stat-f">-</div></div>
+                    </div>
+                    <div class="resistance-display">
+                        <h4>Resistance</h4>
+                        <div id="resistance-value">-</div>
+                    </div>
+                    <div class="resource-clocks">
+                        <div class="resource-clock">
+                            <div class="clock-header hp-header">
+                                <h4>Health</h4>
+                                <div class="clock-values"><span id="hp-current">0</span> / <span id="hp-max">0</span></div>
+                            </div>
+                            <div class="pips-container" id="hp-pips-container"></div>
+                        </div>
+                        <div class="resource-clock">
+                            <div class="clock-header sp-header">
+                                <h4>Stamina</h4>
+                                <div class="clock-values"><span id="sp-current">0</span> / <span id="sp-max">0</span></div>
+                            </div>
+                            <div class="pips-container" id="sp-pips-container"></div>
+                        </div>
+                        <div class="resource-clock">
+                            <div class="clock-header ep-header">
+                                <h4>Energy</h4>
+                                <div class="clock-values"><span id="ep-current">0</span> / <span id="ep-max">0</span></div>
+                            </div>
+                            <div class="pips-container" id="ep-pips-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card collapsible" id="keywords-progression-card">
+                 <div class="card-header">
+                    <h3>Keywords & Progression</h3>
+                </div>
+                <div class="collapsible-content card-content">
+                    <div class="innate-keywords">
+                        <h4>Innate Keywords (<span id="innate-slotted-count">0</span>/<span id="innate-max-slots">0</span>)</h4>
+                        <div class="innate-keywords-list" id="innate-keywords-list">
+                            <!-- JS will populate 22 keyword rows here -->
+                        </div>
+                        <div id="keyword-adder" style="margin-top: 8px;">
+                            <select id="add-keyword-select"></select>
+                            <button id="add-keyword-btn">+</button>
+                            <button id="remove-last-keyword">-</button>
+                        </div>
+                    </div>
+                    <div class="stat-progression">
+                        <h4>Stat Progression</h4>
+                        <div class="stat-progression-list" id="stat-progression-list">
+                            <!-- JS will populate stat progression rows here -->
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="card">
-                <h3>Stats & Resources</h3>
-                <div class="stat-grid">
-                    <div class="stat-grid-header"></div><div class="stat-grid-header">Control</div><div class="stat-grid-header">Execution</div><div class="stat-grid-header">Foundation</div>
-                    <div class="stat-grid-header">Body</div>
-                    <div class="stat-box"><span id="stat-m">0</span><div class="stat-label">M</div></div><div class="stat-box"><span id="stat-a">0</span><div class="stat-label">A</div></div><div class="stat-box"><span id="stat-b">0</span><div class="stat-label">B</div></div>
-                    <div class="stat-grid-header">Mind</div>
-                    <div class="stat-box"><span id="stat-w">0</span><div class="stat-label">W</div></div><div class="stat-box"><span id="stat-e">0</span><div class="stat-label">E</div></div><div class="stat-box"><span id="stat-t">0</span><div class="stat-label">T</div></div>
-                    <div class="stat-grid-header">Essence</div>
-                    <div class="stat-box"><span id="stat-p">0</span><div class="stat-label">P</div></div><div class="stat-box"><span id="stat-i">0</span><div class="stat-label">I</div></div><div class="stat-box"><span id="stat-f">0</span><div class="stat-label">F</div></div>
+            <div class="card collapsible collapsed" id="live-blueprint-card">
+                 <div class="card-header">
+                    <h3>Live Blueprint</h3>
                 </div>
-                <p><strong>Resistance:</strong> <span id="resistance-value">0</span></p>
-                <div class="resource-tracker" data-resource="HP"><div class="resource-label" style="color: var(--color-green);">HP</div><div id="hp-pips" class="resource-pips"></div><div class="resource-values"><span id="hp-current">10</span> / <span id="hp-max">10</span></div></div>
-                <div class="resource-tracker" data-resource="SP"><div class="resource-label" style="color: var(--color-orange);">SP</div><div id="sp-pips" class="resource-pips"></div><div class="resource-values"><span id="sp-current">10</span> / <span id="sp-max">10</span></div></div>
-                <div class="resource-tracker" data-resource="EP"><div class="resource-label" style="color: var(--color-purple);">EP</div><div id="ep-pips" class="resource-pips"></div><div class="resource-values"><span id="ep-current">10</span> / <span id="ep-max">10</span></div></div>
-            </div>
-
-            <div class="card">
-                <h3>Keywords & Progression (<span id="innate-passive-count">0</span>/<span id="innate-passive-max">0</span>)</h3>
-                <div id="add-keyword-form" style="display:flex; gap: 5px; margin-bottom: 10px;">
-                    <select id="keyword-select" style="flex-grow: 1;"></select>
-                    <button id="add-keyword-btn">Add</button>
-                    <button id="remove-last-keyword-btn" class="remove-btn">Rem Last</button>
+                <div class="collapsible-content card-content">
+                    <textarea id="live-blueprint-string" rows="3"></textarea>
                 </div>
-                <ul id="keyword-list"></ul>
-                <h3>Stat Progression</h3>
-                <ul id="stat-progression-list"></ul>
             </div>
-
-            <div class="card collapsible collapsed" id="blueprint-card">
-                <div class="card-header"><h3>Live Blueprint</h3></div>
-                <div class="card-content"><textarea id="live-blueprint-string" style="width: 100%;" rows="3"></textarea></div>
-            </div>
-        </section>
+        </div>
 
         <!-- PLAY PANE -->
-        <section id="play-pane" class="pane">
-            <nav class="tabs">
-                <button class="tab-button active" data-tab="inventory">Inventory</button><button class="tab-button" data-tab="companions">Companions</button><button class="tab-button" data-tab="factions">Factions</button><button class="tab-button" data-tab="tags">Tags</button>
+        <div id="play-pane" class="card">
+            <nav class="tab-nav">
+                <button class="tab-button active" data-tab="tags">Tags</button>
+                <button class="tab-button" data-tab="inventory">Inventory</button>
+                <button class="tab-button" data-tab="companions">Companions</button>
+                <button class="tab-button" data-tab="factions">Factions</button>
             </nav>
-            <div id="inventory" class="tab-content active">
-                <h3>Inventory (<span id="gear-passive-count">0</span>/<span id="gear-passive-max">0</span>)</h3><div id="inventory-list"></div>
-                <div class="add-item-form"><input type="text" id="add-item-string" placeholder="Paste Item Blueprint String..."><button id="add-item-btn">Add Item</button></div>
+            
+            <div class="tab-content">
+                <div id="tab-tags" class="tab-pane active">
+                    <div class="tags-container">
+                        <div class="tag-pool">
+                            <h4>Boosts (<span id="boost-count">0</span>/10)</h4>
+                            <div class="tag-list" id="boost-tag-list"></div>
+                            <div class="tag-adder">
+                                <select id="boost-adder-select"></select>
+                                <button id="add-boost-btn">+</button>
+                            </div>
+                        </div>
+                        <div class="tag-pool">
+                            <h4>Statuses (<span id="status-count">0</span>/10)</h4>
+                            <div class="tag-list" id="status-tag-list"></div>
+                            <div class="tag-adder">
+                                <select id="status-adder-select"></select>
+                                <button id="add-status-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-inventory" class="tab-pane">
+                    <h4>Inventory (<span id="gear-slotted-count">0</span>/<span id="gear-max-slots">0</span>)</h4>
+                    <div id="inventory-list" class="play-card-list"></div>
+                    <div class="play-card-adder">
+                         <input type="text" id="add-item-string" placeholder="Paste Item String or leave blank">
+                         <button id="add-item-btn">Add Item</button>
+                    </div>
+                </div>
+                <div id="tab-companions" class="tab-pane">
+                    <div id="companion-list" class="play-card-list"></div>
+                     <div class="play-card-adder">
+                         <input type="text" id="add-companion-string" placeholder="Paste Animation String or leave blank">
+                         <button id="add-companion-btn">Add Companion</button>
+                    </div>
+                </div>
+                <div id="tab-factions" class="tab-pane">
+                    <div id="faction-list" class="play-card-list"></div>
+                     <div class="play-card-adder">
+                         <input type="text" id="add-faction-string" placeholder="Paste Faction String or leave blank">
+                         <button id="add-faction-btn">Add Faction</button>
+                    </div>
+                </div>
             </div>
-            <div id="companions" class="tab-content"><h3>Companions</h3><div id="companions-list"></div><div class="add-item-form"><input type="text" id="add-companion-string" placeholder="Paste Animation Blueprint..."><button id="add-companion-btn">Add Companion</button></div></div>
-            <div id="factions" class="tab-content"><h3>Factions</h3><div id="factions-list"></div><div class="add-item-form"><input type="text" id="add-faction-string" placeholder="Paste Faction Blueprint..."><button id="add-faction-btn">Add Faction</button></div></div>
-            <div id="tags" class="tab-content">
-                <h3>Boosts (<span id="boost-tag-count">0</span>/10)</h3>
-                <div class="add-item-form"><select id="add-boost-select"></select><button id="add-boost-btn">+</button></div><div id="boost-tag-list" class="tag-container"></div>
-                <h3>Statuses (<span id="status-tag-count">0</span>/10)</h3>
-                <div class="add-item-form"><select id="add-status-select"></select><button id="add-status-btn">+</button></div><div id="status-tag-list" class="tag-container"></div>
-            </div>
-        </section>
+        </div>
+
     </main>
-
+    
     <!-- CODEX VAULT -->
-    <footer id="codex-vault" class="pane card collapsible collapsed">
-        <div class="card-header"><h2>Codex Vault</h2></div>
-        <div class="card-content"><ul id="codex-vault-list"></ul></div>
-    </footer>
-</div>
+    <div id="codex-vault" class="collapsible collapsed">
+        <div id="codex-header" class="card-header">
+            <h3>Codex Vault</h3>
+        </div>
+        <div id="codex-content" class="collapsible-content">
+            <ul id="codex-list">
+                <!-- JS will populate this list -->
+            </ul>
+        </div>
+    </div>
+    
+    <!-- DICE ROLLER MODAL -->
+    <div id="dice-roller-modal" class="hidden">
+        <div class="card dice-roller-content">
+            <h3>Standard Roll</h3>
+            <div id="dice-display">
+                <div class="die" id="main-die">10</div>
+                <div class="die" id="lucky-die">10</div>
+            </div>
+            <div id="dice-roller-controls">
+                <select id="dice-stat-select">
+                    <option value="none">No Stat</option>
+                    <option value="m">Movement</option>
+                    <option value="a">Alacrity</option>
+                    <option value="b">Brawn</option>
+                    <option value="w">Wit</option>
+                    <option value="e">Expertise</option>
+                    <option value="t">Technique</option>
+                    <option value="p">Power</option>
+                    <option value="i">Influence</option>
+                    <option value="f">Force</option>
+                </select>
+                <select id="dice-adv-select">
+                    <option value="normal">Normal</option>
+                    <option value="advantage">Advantage</option>
+                    <option value="disadvantage">Disadvantage</option>
+                </select>
+                <button id="roll-button">Roll</button>
+                <button id="close-roller-btn">Close</button>
+            </div>
+             <div id="dice-results">
+                <p>SR: <span id="sr-result">-</span> | EV/ER: <span id="ev-result">-</span></p>
+                <p id="crit-indicator" class="hidden" style="color:var(--yellow-color)"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RANDOM GENERATOR MODAL -->
+    <div id="random-gen-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.7); z-index: 100; display: flex; justify-content: center; align-items: center;">
+         <div class="card" style="width: 90%; max-width: 500px;">
+             <h3>Random String Generator</h3>
+             <div class="card-content" style="gap: 15px;">
+                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <select id="random-type-select">
+                        <option value="C">Character</option>
+                        <option value="A">Animation</option>
+                        <option value="I">Item</option>
+                        <option value="F">Faction</option>
+                    </select>
+                    <input type="number" id="random-level-input" min="0" max="9" value="1" placeholder="Level (0-9)">
+                 </div>
+                 <button id="generate-string-btn">Generate</button>
+                 <textarea id="generated-string-output" rows="3" readonly></textarea>
+                 <button id="close-gen-btn">Close</button>
+             </div>
+         </div>
+    </div>
 
-<!-- MODALS -->
-<div id="dice-roller-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Standard Roll</h2>
-        <div id="dice-display"><div id="main-die" class="die">?</div><div id="lucky-die" class="die">?</div></div>
-        <div id="dice-result-text">Ready to roll...</div>
-        <div><input type="checkbox" id="advantage-toggle"> <label for="advantage-toggle">Advantage</label><input type="checkbox" id="disadvantage-toggle"> <label for="disadvantage-toggle">Disadvantage</label></div>
-        <div style="margin-top: 10px;"><button id="roll-sr-btn">Roll</button><button id="roll-ev-btn">Roll EV/ER</button><button id="close-dice-modal-btn">Close</button></div>
-    </div>
-</div>
-<div id="random-gen-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Generate Random Entity</h2>
-        <div style="margin: 15px 0;"><label for="gen-type-select">Type:</label><select id="gen-type-select"><option value="C">Character</option><option value="A">Animation</option><option value="I">Item</option><option value="F">Faction</option></select><label for="gen-level-input">Level:</label><input type="number" id="gen-level-input" value="1" min="0" max="9" style="width: 50px;"></div>
-        <textarea id="generated-string-output" rows="4" style="width: 100%;" readonly></textarea>
-        <div><button id="generate-string-btn">Generate</button><button id="close-gen-modal-btn">Close</button></div>
-    </div>
-</div>
 
 <script>
+/*****************************************************************
+ *   The Resonance Companion: Project Bible (v2.1) - Executed   *
+ *****************************************************************/
+
+// Wait for the DOM to be fully loaded before running the app
 document.addEventListener('DOMContentLoaded', () => {
 
-// #################################################################
-// ### PHASE 2: THE LOGIC CORE (SRD_DATA & CodexEngine)          ###
-// #################################################################
-
-const SRD_DATA = {
-    motivations: {
-        '0': { name: 'Discovery', color: 0 }, '1': { name: 'Absolution', color: 1 },
-        '2': { name: 'Ambition', color: 2 }, '3': { name: 'Security', color: 3 },
-        '4': { name: 'Legacy', color: 4 }, '5': { name: 'Innovation', color: 5 },
-        '6': { name: 'Purity', color: 6 }, '7': { name: 'Glory', color: 7 },
-        '8': { name: 'Influence', color: 8 }, '9': { name: 'Faith', color: 9 }
-    },
-    stats: ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'],
-    statProgression: [
-        { level: 2, points: 1 }, { level: 3, points: 1 },
-        { level: 4, points: 1 }, { level: 5, points: 1 },
-        { level: 6, points: 2 }, { level: 7, points: 2 },
-        { level: 8, points: 2 }, { level: 9, points: 2 }
-    ],
-    tags: {
-        boosts: [
-            { name: "Liberate", color: 0 }, { name: "Augment", color: 1 }, { name: "Haste", color: 2 }, { name: "Ward", color: 3 },
-            { name: "Bless", color: 4 }, { name: "Charge", color: 5 }, { name: "Cure", color: 6 }, { name: "Regen", color: 7 },
-            { name: "Enhance", color: 8 }, { name: "Obscure", color: 9 }
-        ],
-        statuses: [
-            { name: "Mark", color: 0 }, { name: "Impair", color: 1 }, { name: "Slow", color: 2 }, { name: "Daze", color: 3 },
-            { name: "Curse", color: 4 }, { name: "Bind", color: 5 }, { name: "Weaken", color: 6 }, { name: "Blight", color: 7 },
-            { name: "Silence", color: 8 }, { name: "Nullify", color: 9 }
-        ]
-    },
-    keywords: {
-        '00':{name:"Restricted",color:0,type:"Flaw"},'01':{name:"Aura",color:0,type:"Gift"},'02':{name:"Specialist",color:0,type:"Talent"},'03':{name:"Alert",color:0,type:"Quirk"},'04':{name:"Liberate",color:0,type:"Boost"},'05':{name:"Mark",color:0,type:"Status"},'06':{name:"Indirect",color:0,type:"Form"},'07':{name:"Adaptive",color:0,type:"Modifier"},'08':{name:"Gamble",color:0,type:"Drive"},'09':{name:"Edit",color:0,type:"Unique"},
-        '10':{name:"Bane",color:1,type:"Flaw"},'11':{name:"Traveller",color:1,type:"Gift"},'12':{name:"Martial",color:1,type:"Talent"},'13':{name:"Attuned",color:1,type:"Quirk"},'14':{name:"Augment",color:1,type:"Boost"},'15':{name:"Impair",color:1,type:"Status"},'16':{name:"Reactive",color:1,type:"Form"},'17':{name:"Phasing",color:1,type:"Modifier"},'18':{name:"Brutal",color:1,type:"Drive"},'19':{name:"Translocate",color:1,type:"Unique"},
-        '20':{name:"Anxious",color:2,type:"Flaw"},'21':{name:"Acrobatic",color:2,type:"Gift"},'22':{name:"Sentry",color:2,type:"Talent"},'23':{name:"Eidetic",color:2,type:"Quirk"},'24':{name:"Haste",color:2,type:"Boost"},'25':{name:"Slow",color:2,type:"Status"},'26':{name:"Snap",color:2,type:"Form"},'27':{name:"Condense",color:2,type:"Modifier"},'28':{name:"Rapid",color:2,type:"Drive"},'29':{name:"Reckless",color:2,type:"Unique"},
-        '30':{name:"Hesitant",color:3,type:"Flaw"},'31':{name:"Sturdy",color:3,type:"Gift"},'32':{name:"Brawler",color:3,type:"Talent"},'33':{name:"Stubborn",color:3,type:"Quirk"},'34':{name:"Ward",color:3,type:"Boost"},'35':{name:"Daze",color:3,type:"Status"},'36':{name:"Sculpt",color:3,type:"Form"},'37':{name:"Defensive",color:3,type:"Modifier"},'38':{name:"Impact",color:3,type:"Drive"},'39':{name:"Shift",color:3,type:"Unique"},
-        '40':{name:"Feeble",color:4,type:"Flaw"},'41':{name:"Survivor",color:4,type:"Gift"},'42':{name:"Stoic",color:4,type:"Talent"},'43':{name:"Ageless",color:4,type:"Quirk"},'44':{name:"Bless",color:4,type:"Boost"},'45':{name:"Curse",color:4,type:"Status"},'46':{name:"Piercing",color:4,type:"Form"},'47':{name:"Flux",color:4,type:"Modifier"},'48':{name:"Siphon",color:4,type:"Drive"},'49':{name:"Animate",color:4,type:"Unique"},
-        '50':{name:"Gremlins",color:5,type:"Flaw"},'51':{name:"Sensor",color:5,type:"Gift"},'52':{name:"Improvisor",color:5,type:"Talent"},'53':{name:"Crafty",color:5,type:"Quirk"},'54':{name:"Charge",color:5,type:"Boost"},'55':{name:"Bind",color:5,type:"Status"},'56':{name:"Imbue",color:5,type:"Form"},'57':{name:"Material",color:5,type:"Modifier"},'58':{name:"Leverage",color:5,type:"Drive"},'59':{name:"Manifest",color:5,type:"Unique"},
-        '60':{name:"Vulnerable",color:6,type:"Flaw"},'61':{name:"Tolerant",color:6,type:"Gift"},'62':{name:"Deadeye",color:6,type:"Talent"},'63':{name:"Immunized",color:6,type:"Quirk"},'64':{name:"Cure",color:6,type:"Boost"},'65':{name:"Weaken",color:6,type:"Status"},'66':{name:"Sticky",color:6,type:"Form"},'67':{name:"Restore",color:6,type:"Modifier"},'68':{name:"Exploit",color:6,type:"Drive"},'69':{name:"Growth",color:6,type:"Unique"},
-        '70':{name:"Limited",color:7,type:"Flaw"},'71':{name:"Resilient",color:7,type:"Gift"},'72':{name:"Font",color:7,type:"Talent"},'73':{name:"Insulated",color:7,type:"Quirk"},'74':{name:"Regen",color:7,type:"Boost"},'75':{name:"Blight",color:7,type:"Status"},'76':{name:"Area",color:7,type:"Form"},'77':{name:"Ranged",color:7,type:"Modifier"},'78':{name:"Multiply",color:7,type:"Drive"},'79':{name:"Split",color:7,type:"Unique"},
-        '80':{name:"Awkward",color:8,type:"Flaw"},'81':{name:"Charismatic",color:8,type:"Gift"},'82':{name:"Leader",color:8,type:"Talent"},'83':{name:"Insightful",color:8,type:"Quirk"},'84':{name:"Enhance",color:8,type:"Boost"},'85':{name:"Silence",color:8,type:"Status"},'86':{name:"Splash",color:8,type:"Form"},'87':{name:"Lingering",color:8,type:"Modifier"},'88':{name:"Spread",color:8,type:"Drive"},'89':{name:"Potent",color:8,type:"Unique"},
-        '90':{name:"Mundane",color:9,type:"Flaw"},'91':{name:"Aware",color:9,type:"Gift"},'92':{name:"Stealthy",color:9,type:"Talent"},'93':{name:"Trickster",color:9,type:"Quirk"},'94':{name:"Obscure",color:9,type:"Boost"},'95':{name:"Nullify",color:9,type:"Status"},'96':{name:"Chain",color:9,type:"Form"},'97':{name:"Natural",color:9,type:"Modifier"},'98':{name:"Ambience",color:9,type:"Drive"},'99':{name:"Channel",color:9,type:"Unique"}
-    }
-};
-
-const CodexEngine = {
-    parseBlueprint: function(blueprintString) {
-        if (!blueprintString || typeof blueprintString !== 'string') return null;
-        const type = blueprintString.substring(0, 2);
-        switch(type) {
-            case 'C:': return this.calculateCharacter(this.parseCharacter(blueprintString));
-            case 'A:': return this.calculateAnimation(this.parseAnimation(blueprintString));
-            case 'I:': return this.parseItem(blueprintString);
-            case 'F:': return this.parseFaction(blueprintString);
-            default: return null;
-        }
-    },
-
-    parseCharacter: function(str) {
-        let entity = { type: 'Character', keywords: [], flawPackage: null, statAllocs: [] };
-        const content = str.substring(2);
-        
-        const flawMatch = content.match(/\+\d{4}/);
-        if (flawMatch) {
-            const flawStr = flawMatch[0];
-            entity.flawPackage = { flaw: flawStr.substring(1, 3), compensation: flawStr.substring(3, 5) };
-        }
-        
-        const coreStr = content.replace(/\+\d{4}-?/, '');
-        const parts = coreStr.split('-');
-        
-        entity.profile = parts.shift();
-
-        parts.forEach(part => {
-            const subParts = part.split('.');
-            subParts.forEach(sub => {
-                if (SRD_DATA.stats.includes(sub)) {
-                    entity.statAllocs.push(sub);
-                } else if (sub && !sub.startsWith('+')) {
-                    entity.keywords.push(sub);
-                }
-            });
-        });
-        return entity;
-    },
-    
-    parseAnimation: function(str) {
-        let entity = { type: 'Animation', keywords: [], flawPackage: null };
-        const content = str.substring(2);
-        
-        const flawMatch = content.match(/\+\d{4}/);
-        if (flawMatch) {
-            entity.flawPackage = { flaw: flawMatch[0].substring(1, 3), compensation: flawMatch[0].substring(3, 5) };
-        }
-
-        const coreStr = content.replace(/\+\d{4}-?/, '').replace(/^-/,'');
-        const parts = coreStr.split(/[.-]/);
-        
-        parts.forEach(part => {
-             if (part) { entity.keywords.push(part); }
-        });
-        return entity;
-    },
-    
-    parseItem: function(str) {
-        let entity = { type: 'Item', keywords: [], flawPackage: null };
-        const levelMatch = str.match(/^I:L(\d)/);
-        if (!levelMatch) return null;
-        entity.level = parseInt(levelMatch[1], 10);
-        
-        const content = str.substring(levelMatch[0].length);
-        const flawMatch = content.match(/\+\d{4}/);
-        if (flawMatch) {
-            entity.flawPackage = { flaw: flawMatch[0].substring(1, 3), compensation: flawMatch[0].substring(3, 5) };
-        }
-
-        const coreStr = content.replace(/\+\d{4}-?/, '').replace(/^-/,'');
-        const parts = coreStr.split(/[.-]/);
-        parts.forEach(part => {
-             if (part) { entity.keywords.push(part); }
-        });
-        return entity;
-    },
-
-    parseFaction: function(str) {
-        return { type: 'Faction', raw: str };
-    },
-
-    calculateCharacter: function(entity) {
-        if (!entity) return null;
-        const keywordCount = entity.keywords.length;
-        
-        entity.level = 0;
-        if (keywordCount >= 4) entity.level = 1; if (keywordCount >= 6) entity.level = 2;
-        if (keywordCount >= 8) entity.level = 3; if (keywordCount >= 10) entity.level = 4;
-        if (keywordCount >= 12) entity.level = 5; if (keywordCount >= 14) entity.level = 6;
-        if (keywordCount >= 16) entity.level = 7; if (keywordCount >= 18) entity.level = 8;
-        if (keywordCount >= 20) entity.level = 9;
-
-        const baseStat = entity.level < 1 ? 1 : 2;
-        entity.stats = { M: baseStat, A: baseStat, B: baseStat, W: baseStat, E: baseStat, T: baseStat, P: baseStat, I: baseStat, F: baseStat };
-        
-        entity.statAllocs.forEach(statKey => {
-            if(entity.stats[statKey] < 5) { entity.stats[statKey]++; }
-        });
-
-        const sortedStats = Object.values(entity.stats).sort((a, b) => b - a);
-        entity.resistance = sortedStats[0] + sortedStats[1] + sortedStats[2];
-        
-        entity.maxHP = 10; entity.maxSP = 10; entity.maxEP = 10;
-        
-        entity.keywords.forEach(kwStr => {
-           if (kwStr.startsWith('71')) { // Resilient
-               const optionMatch = kwStr.match(/\((\d)\)/);
-               if (optionMatch) {
-                   const option = parseInt(optionMatch[1]);
-                   if(option === 0) entity.maxHP += 5;
-                   if(option === 1) entity.maxSP += 5;
-                   if(option === 2) entity.maxEP += 5;
-               }
-           } else if (kwStr.startsWith('70')) { // Limited
-                const optionMatch = kwStr.match(/\((\d)\)/);
-               if (optionMatch) {
-                   const option = parseInt(optionMatch[1]);
-                   if(option === 0) entity.maxHP -= 5;
-                   if(option === 1) entity.maxSP -= 5;
-                   if(option === 2) entity.maxEP -= 5;
-               }
-           }
-        });
-
-        entity.maxInnatePassives = entity.stats.F;
-        entity.maxGearPassives = entity.stats.E;
-
-        return entity;
-    },
-
-    calculateAnimation: function(entity) {
-        if (!entity) return null;
-        const keywordCount = entity.keywords.length;
-        entity.level = keywordCount > 0 ? keywordCount - 1 : 0;
-        
-        const baseStats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
-        // In a full implementation, stat points would be allocated. For now, we simplify.
-        const totalPoints = 9 + entity.level; 
-        entity.stats = baseStats;
-        
-        const sortedStats = Object.values(entity.stats).sort((a, b) => b - a);
-        entity.resistance = sortedStats[0] + sortedStats[1] + sortedStats[2]; 
-        entity.maxHP = 10; entity.maxSP = 10; entity.maxEP = 10;
-        return entity;
-    },
-    
-    stringifyCharacter: function(parsedData) {
-        let str = `C:${parsedData.profile}`;
-
-        if (parsedData.keywords.length > 0) {
-            str += `-${parsedData.keywords[0]}`; // Seed
-        }
-        if (parsedData.keywords.length > 1) {
-            str += `-${parsedData.keywords.slice(1, 4).join('.')}`; // Awakening
-        }
-        
-        let statAllocIndex = 0;
-        for (let i = 4; i < parsedData.keywords.length; i += 2) {
-            let pair = parsedData.keywords.slice(i, i + 2);
-            if (pair.length > 0) {
-                str += `-${pair.join('.')}`;
-                
-                const levelAtThisPoint = CodexEngine.calculateCharacter({keywords: parsedData.keywords.slice(0, i+2)}).level;
-                const progDef = SRD_DATA.statProgression.find(p => p.level === levelAtThisPoint);
-                if(progDef) {
-                    for(let p = 0; p < progDef.points; p++) {
-                        if (parsedData.statAllocs[statAllocIndex]) {
-                           str += `.${parsedData.statAllocs[statAllocIndex]}`;
-                           statAllocIndex++;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (parsedData.flawPackage) {
-            str += `+${parsedData.flawPackage.flaw}${parsedData.flawPackage.compensation}`;
-        }
-        return str.replace(/--/g, '-');
-    }
-};
-
-// #################################################################
-// ### PHASE 3: THE APP CONTROLLER (Event Handling & Rendering)  ###
-// #################################################################
-
-const App = {
-    state: { entities: {}, activeEntityId: null, },
-    init: function() { this.cacheDOMElements(); this.loadState(); this.populateStaticDropdowns(); this.setupEventListeners(); this.render(); },
-    cacheDOMElements: function() { this.dom = {
-        mainContent: document.getElementById('main-content'),
-        entitySelector: document.getElementById('entity-selector'),
-        addNewEntityBtn: document.getElementById('add-new-entity-btn'), importEntityBtn: document.getElementById('import-entity-btn'),
-        diceRollerBtn: document.getElementById('dice-roller-btn'), randomGenBtn: document.getElementById('random-gen-btn'),
-        charName: document.getElementById('character-name-input'), charLevel: document.getElementById('character-level-display'),
-        motivations: { goal: document.getElementById('motivation-goal'), method: document.getElementById('motivation-method'), purpose: document.getElementById('motivation-purpose'), external: document.getElementById('motivation-external'), internal: document.getElementById('motivation-internal'), },
-        stats: { M: document.getElementById('stat-m'), A: document.getElementById('stat-a'), B: document.getElementById('stat-b'), W: document.getElementById('stat-w'), E: document.getElementById('stat-e'), T: document.getElementById('stat-t'), P: document.getElementById('stat-p'), I: document.getElementById('stat-i'), F: document.getElementById('stat-f'), },
-        resistance: document.getElementById('resistance-value'),
-        resources: {
-            hp: { current: document.getElementById('hp-current'), max: document.getElementById('hp-max'), pips: document.getElementById('hp-pips') },
-            sp: { current: document.getElementById('sp-current'), max: document.getElementById('sp-max'), pips: document.getElementById('sp-pips') },
-            ep: { current: document.getElementById('ep-current'), max: document.getElementById('ep-max'), pips: document.getElementById('ep-pips') },
+    /*******************************************************
+     *  Part 1: The SRD (System Reference Document) Data   *
+     *******************************************************/
+    const SRD_DATA = {
+        motivations: {
+            0: { name: "Discovery",  color: "--null-color" },
+            1: { name: "Absolution", color: "--silver-color" },
+            2: { name: "Ambition",   color: "--yellow-color" },
+            3: { name: "Security",   color: "--green-color" },
+            4: { name: "Legacy",     color: "--black-color" },
+            5: { name: "Innovation", color: "--orange-color" },
+            6: { name: "Purity",     color: "--white-color" },
+            7: { name: "Glory",      color: "--red-color" },
+            8: { name: "Influence",  color: "--blue-color" },
+            9: { name: "Faith",      color: "--purple-color" },
         },
-        keyword: { select: document.getElementById('keyword-select'), addBtn: document.getElementById('add-keyword-btn'), removeBtn: document.getElementById('remove-last-keyword-btn'), list: document.getElementById('keyword-list'), },
-        progressionList: document.getElementById('stat-progression-list'),
-        innatePassives: { count: document.getElementById('innate-passive-count'), max: document.getElementById('innate-passive-max'), },
-        liveBlueprint: document.getElementById('live-blueprint-string'),
-        tabs: document.querySelectorAll('.tab-button'), tabContents: document.querySelectorAll('.tab-content'),
-        inventory: { list: document.getElementById('inventory-list'), addString: document.getElementById('add-item-string'), addBtn: document.getElementById('add-item-btn'), passiveCount: document.getElementById('gear-passive-count'), passiveMax: document.getElementById('gear-passive-max'), },
-        tags: { boostSelect: document.getElementById('add-boost-select'), boostBtn: document.getElementById('add-boost-btn'), boostList: document.getElementById('boost-tag-list'), boostCount: document.getElementById('boost-tag-count'), statusSelect: document.getElementById('add-status-select'), statusBtn: document.getElementById('add-status-btn'), statusList: document.getElementById('status-tag-list'), statusCount: document.getElementById('status-tag-count'), },
-        codexVault: document.getElementById('codex-vault'), codexVaultList: document.getElementById('codex-vault-list'),
-        diceModal: document.getElementById('dice-roller-modal'),
-        diceDisplay: { main: document.getElementById('main-die'), lucky: document.getElementById('lucky-die'), resultText: document.getElementById('dice-result-text'), },
-        diceControls: { adv: document.getElementById('advantage-toggle'), dis: document.getElementById('disadvantage-toggle'), rollSrBtn: document.getElementById('roll-sr-btn'), rollEvBtn: document.getElementById('roll-ev-btn'), closeBtn: document.getElementById('close-dice-modal-btn'), },
-        genModal: document.getElementById('random-gen-modal'),
-        genControls: { type: document.getElementById('gen-type-select'), level: document.getElementById('gen-level-input'), output: document.getElementById('generated-string-output'), generateBtn: document.getElementById('generate-string-btn'), closeBtn: document.getElementById('close-gen-modal-btn'), }
-    }; },
-    populateStaticDropdowns: function() {
-        const keywordOptions = Object.entries(SRD_DATA.keywords).map(([code, kw]) => `<option value="${code}">${kw.name} (${code})</option>`).join('');
-        this.dom.keyword.select.innerHTML = keywordOptions;
-        const boostOptions = SRD_DATA.tags.boosts.map(tag => `<option value="${tag.name}">${tag.name}</option>`).join('');
-        this.dom.tags.boostSelect.innerHTML = boostOptions;
-        const statusOptions = SRD_DATA.tags.statuses.map(tag => `<option value="${tag.name}">${tag.name}</option>`).join('');
-        this.dom.tags.statusSelect.innerHTML = statusOptions;
-    },
-    setupEventListeners: function() {
-        this.dom.entitySelector.addEventListener('change', e => { this.state.activeEntityId = e.target.value; this.saveState(); this.render(); });
-        this.dom.addNewEntityBtn.addEventListener('click', () => this.addNewEntity());
-        this.dom.importEntityBtn.addEventListener('click', () => this.importEntity());
-        document.querySelectorAll('.collapsible .card-header').forEach(header => header.addEventListener('click', () => header.parentElement.classList.toggle('collapsed')));
-        this.dom.charName.addEventListener('change', e => { if (this.getActiveEntity()) { this.getActiveEntity().name = e.target.value; this.saveState(); this.render(); } });
-        this.dom.liveBlueprint.addEventListener('change', e => this.updateBlueprint(e.target.value));
-        this.dom.keyword.addBtn.addEventListener('click', () => this.addKeyword());
-        this.dom.keyword.removeBtn.addEventListener('click', () => this.removeLastKeyword());
-        ['hp', 'sp', 'ep'].forEach(res => { this.dom.resources[res].pips.addEventListener('click', e => { if (e.target.classList.contains('pip')) { const newValue = parseInt(e.target.dataset.index) + 1; this.getActiveEntity().runtime.resources[res.toUpperCase()] = newValue; this.saveState(); this.renderResources(); } }); });
-        this.dom.tabs.forEach(button => { button.addEventListener('click', () => { this.dom.tabs.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => { content.classList.remove('active'); if(content.id === button.dataset.tab) { content.classList.add('active'); } }); }); });
-        this.dom.inventory.addBtn.addEventListener('click', () => { const bp = this.dom.inventory.addString.value; if (bp && bp.startsWith('I:')) { const entity = this.getActiveEntity(); const item = { id: `item_${Date.now()}`, name: "New Item", blueprint: bp, runtime: { slottedPassives: [] } }; entity.runtime.inventory.push(item); this.dom.inventory.addString.value = ''; this.saveState(); this.renderInventory(); } else { alert("Invalid Item blueprint string. Must start with 'I:'."); } });
-        this.dom.tags.boostBtn.addEventListener('click', () => this.addTag('boosts'));
-        this.dom.tags.statusBtn.addEventListener('click', () => this.addTag('statuses'));
-        this.dom.diceRollerBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'flex');
-        this.dom.diceControls.closeBtn.addEventListener('click', () => this.dom.diceModal.style.display = 'none');
-        this.dom.diceControls.rollSrBtn.addEventListener('click', () => this.rollDice(false));
-        this.dom.diceControls.rollEvBtn.addEventListener('click', () => this.rollDice(true));
-        this.dom.randomGenBtn.addEventListener('click', () => this.dom.genModal.style.display = 'flex');
-        this.dom.genControls.closeBtn.addEventListener('click', () => this.dom.genModal.style.display = 'none');
-        this.dom.genControls.generateBtn.addEventListener('click', () => this.generateRandomString());
-    },
-    getActiveEntity: function() { return this.state.entities[this.state.activeEntityId] || null; },
-    saveState: function() { localStorage.setItem('resonanceCompanionState', JSON.stringify(this.state)); },
-    loadState: function() {
-        const savedState = localStorage.getItem('resonanceCompanionState');
-        try {
-            if (savedState) { this.state = JSON.parse(savedState); }
-            if (!this.state.entities || Object.keys(this.state.entities).length === 0) {
-                 throw new Error("No entities found, creating default.");
+        stats: [ 'm', 'a', 'b', 'w', 'e', 't', 'p', 'i', 'f' ],
+        statNames: { m: 'MOV', a: 'ALA', b: 'BRW', w: 'WIT', e: 'EXP', t: 'TEC', p: 'POW', i: 'INF', f: 'FOR' },
+        boosts: ["Liberate", "Augment", "Haste", "Ward", "Bless", "Charge", "Cure", "Regen", "Enhance", "Obscure"],
+        statuses: ["Mark", "Impair", "Slow", "Daze", "Curse", "Bind", "Weaken", "Blight", "Silence", "Nullify"],
+        keywords: {
+            // Null
+            '00': { name: "Restricted", choices: null }, '01': { name: "Aura", choices: null }, '02': { name: "Specialist", choices: null },
+            '03': { name: "Alert", choices: null }, '04': { name: "Liberate", choices: null }, '05': { name: "Mark", choices: null },
+            '06': { name: "Indirect", choices: null }, '07': { name: "Adaptive", choices: null }, '08': { name: "Gamble", choices: null }, '09': { name: "Edit", choices: null },
+            // Silver
+            '10': { name: "Bane", choices: null }, '11': { name: "Traveller", choices: ["Walk", "Teleport", "Fly", "Dig", "Permeation", "Jump", "Parkour", "Climb", "Swim", "Lightfoot"] },
+            '12': { name: "Martial", choices: null }, '13': { name: "Attuned", choices: null }, '14': { name: "Augment", choices: null },
+            '15': { name: "Impair", choices: null }, '16': { name: "Reactive", choices: null }, '17': { name: "Phasing", choices: null },
+            '18': { name: "Brutal", choices: null }, '19': { name: "Translocate", choices: null },
+            // Yellow
+            '20': { name: "Anxious", choices: null }, '21': { name: "Acrobatic", choices: null }, '22': { name: "Sentry", choices: null },
+            '23': { name: "Eidetic", choices: null }, '24': { name: "Haste", choices: null }, '25': { name: "Slow", choices: null },
+            '26': { name: "Snap", choices: null }, '27': { name: "Condense", choices: null }, '28': { name: "Rapid", choices: null },
+            '29': { name: "Reckless", choices: null },
+            // Green
+            '30': { name: "Hesitant", choices: null }, '31': { name: "Sturdy", choices: null }, '32': { name: "Brawler", choices: null },
+            '33': { name: "Stubborn", choices: null }, '34': { name: "Ward", choices: null }, '35': { name: "Daze", choices: null },
+            '36': { name: "Sculpt", choices: null }, '37': { name: "Defensive", choices: null }, '38': { name: "Impact", choices: null },
+            '39': { name: "Shift", choices: null },
+            // Black
+            '40': { name: "Feeble", choices: null }, '41': { name: "Survivor", choices: null }, '42': { name: "Stoic", choices: null },
+            '43': { name: "Ageless", choices: null }, '44': { name: "Bless", choices: null }, '45': { name: "Curse", choices: null },
+            '46': { name: "Piercing", choices: null }, '47': { name: "Flux", choices: null }, '48': { name: "Siphon", choices: null },
+            '49': { name: "Animate", choices: null },
+            // Orange
+            '50': { name: "Gremlins", choices: null }, '51': { name: "Sensor", choices: ["Karma", "Keywords", "Echolocation", "Vibration", "Energy", "Materials", "Life", "Infrared", "Emotion", "The Weave"] },
+            '52': { name: "Improvisor", choices: null }, '53': { name: "Crafty", choices: null }, '54': { name: "Charge", choices: null },
+            '55': { name: "Bind", choices: null }, '56': { name: "Imbue", choices: null }, '57': { name: "Material", choices: null },
+            '58': { name: "Leverage", choices: null }, '59': { name: "Manifest", choices: null },
+            // White
+            '60': { name: "Vulnerable", choices: null }, '61': { name: "Tolerant", choices: null }, '62': { name: "Deadeye", choices: null },
+            '63': { name: "Immunized", choices: null }, '64': { name: "Cure", choices: null }, '65': { name: "Weaken", choices: null },
+            '66': { name: "Sticky", choices: null }, '67': { name: "Restore", choices: null }, '68': { name: "Exploit", choices: null },
+            '69': { name: "Growth", choices: null },
+            // Red
+            '70': { name: "Limited", choices: ["HP", "SP", "EP"] }, '71': { name: "Resilient", choices: ["HP", "SP", "EP"] }, '72': { name: "Font", choices: null },
+            '73': { name: "Insulated", choices: null }, '74': { name: "Regen", choices: null }, '75': { name: "Blight", choices: null },
+            '76': { name: "Area", choices: null }, '77': { name: "Ranged", choices: null }, '78': { name: "Multiply", choices: null },
+            '79': { name: "Split", choices: null },
+            // Blue
+            '80': { name: "Awkward", choices: null }, '81': { name: "Charismatic", choices: null }, '82': { name: "Leader", choices: null },
+            '83': { name: "Insightful", choices: null }, '84': { name: "Enhance", choices: null }, '85': { name: "Silence", choices: null },
+            '86': { name: "Splash", choices: null }, '87': { name: "Lingering", choices: null }, '88': { name: "Spread", choices: null },
+            '89': { name: "Potent", choices: null },
+            // Purple
+            '90': { name: "Mundane", choices: null }, '91': { name: "Aware", choices: null }, '92': { name: "Stealthy", choices: null },
+            '93': { name: "Trickster", choices: null }, '94': { name: "Obscure", choices: null }, '95': { name: "Nullify", choices: null },
+            '96': { name: "Chain", choices: null }, '97': { name: "Natural", choices: null }, '98': { name: "Ambience", choices: null },
+            '99': { name: "Channel", choices: null },
+        }
+    };
+
+    /*******************************************************
+     *  Part 2: The Codex Engine (Pure Logic)              *
+     *******************************************************/
+    const CodexEngine = {
+        parseCharacter: (str) => {
+            const parsed = {
+                type: 'C',
+                profile: '00000',
+                flaw: null,
+                keywords: [],
+                statProgression: []
+            };
+
+            // Profile
+            const profileMatch = str.match(/^\d{5}/);
+            if (profileMatch) parsed.profile = profileMatch[0];
+
+            // Flaw
+            const flawMatch = str.match(/\+(\d{4})/);
+            if (flawMatch) {
+                parsed.flaw = {
+                    code: flawMatch[1],
+                    flawKW: flawMatch[1].substring(0, 2),
+                    compKW: flawMatch[1].substring(2, 4)
+                };
             }
-        } catch (e) {
-            console.warn("Could not load saved state, creating default character.", e);
-            this.state = { entities: {}, activeEntityId: null };
-            this.addNewEntity("Sparks (Default)", "C:13829-13-11.83.93");
-        }
-    },
-    addNewEntity: function(name = "New Character", blueprint = "C:01234-03") {
-        const newId = `char_${Date.now()}`;
-        this.state.entities[newId] = { id: newId, name: name, blueprint: blueprint, runtime: this.createDefaultRuntimeState() };
-        this.state.activeEntityId = newId;
-        this.saveState();
-        this.render();
-    },
-    importEntity: function() { const blueprint = prompt("Paste the full entity blueprint string:"); if (blueprint) { this.updateBlueprint(blueprint); } },
-    updateBlueprint: function(newBlueprint) {
-        const entity = this.getActiveEntity();
-        if (entity) {
-            const parsed = CodexEngine.parseBlueprint(newBlueprint);
-            if (parsed) { entity.blueprint = newBlueprint; this.saveState(); this.render(); } 
-            else { alert("Invalid blueprint string."); this.render(); }
-        }
-    },
-    addKeyword: function() {
-        const entity = this.getActiveEntity();
-        if (!entity || entity.parsed.level >= 9) return;
-        let parsed = CodexEngine.parseCharacter(entity.blueprint);
-        const newKwCode = this.dom.keyword.select.value;
-        
-        // Add new keyword to parsed data
-        parsed.keywords.push(newKwCode);
-        
-        // Regenerate string from updated parsed data
-        const newBlueprint = CodexEngine.stringifyCharacter(parsed);
-        this.updateBlueprint(newBlueprint);
-    },
-    removeLastKeyword: function() {
-        const entity = this.getActiveEntity();
-        if (!entity || entity.parsed.keywords.length <= 1) return;
-        if (!confirm("Are you sure you want to remove the last keyword and its associated stat point (if any)? This cannot be undone.")) return;
 
-        let parsed = CodexEngine.parseCharacter(entity.blueprint);
-        
-        const oldLevel = CodexEngine.calculateCharacter({keywords: parsed.keywords}).level;
-        parsed.keywords.pop(); // Remove the keyword
-        const newLevel = CodexEngine.calculateCharacter({keywords: parsed.keywords}).level;
+            // Keywords and Stat Progression
+            const progressionStr = str.replace(/^\d{5}/, '').replace(/\+\d{4}/, '');
+            const parts = progressionStr.split('-').filter(p => p);
+            
+            parts.forEach(part => {
+                const kws = part.split('.');
+                kws.forEach(kwStr => {
+                    if (!kwStr) return;
+                    
+                    const statMatch = kwStr.match(/([A-Z])$/i);
+                    const mainKwStr = statMatch ? kwStr.slice(0, -1) : kwStr;
+                    
+                    if (statMatch) {
+                        parsed.statProgression.push(statMatch[1].toLowerCase());
+                    }
 
-        // If level changed, check if a stat point needs to be removed
-        if (newLevel < oldLevel) {
-            const progDef = SRD_DATA.statProgression.find(p => p.level === oldLevel);
-            if (progDef) {
-                for(let i = 0; i < progDef.points; i++) {
-                     parsed.statAllocs.pop();
+                    const slotted = mainKwStr.startsWith('!');
+                    const cleanKwStr = slotted ? mainKwStr.substring(1) : mainKwStr;
+                    
+                    const choiceMatch = cleanKwStr.match(/(\d{2})\((\d+)\)/);
+                    if (choiceMatch) {
+                        parsed.keywords.push({
+                            code: choiceMatch[1],
+                            isSlotted: slotted,
+                            choice: parseInt(choiceMatch[2], 10)
+                        });
+                    } else if (cleanKwStr.match(/^\d{2}$/)) {
+                        parsed.keywords.push({
+                            code: cleanKwStr,
+                            isSlotted: slotted,
+                            choice: null
+                        });
+                    }
+                });
+            });
+
+            return parsed;
+        },
+
+        calculateCharacter: (parsed) => {
+            const derived = {
+                level: 0,
+                stats: { m: 0, a: 0, b: 0, w: 0, e: 0, t: 0, p: 0, i: 0, f: 0 },
+                resistance: 0,
+                maxHP: 10, maxSP: 10, maxEP: 10,
+                innatePassiveSlots: 0,
+                gearPassiveSlots: 0,
+            };
+
+            const kwCount = parsed.keywords.length;
+
+            if (kwCount === 0) { // Edge case for empty character
+                return derived;
+            }
+
+            // Level
+            if (kwCount <= 1) {
+                derived.level = 0;
+            } else if (kwCount <= 4) {
+                derived.level = 1;
+            } else {
+                 derived.level = 1 + Math.floor((kwCount - 4) / 2);
+            }
+            if (derived.level > 9) derived.level = 9;
+
+            // Base Stats
+            if (derived.level === 0) {
+                Object.keys(derived.stats).forEach(key => derived.stats[key] = 1);
+            } else {
+                Object.keys(derived.stats).forEach(key => derived.stats[key] = 2);
+            }
+
+            // Stat Progression
+            let pointsToAllocate = 0;
+            if (derived.level >= 2 && derived.level <= 5) pointsToAllocate = derived.level - 1;
+            if (derived.level >= 6) pointsToAllocate = 4 + (derived.level - 5) * 2;
+
+            parsed.statProgression.slice(0, pointsToAllocate).forEach(statKey => {
+                if (derived.stats[statKey] < 5) {
+                    derived.stats[statKey]++;
+                }
+            });
+
+            // Resources & Slots
+            derived.innatePassiveSlots = derived.stats.f;
+            derived.gearPassiveSlots = derived.stats.e;
+            
+            const resilientChoices = parsed.keywords.filter(k => k.code === '71' && k.choice !== null).map(k => k.choice);
+            if (resilientChoices.includes(0)) derived.maxHP += 5;
+            if (resilientChoices.includes(1)) derived.maxSP += 5;
+            if (resilientChoices.includes(2)) derived.maxEP += 5;
+            
+            const limitedChoices = parsed.keywords.filter(k => k.code === '70' && k.choice !== null).map(k => k.choice);
+            if (limitedChoices.includes(0)) derived.maxHP -= 5;
+            if (limitedChoices.includes(1)) derived.maxSP -= 5;
+            if (limitedChoices.includes(2)) derived.maxEP -= 5;
+
+            // Resistance
+            const statValues = Object.values(derived.stats).sort((a, b) => b - a);
+            derived.resistance = statValues[0] + statValues[1] + statValues[2];
+
+            return derived;
+        },
+        
+        stringifyCharacter: (parsed) => {
+            let str = parsed.profile;
+            if (parsed.flaw) str += `+${parsed.flaw.code}`;
+
+            const keywordChunks = [];
+            if (parsed.keywords.length > 0) keywordChunks.push(parsed.keywords.slice(0, 1)); // Seed
+            if (parsed.keywords.length > 1) keywordChunks.push(parsed.keywords.slice(1, 4)); // Awakening
+            if (parsed.keywords.length > 4) {
+                for (let i = 4; i < parsed.keywords.length; i += 2) {
+                    keywordChunks.push(parsed.keywords.slice(i, i + 2));
                 }
             }
-        }
-        
-        const newBlueprint = CodexEngine.stringifyCharacter(parsed);
-        this.updateBlueprint(newBlueprint);
-    },
-    allocateStat: function(level, stat) {
-        const entity = this.getActiveEntity();
-        if (!entity) return;
-        
-        let parsed = CodexEngine.parseCharacter(entity.blueprint);
-        let statAllocIndex = -1;
-        let cumulativePoints = 0;
-        for(const prog of SRD_DATA.statProgression) {
-            if (prog.level < level) {
-                cumulativePoints += prog.points;
-            } else if (prog.level === level) {
-                statAllocIndex = cumulativePoints;
-                break;
-            }
-        }
 
-        if (statAllocIndex !== -1) {
-            parsed.statAllocs[statAllocIndex] = stat;
-            const newBlueprint = CodexEngine.stringifyCharacter(parsed);
-            this.updateBlueprint(newBlueprint);
-        }
-    },
-    addTag: function(type) {
-        const entity = this.getActiveEntity(); if(!entity) return;
-        const select = type === 'boosts' ? this.dom.tags.boostSelect : this.dom.tags.statusSelect;
-        const tagName = select.value; const tagList = entity.runtime.tags[type];
-        const existingTag = tagList.find(t => t.name === tagName);
-        if (existingTag) { if (existingTag.quantity < 5) existingTag.quantity++; } 
-        else { if (tagList.reduce((acc, t) => acc + t.quantity, 0) < 10) { tagList.push({ name: tagName, quantity: 1 }); } }
-        this.saveState(); this.renderTags();
-    },
-    createDefaultRuntimeState: function() { return { resources: { HP: 10, SP: 10, EP: 10 }, slottedInnatePassives: [], inventory: [], companions: [], factions: [], tags: { boosts: [], statuses: [] } }; },
-    render: function() {
-        const entity = this.getActiveEntity();
-        if (entity) {
-            this.dom.mainContent.classList.remove('hidden');
-            const parsed = CodexEngine.parseBlueprint(entity.blueprint);
-            if (!parsed) { console.error("Failed to parse blueprint:", entity.blueprint); return; }
-            entity.parsed = parsed; // Cache parsed data
-            this.renderCharacterHeader(entity); this.renderMotivations(entity); this.renderStats(entity); this.renderResources(entity);
-            this.renderKeywords(entity); this.renderProgression(entity); this.renderLiveBlueprint(entity); this.renderInventory(entity); this.renderTags();
-        } else { this.dom.mainContent.classList.add('hidden'); }
-        this.renderEntitySelector(); this.renderVault();
-    },
-    renderCharacterHeader: function(entity) { this.dom.charName.value = entity.name; this.dom.charLevel.textContent = `LVL ${entity.parsed.level}`; },
-    renderMotivations: function(entity) {
-        const profile = entity.parsed.profile || "?????"; const getMot = (index) => SRD_DATA.motivations[profile[index]] || { name: 'N/A', color: 1 };
-        const goal = getMot(0); this.dom.motivations.goal.textContent = goal.name; this.dom.motivations.goal.className = `color-code-${goal.color}`;
-        const method = getMot(1); this.dom.motivations.method.textContent = method.name; this.dom.motivations.method.className = `color-code-${method.color}`;
-        const purpose = getMot(2); this.dom.motivations.purpose.textContent = purpose.name; this.dom.motivations.purpose.className = `color-code-${purpose.color}`;
-        const external = getMot(3); this.dom.motivations.external.textContent = external.name; this.dom.motivations.external.className = `color-code-${external.color}`;
-        const internal = getMot(4); this.dom.motivations.internal.textContent = internal.name; this.dom.motivations.internal.className = `color-code-${internal.color}`;
-    },
-    renderStats: function(entity) { Object.entries(entity.parsed.stats).forEach(([key, value]) => { this.dom.stats[key].textContent = value; }); this.dom.resistance.textContent = entity.parsed.resistance; },
-    renderResources: function(entity = this.getActiveEntity()) {
-        if (!entity) return;
-        const renderPipGroup = (resKey) => {
-            const max = entity.parsed[`max${resKey}`]; const current = entity.runtime.resources[resKey];
-            const container = this.dom.resources[resKey.toLowerCase()].pips;
-            this.dom.resources[resKey.toLowerCase()].current.textContent = current; this.dom.resources[resKey.toLowerCase()].max.textContent = max;
-            container.innerHTML = '';
-            for (let i = 0; i < max; i++) { const pip = document.createElement('div'); pip.className = 'pip'; pip.dataset.index = i; if (i < current) pip.classList.add('filled'); container.appendChild(pip); }
-        };
-        renderPipGroup('HP'); renderPipGroup('SP'); renderPipGroup('EP');
-    },
-    renderKeywords: function(entity) {
-        const list = this.dom.keyword.list; list.innerHTML = '';
-        const slottedPassives = entity.runtime.slottedInnatePassives;
-        this.dom.innatePassives.count.textContent = slottedPassives.length; this.dom.innatePassives.max.textContent = entity.parsed.maxInnatePassives;
-        entity.parsed.keywords.forEach((kwString) => {
-            const kwCode = kwString.substring(0, 2); const kwData = SRD_DATA.keywords[kwCode]; if (!kwData) return;
-            const li = document.createElement('li'); li.className = 'keyword-item';
-            const toggle = document.createElement('div'); toggle.className = 'passive-toggle'; if (slottedPassives.includes(kwCode)) toggle.classList.add('slotted');
-            toggle.addEventListener('click', () => { const index = slottedPassives.indexOf(kwCode); if (index > -1) { slottedPassives.splice(index, 1); } else { if (slottedPassives.length < entity.parsed.maxInnatePassives) { slottedPassives.push(kwCode); } } this.saveState(); this.renderKeywords(entity); });
-            const nameSpan = document.createElement('span'); nameSpan.className = 'keyword-name';
-            let nameContent = `<span class="color-code-${kwData.color}">${kwData.name}</span> <span class="keyword-code">(${kwCode})</span>`;
-            if (entity.parsed.flawPackage) { if (kwCode === entity.parsed.flawPackage.flaw) nameContent += ' <span class="keyword-flaw">[FLAW]</span>'; if (kwCode === entity.parsed.flawPackage.compensation) nameContent += ' <span class="keyword-comp">[COMP]</span>'; }
-            nameSpan.innerHTML = nameContent;
-            li.appendChild(toggle); li.appendChild(nameSpan); list.appendChild(li);
-        });
-    },
-    renderProgression: function(entity) {
-        const list = this.dom.progressionList; list.innerHTML = '';
-        let statAllocIndex = 0;
-        SRD_DATA.statProgression.forEach((prog) => {
-            if (entity.parsed.level >= prog.level) {
-                for(let p = 0; p < prog.points; p++) {
-                    const currentIndex = statAllocIndex;
-                    const li = document.createElement('li'); li.className = 'progression-item';
-                    const label = document.createElement('span'); label.textContent = `Level ${prog.level} Stat Point #${p+1}`;
-                    const select = document.createElement('select');
-                    SRD_DATA.stats.forEach(stat => { const option = document.createElement('option'); option.value = stat; option.textContent = stat; if (entity.parsed.statAllocs[currentIndex] === stat) option.selected = true; select.appendChild(option); });
-                    select.addEventListener('change', (e) => this.allocateStat(prog.level, e.target.value));
-                    li.appendChild(label); li.appendChild(select); list.appendChild(li);
-                    statAllocIndex++;
-                }
-            }
-        });
-    },
-    renderLiveBlueprint: function(entity) { this.dom.liveBlueprint.value = entity.blueprint; },
-    renderInventory: function(entity = this.getActiveEntity()) {
-        if(!entity) return;
-        const list = this.dom.inventory.list; list.innerHTML = '';
-        const slottedGearPassives = entity.runtime.inventory.flatMap(item => item.runtime.slottedPassives);
-        this.dom.inventory.passiveCount.textContent = slottedGearPassives.length; this.dom.inventory.passiveMax.textContent = entity.parsed.maxGearPassives;
-        entity.runtime.inventory.forEach(item => {
-            const itemData = CodexEngine.parseBlueprint(item.blueprint); if (!itemData) return;
-            const card = document.createElement('div'); card.className = 'card';
-            const header = document.createElement('h3'); header.textContent = `L${itemData.level} ${item.name}`;
-            const kwList = document.createElement('ul'); kwList.className = 'item-keyword-list';
-            itemData.keywords.forEach(kwString => {
-                 const kwCode = kwString.substring(0, 2); const kwData = SRD_DATA.keywords[kwCode]; if (!kwData) return;
-                 const li = document.createElement('li'); li.className = 'keyword-item';
-                 const toggle = document.createElement('div'); toggle.className = 'passive-toggle'; if(item.runtime.slottedPassives.includes(kwCode)) toggle.classList.add('slotted');
-                 toggle.addEventListener('click', () => { const index = item.runtime.slottedPassives.indexOf(kwCode); if (index > -1) { item.runtime.slottedPassives.splice(index, 1); } else { if (slottedGearPassives.length < entity.parsed.maxGearPassives) { item.runtime.slottedPassives.push(kwCode); } } this.saveState(); this.renderInventory(); });
-                 const name = document.createElement('span'); name.innerHTML = `<span class="color-code-${kwData.color}">${kwData.name}</span>`;
-                 li.appendChild(toggle); li.appendChild(name); kwList.appendChild(li);
-            });
-            const removeBtn = document.createElement('button'); removeBtn.textContent = 'X'; removeBtn.className = 'remove-btn';
-            removeBtn.onclick = () => { entity.runtime.inventory = entity.runtime.inventory.filter(i => i.id !== item.id); this.saveState(); this.renderInventory(); };
-            header.appendChild(removeBtn); card.appendChild(header); card.appendChild(kwList); list.appendChild(card);
-        });
-    },
-    renderTags: function(entity = this.getActiveEntity()) {
-        if(!entity) return;
-        const renderTagGroup = (type) => {
-            const list = this.dom.tags[`${type.slice(0, -1)}List`]; const countSpan = this.dom.tags[`${type.slice(0, -1)}Count`];
-            const tagData = entity.runtime.tags[type]; list.innerHTML = '';
-            let totalTags = tagData.reduce((acc, tag) => acc + tag.quantity, 0);
-            tagData.forEach(tag => {
-                const tagEl = document.createElement('div'); tagEl.className = 'tag';
-                const tagInfo = SRD_DATA.tags[type].find(t => t.name === tag.name);
-                tagEl.innerHTML = `<span class="color-code-${tagInfo.color}">${tag.name}</span><span>(x${tag.quantity})</span><button class="small-btn remove-btn">-</button>`;
-                tagEl.querySelector('.remove-btn').addEventListener('click', () => { tag.quantity--; if(tag.quantity <= 0) { entity.runtime.tags[type] = tagData.filter(t => t.name !== tag.name); } this.saveState(); this.renderTags(); });
-                list.appendChild(tagEl);
-            });
-            countSpan.textContent = totalTags;
-        };
-        renderTagGroup('boosts'); renderTagGroup('statuses');
-    },
-    renderEntitySelector: function() { this.dom.entitySelector.innerHTML = ''; Object.values(this.state.entities).forEach(entity => { const option = document.createElement('option'); option.value = entity.id; option.textContent = entity.name; if (entity.id === this.state.activeEntityId) option.selected = true; this.dom.entitySelector.appendChild(option); }); },
-    renderVault: function() { this.dom.codexVaultList.innerHTML = ''; Object.values(this.state.entities).forEach(entity => { const li = document.createElement('li'); li.textContent = entity.name; li.dataset.id = entity.id; const deleteBtn = document.createElement('button'); deleteBtn.textContent = 'X'; deleteBtn.className = 'remove-btn'; deleteBtn.onclick = (e) => { e.stopPropagation(); if (confirm(`Delete ${entity.name}?`)) { delete this.state.entities[entity.id]; if (this.state.activeEntityId === entity.id) { this.state.activeEntityId = Object.keys(this.state.entities)[0] || null; } this.saveState(); this.render(); } }; li.appendChild(deleteBtn); li.addEventListener('click', () => { this.state.activeEntityId = entity.id; this.saveState(); this.render(); }); this.dom.codexVaultList.appendChild(li); }); },
-    rollDice: function(isEV) {
-        let chainTotal = 0, main, lucky, rolls = 0, resultText = "", sr = 0;
-        this.dom.diceDisplay.resultText.textContent = "Rolling...";
-
-        const animateRoll = (dieElement, finalValue) => {
-            let count = 0; const interval = setInterval(() => { dieElement.textContent = Math.ceil(Math.random() * 10); count++; if (count > 10) { clearInterval(interval); dieElement.textContent = finalValue; } }, 50);
-        };
-        
-        const performRoll = () => {
-            main = Math.ceil(Math.random() * 10); lucky = Math.ceil(Math.random() * 10); rolls++;
-            if (main === lucky && rolls < 10) { chainTotal += main + lucky; setTimeout(performRoll, 200); } 
-            else { finalizeRoll(); }
-        };
-
-        const finalizeRoll = () => {
-            animateRoll(this.dom.diceDisplay.main, main); animateRoll(this.dom.diceDisplay.lucky, lucky);
-            const adv = this.dom.diceControls.adv.checked, dis = this.dom.diceControls.dis.checked;
-            let baseResult = main;
-            if (adv && !dis) baseResult = Math.max(main, lucky);
-            if (dis && !adv) baseResult = Math.min(main, lucky);
-            sr = chainTotal + baseResult; resultText = `SR: ${sr}`;
-            if (chainTotal > 0 || main === lucky) resultText += " - CRITICAL!"; if (sr >= 31) resultText += " - SUPER CRITICAL!";
-            if (isEV) {
-                const entity = this.getActiveEntity();
-                if (entity) {
-                    const statChoice = prompt(`EV/ER Roll. Choose stat (M, A, B, W, E, T, P, I, F):`, 'B').toUpperCase();
-                    if (SRD_DATA.stats.includes(statChoice)) {
-                        const statValue = entity.parsed.stats[statChoice], level = entity.parsed.level;
-                        const total = sr + level + statValue;
-                        resultText += ` (EV: ${sr}+${level}L+${statValue}${statChoice} = ${total})`;
+            let statIndex = 0;
+            keywordChunks.forEach((chunk, index) => {
+                str += '-';
+                const kwStrings = chunk.map(kw => {
+                    let kwStr = kw.isSlotted ? `!${kw.code}` : kw.code;
+                    if (kw.choice !== null && kw.choice !== undefined) kwStr += `(${kw.choice})`;
+                    return kwStr;
+                });
+                str += kwStrings.join('.');
+                
+                // Add stat progression character
+                if (index > 1) { // After Awakening
+                    if (statIndex < parsed.statProgression.length) {
+                        str += parsed.statProgression[statIndex].toUpperCase();
+                        statIndex++;
                     }
                 }
-            }
-            this.dom.diceDisplay.resultText.textContent = resultText;
-        };
-        performRoll();
-    },
-    generateRandomString: function() {
-        const type = this.dom.genControls.type.value, level = parseInt(this.dom.genControls.level.value); let blueprint = '';
-        const rand = (max) => Math.floor(Math.random() * max), randKw = () => String(rand(100)).padStart(2, '0');
-        if (type === 'C') {
-            let profile = Array.from({length: 5}, () => rand(10)).join('');
-            let kwCount = 0;
-            if (level === 0) kwCount = 1; else if (level === 1) kwCount = 4; else kwCount = 4 + (level-1) * 2;
-            let keywords = Array.from({length: kwCount}, randKw);
-            let statAllocs = []; SRD_DATA.statProgression.forEach(p => { if (level >= p.level) { for(let i=0;i<p.points;i++) statAllocs.push(SRD_DATA.stats[rand(9)]); }});
-            blueprint = CodexEngine.stringifyCharacter({ profile, keywords, statAllocs, flawPackage: null });
-        } else if (type === 'I') {
-            let itemLevel = level > 4 ? 4 : level; if (itemLevel === 0) itemLevel = 1;
-            blueprint = `I:L${itemLevel}-` + Array.from({length: itemLevel}, randKw).join('.');
-        } else { blueprint = "Generator for this type not yet implemented."; }
-        this.dom.genControls.output.value = blueprint;
-    }
-};
+            });
 
-App.init();
+            return str;
+        },
+        
+        generateRandom: (type, level) => {
+            level = parseInt(level, 10);
+            if (isNaN(level) || level < 0 || level > 9) level = 1;
+
+            const d10 = () => Math.floor(Math.random() * 10);
+            const d100 = () => ('0' + Math.floor(Math.random() * 100)).slice(-2);
+
+            if (type === 'C') {
+                const profile = `${d10()}${d10()}${d10()}${d10()}${d10()}`;
+                let keywords = [];
+                let statProgression = [];
+                
+                const kwCount = level === 0 ? 1 : (level === 1 ? 4 : 4 + (level - 1) * 2);
+                for (let i = 0; i < kwCount; i++) keywords.push({code: d100(), isSlotted: false, choice: null});
+                
+                let pointsToAllocate = 0;
+                if (level >= 2 && level <= 5) pointsToAllocate = level - 1;
+                if (level >= 6) pointsToAllocate = 4 + (level - 5) * 2;
+                
+                for(let i=0; i < pointsToAllocate; i++) {
+                    const statMap = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
+                    statProgression.push(statMap[d10()-1] || 'M');
+                }
+
+                const parsed = { profile, flaw: null, keywords, statProgression };
+
+                // Flaw check
+                if (d10() <= 2) { // 20% chance of a flaw
+                    const flawKW = ('0' + (d10() * 10)).slice(-2);
+                    const compKW = d100();
+                    parsed.flaw = { code: `${flawKW}${compKW}`};
+                }
+
+                return `C:${CodexEngine.stringifyCharacter(parsed)}`;
+            }
+            if (type === 'A') {
+                const kwCount = level + 1;
+                const keywords = Array.from({ length: kwCount }, () => d100()).join('.');
+                return `A:-${keywords}`;
+            }
+            if (type === 'I') {
+                const itemLevel = level === 0 ? 1 : (level > 4 ? 4 : level);
+                const kwCount = itemLevel;
+                const keywords = Array.from({ length: kwCount }, () => d100()).join('.');
+                return `I:L${itemLevel}-${keywords}`;
+            }
+            if (type === 'F') {
+                const profile = `${d10()}${d10()}${d10()}${d10()}${d10()}`;
+                const systems = new Set();
+                while(systems.size < level) systems.add(`S${d10()}`);
+                const keywords = Array.from({length: Math.ceil(level / 2)}, () => `K${d100()}`);
+                return `F:${profile}-L${level}-[${Array.from(systems).join('.')}]-[${keywords.join('.')}]`;
+            }
+            return "Invalid Type";
+        },
+    };
+
+    /*******************************************************
+     *  Part 3: The Application Layer                      *
+     *******************************************************/
+    const App = {
+        state: {
+            entities: {},
+            activeEntityId: null,
+            tempBlueprint: '',
+        },
+
+        elements: {},
+
+        init() {
+            this.cacheElements();
+            this.populateDropdowns();
+            this.setupEventListeners();
+            this.loadState();
+            this.render();
+        },
+
+        cacheElements() {
+            // Global
+            this.elements.newCharBtn = document.getElementById('new-char-btn');
+            this.elements.importBtn = document.getElementById('import-btn');
+            this.elements.entitySelector = document.getElementById('entity-selector');
+            this.elements.saveBtn = document.getElementById('save-btn');
+            this.elements.diceRollerBtn = document.getElementById('dice-roller-btn');
+            this.elements.randomGenBtn = document.getElementById('random-gen-btn');
+            
+            // Build Pane
+            this.elements.charNameInput = document.getElementById('char-name-input');
+            this.elements.charLevelDisplay = document.getElementById('char-level-display');
+            this.elements.karmaPlus = document.getElementById('karma-plus');
+            this.elements.karmaMinus = document.getElementById('karma-minus');
+            this.elements.karmaValue = document.getElementById('karma-value');
+            this.elements.profileGoal = document.getElementById('profile-goal');
+            this.elements.profileMethod = document.getElementById('profile-method');
+            this.elements.profilePurpose = document.getElementById('profile-purpose');
+            this.elements.profileExternal = document.getElementById('profile-external');
+            this.elements.profileInternal = document.getElementById('profile-internal');
+            
+            // Stats & Resources
+            this.elements.stats = {};
+            SRD_DATA.stats.forEach(s => this.elements.stats[s] = document.getElementById(`stat-${s}`));
+            this.elements.resistanceValue = document.getElementById('resistance-value');
+            this.elements.hp = { current: document.getElementById('hp-current'), max: document.getElementById('hp-max'), pips: document.getElementById('hp-pips-container') };
+            this.elements.sp = { current: document.getElementById('sp-current'), max: document.getElementById('sp-max'), pips: document.getElementById('sp-pips-container') };
+            this.elements.ep = { current: document.getElementById('ep-current'), max: document.getElementById('ep-max'), pips: document.getElementById('ep-pips-container') };
+
+            // Keywords & Progression
+            this.elements.innateSlottedCount = document.getElementById('innate-slotted-count');
+            this.elements.innateMaxSlots = document.getElementById('innate-max-slots');
+            this.elements.innateKeywordsList = document.getElementById('innate-keywords-list');
+            this.elements.addKeywordSelect = document.getElementById('add-keyword-select');
+            this.elements.addKeywordBtn = document.getElementById('add-keyword-btn');
+            this.elements.removeLastKeyword = document.getElementById('remove-last-keyword');
+            this.elements.statProgressionList = document.getElementById('stat-progression-list');
+            this.elements.liveBlueprintString = document.getElementById('live-blueprint-string');
+            
+            // Play Pane
+            this.elements.tabs = document.querySelectorAll('.tab-button');
+            this.elements.panes = document.querySelectorAll('.tab-pane');
+            this.elements.boostCount = document.getElementById('boost-count');
+            this.elements.statusCount = document.getElementById('status-count');
+            this.elements.boostTagList = document.getElementById('boost-tag-list');
+            this.elements.statusTagList = document.getElementById('status-tag-list');
+            this.elements.boostAdderSelect = document.getElementById('boost-adder-select');
+            this.elements.addBoostBtn = document.getElementById('add-boost-btn');
+            this.elements.statusAdderSelect = document.getElementById('status-adder-select');
+            this.elements.addStatusBtn = document.getElementById('add-status-btn');
+            
+            this.elements.inventory = { list: document.getElementById('inventory-list'), addBtn: document.getElementById('add-item-btn'), input: document.getElementById('add-item-string'), slotted: document.getElementById('gear-slotted-count'), max: document.getElementById('gear-max-slots')};
+            this.elements.companions = { list: document.getElementById('companion-list'), addBtn: document.getElementById('add-companion-btn'), input: document.getElementById('add-companion-string')};
+            this.elements.factions = { list: document.getElementById('faction-list'), addBtn: document.getElementById('add-faction-btn'), input: document.getElementById('add-faction-string')};
+            
+            // Codex Vault
+            this.elements.codexVault = document.getElementById('codex-vault');
+            this.elements.codexHeader = document.getElementById('codex-header');
+            this.elements.codexList = document.getElementById('codex-list');
+            
+            // Modals
+            this.elements.diceRollerModal = document.getElementById('dice-roller-modal');
+            this.elements.randomGenModal = document.getElementById('random-gen-modal');
+        },
+        
+        populateDropdowns() {
+            // Keyword Adder
+            Object.entries(SRD_DATA.keywords).forEach(([code, kw]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${code} - ${kw.name}`;
+                this.elements.addKeywordSelect.appendChild(option);
+            });
+
+            // Tag Adders
+            SRD_DATA.boosts.forEach(boost => {
+                const option = document.createElement('option');
+                option.value = boost;
+                option.textContent = boost;
+                this.elements.boostAdderSelect.appendChild(option);
+            });
+            SRD_DATA.statuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status;
+                option.textContent = status;
+                this.elements.statusAdderSelect.appendChild(option);
+            });
+        },
+        
+        setupEventListeners() {
+            // Global
+            this.elements.newCharBtn.addEventListener('click', () => this.handleNew());
+            this.elements.importBtn.addEventListener('click', () => this.handleImport());
+            this.elements.entitySelector.addEventListener('change', (e) => this.handleSelectEntity(e.target.value));
+            this.elements.saveBtn.addEventListener('click', () => this.handleSave());
+            
+            // Collapsibles
+            document.querySelectorAll('.collapsible .card-header').forEach(header => {
+                header.addEventListener('click', () => header.parentElement.classList.toggle('collapsed'));
+            });
+
+            // Build Pane
+            this.elements.charNameInput.addEventListener('change', (e) => this.getActiveEntity().name = e.target.value);
+            this.elements.karmaPlus.addEventListener('click', () => this.updateKarma(1));
+            this.elements.karmaMinus.addEventListener('click', () => this.updateKarma(-1));
+            this.elements.liveBlueprintString.addEventListener('input', (e) => this.handleLiveBlueprintEdit(e.target.value));
+
+            // Keywords
+            this.elements.addKeywordBtn.addEventListener('click', () => this.handleAddKeyword());
+            this.elements.removeLastKeyword.addEventListener('click', () => this.handleRemoveLastKeyword());
+
+            // Play Pane Tabs
+            this.elements.tabs.forEach(tab => {
+                tab.addEventListener('click', () => this.handleTabClick(tab.dataset.tab));
+            });
+            
+            // Tags
+            this.elements.addBoostBtn.addEventListener('click', () => this.handleAddTag('boosts', this.elements.boostAdderSelect.value));
+            this.elements.addStatusBtn.addEventListener('click', () => this.handleAddTag('statuses', this.elements.statusAdderSelect.value));
+            
+            // Play Cards
+            this.elements.inventory.addBtn.addEventListener('click', () => this.addPlayCard('inventory'));
+            this.elements.companions.addBtn.addEventListener('click', () => this.addPlayCard('companions'));
+            this.elements.factions.addBtn.addEventListener('click', () => this.addPlayCard('factions'));
+
+            // Codex
+            this.elements.codexHeader.addEventListener('click', () => this.elements.codexVault.classList.toggle('collapsed'));
+            
+            // Modals
+            this.elements.diceRollerBtn.addEventListener('click', () => this.elements.diceRollerModal.classList.remove('hidden'));
+            document.getElementById('close-roller-btn').addEventListener('click', () => this.elements.diceRollerModal.classList.add('hidden'));
+            document.getElementById('roll-button').addEventListener('click', () => this.handleDiceRoll());
+
+            this.elements.randomGenBtn.addEventListener('click', () => this.elements.randomGenModal.classList.remove('hidden'));
+            document.getElementById('close-gen-btn').addEventListener('click', () => this.elements.randomGenModal.classList.add('hidden'));
+            document.getElementById('generate-string-btn').addEventListener('click', () => {
+                const type = document.getElementById('random-type-select').value;
+                const level = document.getElementById('random-level-input').value;
+                document.getElementById('generated-string-output').value = CodexEngine.generateRandom(type, level);
+            });
+        },
+        
+        loadState() {
+            const savedState = localStorage.getItem('resonanceCompanion');
+            if (savedState) {
+                this.state = JSON.parse(savedState);
+                if (!this.state.activeEntityId && Object.keys(this.state.entities).length > 0) {
+                    this.state.activeEntityId = Object.keys(this.state.entities)[0];
+                }
+            } else {
+                // Create a default character if no state exists
+                this.handleNew('Sparks');
+            }
+            const entity = this.getActiveEntity();
+            if (entity) {
+                this.state.tempBlueprint = entity.blueprint;
+            }
+        },
+
+        saveState() {
+            localStorage.setItem('resonanceCompanion', JSON.stringify(this.state));
+        },
+
+        getActiveEntity() {
+            return this.state.entities[this.state.activeEntityId];
+        },
+        
+        // --- Render Functions ---
+        render() {
+            if (!this.state.activeEntityId) {
+                this.renderEmpty();
+                return;
+            }
+
+            const entity = this.getActiveEntity();
+            this.state.tempBlueprint = this.state.tempBlueprint || entity.blueprint;
+            
+            let parsed, derived;
+            try {
+                parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+                derived = CodexEngine.calculateCharacter(parsed);
+            } catch (e) {
+                console.error("Parsing/Calculation Error:", e);
+                this.elements.liveBlueprintString.style.borderColor = "red";
+                // Don't render if blueprint is broken
+                return;
+            }
+            this.elements.liveBlueprintString.style.borderColor = "var(--blue-color)";
+            
+            this.renderEntitySelector();
+            this.renderHeader(entity, derived);
+            this.renderKarma(entity);
+            this.renderProfile(parsed);
+            this.renderStatsAndResources(entity, derived);
+            this.renderKeywords(parsed, derived);
+            this.renderProgression(parsed, derived);
+            this.renderLiveBlueprint();
+            this.renderPlayPane(entity, derived);
+            this.renderCodex();
+        },
+
+        renderEmpty() {
+            // Clears the sheet and prompts to create a new character
+            document.getElementById('app-container').innerHTML = '<h2>No Character Loaded. Click "New" to begin.</h2>';
+            this.renderEntitySelector();
+            this.renderCodex();
+        },
+        
+        renderEntitySelector() {
+            this.elements.entitySelector.innerHTML = '';
+            Object.entries(this.state.entities).forEach(([id, entity]) => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = entity.name;
+                option.selected = id === this.state.activeEntityId;
+                this.elements.entitySelector.appendChild(option);
+            });
+        },
+
+        renderHeader(entity, derived) {
+            this.elements.charNameInput.value = entity.name;
+            this.elements.charLevelDisplay.textContent = derived.level;
+        },
+        
+        renderKarma(entity) {
+            this.elements.karmaValue.textContent = entity.runtime.karma;
+        },
+        
+        renderProfile(parsed) {
+            const profileData = {
+                goal: parsed.profile[0],
+                method: parsed.profile[1],
+                purpose: parsed.profile[2],
+                external: parsed.profile[3],
+                internal: parsed.profile[4]
+            };
+            Object.entries(profileData).forEach(([key, code]) => {
+                const motivation = SRD_DATA.motivations[code];
+                const el = this.elements[`profile${key.charAt(0).toUpperCase() + key.slice(1)}`];
+                el.textContent = motivation.name;
+                el.style.color = `var(${motivation.color})`;
+            });
+        },
+        
+        renderStatsAndResources(entity, derived) {
+            Object.entries(derived.stats).forEach(([key, value]) => {
+                this.elements.stats[key].textContent = value;
+            });
+            this.elements.resistanceValue.textContent = derived.resistance;
+            
+            const resources = { hp: 'hp', sp: 'sp', ep: 'ep' };
+            Object.keys(resources).forEach(res => {
+                const elGroup = this.elements[res];
+                const max = derived[`max${res.toUpperCase()}`];
+                const current = Math.min(entity.runtime[res], max);
+                
+                elGroup.max.textContent = max;
+                elGroup.current.textContent = current;
+                
+                elGroup.pips.innerHTML = '';
+                for (let i = 1; i <= max; i++) {
+                    const pip = document.createElement('div');
+                    pip.className = 'pip' + (i <= current ? ' filled' : '');
+                    pip.dataset.value = i;
+                    pip.dataset.resource = res;
+                    pip.addEventListener('click', (e) => this.handlePipClick(e));
+                    elGroup.pips.appendChild(pip);
+                }
+            });
+        },
+
+        renderKeywords(parsed, derived) {
+            this.elements.innateKeywordsList.innerHTML = '';
+            for (let i = 0; i < 22; i++) {
+                const kw = parsed.keywords[i];
+                const row = document.createElement('div');
+                row.className = 'keyword-row';
+                if (!kw) {
+                    row.style.visibility = 'hidden';
+                } else {
+                    const toggle = document.createElement('div');
+                    toggle.className = 'keyword-toggle' + (kw.isSlotted ? ' slotted' : '');
+                    toggle.dataset.index = i;
+                    toggle.addEventListener('click', e => this.handleToggleInnate(e));
+                    
+                    const name = document.createElement('span');
+                    const kwData = SRD_DATA.keywords[kw.code] || { name: `Unknown (${kw.code})` };
+                    name.className = 'keyword-name';
+                    name.textContent = `${i+1}. ${kwData.name}`;
+
+                    row.appendChild(toggle);
+                    row.appendChild(name);
+                    
+                    if (kwData.choices) {
+                        const select = document.createElement('select');
+                        select.className = 'keyword-choice-select';
+                        select.dataset.index = i;
+                        kwData.choices.forEach((choiceName, choiceIndex) => {
+                            const option = document.createElement('option');
+                            option.value = choiceIndex;
+                            option.textContent = choiceName;
+                            option.selected = kw.choice === choiceIndex;
+                            select.appendChild(option);
+                        });
+                        select.addEventListener('change', e => this.handleKeywordChoice(e));
+                        row.appendChild(select);
+                    }
+                }
+                this.elements.innateKeywordsList.appendChild(row);
+            }
+            const slottedCount = parsed.keywords.filter(k => k.isSlotted).length;
+            this.elements.innateSlottedCount.textContent = slottedCount;
+            this.elements.innateMaxSlots.textContent = derived.innatePassiveSlots;
+        },
+        
+        renderProgression(parsed, derived) {
+            this.elements.statProgressionList.innerHTML = '';
+            let pointsAvailable = 0;
+            if (derived.level >= 2 && derived.level <= 5) pointsAvailable = derived.level - 1;
+            if (derived.level >= 6) pointsAvailable = 4 + (derived.level - 5) * 2;
+
+            for (let i = 0; i < 12; i++) {
+                if (i >= pointsAvailable) continue;
+                
+                const row = document.createElement('div');
+                row.className = 'progression-row';
+                
+                const label = document.createElement('div');
+                label.className = 'progression-label';
+                const levelMilestone = (i < 4) ? `Lvl ${i + 2}` : `Lvl ${Math.floor(i / 2) + 4}`;
+                label.textContent = levelMilestone;
+
+                const select = document.createElement('select');
+                select.dataset.index = i;
+                Object.entries(SRD_DATA.statNames).forEach(([key, name]) => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = name;
+                    option.selected = parsed.statProgression[i] === key;
+                    select.appendChild(option);
+                });
+                select.addEventListener('change', e => this.handleStatProgression(e));
+                
+                row.appendChild(label);
+                row.appendChild(select);
+                this.elements.statProgressionList.appendChild(row);
+            }
+        },
+        
+        renderLiveBlueprint() {
+            if (document.activeElement !== this.elements.liveBlueprintString) {
+                this.elements.liveBlueprintString.value = this.state.tempBlueprint;
+            }
+        },
+        
+        renderPlayPane(entity, derived) {
+            this.renderTags(entity.runtime.tags);
+            this.renderPlayCardList('inventory', entity.runtime.inventory);
+            this.renderPlayCardList('companions', entity.runtime.companions);
+            this.renderPlayCardList('factions', entity.runtime.factions);
+            this.elements.inventory.max.textContent = derived.gearPassiveSlots;
+
+            const gearSlotted = entity.runtime.inventory.reduce((acc, item) => {
+                return acc + item.keywords.filter(kw => kw.isSlotted).length;
+            }, 0);
+            this.elements.inventory.slotted.textContent = gearSlotted;
+        },
+
+        renderTags(tags) {
+            const boostList = this.elements.boostTagList;
+            const statusList = this.elements.statusTagList;
+            boostList.innerHTML = '';
+            statusList.innerHTML = '';
+
+            let boostCount = 0;
+            let statusCount = 0;
+
+            Object.entries(tags.boosts).forEach(([name, qty]) => {
+                boostList.appendChild(this.createTagItem('boosts', name, qty));
+                boostCount += qty;
+            });
+            Object.entries(tags.statuses).forEach(([name, qty]) => {
+                statusList.appendChild(this.createTagItem('statuses', name, qty));
+                statusCount += qty;
+            });
+            
+            this.elements.boostCount.textContent = boostCount;
+            this.elements.statusCount.textContent = statusCount;
+        },
+        
+        createTagItem(type, name, qty) {
+            const item = document.createElement('div');
+            item.className = 'tag-item';
+            item.innerHTML = `
+                <span>${name} (${qty})</span>
+                <div class="tag-controls">
+                    <button data-type="${type}" data-name="${name}" data-action="dec">-</button>
+                    <button data-type="${type}" data-name="${name}" data-action="inc">+</button>
+                </div>
+            `;
+            item.querySelectorAll('button').forEach(btn => btn.addEventListener('click', e => this.handleTagQtyChange(e)));
+            return item;
+        },
+        
+        renderPlayCardList(type, list) {
+            const container = this.elements[type].list;
+            container.innerHTML = '';
+            list.forEach((card, index) => {
+                const cardEl = this.createPlayCard(type, card, index);
+                container.appendChild(cardEl);
+            });
+        },
+        
+        createPlayCard(type, cardData, index) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'play-card';
+            
+            let content = `
+                <div class="play-card-header">
+                    <input type="text" class="play-card-name" value="${cardData.name}" data-type="${type}" data-index="${index}">
+                    <button class="play-card-delete" data-type="${type}" data-index="${index}">X</button>
+                </div>
+                <div class="play-card-body">`;
+            
+            if (type === 'inventory') {
+                const kws = cardData.keywords.map((kw, kwIndex) => {
+                   const kwData = SRD_DATA.keywords[kw.code] || {name: 'Unknown'};
+                   const toggleClass = kw.isSlotted ? 'slotted' : '';
+                   return `<div class="keyword-row" style="font-size:9pt;">
+                               <div class="keyword-toggle ${toggleClass}" data-type="${type}" data-index="${index}" data-kw-index="${kwIndex}"></div>
+                               <span class="keyword-name">${kwData.name}</span>
+                           </div>`;
+                }).join('');
+                content += kws;
+            } else if (type === 'companions') {
+                content += `<p style="font-size:9pt; color: var(--silver-color)">${cardData.blueprint}</p>`;
+            } else if (type === 'factions') {
+                content += `<div style="font-size:9pt;">Trust: <input type="text" value="${cardData.trust}" data-type="${type}" data-index="${index}" style="width:auto; display:inline; background:#444; color:#fff; padding:2px 4px;"></div>`
+            }
+            
+            content += '</div>';
+            cardEl.innerHTML = content;
+            
+            cardEl.querySelector('.play-card-delete').addEventListener('click', e => this.deletePlayCard(type, index));
+            cardEl.querySelector('.play-card-name').addEventListener('change', e => {
+                this.getActiveEntity().runtime[type][index].name = e.target.value;
+                this.saveState();
+            });
+
+            if (type === 'inventory') {
+                 cardEl.querySelectorAll('.keyword-toggle').forEach(toggle => {
+                     toggle.addEventListener('click', e => this.handleToggleGear(e));
+                 });
+            } else if (type === 'factions') {
+                cardEl.querySelector('input[type="text"]').addEventListener('change', e => {
+                    this.getActiveEntity().runtime.factions[index].trust = e.target.value;
+                    this.saveState();
+                });
+            }
+
+            return cardEl;
+        },
+
+        renderCodex() {
+            this.elements.codexList.innerHTML = '';
+            Object.entries(this.state.entities).forEach(([id, entity]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="codex-name" data-id="${id}">${entity.name}</span>`;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Del';
+                deleteBtn.className = 'codex-delete';
+                deleteBtn.dataset.id = id;
+                li.appendChild(deleteBtn);
+
+                li.querySelector('.codex-name').addEventListener('click', e => this.handleSelectEntity(e.target.dataset.id));
+                deleteBtn.addEventListener('click', e => this.handleDeleteEntity(e.target.dataset.id));
+                
+                this.elements.codexList.appendChild(li);
+            });
+        },
+        
+        // --- Event Handlers ---
+        handleNew(name = null) {
+            const newName = name || prompt("Enter new character name:");
+            if (!newName) return;
+            
+            const newId = Date.now().toString();
+            this.state.entities[newId] = {
+                id: newId,
+                name: newName,
+                blueprint: 'C:36927-!03-11(1).83.93', // Default "Sparks" like build
+                runtime: this.createDefaultRuntimeState()
+            };
+            this.state.activeEntityId = newId;
+            this.state.tempBlueprint = this.state.entities[newId].blueprint;
+            this.saveState();
+            this.render();
+        },
+        
+        handleImport() {
+            const blueprint = prompt("Paste blueprint string to update current character:");
+            if (blueprint) {
+                this.state.tempBlueprint = blueprint;
+                this.render();
+            }
+        },
+
+        handleSave() {
+            const entity = this.getActiveEntity();
+            if (!entity) return;
+            entity.blueprint = this.state.tempBlueprint;
+            entity.name = this.elements.charNameInput.value;
+            this.saveState();
+            alert(`${entity.name} saved to Codex.`);
+            this.render(); // Re-render to update codex list name
+        },
+        
+        handleSelectEntity(id) {
+            if (this.state.activeEntityId === id) return;
+            // Ask to save changes before switching
+            const currentEntity = this.getActiveEntity();
+            if (currentEntity && currentEntity.blueprint !== this.state.tempBlueprint) {
+                if (!confirm("You have unsaved changes. Discard them and switch character?")) {
+                    this.elements.entitySelector.value = this.state.activeEntityId; // revert dropdown
+                    return;
+                }
+            }
+            this.state.activeEntityId = id;
+            this.state.tempBlueprint = this.getActiveEntity().blueprint;
+            this.render();
+        },
+        
+        handleDeleteEntity(id) {
+            const entity = this.state.entities[id];
+            if (!entity || !confirm(`Are you sure you want to delete ${entity.name}?`)) return;
+
+            delete this.state.entities[id];
+
+            if (this.state.activeEntityId === id) {
+                const remainingIds = Object.keys(this.state.entities);
+                this.state.activeEntityId = remainingIds.length > 0 ? remainingIds[0] : null;
+                if (this.state.activeEntityId) {
+                    this.state.tempBlueprint = this.getActiveEntity().blueprint;
+                } else {
+                    this.state.tempBlueprint = '';
+                }
+            }
+            this.saveState();
+            this.render();
+        },
+        
+        updateKarma(amount) {
+            const entity = this.getActiveEntity();
+            if (!entity) return;
+            entity.runtime.karma = Math.max(0, entity.runtime.karma + amount);
+            this.renderKarma(entity);
+            // No full save/render, this is a runtime change
+        },
+        
+        handleLiveBlueprintEdit(newValue) {
+            this.state.tempBlueprint = newValue;
+            this.render();
+        },
+        
+        handlePipClick(event) {
+            const { resource, value } = event.target.dataset;
+            const entity = this.getActiveEntity();
+            entity.runtime[resource] = parseInt(value, 10);
+            if (event.target.classList.contains('filled') && entity.runtime[resource] == value){
+                entity.runtime[resource] -= 1;
+            }
+            this.render();
+        },
+
+        handleAddKeyword() {
+            const code = this.elements.addKeywordSelect.value;
+            let parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+            if (parsed.keywords.length >= 22) {
+                alert("Character has reached the maximum of 22 keywords.");
+                return;
+            }
+            const isFlaw = Math.floor(parseInt(code, 10) / 10) === 0 && code !== '00';
+            const hasFlaw = parsed.flaw !== null;
+
+            if (isFlaw && !hasFlaw) {
+                 // The user is adding a flaw's compensation
+                 // We need to prompt for the flaw itself
+                 const flawCode = prompt("You've selected a compensation keyword. Enter the two-digit code for the Flaw (e.g., 20 for Anxious):");
+                 if (flawCode && flawCode.endsWith('0') && flawCode.length === 2) {
+                     parsed.flaw = { code: `${flawCode}${code}` };
+                 } else {
+                     alert("Invalid flaw code. Must be a two-digit multiple of 10.");
+                     return;
+                 }
+            } else {
+                parsed.keywords.push({ code, isSlotted: false, choice: 0 });
+            }
+            
+            this.state.tempBlueprint = CodexEngine.stringifyCharacter(parsed);
+            this.render();
+        },
+        
+        handleRemoveLastKeyword() {
+            if (!confirm("Are you sure you want to remove the last keyword? This action cannot be undone.")) return;
+            let parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+            if (parsed.keywords.length > 0) {
+                parsed.keywords.pop();
+                // Also remove last stat point if applicable
+                const derived = CodexEngine.calculateCharacter(parsed);
+                let pointsToAllocate = 0;
+                if (derived.level >= 2 && derived.level <= 5) pointsToAllocate = derived.level - 1;
+                if (derived.level >= 6) pointsToAllocate = 4 + (derived.level - 5) * 2;
+                if(parsed.statProgression.length > pointsToAllocate){
+                    parsed.statProgression.pop();
+                }
+
+            }
+            this.state.tempBlueprint = CodexEngine.stringifyCharacter(parsed);
+            this.render();
+        },
+        
+        handleToggleInnate(event) {
+            const index = parseInt(event.target.dataset.index, 10);
+            let parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+            parsed.keywords[index].isSlotted = !parsed.keywords[index].isSlotted;
+            this.state.tempBlueprint = CodexEngine.stringifyCharacter(parsed);
+            this.render();
+        },
+
+        handleKeywordChoice(event) {
+            const index = parseInt(event.target.dataset.index, 10);
+            const choice = parseInt(event.target.value, 10);
+            let parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+            parsed.keywords[index].choice = choice;
+            this.state.tempBlueprint = CodexEngine.stringifyCharacter(parsed);
+            this.render();
+        },
+        
+        handleStatProgression(event) {
+            const index = parseInt(event.target.dataset.index, 10);
+            const stat = event.target.value;
+            let parsed = CodexEngine.parseCharacter(this.state.tempBlueprint);
+            parsed.statProgression[index] = stat;
+            this.state.tempBlueprint = CodexEngine.stringifyCharacter(parsed);
+            this.render();
+        },
+        
+        handleTabClick(tabId) {
+            this.elements.tabs.forEach(t => t.classList.remove('active'));
+            this.elements.panes.forEach(p => p.classList.remove('active'));
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        },
+        
+        handleAddTag(type, name) {
+            const entity = this.getActiveEntity();
+            const tagPool = entity.runtime.tags[type];
+            if (!tagPool[name]) {
+                tagPool[name] = 0;
+            }
+            
+            const totalTags = Object.values(tagPool).reduce((a, b) => a + b, 0);
+            if(totalTags >= 10){
+                alert(`Cannot exceed 10 ${type} tags.`);
+                return;
+            }
+            if (tagPool[name] >= 5) {
+                alert(`Cannot have more than 5 stacks of ${name}.`);
+                return;
+            }
+
+            tagPool[name]++;
+            this.render();
+        },
+        
+        handleTagQtyChange(event) {
+            const { type, name, action } = event.target.dataset;
+            const entity = this.getActiveEntity();
+            const tagPool = entity.runtime.tags[type];
+            if (action === 'inc') {
+                if (tagPool[name] < 5) tagPool[name]++;
+            } else {
+                tagPool[name]--;
+                if (tagPool[name] <= 0) {
+                    delete tagPool[name];
+                }
+            }
+            this.render();
+        },
+        
+        addPlayCard(type) {
+            const entity = this.getActiveEntity();
+            const inputEl = this.elements[type].input;
+            let str = inputEl.value.trim();
+            
+            if (type === 'inventory') {
+                if (str === '') str = 'I:L1-38'; // Default item
+                const name = prompt("Enter item name:", "New Item");
+                if (!name) return;
+                const keywords = str.match(/-(\d{2}(?:\.\d{2})*)/);
+                entity.runtime.inventory.push({
+                    name: name,
+                    blueprint: str,
+                    keywords: keywords ? keywords[1].split('.').map(code => ({code, isSlotted: false})) : []
+                });
+            } else if (type === 'companions') {
+                if (str === '') str = 'A:-22'; // Default companion
+                const name = prompt("Enter companion name:", "New Companion");
+                if (!name) return;
+                entity.runtime.companions.push({ name: name, blueprint: str });
+            } else if (type === 'factions') {
+                 if (str === '') str = 'F:38912-L2-[S0.S2]-[K81]'; // Default faction
+                const name = prompt("Enter faction name:", "New Faction");
+                if (!name) return;
+                entity.runtime.factions.push({ name: name, blueprint: str, trust: "Neutral" });
+            }
+            
+            inputEl.value = '';
+            this.render();
+        },
+        
+        deletePlayCard(type, index) {
+            if (!confirm("Are you sure you want to delete this card?")) return;
+            this.getActiveEntity().runtime[type].splice(index, 1);
+            this.render();
+        },
+
+        handleToggleGear(event) {
+            const { index, kwIndex } = event.target.dataset;
+            const item = this.getActiveEntity().runtime.inventory[index];
+            item.keywords[kwIndex].isSlotted = !item.keywords[kwIndex].isSlotted;
+            this.render();
+        },
+
+        handleDiceRoll() {
+            const rollBtn = document.getElementById('roll-button');
+            rollBtn.disabled = true;
+
+            const mainDieEl = document.getElementById('main-die');
+            const luckyDieEl = document.getElementById('lucky-die');
+            const srResultEl = document.getElementById('sr-result');
+            const evResultEl = document.getElementById('ev-result');
+            const critIndicatorEl = document.getElementById('crit-indicator');
+
+            let jumbleCount = 0;
+            const jumbleInterval = setInterval(() => {
+                mainDieEl.textContent = Math.ceil(Math.random() * 10);
+                luckyDieEl.textContent = Math.ceil(Math.random() * 10);
+                jumbleCount++;
+                if (jumbleCount > 15) {
+                    clearInterval(jumbleInterval);
+                    this.executeRoll();
+                    rollBtn.disabled = false;
+                }
+            }, 50);
+        },
+
+        executeRoll() {
+            let runningTotal = 0;
+            let finalMain = 0;
+            let isCrit = false;
+            let doublesCount = 0;
+
+            while (true) {
+                let main = Math.ceil(Math.random() * 10);
+                let lucky = Math.ceil(Math.random() * 10);
+
+                if (main === lucky) {
+                    isCrit = true;
+                    doublesCount++;
+                    runningTotal += main + lucky;
+                    // Visually show the double before re-rolling
+                } else {
+                    const adv = document.getElementById('dice-adv-select').value;
+                    if (adv === 'advantage') finalMain = Math.max(main, lucky);
+                    else if (adv === 'disadvantage') finalMain = Math.min(main, lucky);
+                    else finalMain = main;
+                    
+                    document.getElementById('main-die').textContent = main;
+                    document.getElementById('lucky-die').textContent = lucky;
+                    break;
+                }
+            }
+
+            const sr = runningTotal + finalMain;
+            
+            document.getElementById('sr-result').textContent = sr;
+            critIndicatorEl.classList.add('hidden');
+            if (isCrit) {
+                critIndicatorEl.textContent = "CRITICAL!";
+                critIndicatorEl.classList.remove('hidden');
+            }
+            if (sr >= 31) {
+                critIndicatorEl.textContent = "SUPER CRITICAL!";
+                critIndicatorEl.classList.remove('hidden');
+            }
+
+            const statSelect = document.getElementById('dice-stat-select').value;
+            let ev = sr;
+            const entity = this.getActiveEntity();
+            if (entity) {
+                const derived = CodexEngine.calculateCharacter(CodexEngine.parseCharacter(entity.blueprint));
+                ev += derived.level;
+                if (statSelect !== 'none' && derived.stats[statSelect]) {
+                    ev += derived.stats[statSelect];
+                }
+            }
+            document.getElementById('ev-result').textContent = ev;
+        },
+
+        createDefaultRuntimeState() {
+            return {
+                karma: 0,
+                hp: 10,
+                sp: 10,
+                ep: 10,
+                tags: { boosts: {}, statuses: {} },
+                inventory: [],
+                companions: [],
+                factions: [],
+            };
+        }
+    };
+
+    // Kick off the application
+    App.init();
+
 });
 </script>
 </body>
