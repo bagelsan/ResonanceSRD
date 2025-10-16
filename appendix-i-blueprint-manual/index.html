@@ -1600,6 +1600,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#18-attachment-separation-delimiters" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.8 Attachment &amp; Separation Delimiters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.8 Attachment &amp; Separation Delimiters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#master-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2353,6 +2377,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#18-attachment-separation-delimiters" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.8 Attachment &amp; Separation Delimiters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.8 Attachment &amp; Separation Delimiters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#master-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master Example:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2712,6 +2760,43 @@
 <p><strong>Combined Example:</strong></p>
 <p>A Level 1 Character has <code>Alert (03)</code> as their Seed, slotted passively. For their Awakening, they learned <code>Traveller (11)</code> with Teleport (option 1), <code>Martial (12)</code>, and <code>Attuned (13)</code>, with <code>Attuned</code> also slotted passively.</p>
 <p><strong>Their keyword string would be:</strong> <code>-!03-11(1).12.!13</code></p>
+<h3 id="18-attachment-separation-delimiters"><strong>1.8 Attachment &amp; Separation Delimiters</strong></h3>
+<p>The original semicolon delimiter <code>;</code> is reserved for separating completely independent ecosystems. To build a single, connected ecosystem where entities are owned by a primary character or each other, use the following attachment delimiters:</p>
+<ul>
+<li>
+<p><strong><code>@</code>(Attach to Root):</strong> Attaches an entity directly to the root Character (<code>C:</code>) of the ecosystem.  </p>
+</li>
+<li>
+<p>Example: <code>C:char_data@A:companion</code> attaches the companion to the character.  </p>
+</li>
+<li>
+<p><strong><code>/</code>(Attach to Previous/Nested Attachment):</strong> Attaches an entity to the <em>immediately preceding</em> entity in the string. This is used to create nested ownership, such as an item owned by a specific animation.  </p>
+</li>
+<li>
+<p>Example: <code>...A:companion/I:item</code> attaches the item specifically to the companion, not the root character.  </p>
+</li>
+<li>
+<p><strong><code>;</code>(Ecosystem Separator):</strong> Separates two completely distinct and unrelated ecosystems.</p>
+</li>
+</ul>
+<h4 id="master-example"><strong>Master Example:</strong></h4>
+<p><code>C:01@A:!37/I:L0-97@A:11(2)@I:L0-!46</code></p>
+<p>This string defines a single ecosystem with the following relationships:  </p>
+<ol>
+<li>
+<p><code>A:!37</code> is attached to the root Character.  </p>
+</li>
+<li>
+<p><code>I:L0-97</code> is attached <em>only</em> to <code>A:!37</code>. Its passives affect <code>A:!37</code> and use <code>A:!37</code>'s gear passive slots.  </p>
+</li>
+<li>
+<p><code>A:11(2</code> is also attached to the root Character.  </p>
+</li>
+<li>
+<p><code>I:L0-!46</code> is attached to the root Character and is part of their personal inventory. Its passives affect the character and </p>
+</li>
+</ol>
+<p>use the character's gear passive slots.</p>
 <hr />
 <h2 id="part-2-the-scene-blueprint-language">Part 2: The Scene Blueprint Language</h2>
 <p>This language allows a Curator to generate a complete <strong>Scene</strong> from a single string, populating it with challenges and entities.</p>

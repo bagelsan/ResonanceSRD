@@ -665,27 +665,32 @@
 
         parseCharacter(data) {
             const parsed = { type: 'Character', profile: '', flaw: null, keywords: [], statAllocs: [] };
-            
-            // Regex to capture all parts
-            const match = data.match(/^(\d{5})?(\+?\d{4})?((?:-!?\d{2}(?:\(\d+\))?(?:\.[A-Z])?)*)$/);
-            if (!match) return this.parseLegacyCharacter(data); // Fallback for older/simpler format
+            let remainingData = data;
 
-            parsed.profile = match[1] || '';
-            
-            if (match[2]) {
-                parsed.flaw = {
-                    flawCode: match[2].slice(1, 3),
-                    compCode: match[2].slice(3, 5),
-                };
+            // Extract Profile
+            const profileMatch = remainingData.match(/^(\d{5})/);
+            if (profileMatch) {
+                parsed.profile = profileMatch[1];
+                remainingData = remainingData.substring(5);
             }
 
-            const progression = match[3] || '';
-            const segments = progression.split('-').filter(Boolean);
+            // Extract Flaw
+            const flawMatch = remainingData.match(/^\+(\d{4})/);
+            if (flawMatch) {
+                const flawPart = flawMatch[1];
+                parsed.flaw = {
+                    flawCode: flawPart.substring(0, 2),
+                    compCode: flawPart.substring(2, 4),
+                };
+                remainingData = remainingData.substring(5); // remove + and 4 digits
+            }
 
+            // Process the rest of the progression string
+            const segments = remainingData.split('-').filter(Boolean);
             segments.forEach(segment => {
                 const parts = segment.split('.').filter(Boolean);
                 parts.forEach(part => {
-                     if (SRD_DATA.stats[part]) {
+                    if (SRD_DATA.stats[part]) {
                         parsed.statAllocs.push(part);
                     } else {
                         const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
@@ -693,44 +698,7 @@
                             parsed.keywords.push({
                                 code: kwMatch[2],
                                 slotted: kwMatch[1] === '!',
-                                choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
-                            });
-                        }
-                    }
-                });
-            });
-
-            return parsed;
-        },
-
-        parseLegacyCharacter(data) { // Keep for compatibility with simpler strings
-            const parsed = { type: 'Character', profile: '', flaw: null, keywords: [], statAllocs: [] };
-            const parts = data.split('-');
-
-            parsed.profile = parts.shift();
-
-            // Handle flaw
-            const flawIndex = parts.findIndex(p => p.startsWith('+'));
-            if (flawIndex !== -1) {
-                const flawPart = parts.splice(flawIndex, 1)[0];
-                parsed.flaw = {
-                    flawCode: flawPart.slice(1, 3),
-                    compCode: flawPart.slice(3, 5),
-                };
-            }
-
-            parts.forEach(part => {
-                const kws = part.split('.');
-                kws.forEach(kw => {
-                    if (SRD_DATA.stats[kw]) {
-                        parsed.statAllocs.push(kw);
-                    } else if (kw) {
-                         const kwMatch = kw.match(/(!?)(\d{2})(?:\((\d+)\))?/);
-                        if (kwMatch) {
-                             parsed.keywords.push({
-                                code: kwMatch[2],
-                                slotted: kwMatch[1] === '!',
-                                choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                                choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
                             });
                         }
                     }
@@ -741,17 +709,28 @@
         },
         
         parseAnimation(data) {
-            // Simplified parser for Animations
             const parsed = { type: 'Animation', flaw: null, keywords: [] };
-            const parts = data.split('.').filter(Boolean);
+            let remainingData = data;
+            
+             // Extract Flaw
+            const flawMatch = remainingData.match(/^\+(\d{4})/);
+            if (flawMatch) {
+                const flawPart = flawMatch[1];
+                parsed.flaw = {
+                    flawCode: flawPart.substring(0, 2),
+                    compCode: flawPart.substring(2, 4),
+                };
+                remainingData = remainingData.substring(5);
+            }
 
+            const parts = remainingData.split('.').filter(Boolean);
             parts.forEach(part => {
                 const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
                 if (kwMatch) {
                     parsed.keywords.push({
                         code: kwMatch[2],
                         slotted: kwMatch[1] === '!',
-                        choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
+                        choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
                     });
                 }
             });
@@ -759,24 +738,34 @@
         },
 
         parseItem(data) {
-            // Parser for Items
             const parsed = { type: 'Item', level: 0, flaw: null, keywords: [] };
-            const match = data.match(/^L(\d)/);
-            if (match) {
-                parsed.level = parseInt(match[1]);
-                const remaining = data.substring(2);
-                const parts = remaining.split('.').filter(Boolean);
-                 parts.forEach(part => {
-                    const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
-                    if (kwMatch) {
-                        parsed.keywords.push({
-                            code: kwMatch[2],
-                            slotted: kwMatch[1] === '!',
-                            choice: kwMatch[3] ? parseInt(kwMatch[3]) : null
-                        });
-                    }
-                });
+            const levelMatch = data.match(/^L(\d)/);
+            if (!levelMatch) return parsed;
+            
+            parsed.level = parseInt(levelMatch[1], 10);
+            let remainingData = data.substring(2);
+
+            const flawMatch = remainingData.match(/^\+(\d{4})/);
+             if (flawMatch) {
+                const flawPart = flawMatch[1];
+                parsed.flaw = {
+                    flawCode: flawPart.substring(0, 2),
+                    compCode: flawPart.substring(2, 4),
+                };
+                remainingData = remainingData.substring(5);
             }
+
+            const parts = remainingData.split('.').filter(Boolean);
+            parts.forEach(part => {
+                const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
+                if (kwMatch) {
+                    parsed.keywords.push({
+                        code: kwMatch[2],
+                        slotted: kwMatch[1] === '!',
+                        choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
+                    });
+                }
+            });
             return parsed;
         },
 
@@ -786,7 +775,7 @@
             if (parts.length > 0) parsed.profile = parts[0];
             if (parts.length > 1) {
                 const levelMatch = parts[1].match(/L(\d)/);
-                if(levelMatch) parsed.level = parseInt(levelMatch[1]);
+                if(levelMatch) parsed.level = parseInt(levelMatch[1], 10);
             }
             if (parts.length > 2) {
                  const systemMatch = parts[2].match(/\[(.*?)\]/);
@@ -816,47 +805,49 @@
                 statPointsPerLevel: {}
             };
             
-            const kwCount = parsed.keywords.length;
-
-            // Level Calculation
-            if (kwCount === 0) calc.level = 0;
-            else if (kwCount >= 1 && kwCount <= 3) calc.level = 0;
-            else if (kwCount >= 4 && kwCount <= 5) calc.level = 1;
-            else if (kwCount > 5) {
-                calc.level = Math.floor((kwCount - 4) / 2) + 1;
-            }
-
-            // Stat Point Calculation
-            if (calc.level >= 2 && calc.level <= 5) {
-                calc.statPointsEarned = calc.level - 1;
-            } else if (calc.level >= 6 && calc.level <= 9) {
-                calc.statPointsEarned = 4 + (calc.level - 5) * 2;
-            }
-            
-            // Map earned points to levels for UI
-            let points = 0;
-            for(let i=2; i<=9; i++) {
-                if(i <= 5) points += 1;
-                else points += 2;
-                calc.statPointsPerLevel[i] = points;
-            }
-
-
-            // Stat Calculation
-            const baseStat = calc.level === 0 ? 1 : 2;
-            SRD_DATA.statOrder.forEach(s => calc.stats[s] = baseStat);
-            
-            parsed.statAllocs.forEach(s => {
-                if (calc.stats[s] < 5) {
-                    calc.stats[s]++;
+            if (parsed.type === 'Animation') {
+                calc.level = parsed.keywords.length > 0 ? parsed.keywords.length - 1 : 0;
+                const statPoints = 9 + calc.level;
+                const baseStat = Math.floor(statPoints / 9);
+                let remainder = statPoints % 9;
+                SRD_DATA.statOrder.forEach(s => {
+                    calc.stats[s] = baseStat + (remainder-- > 0 ? 1 : 0);
+                });
+            } else { // Character logic
+                const kwCount = parsed.keywords.length;
+                if (kwCount === 0) calc.level = 0;
+                else if (kwCount >= 1 && kwCount <= 3) calc.level = 0;
+                else if (kwCount >= 4 && kwCount <= 5) calc.level = 1;
+                else if (kwCount > 5) {
+                    calc.level = Math.floor((kwCount - 4) / 2) + 1;
                 }
-            });
 
-            // Resistance Calculation
+                if (calc.level >= 2 && calc.level <= 5) {
+                    calc.statPointsEarned = calc.level - 1;
+                } else if (calc.level >= 6 && calc.level <= 9) {
+                    calc.statPointsEarned = 4 + (calc.level - 5) * 2;
+                }
+                
+                let points = 0;
+                for(let i=2; i<=9; i++) {
+                    if(i <= 5) points += 1;
+                    else points += 2;
+                    calc.statPointsPerLevel[i] = points;
+                }
+
+                const baseStat = calc.level === 0 ? 1 : 2;
+                SRD_DATA.statOrder.forEach(s => calc.stats[s] = baseStat);
+                
+                parsed.statAllocs.forEach(s => {
+                    if (calc.stats[s] < 5) {
+                        calc.stats[s]++;
+                    }
+                });
+            }
+
             const statValues = Object.values(calc.stats).sort((a, b) => b - a);
             calc.resistance = statValues[0] + statValues[1] + statValues[2];
 
-            // Resource Calculation
             parsed.keywords.forEach(kw => {
                 if (kw.code === '71' && kw.choice !== null) { // Resilient
                     const choiceMap = {0: 'maxHP', 1: 'maxSP', 2: 'maxEP'};
@@ -868,9 +859,8 @@
                 }
             });
 
-            // Passive Slot Calculation
-            calc.innatePassiveSlots = calc.stats.F;
-            calc.gearPassiveSlots = calc.stats.E;
+            calc.innatePassiveSlots = calc.stats.F || 0;
+            calc.gearPassiveSlots = calc.stats.E || 0;
             
             return calc;
         },
@@ -887,42 +877,47 @@
 
             let kwIndex = 0;
             let statIndex = 0;
-            let currentSegment = '';
             
-            const addSegment = () => {
-                if(currentSegment) str += `-${currentSegment}`;
-                currentSegment = '';
-            }
-
             // Seed
             if (kwIndex < parsed.keywords.length) {
-                currentSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
-                addSegment();
+                str += `-${this.stringifyKeyword(parsed.keywords[kwIndex++])}`;
             }
 
             // Awakening
-            for (let i = 0; i < 3 && kwIndex < parsed.keywords.length; i++) {
-                currentSegment += (i > 0 ? '.' : '') + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+            if (kwIndex < parsed.keywords.length) {
+                let awakeningSegment = '';
+                for (let i = 0; i < 3 && kwIndex < parsed.keywords.length; i++) {
+                    awakeningSegment += (i > 0 ? '.' : '') + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                }
+                if (awakeningSegment) str += `-${awakeningSegment}`;
             }
-            addSegment();
             
             // Progression
-            let pointsAtLastLevel = 0;
             for (let level = 2; level <= 9; level++) {
-                if (kwIndex >= parsed.keywords.length) break;
-
+                if (kwIndex >= parsed.keywords.length && statIndex >= parsed.statAllocs.length) break;
+                
+                let levelSegment = '';
+                let partsInSegment = 0;
+                
                 // Keywords for this level
-                currentSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                if(kwIndex < parsed.keywords.length) {
+                     levelSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                     partsInSegment++;
+                }
                 if (kwIndex < parsed.keywords.length) {
-                    currentSegment += '.' + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                     levelSegment += '.' + this.stringifyKeyword(parsed.keywords[kwIndex++]);
+                     partsInSegment++;
                 }
                 
                 // Stat points for this level
                 const pointsThisLevel = (level <= 5) ? 1 : 2;
-                for(let i=0; i<pointsThisLevel && statIndex < parsed.statAllocs.length; i++) {
-                     currentSegment += '.' + parsed.statAllocs[statIndex++];
+                for(let i = 0; i < pointsThisLevel && statIndex < parsed.statAllocs.length; i++) {
+                     if(partsInSegment > 0) levelSegment += '.';
+                     levelSegment += parsed.statAllocs[statIndex++];
+                     partsInSegment++;
                 }
-                addSegment();
+
+                if (levelSegment) str += `-${levelSegment}`;
             }
 
             return str;
@@ -1154,7 +1149,7 @@
         handleRandomEntity() {
             const type = prompt("Generate what type? (character, animation, item, faction)", "character")?.toLowerCase();
             const levelStr = prompt("Enter target level (0-9):", "1");
-            const level = parseInt(levelStr);
+            const level = parseInt(levelStr, 10);
             
             if (!type || isNaN(level)) return;
             
@@ -1186,8 +1181,11 @@
             const currentEntity = this.getCurrentEntity();
             if (currentEntity) {
                 currentEntity.blueprint = newBlueprint.trim();
-                this.saveDatabase();
-                this.renderCharacterSheet();
+                // A small delay to allow typing before re-rendering
+                setTimeout(() => {
+                    this.saveDatabase();
+                    this.renderCharacterSheet();
+                }, 500);
             }
         },
         
@@ -1209,7 +1207,7 @@
             
             if(kwData.category === 'flaw') {
                 const compCode = prompt("Enter the 2-digit code for the Compensation keyword:");
-                if(!compCode || compCode.length !== 2 || isNaN(parseInt(compCode))) {
+                if(!compCode || compCode.length !== 2 || isNaN(parseInt(compCode, 10))) {
                     alert("Invalid compensation code.");
                     return;
                 }
@@ -1242,7 +1240,6 @@
             if (!currentEntity) return;
 
             const currentValue = currentEntity.runtime[resource].current;
-            // If clicking the same pip as the current value, set to zero.
             const newValue = (currentValue === index + 1) ? index : index + 1;
             
             currentEntity.runtime[resource].current = newValue;
@@ -1301,13 +1298,13 @@
                  if(pool[tagName].quantity <= 0) {
                      delete pool[tagName];
                  }
+                 this.saveDatabase();
+                 this.renderTags();
              }
-             this.saveDatabase();
-             this.renderTags();
         },
 
         handleAddItem() {
-            const blueprint = prompt("Enter item blueprint string (e.g., L2-38.58):");
+            const blueprint = prompt("Enter item blueprint string (e.g., I:L2-38.58):");
             if (!blueprint) return;
             
             const currentEntity = this.getCurrentEntity();
@@ -1554,7 +1551,7 @@
                 
                 const nameSpan = document.createElement('span');
                 let nameText = `${kw.code}: ${kwData.name}`;
-                if (flaw && kwData.code === flaw.compCode) {
+                if (flaw && kw.code === flaw.compCode) {
                     nameText += ` (Comp.)`;
                 }
                 nameSpan.textContent = nameText;
@@ -1572,7 +1569,7 @@
                         select.appendChild(option);
                     });
                     select.addEventListener('change', (e) => {
-                       kw.choice = parseInt(e.target.value);
+                       kw.choice = parseInt(e.target.value, 10);
                        this.updateBlueprintFromState();
                     });
                     li.appendChild(select);
@@ -1592,7 +1589,7 @@
             
             // Stat Progression UI
             this.dom.statProgressionList.innerHTML = '';
-            const { statPointsEarned, statPointsPerLevel } = this.state.calculated;
+            const { statPointsEarned } = this.state.calculated;
             const allocatedPoints = this.state.parsed.statAllocs.length;
             
             if (allocatedPoints < statPointsEarned) {
@@ -1724,8 +1721,8 @@
                             }
                             kw.slotted = !kw.slotted;
                             
-                            // Rebuild item blueprint string
                             let newBp = `I:L${parsedItem.level}`;
+                            if(parsedItem.flaw) newBp += `+${parsedItem.flaw.flawCode}${parsedItem.flaw.compCode}`;
                             parsedItem.keywords.forEach(k => newBp += `.${CodexEngine.stringifyKeyword(k)}`);
                             item.blueprint = newBp;
                             this.saveDatabase();
@@ -1755,22 +1752,8 @@
                 card.className = 'companion-card';
 
                 const parsedComp = CodexEngine.parseAnimation(comp.blueprint.substring(2));
-                const calcComp = CodexEngine.calculate(parsedComp); // Need to adapt calculate for animations
+                const calcComp = CodexEngine.calculate(parsedComp); 
                 
-                // Quick fix for animation calculation
-                let compLevel = parsedComp.keywords.length - 1;
-                if (compLevel < 0) compLevel = 0;
-                let compStatsTotal = 9 + compLevel;
-                // Distribute stats evenly for display - this is a simplification
-                let baseStat = Math.floor(compStatsTotal / 9);
-                let rem = compStatsTotal % 9;
-                let compStats = {};
-                SRD_DATA.statOrder.forEach(s => {
-                    compStats[s] = baseStat + (rem-- > 0 ? 1 : 0);
-                });
-                const sortedStats = Object.values(compStats).sort((a,b)=>b-a);
-                const compRes = sortedStats[0]+sortedStats[1]+sortedStats[2];
-
                 card.innerHTML = `
                     <div class="item-header">
                         <input type="text" class="item-name-input" value="${comp.name}" data-id="${comp.id}" data-field="name">
@@ -1778,8 +1761,8 @@
                     </div>
                      <input type="text" value="${comp.blueprint}" style="width:100%" data-id="${comp.id}" data-field="blueprint">
                     <div class="details">
-                        <span>Lvl: ${compLevel}</span>
-                        <span>Res: ${compRes}</span>
+                        <span>Lvl: ${calcComp.level}</span>
+                        <span>Res: ${calcComp.resistance}</span>
                         <span>HP/SP/EP: 10</span>
                         <span>Keywords: ${parsedComp.keywords.map(k=>k.code).join(', ')}</span>
                     </div>
@@ -1833,9 +1816,9 @@
         getNewRuntimeState() {
             return {
                 karma: 0,
-                hp: { current: 10, max: 10 },
-                sp: { current: 10, max: 10 },
-                ep: { current: 10, max: 10 },
+                hp: { current: 10 },
+                sp: { current: 10 },
+                ep: { current: 10 },
                 tags: { boosts: {}, statuses: {} },
                 inventory: [],
                 companions: [],
@@ -1844,7 +1827,7 @@
         },
 
         loadDatabase() {
-            const dbString = localStorage.getItem('resonanceCompanionDb_v2');
+            const dbString = localStorage.getItem('resonanceCompanionDb_v2.1');
             if (dbString) {
                 this.db = JSON.parse(dbString);
             } else {
@@ -1853,7 +1836,7 @@
                 this.db.entities[id] = {
                     id: id,
                     name: "Sparks (Example)",
-                    blueprint: "C:00000-13-11(1).83.93",
+                    blueprint: "C:03817-13-11(1).83.93",
                     runtime: this.getNewRuntimeState()
                 };
                 this.db.currentEntityId = id;
@@ -1862,7 +1845,7 @@
         },
         
         saveDatabase() {
-            localStorage.setItem('resonanceCompanionDb_v2', JSON.stringify(this.db));
+            localStorage.setItem('resonanceCompanionDb_v2.1', JSON.stringify(this.db));
         },
         
         updateEntitySelector() {
@@ -1913,7 +1896,7 @@
             finalLucky = lucky;
             const finalSR = runningTotal + finalMain;
             if (finalSR >= 31) isSuperCrit = true;
-            if (main === lucky && !isCrit) isCrit = true; // For the final roll if it's doubles
+            if (main === lucky && !isCrit) isCrit = true;
 
             if (!isSubRoll) {
                 this.animateDice(finalMain, finalLucky, finalSR, isCrit, isSuperCrit);
@@ -1942,8 +1925,8 @@
                 jumbleCount++;
                 if (jumbleCount > 10) {
                     clearInterval(jumbleInterval);
-                    if(finalMain) this.dom.diceMain.textContent = finalMain;
-                    if(finalLucky) this.dom.diceLucky.textContent = finalLucky;
+                    if(finalMain !== null) this.dom.diceMain.textContent = finalMain;
+                    if(finalLucky !== null) this.dom.diceLucky.textContent = finalLucky;
                     this.dom.diceTotal.textContent = finalTotal;
                     let critText = '';
                     if (isSuperCrit) critText = "SUPER CRITICAL!";
@@ -1961,9 +1944,8 @@
             }
 
             if (type === 'character') {
-                let bp = 'C:';
-                // Profile
-                for (let i = 0; i < 5; i++) bp += rand(10);
+                let profile = '';
+                for (let i = 0; i < 5; i++) profile += rand(10);
                 
                 let kwCount = 0;
                 if(level === 0) kwCount = 1;
@@ -1972,7 +1954,7 @@
                 
                 let statPoints = 0;
                 if(level >= 2 && level <= 5) statPoints = level - 1;
-                if(level >= 6) statPoints = 4 + (level-5) * 2;
+                else if(level >= 6) statPoints = 4 + (level-5) * 2;
                 
                 let statAllocs = [];
                 for(let i=0; i<statPoints; i++) {
@@ -1988,12 +1970,11 @@
                     keywords.push({code: code, slotted: false, choice: null});
                 }
                 
-                const parsed = {type: 'Character', profile: bp.substring(2), flaw: null, keywords: keywords, statAllocs: statAllocs};
+                const parsed = {type: 'Character', profile: profile, flaw: null, keywords: keywords, statAllocs: statAllocs};
                 return CodexEngine.stringify(parsed);
 
             } else if (type === 'item') {
-                 let itemLevel = Math.min(5, level);
-                 if (itemLevel === 0) itemLevel = 1;
+                 let itemLevel = Math.min(5, level > 0 ? level : 1);
                  let bp = `I:L${itemLevel}`;
                  for(let i=0; i<itemLevel; i++) {
                      let code;
