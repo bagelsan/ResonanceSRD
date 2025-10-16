@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Companion</title>
+    <title>Resonance Companion v2.1</title>
     <style>
+        /* --- PART 1: AESTHETIC & GLOBAL STYLES --- */
         :root {
             --null-color: #dea193;
             --silver-color: #a7a9ac;
@@ -17,11 +18,10 @@
             --blue-color: #88bfe8;
             --purple-color: #957fa3;
             --bg-dark: #2a2a2e;
-            --bg-card: #333338;
-            --border-color: #4f4f55;
-            --font-main: Calibri, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            --font-size-sm: 10pt;
-            --font-size-md: 12pt;
+            --border-color: #4a4a4e;
+            --font-size-sm: 8pt;
+            --font-size-md: 10pt;
+            --font-size-lg: 12pt;
         }
 
         * {
@@ -31,1965 +31,1945 @@
         }
 
         html, body {
+            font-family: Calibri, sans-serif;
             background-color: var(--bg-dark);
             color: var(--white-color);
-            font-family: var(--font-main);
-            font-size: var(--font-size-sm);
-            line-height: 1.5;
+            font-size: var(--font-size-md);
+            overscroll-behavior: none;
         }
 
-        #app-container {
-            max-width: 450px;
+        .app-container {
+            max-width: 768px;
             margin: 0 auto;
             padding: 8px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-        
-        @media (min-width: 768px) {
-            #app-container { max-width: 600px; }
-        }
-        
-        @media (min-width: 1024px) {
-            #app-container { max-width: 800px; }
+            gap: 8px;
         }
 
-        /* --- Global Elements --- */
-        .card, details {
-            background-color: var(--bg-card);
+        /* Art-Deco inspired borders and card styles */
+        .card {
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            background-color: var(--black-color);
             padding: 8px;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            --deco-border: inset 0 0 0 1px var(--border-color), inset 0 0 0 2px var(--black-color);
         }
 
-        summary {
+        .card-header {
+            font-size: var(--font-size-lg);
             font-weight: bold;
-            cursor: pointer;
-            list-style: none;
-            color: var(--blue-color);
+            color: var(--null-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        summary::-webkit-details-marker { display: none; }
+        
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsible-header::after {
+            content: ' [-]';
+            float: right;
+            color: var(--silver-color);
+        }
+        .collapsed .collapsible-header::after {
+            content: ' [+]';
+        }
+        .collapsed .card-content {
+            display: none;
+        }
 
-        button, select, input[type="text"] {
-            background-color: var(--black-color);
+        button, input, select {
+            font-family: Calibri, sans-serif;
+            background-color: var(--bg-dark);
             color: var(--white-color);
             border: 1px solid var(--border-color);
-            border-radius: 3px;
-            padding: 4px 6px;
-            font-family: var(--font-main);
-            font-size: var(--font-size-sm);
-            vertical-align: middle;
+            padding: 4px 8px;
+            font-size: var(--font-size-md);
         }
-        button:hover { background-color: #555; }
-        button { cursor: pointer; }
-        input:focus, select:focus {
+
+        button {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--border-color);
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             outline: 1px solid var(--blue-color);
         }
 
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
+        .hidden {
+            display: none !important;
         }
-        .row-start { justify-content: flex-start; }
         
-        .hidden { display: none !important; }
-
-        /* --- Global Header --- */
-        #global-header {
+        .flex-row { display: flex; flex-direction: row; gap: 8px; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; gap: 8px; }
+        .flex-grow { flex-grow: 1; }
+        
+        .grid-3x3 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        #entity-selector { width: 100%; grid-column: 1 / -1; }
-
-        /* --- Dice Roller --- */
-        #dice-roller-card { align-items: center; }
-        #dice-roller-output {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-size: var(--font-size-md);
-            font-weight: bold;
-            min-height: 40px;
-        }
-        #dice-roller-main, #dice-roller-lucky {
-            padding: 5px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-        }
-        #dice-roller-total { color: var(--blue-color); }
-        #dice-roller-crit-indicator { color: var(--yellow-color); font-size: var(--font-size-sm); }
-        .dice-roller-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-        #dice-roller-stat-selector { min-width: 80px; }
-
-        /* --- Build Pane --- */
-        #character-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-        #character-name-input {
-            background: none;
-            border: none;
-            border-bottom: 1px dashed var(--silver-color);
-            border-radius: 0;
-            font-size: var(--font-size-md);
-            font-weight: bold;
-            width: 70%;
-        }
-        #character-level-display {
-            font-size: var(--font-size-md);
-            color: var(--null-color);
-        }
-
-        #karma-tracker .value {
-            font-weight: bold;
-            color: var(--null-color);
-            min-width: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
             text-align: center;
         }
-        #karma-tracker button { width: 25px; height: 25px; }
 
-        #motivation-profile-grid {
+        .stat-box {
+            background-color: var(--bg-dark);
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-label { font-size: var(--font-size-sm); color: var(--silver-color); }
+        .stat-value { font-size: var(--font-size-lg); font-weight: bold; }
+
+        /* --- PART 2: SPECIFIC COMPONENT STYLES --- */
+
+        /* Global Pane */
+        #global-pane {
+            background-color: var(--black-color);
+            border: 1px solid var(--null-color);
+            box-shadow: var(--deco-border), inset 0 0 0 3px var(--null-color);
+        }
+        .global-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+
+        /* Build Pane: Character Header */
+        #character-header { display: flex; justify-content: space-between; align-items: baseline; }
+        #char-name-input { background: none; border: none; border-bottom: 1px dashed var(--silver-color); color: var(--white-color); font-size: var(--font-size-lg); font-weight: bold; padding: 2px;}
+        #char-level-display { color: var(--blue-color); font-weight: bold; }
+
+        /* Karma Tracker */
+        #karma-tracker { display: flex; align-items: center; justify-content: space-between; }
+        .karma-controls { display: flex; align-items: center; gap: 4px; }
+        .karma-controls button { width: 25px; height: 25px; padding: 0; }
+        #karma-value { font-size: var(--font-size-lg); color: var(--null-color); min-width: 30px; text-align: center; }
+
+        /* Motivational Profile */
+        #motivational-profile-card .card-content {
             display: grid;
             grid-template-columns: auto 1fr;
             gap: 4px 8px;
+            align-items: center;
             font-size: var(--font-size-sm);
         }
-        .motivation-label { font-weight: bold; text-align: right; }
-        .motivation-value { padding-left: 8px; border-left: 2px solid; }
+        .profile-label { color: var(--silver-color); text-align: right; }
+        .profile-value { font-weight: bold; }
+        
+        /* Stats & Resources */
+        #stats-resources-card .card-content { display: flex; flex-direction: column; gap: 12px; }
+        .resource-row { display: flex; justify-content: space-between; align-items: center; }
+        .resource-label { font-weight: bold; }
+        .resource-clocks { display: flex; gap: 2px; }
+        .clock-pip { width: 10px; height: 16px; border: 1px solid var(--border-color); cursor: pointer; }
+        #hp-clocks .clock-pip.filled { background-color: var(--green-color); box-shadow: 0 0 2px var(--green-color); }
+        #sp-clocks .clock-pip.filled { background-color: var(--orange-color); box-shadow: 0 0 2px var(--orange-color); }
+        #ep-clocks .clock-pip.filled { background-color: var(--purple-color); box-shadow: 0 0 2px var(--purple-color); }
+        .resource-display { color: var(--silver-color); font-size: var(--font-size-sm); }
+        #resistance-value { color: var(--silver-color); font-weight: bold; }
 
-        #stats-resources-card .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        .stat-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 4px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-        }
-        .stat-display .name { font-weight: bold; }
-        #resistance-display {
-            text-align: center;
-            font-weight: bold;
-            font-size: var(--font-size-md);
-            grid-column: 1 / -1;
-        }
-        #resistance-display .value { color: var(--blue-color); }
-        .resource-clock {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            grid-column: 1 / -1;
-        }
-        .resource-clock .header { display: flex; justify-content: space-between; }
-        .resource-clock .pips { display: flex; gap: 2px; }
-        .resource-clock .pip {
-            flex-grow: 1;
-            height: 12px;
-            background-color: var(--black-color);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-        }
-        #hp-clock .pip.filled { background-color: var(--green-color); }
-        #sp-clock .pip.filled { background-color: var(--orange-color); }
-        #ep-clock .pip.filled { background-color: var(--purple-color); }
-        
-        #keyword-progression-card .add-keyword-form {
-            display: flex;
-            gap: 8px;
-        }
-        #add-keyword-selector { flex-grow: 1; }
-        
-        #innate-keywords-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .keyword-item {
-            display: grid;
-            grid-template-columns: 24px 1fr auto;
-            align-items: center;
-            gap: 8px;
-        }
+        /* Keywords & Progression */
+        .keyword-list { display: flex; flex-direction: column; gap: 6px; }
+        .keyword-item { display: flex; align-items: center; gap: 8px; padding: 4px; background-color: var(--bg-dark); }
         .keyword-toggle {
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--silver-color);
-            cursor: pointer;
+            width: 14px; height: 14px; border: 1px solid var(--null-color); cursor: pointer;
             position: relative;
         }
-        .keyword-toggle.slotted {
-            background-color: var(--null-color);
-            border-color: var(--null-color);
-        }
-        .keyword-toggle.slotted::after {
+        .keyword-toggle.active::after {
             content: '';
             position: absolute;
-            top: 50%; left: 50%;
+            top: 2px; left: 2px;
             width: 8px; height: 8px;
-            background: var(--bg-card);
-            transform: translate(-50%, -50%) rotate(45deg);
+            background-color: var(--null-color);
+            box-shadow: 0 0 4px var(--null-color);
         }
-        
-        #live-blueprint-textarea {
+        .keyword-name { flex-grow: 1; }
+        .keyword-choice select { padding: 2px; font-size: var(--font-size-sm); }
+        #innate-slots-display { color: var(--silver-color); font-size: var(--font-size-sm); }
+        #progression-controls { margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px; }
+        #add-keyword-form, #stat-allocation-form { display: flex; gap: 4px; }
+
+        /* Live Blueprint */
+        #live-blueprint-input {
             width: 100%;
-            min-height: 80px;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--blue-color);
+            color: var(--blue-color);
+            font-family: monospace;
+            font-size: 9pt;
+            padding: 4px;
             resize: vertical;
         }
 
-        #stat-progression-list {
-            list-style: none;
-        }
-
-        /* --- Play Pane --- */
-        #play-pane-tabs { display: flex; }
+        /* Play Pane */
+        .play-tabs { display: flex; border-bottom: 1px solid var(--border-color); }
         .tab-button {
             flex-grow: 1;
-            border-radius: 3px 3px 0 0;
-            border-bottom: 1px solid var(--border-color);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 8px 4px;
+            color: var(--silver-color);
+            font-size: var(--font-size-md);
+            text-transform: uppercase;
         }
         .tab-button.active {
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--bg-card);
-            color: var(--blue-color);
+            color: var(--white-color);
+            border-bottom-color: var(--null-color);
         }
-        .tab-content {
-            border-top: none;
-            border-radius: 0 0 3px 3px;
+        .tab-content { padding-top: 8px; }
+
+        /* Tags Tab */
+        .tags-section { margin-bottom: 12px; }
+        .tags-header { color: var(--silver-color); margin-bottom: 4px; }
+        .tag-list { display: flex; flex-direction: column; gap: 4px; }
+        .tag-item { display: flex; align-items: center; gap: 4px; background-color: var(--bg-dark); padding: 4px; }
+        .tag-name { flex-grow: 1; }
+        .tag-controls button { width: 22px; height: 22px; padding: 0; }
+        #add-tag-form { display: flex; gap: 4px; }
+        
+        /* Inventory, Companions, Factions */
+        .play-card {
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            padding: 8px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .play-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .play-card-name { font-weight: bold; background: none; border: none; color: var(--white-color); border-bottom: 1px dashed var(--silver-color); flex-grow: 1; font-size: var(--font-size-md); }
+        .play-card-remove-btn { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; padding: 0; font-size: 12px; background-color: var(--red-color); }
+        .play-card-footer { font-size: var(--font-size-sm); color: var(--silver-color); margin-top: 8px; text-align: right; }
+        .companion-card-stats { font-size: var(--font-size-sm); color: var(--silver-color); display: flex; justify-content: space-around; margin-bottom: 8px;}
+        .faction-trust { display: flex; align-items: center; gap: 8px; }
+        .add-play-card-form { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px; }
+        
+        /* Codex Vault */
+        #codex-vault-list { list-style: none; padding: 0; }
+        #codex-vault-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 4px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        #codex-vault-list li:hover { background-color: var(--border-color); }
+        #codex-vault-list li.selected { background-color: var(--null-color); color: var(--black-color); }
+        .codex-delete-btn {
+            background-color: var(--red-color); color: var(--white-color);
+            border: none; padding: 2px 5px; font-size: 8pt;
         }
         
-        .tag-section { border-top: 1px solid var(--border-color); padding-top: 8px; }
-        .tag-section:first-child { border-top: none; padding-top: 0; }
-        .tag-list { list-style: none; }
-        .tag-item { display: flex; align-items: center; justify-content: space-between; }
-        .tag-item .name { flex-grow: 1; }
-        .tag-item .quantity { min-width: 20px; text-align: center; }
-        .tag-item button { width: 25px; height: 25px; }
-
-        .play-pane-card-list { display: flex; flex-direction: column; gap: 8px; }
-        .inventory-item-card, .companion-card, .faction-card {
-            border: 1px solid var(--border-color);
-            padding: 6px;
-            border-radius: 3px;
-            background: var(--bg-dark);
+        /* Dice Roller Modal */
+        #dice-roller-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
         }
-        .item-header { display: flex; justify-content: space-between; }
-        .item-name-input { width: 70%; background: none; border: none; font-weight: bold; }
-        .item-keywords-list {
-            list-style: none;
-            padding-top: 4px;
-            margin-top: 4px;
-            border-top: 1px solid var(--border-color);
+        .dice-roller-content {
+            width: 90%; max-width: 400px;
+            background-color: var(--black-color);
+            border: 2px solid var(--null-color);
+            padding: 16px;
+            text-align: center;
         }
-
-        .companion-card .header { font-weight: bold; }
-        .companion-card .details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            font-size: var(--font-size-sm);
+        #dice-display { font-size: 32pt; font-weight: bold; min-height: 50px; margin-bottom: 16px; }
+        .dice-roller-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .dice-roller-results { font-size: 10pt; color: var(--silver-color); }
+        #dice-crit-indicator { color: var(--yellow-color); font-weight: bold; }
+        
+        @media (min-width: 768px) {
+            .app-container {
+                transform: scale(1.5);
+                transform-origin: top center;
+                margin-top: 10%;
+                margin-bottom: 10%;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="app-container">
-        <!-- GLOBAL HEADER -->
-        <div id="global-header" class="card">
-            <select id="entity-selector"></select>
-            <button id="add-entity-btn">New</button>
-            <button id="import-entity-btn">Import</button>
-            <button id="delete-entity-btn">Delete</button>
-            <button id="random-entity-btn">Random</button>
+
+    <div class="app-container">
+        <!-- GLOBAL PANE -->
+        <div id="global-pane" class="card">
+            <div class="card-header">RESONANCE COMPANION V2.1</div>
+            <div class="global-buttons">
+                <button id="add-char-btn">New Entity</button>
+                <button id="import-blueprint-btn">Import Blueprint</button>
+                <button id="dice-roller-btn">Dice Roller</button>
+                <button id="random-string-btn">Random Generator</button>
+            </div>
         </div>
 
-        <!-- DICE ROLLER -->
-        <details id="dice-roller-card" class="card">
-            <summary>Dice Roller</summary>
-            <div id="dice-roller-output">
-                <span>SR:</span>
-                <span id="dice-roller-main">--</span>
-                <span>+</span>
-                <span id="dice-roller-lucky">--</span>
-                <span>=</span>
-                <span id="dice-roller-total">--</span>
-            </div>
-            <div id="dice-roller-crit-indicator">&nbsp;</div>
-            <div class="dice-roller-controls">
-                <button id="roll-sr-btn">Roll SR</button>
-                <button id="roll-ev-btn">Roll EV/ER</button>
-                <select id="dice-roller-stat-selector"></select>
-            </div>
-        </details>
-
         <!-- BUILD PANE -->
-        <div id="build-pane">
-            <div class="card">
-                <div id="character-header">
-                    <input type="text" id="character-name-input" placeholder="Character Name">
-                    <span id="character-level-display">Lvl --</span>
+        <div id="build-pane" class="card">
+            <div id="character-header">
+                <input type="text" id="char-name-input" value="Character Name">
+                <span id="char-level-display">Level 0</span>
+            </div>
+            
+            <div id="karma-tracker">
+                <span class="card-header" style="border:none; padding: 0;">KARMA</span>
+                <div class="karma-controls">
+                    <button id="karma-decrease-btn">-</button>
+                    <span id="karma-value">0</span>
+                    <button id="karma-increase-btn">+</button>
                 </div>
-                <div class="row" id="karma-tracker">
-                    <span>Karma</span>
-                    <div class="row row-start">
-                        <button id="karma-dec-btn">-</button>
-                        <span class="value" id="karma-value">0</span>
-                        <button id="karma-inc-btn">+</button>
+            </div>
+
+            <div id="motivational-profile-card" class="card">
+                <div class="card-header collapsible-header">MOTIVATIONAL PROFILE</div>
+                <div class="card-content">
+                    <span class="profile-label">Goal:</span> <span class="profile-value" id="profile-goal" style="color: var(--green-color)">-</span>
+                    <span class="profile-label">Method:</span> <span class="profile-value" id="profile-method" style="color: var(--orange-color)">-</span>
+                    <span class="profile-label">Purpose:</span> <span class="profile-value" id="profile-purpose" style="color: var(--purple-color)">-</span>
+                    <span class="profile-label">Ext. Conflict:</span> <span class="profile-value" id="profile-ext-conflict" style="color: var(--blue-color)">-</span>
+                    <span class="profile-label">Int. Conflict:</span> <span class="profile-value" id="profile-int-conflict" style="color: var(--yellow-color)">-</span>
+                </div>
+            </div>
+
+            <div id="stats-resources-card" class="card">
+                <div class="card-header">STATS & RESOURCES</div>
+                <div class="card-content">
+                    <div class="resource-row">
+                        <span>HP</span>
+                        <div class="resource-clocks" id="hp-clocks">
+                            <!-- 10 pips will be managed by JS -->
+                            <div class="clock-pip" data-value="1"></div><div class="clock-pip" data-value="2"></div><div class="clock-pip" data-value="3"></div><div class="clock-pip" data-value="4"></div><div class="clock-pip" data-value="5"></div><div class="clock-pip" data-value="6"></div><div class="clock-pip" data-value="7"></div><div class="clock-pip" data-value="8"></div><div class="clock-pip" data-value="9"></div><div class="clock-pip" data-value="10"></div>
+                        </div>
+                        <span class="resource-display" id="hp-display">0/10</span>
+                    </div>
+                    <div class="resource-row">
+                        <span>SP</span>
+                        <div class="resource-clocks" id="sp-clocks">
+                            <div class="clock-pip" data-value="1"></div><div class="clock-pip" data-value="2"></div><div class="clock-pip" data-value="3"></div><div class="clock-pip" data-value="4"></div><div class="clock-pip" data-value="5"></div><div class="clock-pip" data-value="6"></div><div class="clock-pip" data-value="7"></div><div class="clock-pip" data-value="8"></div><div class="clock-pip" data-value="9"></div><div class="clock-pip" data-value="10"></div>
+                        </div>
+                        <span class="resource-display" id="sp-display">0/10</span>
+                    </div>
+                    <div class="resource-row">
+                        <span>EP</span>
+                        <div class="resource-clocks" id="ep-clocks">
+                            <div class="clock-pip" data-value="1"></div><div class="clock-pip" data-value="2"></div><div class="clock-pip" data-value="3"></div><div class="clock-pip" data-value="4"></div><div class="clock-pip" data-value="5"></div><div class="clock-pip" data-value="6"></div><div class="clock-pip" data-value="7"></div><div class="clock-pip" data-value="8"></div><div class="clock-pip" data-value="9"></div><div class="clock-pip" data-value="10"></div>
+                        </div>
+                        <span class="resource-display" id="ep-display">0/10</span>
+                    </div>
+                    <div class="resource-row">
+                        <span>Resistance</span>
+                        <span id="resistance-value">0</span>
+                    </div>
+                    <div class="grid-3x3">
+                        <div class="stat-box"><div class="stat-label">Movement</div><div class="stat-value" id="stat-m">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Alacrity</div><div class="stat-value" id="stat-a">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Brawn</div><div class="stat-value" id="stat-b">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Wit</div><div class="stat-value" id="stat-w">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Expertise</div><div class="stat-value" id="stat-e">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Technique</div><div class="stat-value" id="stat-t">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Power</div><div class="stat-value" id="stat-p">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Influence</div><div class="stat-value" id="stat-i">0</div></div>
+                        <div class="stat-box"><div class="stat-label">Force</div><div class="stat-value" id="stat-f">0</div></div>
                     </div>
                 </div>
             </div>
 
-            <details class="card">
-                <summary>Motivational Profile</summary>
-                <div id="motivation-profile-grid">
-                    <div class="motivation-label">Goal</div><div class="motivation-value" id="profile-goal">--</div>
-                    <div class="motivation-label">Method</div><div class="motivation-value" id="profile-method">--</div>
-                    <div class="motivation-label">Purpose</div><div class="motivation-value" id="profile-purpose">--</div>
-                    <div class="motivation-label">External</div><div class="motivation-value" id="profile-external">--</div>
-                    <div class="motivation-label">Internal</div><div class="motivation-value" id="profile-internal">--</div>
+            <div id="keywords-progression-card" class="card">
+                <div class="card-header flex-row" style="justify-content: space-between;">
+                    <span>KEYWORDS & PROGRESSION</span>
+                    <span id="innate-slots-display">Slotted: 0/0</span>
                 </div>
-            </details>
-
-            <div id="stats-resources-card" class="card">
-                <div class="grid">
-                    <div class="stat-display"><span class="name">M</span><span class="value" id="stat-m">0</span></div>
-                    <div class="stat-display"><span class="name">A</span><span class="value" id="stat-a">0</span></div>
-                    <div class="stat-display"><span class="name">B</span><span class="value" id="stat-b">0</span></div>
-                    <div class="stat-display"><span class="name">W</span><span class="value" id="stat-w">0</span></div>
-                    <div class="stat-display"><span class="name">E</span><span class="value" id="stat-e">0</span></div>
-                    <div class="stat-display"><span class="name">T</span><span class="value" id="stat-t">0</span></div>
-                    <div class="stat-display"><span class="name">P</span><span class="value" id="stat-p">0</span></div>
-                    <div class="stat-display"><span class="name">I</span><span class="value" id="stat-i">0</span></div>
-                    <div class="stat-display"><span class="name">F</span><span class="value" id="stat-f">0</span></div>
-                    <div id="resistance-display">Resistance: <span class="value" id="resistance-value">0</span></div>
-                </div>
-                <div class="resource-clock" id="hp-clock">
-                    <div class="header"><span>HP</span><span id="hp-display">0/0</span></div>
-                    <div class="pips"></div>
-                </div>
-                <div class="resource-clock" id="sp-clock">
-                    <div class="header"><span>SP</span><span id="sp-display">0/0</span></div>
-                    <div class="pips"></div>
-                </div>
-                <div class="resource-clock" id="ep-clock">
-                    <div class="header"><span>EP</span><span id="ep-display">0/0</span></div>
-                    <div class="pips"></div>
+                <div class="card-content">
+                    <div class="keyword-list" id="keyword-list">
+                        <!-- Max 22 Keyword slots will be populated by JS -->
+                        <div class="keyword-item hidden" data-kw-index="0"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="1"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="2"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="3"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="4"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="5"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="6"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="7"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="8"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="9"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="10"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="11"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="12"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="13"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="14"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="15"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="16"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="17"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="18"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="19"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="20"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                        <div class="keyword-item hidden" data-kw-index="21"><div class="keyword-toggle"></div><span class="keyword-name"></span><div class="keyword-choice hidden"><select></select></div></div>
+                    </div>
+                    <div id="progression-controls">
+                        <div class="flex-row">
+                            <select id="add-keyword-select" class="flex-grow"></select>
+                            <button id="add-keyword-btn">+</button>
+                            <button id="remove-last-keyword-btn">-</button>
+                        </div>
+                        <div id="stat-allocation-container" class="hidden">
+                            <p id="stat-points-message" style="font-size: 9pt; color: var(--yellow-color); margin: 4px 0;"></p>
+                            <form id="stat-allocation-form">
+                                <select id="stat-allocation-select" class="flex-grow"></select>
+                                <button type="submit">Allocate</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <details id="keyword-progression-card" class="card" open>
-                <summary>Keywords & Progression</summary>
-                <div class="add-keyword-form">
-                    <select id="add-keyword-selector"></select>
-                    <button id="add-keyword-btn">+</button>
-                    <button id="remove-keyword-btn">-</button>
+            <div id="live-blueprint-card" class="card">
+                <div class="card-header collapsible-header">LIVE BLUEPRINT</div>
+                <div class="card-content">
+                    <textarea id="live-blueprint-input" rows="3"></textarea>
                 </div>
-                <div class="row">
-                    <span>Innate Passives: <span id="innate-passives-count">0/0</span></span>
-                </div>
-                <ul id="innate-keywords-list"></ul>
-                <div>
-                    <strong>Stat Progression:</strong>
-                    <ul id="stat-progression-list"></ul>
-                </div>
-            </details>
-
-            <details class="card">
-                <summary>Live Blueprint</summary>
-                <textarea id="live-blueprint-textarea"></textarea>
-            </details>
+            </div>
         </div>
 
         <!-- PLAY PANE -->
-        <div id="play-pane">
-            <div id="play-pane-tabs">
+        <div id="play-pane" class="card">
+            <div class="play-tabs">
                 <button class="tab-button active" data-tab="tags">Tags</button>
                 <button class="tab-button" data-tab="inventory">Inventory</button>
                 <button class="tab-button" data-tab="companions">Companions</button>
                 <button class="tab-button" data-tab="factions">Factions</button>
             </div>
-
-            <!-- TAGS TAB -->
-            <div id="tab-content-tags" class="tab-content card">
-                <div id="boost-tags-section" class="tag-section">
-                    <div class="row">
-                        <strong>Boosts (<span id="boost-tag-pool-count">0</span>/10)</strong>
-                        <div class="row row-start">
-                            <select id="add-boost-tag-selector"></select>
-                            <button id="add-boost-tag-btn">+</button>
-                        </div>
+            
+            <div id="tab-content-tags" class="tab-content">
+                <div class="tags-section">
+                    <div class="tags-header flex-row" style="justify-content: space-between;">
+                        <span>BOOSTS</span>
+                        <span id="boost-count">0/10</span>
                     </div>
-                    <ul id="boost-tag-list" class="tag-list"></ul>
+                    <div id="boost-tag-list" class="tag-list"></div>
+                    <form id="add-boost-form" class="add-tag-form">
+                        <select id="add-boost-select" class="flex-grow"></select>
+                        <button type="submit">+</button>
+                    </form>
                 </div>
-                <div id="status-tags-section" class="tag-section">
-                    <div class="row">
-                        <strong>Statuses (<span id="status-tag-pool-count">0</span>/10)</strong>
-                        <div class="row row-start">
-                            <select id="add-status-tag-selector"></select>
-                            <button id="add-status-tag-btn">+</button>
-                        </div>
+                <div class="tags-section">
+                    <div class="tags-header flex-row" style="justify-content: space-between;">
+                        <span>STATUSES</span>
+                        <span id="status-count">0/10</span>
                     </div>
-                    <ul id="status-tag-list" class="tag-list"></ul>
+                    <div id="status-tag-list" class="tag-list"></div>
+                    <form id="add-status-form" class="add-tag-form">
+                        <select id="add-status-select" class="flex-grow"></select>
+                        <button type="submit">+</button>
+                    </form>
                 </div>
-            </div>
-
-            <!-- INVENTORY TAB -->
-            <div id="tab-content-inventory" class="tab-content card hidden">
-                <div class="row">
-                    <strong>Inventory (Gear Passives: <span id="gear-passives-count">0/0</span>)</strong>
-                    <button id="add-inventory-item-btn">Add Item</button>
-                </div>
-                <div id="inventory-list" class="play-pane-card-list"></div>
-            </div>
-
-            <!-- COMPANIONS TAB -->
-            <div id="tab-content-companions" class="tab-content card hidden">
-                <div class="row">
-                    <strong>Companions</strong>
-                    <button id="add-companion-btn">Add Companion</button>
-                </div>
-                <div id="companion-list" class="play-pane-card-list"></div>
             </div>
             
-            <!-- FACTIONS TAB -->
-            <div id="tab-content-factions" class="tab-content card hidden">
-                 <div class="row">
-                    <strong>Factions</strong>
+            <div id="tab-content-inventory" class="tab-content hidden">
+                <div class="flex-row" style="justify-content: space-between;">
+                    <span class="card-header" style="border:none; padding: 0;">INVENTORY</span>
+                    <span id="gear-slots-display" style="font-size: var(--font-size-sm); color: var(--silver-color);">Slotted: 0/0</span>
+                </div>
+                <div id="inventory-list"></div>
+                <div class="add-play-card-form">
+                    <input type="text" id="add-item-name" placeholder="New Item Name">
+                    <input type="text" id="add-item-string" placeholder="Paste Item Blueprint String (I:L#...)">
+                    <button id="add-item-btn">Add Item</button>
+                </div>
+            </div>
+
+            <div id="tab-content-companions" class="tab-content hidden">
+                 <div class="flex-row" style="justify-content: space-between;">
+                    <span class="card-header" style="border:none; padding: 0;">COMPANIONS</span>
+                </div>
+                <div id="companion-list"></div>
+                 <div class="add-play-card-form">
+                    <input type="text" id="add-companion-name" placeholder="New Companion Name">
+                    <input type="text" id="add-companion-string" placeholder="Paste Animation Blueprint String (A:...)">
+                    <button id="add-companion-btn">Add Companion</button>
+                </div>
+            </div>
+            
+            <div id="tab-content-factions" class="tab-content hidden">
+                 <div class="flex-row" style="justify-content: space-between;">
+                    <span class="card-header" style="border:none; padding: 0;">FACTIONS</span>
+                </div>
+                <div id="faction-list"></div>
+                 <div class="add-play-card-form">
+                    <input type="text" id="add-faction-name" placeholder="New Faction Name">
+                    <input type="text" id="add-faction-string" placeholder="Paste Faction Blueprint String (F:...)">
                     <button id="add-faction-btn">Add Faction</button>
                 </div>
-                <div id="faction-list" class="play-pane-card-list"></div>
+            </div>
+        </div>
+
+        <!-- CODEX VAULT (ENTITY LIST) -->
+        <div id="codex-vault-card" class="card collapsed">
+            <div class="card-header collapsible-header">CODEX VAULT</div>
+            <div class="card-content">
+                <ul id="codex-vault-list">
+                    <!-- Li elements populated by JS -->
+                </ul>
             </div>
         </div>
     </div>
 
-    <script>
-        const SRD_DATA = {
-            // Data will be injected here
-        };
-
-        const CodexEngine = {
-            // Engine logic will be injected here
-        };
-
-        const App = {
-            // App logic will be injected here
-        };
-        
-        // This is where the massive data objects and logic will go.
-        // To keep the initial HTML clean, it's all appended below.
-    </script>
-    <script>
-    // SRD DATA OBJECT
-    const srd_data_string = `
-    {
-        "motivations": {
-            "0": "Discovery", "1": "Absolution", "2": "Ambition", "3": "Security", "4": "Legacy",
-            "5": "Innovation", "6": "Purity", "7": "Glory", "8": "Influence", "9": "Faith"
-        },
-        "civilSystems": {
-            "S0": "Food", "S1": "Water", "S2": "Shelter", "S3": "Infrastructure", "S4": "Humanitarian",
-            "S5": "Education", "S6": "Healthcare", "S7": "Government", "S8": "Commerce", "S9": "Military"
-        },
-        "stats": {
-            "M": "Movement", "A": "Alacrity", "B": "Brawn", "W": "Wit", "E": "Expertise",
-            "T": "Technique", "P": "Power", "I": "Influence", "F": "Force"
-        },
-        "statOrder": ["M", "A", "B", "W", "E", "T", "P", "I", "F"],
-        "colors": {
-            "0": {"name": "Null", "hex": "#dea193"}, "1": {"name": "Silver", "hex": "#a7a9ac"},
-            "2": {"name": "Yellow", "hex": "#f5d36c"}, "3": {"name": "Green", "hex": "#688d4c"},
-            "4": {"name": "Black", "hex": "#414042"}, "5": {"name": "Orange", "hex": "#f7855d"},
-            "6": {"name": "White", "hex": "#e3e1da"}, "7": {"name": "Red", "hex": "#a95b5a"},
-            "8": {"name": "Blue", "hex": "#88bfe8"}, "9": {"name": "Purple", "hex": "#957fa3"}
-        },
-        "tags": {
-            "boosts": {
-                "04": "Liberate", "14": "Augment", "24": "Haste", "34": "Ward", "44": "Bless",
-                "54": "Charge", "64": "Cure", "74": "Regen", "84": "Enhance", "94": "Obscure"
-            },
-            "statuses": {
-                "05": "Mark", "15": "Impair", "25": "Slow", "35": "Daze", "45": "Curse",
-                "55": "Bind", "65": "Weaken", "75": "Blight", "85": "Silence", "95": "Nullify"
-            }
-        },
-        "keywords": {
-            "00": {"name": "Restricted", "category": "flaw", "color": "0"},
-            "01": {"name": "Aura", "category": "gift", "color": "0", "options": null},
-            "02": {"name": "Specialist", "category": "talent", "color": "0", "options": null},
-            "03": {"name": "Alert", "category": "quirk", "color": "0", "options": null},
-            "04": {"name": "Liberate", "category": "boost", "color": "0", "options": null},
-            "05": {"name": "Mark", "category": "status", "color": "0", "options": null},
-            "06": {"name": "Indirect", "category": "form", "color": "0", "options": null},
-            "07": {"name": "Adaptive", "category": "modifier", "color": "0", "options": null},
-            "08": {"name": "Gamble", "category": "drive", "color": "0", "options": null},
-            "09": {"name": "Edit", "category": "unique", "color": "0", "options": null},
-            "10": {"name": "Bane", "category": "flaw", "color": "1"},
-            "11": {"name": "Traveller", "category": "gift", "color": "1", "options": ["Walk", "Teleport", "Fly", "Dig", "Permeation", "Jump", "Parkour", "Climb", "Swim", "Lightfoot"]},
-            "12": {"name": "Martial", "category": "talent", "color": "1", "options": null},
-            "13": {"name": "Attuned", "category": "quirk", "color": "1", "options": null},
-            "14": {"name": "Augment", "category": "boost", "color": "1", "options": null},
-            "15": {"name": "Impair", "category": "status", "color": "1", "options": null},
-            "16": {"name": "Reactive", "category": "form", "color": "1", "options": null},
-            "17": {"name": "Phasing", "category": "modifier", "color": "1", "options": null},
-            "18": {"name": "Brutal", "category": "drive", "color": "1", "options": null},
-            "19": {"name": "Translocate", "category": "unique", "color": "1", "options": null},
-            "20": {"name": "Anxious", "category": "flaw", "color": "2"},
-            "21": {"name": "Acrobatic", "category": "gift", "color": "2", "options": null},
-            "22": {"name": "Sentry", "category": "talent", "color": "2", "options": null},
-            "23": {"name": "Eidetic", "category": "quirk", "color": "2", "options": null},
-            "24": {"name": "Haste", "category": "boost", "color": "2", "options": null},
-            "25": {"name": "Slow", "category": "status", "color": "2", "options": null},
-            "26": {"name": "Snap", "category": "form", "color": "2", "options": null},
-            "27": {"name": "Condense", "category": "modifier", "color": "2", "options": null},
-            "28": {"name": "Rapid", "category": "drive", "color": "2", "options": null},
-            "29": {"name": "Reckless", "category": "unique", "color": "2", "options": null},
-            "30": {"name": "Hesitant", "category": "flaw", "color": "3"},
-            "31": {"name": "Sturdy", "category": "gift", "color": "3", "options": null},
-            "32": {"name": "Brawler", "category": "talent", "color": "3", "options": null},
-            "33": {"name": "Stubborn", "category": "quirk", "color": "3", "options": null},
-            "34": {"name": "Ward", "category": "boost", "color": "3", "options": null},
-            "35": {"name": "Daze", "category": "status", "color": "3", "options": null},
-            "36": {"name": "Sculpt", "category": "form", "color": "3", "options": null},
-            "37": {"name": "Defensive", "category": "modifier", "color": "3", "options": null},
-            "38": {"name": "Impact", "category": "drive", "color": "3", "options": null},
-            "39": {"name": "Shift", "category": "unique", "color": "3", "options": null},
-            "40": {"name": "Feeble", "category": "flaw", "color": "4"},
-            "41": {"name": "Survivor", "category": "gift", "color": "4", "options": null},
-            "42": {"name": "Stoic", "category": "talent", "color": "4", "options": null},
-            "43": {"name": "Ageless", "category": "quirk", "color": "4", "options": null},
-            "44": {"name": "Bless", "category": "boost", "color": "4", "options": null},
-            "45": {"name": "Curse", "category": "status", "color": "4", "options": null},
-            "46": {"name": "Piercing", "category": "form", "color": "4", "options": null},
-            "47": {"name": "Flux", "category": "modifier", "color": "4", "options": null},
-            "48": {"name": "Siphon", "category": "drive", "color": "4", "options": null},
-            "49": {"name": "Animate", "category": "unique", "color": "4", "options": null},
-            "50": {"name": "Gremlins", "category": "flaw", "color": "5"},
-            "51": {"name": "Sensor", "category": "gift", "color": "5", "options": ["Karma", "Keywords", "Echolocation", "Vibration", "Energy", "Materials", "Life", "Infrared", "Emotion", "The Weave"]},
-            "52": {"name": "Improvisor", "category": "talent", "color": "5", "options": null},
-            "53": {"name": "Crafty", "category": "quirk", "color": "5", "options": null},
-            "54": {"name": "Charge", "category": "boost", "color": "5", "options": null},
-            "55": {"name": "Bind", "category": "status", "color": "5", "options": null},
-            "56": {"name": "Imbue", "category": "form", "color": "5", "options": null},
-            "57": {"name": "Material", "category": "modifier", "color": "5", "options": null},
-            "58": {"name": "Leverage", "category": "drive", "color": "5", "options": null},
-            "59": {"name": "Manifest", "category": "unique", "color": "5", "options": null},
-            "60": {"name": "Vulnerable", "category": "flaw", "color": "6"},
-            "61": {"name": "Tolerant", "category": "gift", "color": "6", "options": null},
-            "62": {"name": "Deadeye", "category": "talent", "color": "6", "options": null},
-            "63": {"name": "Immunized", "category": "quirk", "color": "6", "options": null},
-            "64": {"name": "Cure", "category": "boost", "color": "6", "options": null},
-            "65": {"name": "Weaken", "category": "status", "color": "6", "options": null},
-            "66": {"name": "Sticky", "category": "form", "color": "6", "options": null},
-            "67": {"name": "Restore", "category": "modifier", "color": "6", "options": null},
-            "68": {"name": "Exploit", "category": "drive", "color": "6", "options": null},
-            "69": {"name": "Growth", "category": "unique", "color": "6", "options": null},
-            "70": {"name": "Limited", "category": "flaw", "color": "7"},
-            "71": {"name": "Resilient", "category": "gift", "color": "7", "options": ["HP", "SP", "EP"]},
-            "72": {"name": "Font", "category": "talent", "color": "7", "options": null},
-            "73": {"name": "Insulated", "category": "quirk", "color": "7", "options": null},
-            "74": {"name": "Regen", "category": "boost", "color": "7", "options": null},
-            "75": {"name": "Blight", "category": "status", "color": "7", "options": null},
-            "76": {"name": "Area", "category": "form", "color": "7", "options": null},
-            "77": {"name": "Ranged", "category": "modifier", "color": "7", "options": null},
-            "78": {"name": "Multiply", "category": "drive", "color": "7", "options": null},
-            "79": {"name": "Split", "category": "unique", "color": "7", "options": null},
-            "80": {"name": "Awkward", "category": "flaw", "color": "8"},
-            "81": {"name": "Charismatic", "category": "gift", "color": "8", "options": null},
-            "82": {"name": "Leader", "category": "talent", "color": "8", "options": null},
-            "83": {"name": "Insightful", "category": "quirk", "color": "8", "options": null},
-            "84": {"name": "Enhance", "category": "boost", "color": "8", "options": null},
-            "85": {"name": "Silence", "category": "status", "color": "8", "options": null},
-            "86": {"name": "Splash", "category": "form", "color": "8", "options": null},
-            "87": {"name": "Lingering", "category": "modifier", "color": "8", "options": null},
-            "88": {"name": "Spread", "category": "drive", "color": "8", "options": null},
-            "89": {"name": "Potent", "category": "unique", "color": "8", "options": null},
-            "90": {"name": "Mundane", "category": "flaw", "color": "9"},
-            "91": {"name": "Aware", "category": "gift", "color": "9", "options": null},
-            "92": {"name": "Stealthy", "category": "talent", "color": "9", "options": null},
-            "93": {"name": "Trickster", "category": "quirk", "color": "9", "options": null},
-            "94": {"name": "Obscure", "category": "boost", "color": "9", "options": null},
-            "95": {"name": "Nullify", "category": "status", "color": "9", "options": null},
-            "96": {"name": "Chain", "category": "form", "color": "9", "options": null},
-            "97": {"name": "Natural", "category": "modifier", "color": "9", "options": null},
-            "98": {"name": "Ambience", "category": "drive", "color": "9", "options": null},
-            "99": {"name": "Channel", "category": "unique", "color": "9", "options": null}
-        }
-    }`;
-    
-    // Inject SRD_DATA
-    Object.assign(SRD_DATA, JSON.parse(srd_data_string));
-
-    // CODEX ENGINE
-    Object.assign(CodexEngine, {
-        parse(blueprintString) {
-            if (!blueprintString || typeof blueprintString !== 'string') return null;
-
-            const entities = blueprintString.split(';').map(s => s.trim()).filter(Boolean);
-            const parsedEntities = {};
-
-            entities.forEach(entityStr => {
-                const [prefix, data] = entityStr.split(/:(.+)/);
-                if (!data) return;
-
-                let parsed;
-                switch (prefix) {
-                    case 'C': parsed = this.parseCharacter(data); break;
-                    case 'A': parsed = this.parseAnimation(data); break;
-                    case 'I': parsed = this.parseItem(data); break;
-                    case 'F': parsed = this.parseFaction(data); break;
-                }
-                
-                if(parsed) {
-                    if (!parsedEntities[parsed.type]) parsedEntities[parsed.type] = [];
-                    parsedEntities[parsed.type].push(parsed);
-                }
-            });
-
-            return parsedEntities.Character ? parsedEntities.Character[0] : null; // For now, sheet focuses on the character
-        },
-
-        parseCharacter(data) {
-            const parsed = { type: 'Character', profile: '', flaw: null, keywords: [], statAllocs: [] };
-            let remainingData = data;
-
-            // Extract Profile
-            const profileMatch = remainingData.match(/^(\d{5})/);
-            if (profileMatch) {
-                parsed.profile = profileMatch[1];
-                remainingData = remainingData.substring(5);
-            }
-
-            // Extract Flaw
-            const flawMatch = remainingData.match(/^\+(\d{4})/);
-            if (flawMatch) {
-                const flawPart = flawMatch[1];
-                parsed.flaw = {
-                    flawCode: flawPart.substring(0, 2),
-                    compCode: flawPart.substring(2, 4),
-                };
-                remainingData = remainingData.substring(5); // remove + and 4 digits
-            }
-
-            // Process the rest of the progression string
-            const segments = remainingData.split('-').filter(Boolean);
-            segments.forEach(segment => {
-                const parts = segment.split('.').filter(Boolean);
-                parts.forEach(part => {
-                    if (SRD_DATA.stats[part]) {
-                        parsed.statAllocs.push(part);
-                    } else {
-                        const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
-                        if (kwMatch) {
-                            parsed.keywords.push({
-                                code: kwMatch[2],
-                                slotted: kwMatch[1] === '!',
-                                choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
-                            });
-                        }
-                    }
-                });
-            });
-
-            return parsed;
-        },
-        
-        parseAnimation(data) {
-            const parsed = { type: 'Animation', flaw: null, keywords: [] };
-            let remainingData = data;
-            
-             // Extract Flaw
-            const flawMatch = remainingData.match(/^\+(\d{4})/);
-            if (flawMatch) {
-                const flawPart = flawMatch[1];
-                parsed.flaw = {
-                    flawCode: flawPart.substring(0, 2),
-                    compCode: flawPart.substring(2, 4),
-                };
-                remainingData = remainingData.substring(5);
-            }
-
-            const parts = remainingData.split('.').filter(Boolean);
-            parts.forEach(part => {
-                const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
-                if (kwMatch) {
-                    parsed.keywords.push({
-                        code: kwMatch[2],
-                        slotted: kwMatch[1] === '!',
-                        choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
-                    });
-                }
-            });
-            return parsed;
-        },
-
-        parseItem(data) {
-            const parsed = { type: 'Item', level: 0, flaw: null, keywords: [] };
-            const levelMatch = data.match(/^L(\d)/);
-            if (!levelMatch) return parsed;
-            
-            parsed.level = parseInt(levelMatch[1], 10);
-            let remainingData = data.substring(2);
-
-            const flawMatch = remainingData.match(/^\+(\d{4})/);
-             if (flawMatch) {
-                const flawPart = flawMatch[1];
-                parsed.flaw = {
-                    flawCode: flawPart.substring(0, 2),
-                    compCode: flawPart.substring(2, 4),
-                };
-                remainingData = remainingData.substring(5);
-            }
-
-            const parts = remainingData.split('.').filter(Boolean);
-            parts.forEach(part => {
-                const kwMatch = part.match(/(!?)(\d{2})(?:\((\d+)\))?/);
-                if (kwMatch) {
-                    parsed.keywords.push({
-                        code: kwMatch[2],
-                        slotted: kwMatch[1] === '!',
-                        choice: kwMatch[3] ? parseInt(kwMatch[3], 10) : null
-                    });
-                }
-            });
-            return parsed;
-        },
-
-        parseFaction(data) {
-            const parsed = { type: 'Faction', profile: '', level: 0, systems: [], keywords: [] };
-            const parts = data.split('-');
-            if (parts.length > 0) parsed.profile = parts[0];
-            if (parts.length > 1) {
-                const levelMatch = parts[1].match(/L(\d)/);
-                if(levelMatch) parsed.level = parseInt(levelMatch[1], 10);
-            }
-            if (parts.length > 2) {
-                 const systemMatch = parts[2].match(/\[(.*?)\]/);
-                 if(systemMatch) parsed.systems = systemMatch[1].split('.').filter(Boolean);
-            }
-            if (parts.length > 3) {
-                const keywordMatch = parts[3].match(/\[(.*?)\]/);
-                if(keywordMatch) parsed.keywords = keywordMatch[1].split('.').filter(Boolean);
-            }
-            return parsed;
-        },
-
-
-        calculate(parsed) {
-            if (!parsed) return null;
-
-            const calc = {
-                level: 0,
-                stats: {},
-                resistance: 0,
-                maxHP: 10,
-                maxSP: 10,
-                maxEP: 10,
-                innatePassiveSlots: 0,
-                gearPassiveSlots: 0,
-                statPointsEarned: 0,
-                statPointsPerLevel: {}
-            };
-            
-            if (parsed.type === 'Animation') {
-                calc.level = parsed.keywords.length > 0 ? parsed.keywords.length - 1 : 0;
-                const statPoints = 9 + calc.level;
-                const baseStat = Math.floor(statPoints / 9);
-                let remainder = statPoints % 9;
-                SRD_DATA.statOrder.forEach(s => {
-                    calc.stats[s] = baseStat + (remainder-- > 0 ? 1 : 0);
-                });
-            } else { // Character logic
-                const kwCount = parsed.keywords.length;
-                if (kwCount === 0) calc.level = 0;
-                else if (kwCount >= 1 && kwCount <= 3) calc.level = 0;
-                else if (kwCount >= 4 && kwCount <= 5) calc.level = 1;
-                else if (kwCount > 5) {
-                    calc.level = Math.floor((kwCount - 4) / 2) + 1;
-                }
-
-                if (calc.level >= 2 && calc.level <= 5) {
-                    calc.statPointsEarned = calc.level - 1;
-                } else if (calc.level >= 6 && calc.level <= 9) {
-                    calc.statPointsEarned = 4 + (calc.level - 5) * 2;
-                }
-                
-                let points = 0;
-                for(let i=2; i<=9; i++) {
-                    if(i <= 5) points += 1;
-                    else points += 2;
-                    calc.statPointsPerLevel[i] = points;
-                }
-
-                const baseStat = calc.level === 0 ? 1 : 2;
-                SRD_DATA.statOrder.forEach(s => calc.stats[s] = baseStat);
-                
-                parsed.statAllocs.forEach(s => {
-                    if (calc.stats[s] < 5) {
-                        calc.stats[s]++;
-                    }
-                });
-            }
-
-            const statValues = Object.values(calc.stats).sort((a, b) => b - a);
-            calc.resistance = statValues[0] + statValues[1] + statValues[2];
-
-            parsed.keywords.forEach(kw => {
-                if (kw.code === '71' && kw.choice !== null) { // Resilient
-                    const choiceMap = {0: 'maxHP', 1: 'maxSP', 2: 'maxEP'};
-                    calc[choiceMap[kw.choice]] += 5;
-                }
-                 if (kw.code === '70' && kw.choice !== null) { // Limited
-                    const choiceMap = {0: 'maxHP', 1: 'maxSP', 2: 'maxEP'};
-                    calc[choiceMap[kw.choice]] -= 5;
-                }
-            });
-
-            calc.innatePassiveSlots = calc.stats.F || 0;
-            calc.gearPassiveSlots = calc.stats.E || 0;
-            
-            return calc;
-        },
-
-        stringify(parsed) {
-            if (!parsed) return '';
-
-            let str = 'C:';
-            str += parsed.profile;
-
-            if (parsed.flaw) {
-                str += `+${parsed.flaw.flawCode}${parsed.flaw.compCode}`;
-            }
-
-            let kwIndex = 0;
-            let statIndex = 0;
-            
-            // Seed
-            if (kwIndex < parsed.keywords.length) {
-                str += `-${this.stringifyKeyword(parsed.keywords[kwIndex++])}`;
-            }
-
-            // Awakening
-            if (kwIndex < parsed.keywords.length) {
-                let awakeningSegment = '';
-                for (let i = 0; i < 3 && kwIndex < parsed.keywords.length; i++) {
-                    awakeningSegment += (i > 0 ? '.' : '') + this.stringifyKeyword(parsed.keywords[kwIndex++]);
-                }
-                if (awakeningSegment) str += `-${awakeningSegment}`;
-            }
-            
-            // Progression
-            for (let level = 2; level <= 9; level++) {
-                if (kwIndex >= parsed.keywords.length && statIndex >= parsed.statAllocs.length) break;
-                
-                let levelSegment = '';
-                let partsInSegment = 0;
-                
-                // Keywords for this level
-                if(kwIndex < parsed.keywords.length) {
-                     levelSegment += this.stringifyKeyword(parsed.keywords[kwIndex++]);
-                     partsInSegment++;
-                }
-                if (kwIndex < parsed.keywords.length) {
-                     levelSegment += '.' + this.stringifyKeyword(parsed.keywords[kwIndex++]);
-                     partsInSegment++;
-                }
-                
-                // Stat points for this level
-                const pointsThisLevel = (level <= 5) ? 1 : 2;
-                for(let i = 0; i < pointsThisLevel && statIndex < parsed.statAllocs.length; i++) {
-                     if(partsInSegment > 0) levelSegment += '.';
-                     levelSegment += parsed.statAllocs[statIndex++];
-                     partsInSegment++;
-                }
-
-                if (levelSegment) str += `-${levelSegment}`;
-            }
-
-            return str;
-        },
-        
-        stringifyKeyword(kw) {
-            let s = '';
-            if (kw.slotted) s += '!';
-            s += kw.code;
-            if (kw.choice !== null && kw.choice !== undefined) s += `(${kw.choice})`;
-            return s;
-        },
-
-    });
-
-    // APP LOGIC
-    Object.assign(App, {
-        db: {
-            entities: {},
-            currentEntityId: null,
-        },
-        state: {
-            parsed: null,
-            calculated: null,
-        },
-        dom: {},
-
-        init() {
-            this.selectElements();
-            this.populateSelectors();
-            this.bindEvents();
-            this.loadDatabase();
-            this.renderCharacterSheet();
-        },
-
-        selectElements() {
-            this.dom.appContainer = document.getElementById('app-container');
-            // Global
-            this.dom.entitySelector = document.getElementById('entity-selector');
-            this.dom.addEntityBtn = document.getElementById('add-entity-btn');
-            this.dom.importEntityBtn = document.getElementById('import-entity-btn');
-            this.dom.deleteEntityBtn = document.getElementById('delete-entity-btn');
-            this.dom.randomEntityBtn = document.getElementById('random-entity-btn');
-            // Dice Roller
-            this.dom.rollSrBtn = document.getElementById('roll-sr-btn');
-            this.dom.rollEvBtn = document.getElementById('roll-ev-btn');
-            this.dom.diceMain = document.getElementById('dice-roller-main');
-            this.dom.diceLucky = document.getElementById('dice-roller-lucky');
-            this.dom.diceTotal = document.getElementById('dice-roller-total');
-            this.dom.diceCrit = document.getElementById('dice-roller-crit-indicator');
-            this.dom.diceStatSelector = document.getElementById('dice-roller-stat-selector');
-            // Build Pane
-            this.dom.characterNameInput = document.getElementById('character-name-input');
-            this.dom.levelDisplay = document.getElementById('character-level-display');
-            this.dom.karmaValue = document.getElementById('karma-value');
-            this.dom.karmaIncBtn = document.getElementById('karma-inc-btn');
-            this.dom.karmaDecBtn = document.getElementById('karma-dec-btn');
-            this.dom.profileGoal = document.getElementById('profile-goal');
-            this.dom.profileMethod = document.getElementById('profile-method');
-            this.dom.profilePurpose = document.getElementById('profile-purpose');
-            this.dom.profileExternal = document.getElementById('profile-external');
-            this.dom.profileInternal = document.getElementById('profile-internal');
-            // Stats
-            SRD_DATA.statOrder.forEach(s => {
-                this.dom[`stat${s}`] = document.getElementById(`stat-${s.toLowerCase()}`);
-            });
-            this.dom.resistanceValue = document.getElementById('resistance-value');
-            // Resources
-            this.dom.hpDisplay = document.getElementById('hp-display');
-            this.dom.spDisplay = document.getElementById('sp-display');
-            this.dom.epDisplay = document.getElementById('ep-display');
-            this.dom.hpPips = document.querySelector('#hp-clock .pips');
-            this.dom.spPips = document.querySelector('#sp-clock .pips');
-            this.dom.epPips = document.querySelector('#ep-clock .pips');
-            // Keywords
-            this.dom.addKeywordSelector = document.getElementById('add-keyword-selector');
-            this.dom.addKeywordBtn = document.getElementById('add-keyword-btn');
-            this.dom.removeKeywordBtn = document.getElementById('remove-keyword-btn');
-            this.dom.innateKeywordsList = document.getElementById('innate-keywords-list');
-            this.dom.innatePassivesCount = document.getElementById('innate-passives-count');
-            this.dom.statProgressionList = document.getElementById('stat-progression-list');
-            // Blueprint
-            this.dom.liveBlueprintTextarea = document.getElementById('live-blueprint-textarea');
-            // Play Pane
-            this.dom.playPaneTabs = document.getElementById('play-pane-tabs');
-            this.dom.tabContents = document.querySelectorAll('.tab-content');
-            // Tags
-            this.dom.addBoostTagSelector = document.getElementById('add-boost-tag-selector');
-            this.dom.addBoostTagBtn = document.getElementById('add-boost-tag-btn');
-            this.dom.boostTagList = document.getElementById('boost-tag-list');
-            this.dom.boostTagPoolCount = document.getElementById('boost-tag-pool-count');
-            this.dom.addStatusTagSelector = document.getElementById('add-status-tag-selector');
-            this.dom.addStatusTagBtn = document.getElementById('add-status-tag-btn');
-            this.dom.statusTagList = document.getElementById('status-tag-list');
-            this.dom.statusTagPoolCount = document.getElementById('status-tag-pool-count');
-            // Inventory
-            this.dom.addInventoryItemBtn = document.getElementById('add-inventory-item-btn');
-            this.dom.inventoryList = document.getElementById('inventory-list');
-            this.dom.gearPassivesCount = document.getElementById('gear-passives-count');
-            //Companions
-            this.dom.addCompanionBtn = document.getElementById('add-companion-btn');
-            this.dom.companionList = document.getElementById('companion-list');
-            //Factions
-            this.dom.addFactionBtn = document.getElementById('add-faction-btn');
-            this.dom.factionList = document.getElementById('faction-list');
-        },
-
-        populateSelectors() {
-            // Keywords
-            Object.entries(SRD_DATA.keywords).forEach(([code, kw]) => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.textContent = `${code}: ${kw.name}`;
-                this.dom.addKeywordSelector.appendChild(option);
-            });
-            // Tags
-            Object.entries(SRD_DATA.tags.boosts).forEach(([code, name]) => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                this.dom.addBoostTagSelector.appendChild(option);
-            });
-            Object.entries(SRD_DATA.tags.statuses).forEach(([code, name]) => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                this.dom.addStatusTagSelector.appendChild(option);
-            });
-            // Stats for dice roller
-            Object.entries(SRD_DATA.stats).forEach(([code, name]) => {
-                const option = document.createElement('option');
-                option.value = code;
-                option.textContent = name;
-                this.dom.diceStatSelector.appendChild(option);
-            })
-        },
-
-        bindEvents() {
-            // Global
-            this.dom.entitySelector.addEventListener('change', () => this.handleSelectEntity());
-            this.dom.addEntityBtn.addEventListener('click', () => this.handleAddEntity());
-            this.dom.importEntityBtn.addEventListener('click', () => this.handleImportEntity());
-            this.dom.deleteEntityBtn.addEventListener('click', () => this.handleDeleteEntity());
-            this.dom.randomEntityBtn.addEventListener('click', () => this.handleRandomEntity());
-            
-            // Dice Roller
-            this.dom.rollSrBtn.addEventListener('click', () => this.rollSR());
-            this.dom.rollEvBtn.addEventListener('click', () => this.rollEV());
-
-            // Name & Blueprint
-            this.dom.characterNameInput.addEventListener('input', (e) => this.handleNameChange(e.target.value));
-            this.dom.liveBlueprintTextarea.addEventListener('input', (e) => this.handleBlueprintChange(e.target.value));
-            
-            // Karma
-            this.dom.karmaIncBtn.addEventListener('click', () => this.updateKarma(1));
-            this.dom.karmaDecBtn.addEventListener('click', () => this.updateKarma(-1));
-            
-            // Keywords
-            this.dom.addKeywordBtn.addEventListener('click', () => this.handleAddKeyword());
-            this.dom.removeKeywordBtn.addEventListener('click', () => this.handleRemoveKeyword());
-            
-            // Resources
-            this.dom.hpPips.addEventListener('click', (e) => this.handlePipClick(e, 'hp'));
-            this.dom.spPips.addEventListener('click', (e) => this.handlePipClick(e, 'sp'));
-            this.dom.epPips.addEventListener('click', (e) => this.handlePipClick(e, 'ep'));
-
-            // Play Pane Tabs
-            this.dom.playPaneTabs.addEventListener('click', (e) => this.handleTabClick(e));
-
-            // Tags
-            this.dom.addBoostTagBtn.addEventListener('click', () => this.handleAddTag('boost'));
-            this.dom.addStatusTagBtn.addEventListener('click', () => this.handleAddTag('status'));
-            
-            // Inventory
-            this.dom.addInventoryItemBtn.addEventListener('click', () => this.handleAddItem());
-            // Companions
-            this.dom.addCompanionBtn.addEventListener('click', () => this.handleAddCompanion());
-            // Factions
-            this.dom.addFactionBtn.addEventListener('click', () => this.handleAddFaction());
-        },
-
-        // --- Event Handlers ---
-        handleSelectEntity() {
-            this.db.currentEntityId = this.dom.entitySelector.value;
-            this.saveDatabase();
-            this.renderCharacterSheet();
-        },
-        
-        handleAddEntity() {
-            const name = prompt("Enter new character name:", "New Agent");
-            if (!name) return;
-            const id = `entity_${Date.now()}`;
-            this.db.entities[id] = {
-                id: id,
-                name: name,
-                blueprint: "C:00000-01",
-                runtime: this.getNewRuntimeState()
-            };
-            this.db.currentEntityId = id;
-            this.updateEntitySelector();
-            this.saveDatabase();
-            this.renderCharacterSheet();
-        },
-        
-        handleImportEntity() {
-            const bp = prompt("Paste blueprint string:");
-            if (!bp) return;
-            const currentEntity = this.getCurrentEntity();
-            if(currentEntity) {
-                currentEntity.blueprint = bp.trim();
-                this.saveDatabase();
-                this.renderCharacterSheet();
-            }
-        },
-        
-        handleDeleteEntity() {
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity || !confirm(`Are you sure you want to delete "${currentEntity.name}"?`)) return;
-            
-            delete this.db.entities[currentEntity.id];
-            const remainingIds = Object.keys(this.db.entities);
-            this.db.currentEntityId = remainingIds.length > 0 ? remainingIds[0] : null;
-            
-            this.updateEntitySelector();
-            this.saveDatabase();
-            this.renderCharacterSheet();
-        },
-        
-        handleRandomEntity() {
-            const type = prompt("Generate what type? (character, animation, item, faction)", "character")?.toLowerCase();
-            const levelStr = prompt("Enter target level (0-9):", "1");
-            const level = parseInt(levelStr, 10);
-            
-            if (!type || isNaN(level)) return;
-            
-            let blueprint = this.generateRandomBlueprint(type, level);
-            if (blueprint) {
-                const currentEntity = this.getCurrentEntity();
-                 if(currentEntity) {
-                    currentEntity.blueprint = blueprint;
-                    this.saveDatabase();
-                    this.renderCharacterSheet();
-                 } else {
-                     alert("Create a character first to apply the random blueprint.");
-                 }
-            } else {
-                alert("Invalid type for random generation.");
-            }
-        },
-
-        handleNameChange(newName) {
-            const currentEntity = this.getCurrentEntity();
-            if (currentEntity) {
-                currentEntity.name = newName;
-                this.dom.entitySelector.querySelector(`option[value="${currentEntity.id}"]`).textContent = newName;
-                this.saveDatabase();
-            }
-        },
-
-        handleBlueprintChange(newBlueprint) {
-            const currentEntity = this.getCurrentEntity();
-            if (currentEntity) {
-                currentEntity.blueprint = newBlueprint.trim();
-                // A small delay to allow typing before re-rendering
-                setTimeout(() => {
-                    this.saveDatabase();
-                    this.renderCharacterSheet();
-                }, 500);
-            }
-        },
-        
-        updateKarma(delta) {
-            const currentEntity = this.getCurrentEntity();
-            if(currentEntity) {
-                currentEntity.runtime.karma = Math.max(0, currentEntity.runtime.karma + delta);
-                this.dom.karmaValue.textContent = currentEntity.runtime.karma;
-                this.saveDatabase();
-            }
-        },
-
-        handleAddKeyword() {
-            const code = this.dom.addKeywordSelector.value;
-            if (!code || !this.state.parsed) return;
-            
-            const kwData = SRD_DATA.keywords[code];
-            const newKw = { code: code, slotted: false, choice: null };
-            
-            if(kwData.category === 'flaw') {
-                const compCode = prompt("Enter the 2-digit code for the Compensation keyword:");
-                if(!compCode || compCode.length !== 2 || isNaN(parseInt(compCode, 10))) {
-                    alert("Invalid compensation code.");
-                    return;
-                }
-                this.state.parsed.flaw = { flawCode: code, compCode: compCode };
-            } else {
-                if(this.state.parsed.keywords.length >= 20) {
-                    alert("Maximum of 20 keywords reached.");
-                    return;
-                }
-                this.state.parsed.keywords.push(newKw);
-            }
-
-            this.updateBlueprintFromState();
-        },
-
-        handleRemoveKeyword() {
-            if (!this.state.parsed || this.state.parsed.keywords.length === 0) return;
-            if (!confirm("Remove the last added keyword?")) return;
-
-            this.state.parsed.keywords.pop();
-            this.updateBlueprintFromState();
-        },
-
-        handlePipClick(event, resource) {
-            if (!event.target.classList.contains('pip')) return;
-
-            const pips = Array.from(event.currentTarget.children);
-            const index = pips.indexOf(event.target);
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-
-            const currentValue = currentEntity.runtime[resource].current;
-            const newValue = (currentValue === index + 1) ? index : index + 1;
-            
-            currentEntity.runtime[resource].current = newValue;
-            this.saveDatabase();
-            this.renderResources();
-        },
-
-        handleTabClick(event) {
-            if (!event.target.classList.contains('tab-button')) return;
-
-            this.dom.playPaneTabs.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            this.dom.tabContents.forEach(content => content.classList.add('hidden'));
-            const tabId = `tab-content-${event.target.dataset.tab}`;
-            document.getElementById(tabId)?.classList.remove('hidden');
-        },
-        
-        handleAddTag(type) {
-            const selector = type === 'boost' ? this.dom.addBoostTagSelector : this.dom.addStatusTagSelector;
-            const tagName = selector.value;
-            if(!tagName) return;
-
-            const currentEntity = this.getCurrentEntity();
-            if(!currentEntity) return;
-
-            const pool = currentEntity.runtime.tags[type + 's'];
-            const totalInPool = Object.values(pool).reduce((sum, tag) => sum + tag.quantity, 0);
-
-            if (totalInPool >= 10) {
-                alert(`Maximum of 10 ${type} tags reached.`);
-                return;
-            }
-
-            if(pool[tagName]) {
-                if(pool[tagName].quantity < 5) {
-                    pool[tagName].quantity++;
-                } else {
-                     alert(`Maximum of 5 stacks for ${tagName}.`);
-                }
-            } else {
-                pool[tagName] = { name: tagName, quantity: 1 };
-            }
-
-            this.saveDatabase();
-            this.renderTags();
-        },
-        
-        handleTagQuantityChange(type, tagName, delta) {
-             const currentEntity = this.getCurrentEntity();
-             if(!currentEntity) return;
-             const pool = currentEntity.runtime.tags[type + 's'];
-             
-             if(pool[tagName]) {
-                 pool[tagName].quantity += delta;
-                 if(pool[tagName].quantity <= 0) {
-                     delete pool[tagName];
-                 }
-                 this.saveDatabase();
-                 this.renderTags();
-             }
-        },
-
-        handleAddItem() {
-            const blueprint = prompt("Enter item blueprint string (e.g., I:L2-38.58):");
-            if (!blueprint) return;
-            
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-
-            const newItem = {
-                id: `item_${Date.now()}`,
-                name: "New Item",
-                blueprint: blueprint
-            };
-            currentEntity.runtime.inventory.push(newItem);
-            this.saveDatabase();
-            this.renderInventory();
-        },
-        
-        handleItemChange(itemId, field, value) {
-             const currentEntity = this.getCurrentEntity();
-             if (!currentEntity) return;
-             const item = currentEntity.runtime.inventory.find(i => i.id === itemId);
-             if (item) {
-                 item[field] = value;
-                 this.saveDatabase();
-                 if(field === 'blueprint') this.renderInventory();
-             }
-        },
-
-        handleDeleteItem(itemId) {
-            if(!confirm("Delete this item?")) return;
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-            currentEntity.runtime.inventory = currentEntity.runtime.inventory.filter(i => i.id !== itemId);
-            this.saveDatabase();
-            this.renderInventory();
-        },
-        
-        handleCompanionChange(compId, field, value) {
-             const currentEntity = this.getCurrentEntity();
-             if (!currentEntity) return;
-             const comp = currentEntity.runtime.companions.find(c => c.id === compId);
-             if (comp) {
-                 comp[field] = value;
-                 this.saveDatabase();
-                 if(field === 'blueprint') this.renderCompanions();
-             }
-        },
-        
-        handleDeleteCompanion(compId) {
-            if(!confirm("Delete this companion?")) return;
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-            currentEntity.runtime.companions = currentEntity.runtime.companions.filter(c => c.id !== compId);
-            this.saveDatabase();
-            this.renderCompanions();
-        },
-
-        handleAddCompanion() {
-            const blueprint = prompt("Enter companion blueprint string (e.g., A:21.22):");
-            if (!blueprint) return;
-            
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-
-            const newComp = {
-                id: `comp_${Date.now()}`,
-                name: "New Companion",
-                blueprint: blueprint
-            };
-            currentEntity.runtime.companions.push(newComp);
-            this.saveDatabase();
-            this.renderCompanions();
-        },
-        
-        handleAddFaction() {
-            const blueprint = prompt("Enter faction blueprint string (e.g., F:03817-L3[S0.S2.S3]-[K01.12...]):");
-            if (!blueprint) return;
-            
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-
-            const newFact = {
-                id: `fact_${Date.now()}`,
-                name: "New Faction",
-                blueprint: blueprint,
-                trust: "Neutral"
-            };
-            currentEntity.runtime.factions.push(newFact);
-            this.saveDatabase();
-            this.renderFactions();
-        },
-        
-        handleFactionChange(factId, field, value) {
-             const currentEntity = this.getCurrentEntity();
-             if (!currentEntity) return;
-             const fact = currentEntity.runtime.factions.find(f => f.id === factId);
-             if (fact) {
-                 fact[field] = value;
-                 this.saveDatabase();
-                 if(field === 'blueprint') this.renderFactions();
-             }
-        },
-        
-        handleDeleteFaction(factId) {
-            if(!confirm("Delete this faction?")) return;
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-            currentEntity.runtime.factions = currentEntity.runtime.factions.filter(f => f.id !== factId);
-            this.saveDatabase();
-            this.renderFactions();
-        },
-
-        updateBlueprintFromState() {
-            const newBlueprint = CodexEngine.stringify(this.state.parsed);
-            const currentEntity = this.getCurrentEntity();
-            if (currentEntity && newBlueprint) {
-                currentEntity.blueprint = newBlueprint;
-                this.saveDatabase();
-                this.renderCharacterSheet();
-            }
-        },
-        
-        // --- Rendering ---
-        renderCharacterSheet() {
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) {
-                this.dom.appContainer.classList.add('hidden');
-                return;
-            }
-            this.dom.appContainer.classList.remove('hidden');
-
-            this.state.parsed = CodexEngine.parse(currentEntity.blueprint);
-            this.state.calculated = CodexEngine.calculate(this.state.parsed);
-            
-            if (!this.state.parsed || !this.state.calculated) {
-                console.error("Failed to parse or calculate blueprint:", currentEntity.blueprint);
-                this.dom.liveBlueprintTextarea.style.borderColor = 'red';
-                return;
-            }
-             this.dom.liveBlueprintTextarea.style.borderColor = '';
-
-            // Render all sections
-            this.dom.characterNameInput.value = currentEntity.name;
-            this.dom.liveBlueprintTextarea.value = currentEntity.blueprint;
-            this.dom.levelDisplay.textContent = `Lvl ${this.state.calculated.level}`;
-            this.dom.karmaValue.textContent = currentEntity.runtime.karma;
-
-            this.renderProfile();
-            this.renderStats();
-            this.renderResources();
-            this.renderKeywordsAndProgression();
-            this.renderTags();
-            this.renderInventory();
-            this.renderCompanions();
-            this.renderFactions();
-        },
-
-        renderProfile() {
-            const { profile } = this.state.parsed;
-            const motivations = SRD_DATA.motivations;
-            const colors = SRD_DATA.colors;
-
-            const goal = profile[0] ? motivations[profile[0]] : '--';
-            const method = profile[1] ? motivations[profile[1]] : '--';
-            const purpose = profile[2] ? motivations[profile[2]] : '--';
-            const external = profile[3] ? motivations[profile[3]] : '--';
-            const internal = profile[4] ? motivations[profile[4]] : '--';
-
-            const getColor = (code) => {
-                 const colorMap = {'0':'0', '1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9'};
-                 return colors[colorMap[code]]?.hex || 'var(--silver-color)';
-            }
-            
-            this.dom.profileGoal.textContent = goal;
-            this.dom.profileGoal.style.borderColor = getColor(profile[0]);
-            this.dom.profileMethod.textContent = method;
-            this.dom.profileMethod.style.borderColor = getColor(profile[1]);
-            this.dom.profilePurpose.textContent = purpose;
-            this.dom.profilePurpose.style.borderColor = getColor(profile[2]);
-            this.dom.profileExternal.textContent = external;
-            this.dom.profileExternal.style.borderColor = getColor(profile[3]);
-            this.dom.profileInternal.textContent = internal;
-            this.dom.profileInternal.style.borderColor = getColor(profile[4]);
-        },
-
-        renderStats() {
-            const { stats, resistance } = this.state.calculated;
-            SRD_DATA.statOrder.forEach(s => {
-                this.dom[`stat${s}`].textContent = stats[s];
-            });
-            this.dom.resistanceValue.textContent = resistance;
-        },
-
-        renderResources() {
-            const { maxHP, maxSP, maxEP } = this.state.calculated;
-            const currentEntity = this.getCurrentEntity();
-            if(!currentEntity) return;
-
-            const {hp, sp, ep} = currentEntity.runtime;
-            
-            this.dom.hpDisplay.textContent = `${hp.current}/${maxHP}`;
-            this.dom.spDisplay.textContent = `${sp.current}/${maxSP}`;
-            this.dom.epDisplay.textContent = `${ep.current}/${maxEP}`;
-
-            const renderPips = (container, current, max) => {
-                container.innerHTML = '';
-                for (let i = 0; i < max; i++) {
-                    const pip = document.createElement('div');
-                    pip.className = 'pip';
-                    if (i < current) pip.classList.add('filled');
-                    container.appendChild(pip);
-                }
-            };
-
-            renderPips(this.dom.hpPips, hp.current, maxHP);
-            renderPips(this.dom.spPips, sp.current, maxSP);
-            renderPips(this.dom.epPips, ep.current, maxEP);
-        },
-        
-        renderKeywordsAndProgression() {
-            this.dom.innateKeywordsList.innerHTML = '';
-            const { keywords, flaw } = this.state.parsed;
-            const { innatePassiveSlots } = this.state.calculated;
-            
-            let slottedCount = 0;
-            keywords.forEach((kw, index) => {
-                if(kw.slotted) slottedCount++;
-                const kwData = SRD_DATA.keywords[kw.code];
-                if(!kwData) return;
-                
-                const li = document.createElement('li');
-                li.className = 'keyword-item';
-
-                const toggle = document.createElement('div');
-                toggle.className = 'keyword-toggle';
-                if(kw.slotted) toggle.classList.add('slotted');
-                toggle.addEventListener('click', () => {
-                    const currentSlotted = this.state.parsed.keywords.filter(k=>k.slotted).length;
-                    if(!kw.slotted && currentSlotted >= innatePassiveSlots) {
-                        alert('No more innate passive slots available.');
-                        return;
-                    }
-                    kw.slotted = !kw.slotted;
-                    this.updateBlueprintFromState();
-                });
-                
-                const nameSpan = document.createElement('span');
-                let nameText = `${kw.code}: ${kwData.name}`;
-                if (flaw && kw.code === flaw.compCode) {
-                    nameText += ` (Comp.)`;
-                }
-                nameSpan.textContent = nameText;
-                
-                li.appendChild(toggle);
-                li.appendChild(nameSpan);
-
-                if (kwData.options) {
-                    const select = document.createElement('select');
-                    kwData.options.forEach((opt, optIndex) => {
-                        const option = document.createElement('option');
-                        option.value = optIndex;
-                        option.textContent = opt;
-                        if (kw.choice === optIndex) option.selected = true;
-                        select.appendChild(option);
-                    });
-                    select.addEventListener('change', (e) => {
-                       kw.choice = parseInt(e.target.value, 10);
-                       this.updateBlueprintFromState();
-                    });
-                    li.appendChild(select);
-                }
-
-                this.dom.innateKeywordsList.appendChild(li);
-            });
-            
-            if(flaw) {
-                 const li = document.createElement('li');
-                 li.className = 'keyword-item';
-                 li.innerHTML = `<span></span><span>${flaw.flawCode}: ${SRD_DATA.keywords[flaw.flawCode].name} (Flaw)</span>`;
-                 this.dom.innateKeywordsList.prepend(li);
-            }
-            
-            this.dom.innatePassivesCount.textContent = `${slottedCount}/${innatePassiveSlots}`;
-            
-            // Stat Progression UI
-            this.dom.statProgressionList.innerHTML = '';
-            const { statPointsEarned } = this.state.calculated;
-            const allocatedPoints = this.state.parsed.statAllocs.length;
-            
-            if (allocatedPoints < statPointsEarned) {
-                const pointsToAllocate = statPointsEarned - allocatedPoints;
-                const li = document.createElement('li');
-                
-                let currentLevel = 2;
-                while(this.state.calculated.statPointsPerLevel[currentLevel] <= allocatedPoints && currentLevel < 9) {
-                    currentLevel++;
-                }
-                
-                li.textContent = `Allocate ${pointsToAllocate} point(s) for Lvl ${currentLevel}+: `;
-                
-                const select = document.createElement('select');
-                 SRD_DATA.statOrder.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s;
-                    option.textContent = SRD_DATA.stats[s];
-                    select.appendChild(option);
-                });
-                
-                const button = document.createElement('button');
-                button.textContent = 'Allocate';
-                button.onclick = () => {
-                    this.state.parsed.statAllocs.push(select.value);
-                    this.updateBlueprintFromState();
-                };
-                
-                li.appendChild(select);
-                li.appendChild(button);
-                this.dom.statProgressionList.appendChild(li);
-            }
-        },
-
-        renderTags() {
-            const currentEntity = this.getCurrentEntity();
-            if (!currentEntity) return;
-
-            const renderList = (type, listEl, pool) => {
-                listEl.innerHTML = '';
-                Object.values(pool).forEach(tag => {
-                    const li = document.createElement('li');
-                    li.className = 'tag-item';
-                    
-                    const name = document.createElement('span');
-                    name.className = 'name';
-                    name.textContent = tag.name;
-
-                    const decBtn = document.createElement('button');
-                    decBtn.textContent = '-';
-                    decBtn.onclick = () => this.handleTagQuantityChange(type, tag.name, -1);
-
-                    const quantity = document.createElement('span');
-                    quantity.className = 'quantity';
-                    quantity.textContent = tag.quantity;
-
-                    const incBtn = document.createElement('button');
-                    incBtn.textContent = '+';
-                    incBtn.onclick = () => this.handleTagQuantityChange(type, tag.name, 1);
-
-                    li.append(name, decBtn, quantity, incBtn);
-                    listEl.appendChild(li);
-                });
-            };
-            
-            const boosts = currentEntity.runtime.tags.boosts;
-            const statuses = currentEntity.runtime.tags.statuses;
-            
-            renderList('boost', this.dom.boostTagList, boosts);
-            renderList('status', this.dom.statusTagList, statuses);
-            
-            this.dom.boostTagPoolCount.textContent = Object.values(boosts).reduce((sum,t) => sum + t.quantity, 0);
-            this.dom.statusTagPoolCount.textContent = Object.values(statuses).reduce((sum,t) => sum + t.quantity, 0);
-        },
-        
-        renderInventory() {
-            this.dom.inventoryList.innerHTML = '';
-            const currentEntity = this.getCurrentEntity();
-            if(!currentEntity || !this.state.calculated) return;
-
-            let slottedGearPassives = 0;
-            currentEntity.runtime.inventory.forEach(item => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'inventory-item-card';
-
-                const parsedItem = CodexEngine.parseItem(item.blueprint.substring(2)); // remove I:
-                
-                const header = document.createElement('div');
-                header.className = 'item-header';
-                
-                const nameInput = document.createElement('input');
-                nameInput.type = 'text';
-                nameInput.className = 'item-name-input';
-                nameInput.value = item.name;
-                nameInput.oninput = (e) => this.handleItemChange(item.id, 'name', e.target.value);
-                
-                const bpInput = document.createElement('input');
-                bpInput.type = 'text';
-                bpInput.value = item.blueprint;
-                bpInput.style.width = '25%';
-                bpInput.oninput = (e) => this.handleItemChange(item.id, 'blueprint', e.target.value);
-
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'X';
-                delBtn.onclick = () => this.handleDeleteItem(item.id);
-                
-                header.append(nameInput, bpInput, delBtn);
-                itemCard.appendChild(header);
-
-                if (parsedItem && parsedItem.keywords.length > 0) {
-                    const kwList = document.createElement('ul');
-                    kwList.className = 'item-keywords-list';
-                    parsedItem.keywords.forEach(kw => {
-                        const kwData = SRD_DATA.keywords[kw.code];
-                        if(!kwData) return;
-                        if(kw.slotted) slottedGearPassives++;
-
-                        const li = document.createElement('li');
-                        li.className = 'keyword-item';
-
-                        const toggle = document.createElement('div');
-                        toggle.className = 'keyword-toggle';
-                        if(kw.slotted) toggle.classList.add('slotted');
-                        toggle.onclick = () => {
-                             const currentSlotted = currentEntity.runtime.inventory.flatMap(i => CodexEngine.parseItem(i.blueprint.substring(2)).keywords).filter(k=>k.slotted).length;
-                            if(!kw.slotted && currentSlotted >= this.state.calculated.gearPassiveSlots) {
-                                alert('No more gear passive slots available.');
-                                return;
-                            }
-                            kw.slotted = !kw.slotted;
-                            
-                            let newBp = `I:L${parsedItem.level}`;
-                            if(parsedItem.flaw) newBp += `+${parsedItem.flaw.flawCode}${parsedItem.flaw.compCode}`;
-                            parsedItem.keywords.forEach(k => newBp += `.${CodexEngine.stringifyKeyword(k)}`);
-                            item.blueprint = newBp;
-                            this.saveDatabase();
-                            this.renderInventory();
-                        };
-
-                        const nameSpan = document.createElement('span');
-                        nameSpan.textContent = `${kw.code}: ${kwData.name}`;
-
-                        li.append(toggle, nameSpan);
-                        kwList.appendChild(li);
-                    });
-                    itemCard.appendChild(kwList);
-                }
-                this.dom.inventoryList.appendChild(itemCard);
-            });
-            this.dom.gearPassivesCount.textContent = `${slottedGearPassives}/${this.state.calculated.gearPassiveSlots}`;
-        },
-        
-        renderCompanions() {
-            this.dom.companionList.innerHTML = '';
-            const currentEntity = this.getCurrentEntity();
-            if(!currentEntity) return;
-
-            currentEntity.runtime.companions.forEach(comp => {
-                const card = document.createElement('div');
-                card.className = 'companion-card';
-
-                const parsedComp = CodexEngine.parseAnimation(comp.blueprint.substring(2));
-                const calcComp = CodexEngine.calculate(parsedComp); 
-                
-                card.innerHTML = `
-                    <div class="item-header">
-                        <input type="text" class="item-name-input" value="${comp.name}" data-id="${comp.id}" data-field="name">
-                        <button data-id="${comp.id}" class="delete-companion-btn">X</button>
-                    </div>
-                     <input type="text" value="${comp.blueprint}" style="width:100%" data-id="${comp.id}" data-field="blueprint">
-                    <div class="details">
-                        <span>Lvl: ${calcComp.level}</span>
-                        <span>Res: ${calcComp.resistance}</span>
-                        <span>HP/SP/EP: 10</span>
-                        <span>Keywords: ${parsedComp.keywords.map(k=>k.code).join(', ')}</span>
-                    </div>
-                `;
-                
-                card.querySelector('.item-name-input').oninput = (e) => this.handleCompanionChange(e.target.dataset.id, 'name', e.target.value);
-                 card.querySelector('input[type="text"][data-field="blueprint"]').oninput = (e) => this.handleCompanionChange(e.target.dataset.id, 'blueprint', e.target.value);
-                card.querySelector('.delete-companion-btn').onclick = (e) => this.handleDeleteCompanion(e.target.dataset.id);
-                this.dom.companionList.appendChild(card);
-            });
-        },
-        
-        renderFactions() {
-            this.dom.factionList.innerHTML = '';
-            const currentEntity = this.getCurrentEntity();
-            if(!currentEntity) return;
-
-            currentEntity.runtime.factions.forEach(fact => {
-                 const card = document.createElement('div');
-                 card.className = 'faction-card';
-                 const parsedFact = CodexEngine.parseFaction(fact.blueprint.substring(2));
-                 
-                 card.innerHTML = `
-                    <div class="item-header">
-                        <input type="text" class="item-name-input" value="${fact.name}" data-id="${fact.id}" data-field="name">
-                        <select data-id="${fact.id}" data-field="trust">
-                            <option value="Ally" ${fact.trust === 'Ally' ? 'selected' : ''}>Ally</option>
-                            <option value="Neutral" ${fact.trust === 'Neutral' ? 'selected' : ''}>Neutral</option>
-                            <option value="Enemy" ${fact.trust === 'Enemy' ? 'selected' : ''}>Enemy</option>
-                        </select>
-                        <button data-id="${fact.id}" class="delete-faction-btn">X</button>
-                    </div>
-                    <input type="text" value="${fact.blueprint}" style="width:100%" data-id="${fact.id}" data-field="blueprint">
-                    <div>Lvl: ${parsedFact.level} | Goal: ${SRD_DATA.motivations[parsedFact.profile[0]] || 'N/A'}</div>
-                 `;
-                
-                card.querySelector('.item-name-input').oninput = (e) => this.handleFactionChange(e.target.dataset.id, 'name', e.target.value);
-                card.querySelector('select').onchange = (e) => this.handleFactionChange(e.target.dataset.id, 'trust', e.target.value);
-                card.querySelector('input[type="text"][data-field="blueprint"]').oninput = (e) => this.handleFactionChange(e.target.dataset.id, 'blueprint', e.target.value);
-                card.querySelector('.delete-faction-btn').onclick = (e) => this.handleDeleteFaction(e.target.dataset.id);
-                this.dom.factionList.appendChild(card);
-            });
-        },
-
-
-        // --- Database & State ---
-        getCurrentEntity() {
-            return this.db.entities[this.db.currentEntityId] || null;
-        },
-
-        getNewRuntimeState() {
-            return {
-                karma: 0,
-                hp: { current: 10 },
-                sp: { current: 10 },
-                ep: { current: 10 },
-                tags: { boosts: {}, statuses: {} },
-                inventory: [],
-                companions: [],
-                factions: [],
-            };
-        },
-
-        loadDatabase() {
-            const dbString = localStorage.getItem('resonanceCompanionDb_v2.1');
-            if (dbString) {
-                this.db = JSON.parse(dbString);
-            } else {
-                // Create a default character if DB is empty
-                const id = 'entity_default';
-                this.db.entities[id] = {
-                    id: id,
-                    name: "Sparks (Example)",
-                    blueprint: "C:03817-13-11(1).83.93",
-                    runtime: this.getNewRuntimeState()
-                };
-                this.db.currentEntityId = id;
-            }
-            this.updateEntitySelector();
-        },
-        
-        saveDatabase() {
-            localStorage.setItem('resonanceCompanionDb_v2.1', JSON.stringify(this.db));
-        },
-        
-        updateEntitySelector() {
-            this.dom.entitySelector.innerHTML = '';
-            const ids = Object.keys(this.db.entities);
-            if (ids.length === 0) {
-                 this.db.currentEntityId = null;
-                 return;
-            }
-
-            ids.forEach(id => {
-                const entity = this.db.entities[id];
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = entity.name;
-                if (id === this.db.currentEntityId) {
-                    option.selected = true;
-                }
-                this.dom.entitySelector.appendChild(option);
-            });
-            
-            if (!this.db.currentEntityId || !this.db.entities[this.db.currentEntityId]) {
-                this.db.currentEntityId = ids[0];
-            }
-        },
-
-        // --- Utils ---
-        rollSR(isSubRoll = false) {
-            let runningTotal = 0;
-            let finalMain, finalLucky;
-            let isCrit = false;
-            let isSuperCrit = false;
-
-            const rollOnce = () => {
-                const main = Math.floor(Math.random() * 10) + 1;
-                const lucky = Math.floor(Math.random() * 10) + 1;
-                return { main, lucky };
-            };
-
-            let { main, lucky } = rollOnce();
-            while (main === lucky) {
-                isCrit = true;
-                runningTotal += main + lucky;
-                ({ main, lucky } = rollOnce());
-            }
-
-            finalMain = main;
-            finalLucky = lucky;
-            const finalSR = runningTotal + finalMain;
-            if (finalSR >= 31) isSuperCrit = true;
-            if (main === lucky && !isCrit) isCrit = true;
-
-            if (!isSubRoll) {
-                this.animateDice(finalMain, finalLucky, finalSR, isCrit, isSuperCrit);
-            }
-            return { sr: finalSR, isCrit, isSuperCrit };
-        },
-
-        rollEV() {
-            if (!this.state.calculated) return;
-            const { sr, isCrit, isSuperCrit } = this.rollSR(true);
-            const statCode = this.dom.diceStatSelector.value;
-            const statValue = this.state.calculated.stats[statCode];
-            const level = this.state.calculated.level;
-            
-            const totalEV = sr + level + statValue;
-
-            this.animateDice(null, null, totalEV, isCrit, isSuperCrit, `SR(${sr})+L(${level})+${statCode}(${statValue})`);
-        },
-        
-        animateDice(finalMain, finalLucky, finalTotal, isCrit, isSuperCrit, formula = "") {
-            let jumbleCount = 0;
-            const jumbleInterval = setInterval(() => {
-                this.dom.diceMain.textContent = Math.floor(Math.random() * 10) + 1;
-                this.dom.diceLucky.textContent = Math.floor(Math.random() * 10) + 1;
-                this.dom.diceTotal.textContent = Math.floor(Math.random() * 30) + 1;
-                jumbleCount++;
-                if (jumbleCount > 10) {
-                    clearInterval(jumbleInterval);
-                    if(finalMain !== null) this.dom.diceMain.textContent = finalMain;
-                    if(finalLucky !== null) this.dom.diceLucky.textContent = finalLucky;
-                    this.dom.diceTotal.textContent = finalTotal;
-                    let critText = '';
-                    if (isSuperCrit) critText = "SUPER CRITICAL!";
-                    else if (isCrit) critText = "Critical!";
-                    this.dom.diceCrit.textContent = critText + (formula ? ` [${formula}]` : '');
-                }
-            }, 50);
-        },
-        
-        generateRandomBlueprint(type, level) {
-            const rand = (max) => Math.floor(Math.random() * max);
-            const d100 = () => {
-                const n = rand(100);
-                return n < 10 ? '0' + n : '' + n;
-            }
-
-            if (type === 'character') {
-                let profile = '';
-                for (let i = 0; i < 5; i++) profile += rand(10);
-                
-                let kwCount = 0;
-                if(level === 0) kwCount = 1;
-                else if (level === 1) kwCount = 4;
-                else kwCount = 4 + (level-1) * 2;
-                
-                let statPoints = 0;
-                if(level >= 2 && level <= 5) statPoints = level - 1;
-                else if(level >= 6) statPoints = 4 + (level-5) * 2;
-                
-                let statAllocs = [];
-                for(let i=0; i<statPoints; i++) {
-                    statAllocs.push(SRD_DATA.statOrder[rand(9)]);
-                }
-
-                let keywords = [];
-                for(let i=0; i<kwCount; i++) {
-                    let code;
-                    do {
-                        code = d100();
-                    } while (SRD_DATA.keywords[code].category === 'flaw');
-                    keywords.push({code: code, slotted: false, choice: null});
-                }
-                
-                const parsed = {type: 'Character', profile: profile, flaw: null, keywords: keywords, statAllocs: statAllocs};
-                return CodexEngine.stringify(parsed);
-
-            } else if (type === 'item') {
-                 let itemLevel = Math.min(5, level > 0 ? level : 1);
-                 let bp = `I:L${itemLevel}`;
-                 for(let i=0; i<itemLevel; i++) {
-                     let code;
-                     do { code = d100(); } while (SRD_DATA.keywords[code].category === 'flaw');
-                     bp += `.${code}`;
-                 }
-                 return bp;
-            }
-            // Add other types later
+    <!-- DICE ROLLER MODAL -->
+    <div id="dice-roller-modal" class="hidden">
+        <div class="dice-roller-content">
+            <div class="card-header">STANDARD ROLL</div>
+            <div id="dice-display">-</div>
+            <div class="dice-roller-options">
+                <select id="dice-roller-stat-select">
+                    <option value="none">No Stat</option>
+                    <!-- Options populated by JS -->
+                </select>
+                <div class="flex-row">
+                    <button id="perform-roll-btn" class="flex-grow">Roll</button>
+                    <button id="close-roller-btn">Close</button>
+                </div>
+            </div>
+            <div class="dice-roller-results">
+                <div id="dice-crit-indicator"></div>
+                <div>EV/ER: <span id="dice-result-total">-</span></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+/*************************************************************************************************/
+/*************************************************************************************************/
+/***                                                                                         ***/
+/***      ####   #####   ####   #####  #####    ##     ####    #####  #   #   ####   #####    ***/
+/***     #      #     # #    # #      #     #  #  #   #    #  #     # #   #  #       #    #   ***/
+/***      ####  #       #    # #      #       #    #  #       #     # #   #   ####   #    #   ***/
+/***          # #       #    # #      #     # ######  #  ###  #     # #   #       #  #####    ***/
+/***     #    # #     # #    # #      #     # #    #  #    #  #     #  # #   #    #  #   #    ***/
+/***      ####   #####   ####   #####  #####  #    #   ####    #####   ###     ####   #    #   ***/
+/***                                                                                         ***/
+/*************************************************************************************************/
+/*************************************************************************************************/
+
+const SRD_DATA = {
+    stats: {
+        'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn',
+        'W': 'Wit', 'E': 'Expertise', 'T': 'Technique',
+        'P': 'Power', 'I': 'Influence', 'F': 'Force'
+    },
+    motivations: [
+        'Discovery', 'Absolution', 'Ambition', 'Security', 'Legacy',
+        'Innovation', 'Purity', 'Glory', 'Influence', 'Faith'
+    ],
+    tags: {
+        statuses: [
+            { name: "Mark", color: "Null" }, { name: "Impair", color: "Silver" },
+            { name: "Slow", color: "Yellow" }, { name: "Daze", color: "Green" },
+            { name: "Curse", color: "Black" }, { name: "Bind", color: "Orange" },
+            { name: "Weaken", color: "White" }, { name: "Blight", color: "Red" },
+            { name: "Silence", color: "Blue" }, { name: "Nullify", color: "Purple" }
+        ],
+        boosts: [
+            { name: "Liberate", color: "Null" }, { name: "Augment", color: "Silver" },
+            { name: "Haste", color: "Yellow" }, { name: "Ward", color: "Green" },
+            { name: "Bless", color: "Black" }, { name: "Charge", color: "Orange" },
+            { name: "Cure", color: "White" }, { name: "Regen", color: "Red" },
+            { name: "Enhance", color: "Blue" }, { name: "Obscure", color: "Purple" }
+        ]
+    },
+    keywords: {
+        '00': { name: 'Restricted', choices: null }, '01': { name: 'Aura', choices: null },
+        '02': { name: 'Specialist', choices: ['Body', 'Mind', 'Essence'] }, '03': { name: 'Alert', choices: null },
+        '04': { name: 'Liberate', choices: null }, '05': { name: 'Mark', choices: null },
+        '06': { name: 'Indirect', choices: null }, '07': { name: 'Adaptive', choices: null },
+        '08': { name: 'Gamble', choices: null }, '09': { name: 'Edit', choices: null },
+        '10': { name: 'Bane', choices: ['Null','Silver','Yellow','Green','Black','Orange','White','Red','Blue','Purple'] }, '11': { name: 'Traveller', choices: ['Walk', 'Teleport', 'Fly', 'Dig', 'Permeation', 'Jump', 'Parkour', 'Climb', 'Swim', 'Lightfoot'] },
+        '12': { name: 'Martial', choices: null }, '13': { name: 'Attuned', choices: null },
+        '14': { name: 'Augment', choices: null }, '15': { name: 'Impair', choices: null },
+        '16': { name: 'Reactive', choices: null }, '17': { name: 'Phasing', choices: null },
+        '18': { name: 'Brutal', choices: null }, '19': { name: 'Translocate', choices: null },
+        '20': { name: 'Anxious', choices: null }, '21': { name: 'Acrobatic', choices: null },
+        '22': { name: 'Sentry', choices: null }, '23': { name: 'Eidetic', choices: null },
+        '24': { name: 'Haste', choices: null }, '25': { name: 'Slow', choices: null },
+        '26': { name: 'Snap', choices: null }, '27': { name: 'Condense', choices: null },
+        '28': { name: 'Rapid', choices: null }, '29': { name: 'Reckless', choices: null },
+        '30': { name: 'Hesitant', choices: null }, '31': { name: 'Sturdy', choices: null },
+        '32': { name: 'Brawler', choices: null }, '33': { name: 'Stubborn', choices: null },
+        '34': { name: 'Ward', choices: null }, '35': { name: 'Daze', choices: null },
+        '36': { name: 'Sculpt', choices: null }, '37': { name: 'Defensive', choices: null },
+        '38': { name: 'Impact', choices: null }, '39': { name: 'Shift', choices: null },
+        '40': { name: 'Feeble', choices: null }, '41': { name: 'Survivor', choices: null },
+        '42': { name: 'Stoic', choices: null }, '43': { name: 'Ageless', choices: null },
+        '44': { name: 'Bless', choices: null }, '45': { name: 'Curse', choices: null },
+        '46': { name: 'Piercing', choices: null }, '47': { name: 'Flux', choices: null },
+        '48': { name: 'Siphon', choices: null }, '49': { name: 'Animate', choices: null },
+        '50': { name: 'Gremlins', choices: null }, '51': { name: 'Sensor', choices: ['Karma', 'Keywords', 'Echolocation', 'Vibration', 'Energy', 'Materials', 'Life', 'Infrared', 'Emotion', 'The Weave'] },
+        '52': { name: 'Improvisor', choices: null }, '53': { name: 'Crafty', choices: null },
+        '54': { name: 'Charge', choices: null }, '55': { name: 'Bind', choices: null },
+        '56': { name: 'Imbue', choices: null }, '57': { name: 'Material', choices: null },
+        '58': { name: 'Leverage', choices: null }, '59': { name: 'Manifest', choices: null },
+        '60': { name: 'Vulnerable', choices: null }, '61': { name: 'Tolerant', choices: null },
+        '62': { name: 'Deadeye', choices: null }, '63': { name: 'Immunized', choices: ['Mark', 'Impair', 'Slow', 'Daze', 'Curse', 'Bind', 'Weaken', 'Blight', 'Silence', 'Nullify'] },
+        '64': { name: 'Cure', choices: null }, '65': { name: 'Weaken', choices: null },
+        '66': { name: 'Sticky', choices: null }, '67': { name: 'Restore', choices: null },
+        '68': { name: 'Exploit', choices: null }, '69': { name: 'Growth', choices: null },
+        '70': { name: 'Limited', choices: ['HP', 'SP', 'EP'] }, '71': { name: 'Resilient', choices: ['HP', 'SP', 'EP'] },
+        '72': { name: 'Font', choices: null }, '73': { name: 'Insulated', choices: null },
+        '74': { name: 'Regen', choices: null }, '75': { name: 'Blight', choices: null },
+        '76': { name: 'Area', choices: null }, '77': { name: 'Ranged', choices: null },
+        '78': { name: 'Multiply', choices: null }, '79': { name: 'Split', choices: null },
+        '80': { name: 'Awkward', choices: null }, '81': { name: 'Charismatic', choices: null },
+        '82': { name: 'Leader', choices: null }, '83': { name: 'Insightful', choices: null },
+        '84': { name: 'Enhance', choices: null }, '85': { name: 'Silence', choices: null },
+        '86': { name: 'Splash', choices: null }, '87': { name: 'Lingering', choices: null },
+        '88': { name: 'Spread', choices: null }, '89': { name: 'Potent', choices: null },
+        '90': { name: 'Mundane', choices: null }, '91': { name: 'Aware', choices: null },
+        '92': { name: 'Stealthy', choices: null }, '93': { name: 'Trickster', choices: null },
+        '94': { name: 'Obscure', choices: null }, '95': { name: 'Nullify', choices: null },
+        '96': { name: 'Chain', choices: null }, '97': { name: 'Natural', choices: null },
+        '98': { name: 'Ambience', choices: null }, '99': { name: 'Channel', choices: null }
+    }
+};
+
+/*************************************************************************************************/
+/*************************************************************************************************/
+/***                                                                                         ***/
+/***      ####   #####  #    #   ####  #  ####   ####   #####  #    #  ####   #    #          ***/
+/***     #    # #     # ##   #  #    # # #      #      #     # ##   # #    #  ##   #          ***/
+/***     #      #     # # #  #  #      #  ####   ####  #     # # #  # #       # #  #          ***/
+/***     #      #     # #  # #  #      #      #      # #     # #  # # #  ###  #  # #          ***/
+/***     #    # #     # #   ##  #    # # #    # #    # #     # #   ## #    #  #   ##          ***/
+/***      ####   #####  #    #   ####  #  ####   ####   #####  #    #  ####   #    #          ***/
+/***                                                                                         ***/
+/*************************************************************************************************/
+/*************************************************************************************************/
+
+const CodexEngine = {
+    /**
+     * Parses a full ecosystem blueprint string into a structured JS object.
+     * @param {string} ecosystemString - The full string, e.g., "C:char_data@A:anim_data;C:..."
+     * @returns {object|null} A structured object representing the first valid ecosystem, or null.
+     */
+    parseEcosystem(ecosystemString) {
+        if (!ecosystemString || typeof ecosystemString !== 'string') return null;
+
+        // Take only the first ecosystem if multiple are pasted
+        const firstEcosystemStr = ecosystemString.split(';')[0].trim();
+        if (!firstEcosystemStr) return null;
+
+        const rootAndAttachments = firstEcosystemStr.split('@');
+        const rootStr = rootAndAttachments.shift();
+
+        if (!rootStr || !rootStr.startsWith('C:')) {
+            console.error("Blueprint must start with a Character (C:).");
             return null;
         }
 
-    });
+        const ecosystem = {
+            character: this.parse(rootStr),
+            attachments: []
+        };
+        
+        if (!ecosystem.character) return null;
 
-    document.addEventListener('DOMContentLoaded', () => App.init());
-    </script>
+        rootAndAttachments.forEach(attachmentStr => {
+            const parts = attachmentStr.split('/');
+            let currentParentAttachments = ecosystem.attachments;
+            let parentObject = ecosystem.character;
+
+            parts.forEach((part, index) => {
+                const entity = this.parse(part);
+                if (entity) {
+                    if (index === 0) { // Top-level attachment to character
+                        ecosystem.attachments.push(entity);
+                    } else { // Nested attachment
+                        if(!parentObject.attachments) parentObject.attachments = [];
+                        parentObject.attachments.push(entity);
+                    }
+                    parentObject = entity; // The new entity becomes the parent for the next part
+                }
+            });
+        });
+
+        return ecosystem;
+    },
+    
+    /**
+     * Parses a single entity blueprint string (e.g., "C:...") into an object.
+     * @param {string} blueprintString - The string for a single entity.
+     * @returns {object|null} A structured object for the entity.
+     */
+    parse(blueprintString) {
+        if (!blueprintString) return null;
+
+        const typePrefix = blueprintString.substring(0, 2);
+        let dataStr = blueprintString.substring(2);
+        
+        let entity = { type: 'Unknown', raw: blueprintString, keywords: [], flaw: null };
+
+        try {
+            switch (typePrefix) {
+                case 'C:':
+                    entity.type = 'Character';
+                    const profileMatch = dataStr.match(/^(\d{5})/);
+                    if (!profileMatch) return null;
+                    entity.profile = profileMatch[1].split('').map(d => parseInt(d));
+                    dataStr = dataStr.substring(5);
+
+                    const progressionParts = dataStr.split('-');
+                    entity.stat_allocations = [];
+
+                    progressionParts.forEach(part => {
+                        if (part.startsWith('+')) { // Flaw
+                            const flawCode = part.substring(1, 5);
+                            entity.flaw = {
+                                flaw_kw: flawCode.substring(0, 2),
+                                comp_kw: flawCode.substring(2, 4)
+                            };
+                        } else if (/[MABWETPIF]$/.test(part)) { // Stat allocation
+                            entity.stat_allocations.push(part.slice(-1));
+                            part = part.slice(0, -1);
+                            part.split('.').forEach(kwStr => this._parseKeyword(kwStr, entity));
+                        } else {
+                           part.split('.').forEach(kwStr => this._parseKeyword(kwStr, entity));
+                        }
+                    });
+                    break;
+                case 'A:':
+                    entity.type = 'Animation';
+                     dataStr.split('-').forEach(part => {
+                        if (part.startsWith('+')) {
+                            const flawCode = part.substring(1, 5);
+                            entity.flaw = { flaw_kw: flawCode.substring(0, 2), comp_kw: flawCode.substring(2, 4) };
+                        } else {
+                            part.split('.').forEach(kwStr => this._parseKeyword(kwStr, entity));
+                        }
+                    });
+                    break;
+                case 'I:':
+                    entity.type = 'Item';
+                    const levelMatch = dataStr.match(/^L(\d)/);
+                    if(!levelMatch) return null;
+                    entity.level = parseInt(levelMatch[1]);
+                    dataStr = dataStr.substring(2);
+                    dataStr.split('-').forEach(part => {
+                         if (part.startsWith('+')) {
+                            const flawCode = part.substring(1, 5);
+                            entity.flaw = { flaw_kw: flawCode.substring(0, 2), comp_kw: flawCode.substring(2, 4) };
+                        } else {
+                            part.split('.').forEach(kwStr => this._parseKeyword(kwStr, entity));
+                        }
+                    });
+                    break;
+                case 'F:':
+                    entity.type = 'Faction';
+                    const fProfileMatch = dataStr.match(/^(\d{5})/);
+                    if (!fProfileMatch) return null;
+                    entity.profile = fProfileMatch[1].split('').map(d => parseInt(d));
+                    
+                    const fLevelMatch = dataStr.match(/-L(\d)/);
+                    if(fLevelMatch) entity.level = parseInt(fLevelMatch[1]);
+
+                    const systemsMatch = dataStr.match(/\[S([^\]]+)\]/);
+                    if(systemsMatch) entity.systems = systemsMatch[1].split('.').map(s => parseInt(s));
+
+                    const keywordsMatch = dataStr.match(/\[K([^\]]+)\]/);
+                    if(keywordsMatch) entity.keywords = keywordsMatch[1].split('.').map(kw => ({ id: kw, isSlotted: false, choice: null }));
+                    break;
+                default:
+                    return null;
+            }
+        } catch (e) {
+            console.error("Error parsing blueprint:", blueprintString, e);
+            return null;
+        }
+
+        return entity;
+    },
+
+    _parseKeyword(kwStr, entity) {
+        if (!kwStr) return;
+        const kw = {};
+        kw.isSlotted = kwStr.startsWith('!');
+        const cleanStr = kw.isSlotted ? kwStr.substring(1) : kwStr;
+        
+        const choiceMatch = cleanStr.match(/(\d{2})\((\d+)\)/);
+        if (choiceMatch) {
+            kw.id = choiceMatch[1];
+            kw.choice = parseInt(choiceMatch[2]);
+        } else {
+            kw.id = cleanStr;
+            kw.choice = null;
+        }
+        entity.keywords.push(kw);
+    },
+
+    /**
+     * Calculates derived values from a parsed entity object.
+     * @param {object} parsedEntity - The output from the parse function.
+     * @returns {object} The entity object augmented with calculated values.
+     */
+    calculate(parsedEntity) {
+        if (!parsedEntity) return null;
+        
+        const calculated = { ...parsedEntity, derived: {} };
+        const d = calculated.derived;
+
+        switch (calculated.type) {
+            case 'Character':
+                // Level calculation
+                const kwCount = calculated.keywords.length;
+                if (kwCount < 4) d.level = 0;
+                else if (kwCount >= 20) d.level = 9;
+                else d.level = 1 + Math.floor((kwCount - 4) / 2);
+                
+                // Stat calculation
+                d.stats = { M:0, A:0, B:0, W:0, E:0, T:0, P:0, I:0, F:0 };
+                const baseStat = d.level > 0 ? 2 : 1;
+                for (const stat in d.stats) {
+                    d.stats[stat] = baseStat;
+                }
+                
+                const statPointsPerLevel = { 2:1, 3:1, 4:1, 5:1, 6:2, 7:2, 8:2, 9:2 };
+                let pointsToAllocate = 0;
+                for(let i = 2; i <= d.level; i++) {
+                    pointsToAllocate += statPointsPerLevel[i] || 0;
+                }
+                d.availableStatPoints = pointsToAllocate - calculated.stat_allocations.length;
+
+                calculated.stat_allocations.forEach(alloc => {
+                    if (d.stats[alloc] < 5) d.stats[alloc]++;
+                });
+
+                // Resistance calculation
+                const statValues = Object.values(d.stats).sort((a, b) => b - a);
+                d.resistance = statValues[0] + statValues[1] + statValues[2];
+
+                // Resource calculation
+                d.maxHP = 10;
+                d.maxSP = 10;
+                d.maxEP = 10;
+                calculated.keywords.forEach(kw => {
+                    if (kw.id === '71') { // Resilient
+                       if(kw.choice === 0) d.maxHP += 5;
+                       if(kw.choice === 1) d.maxSP += 5;
+                       if(kw.choice === 2) d.maxEP += 5;
+                    }
+                });
+                if(calculated.flaw && calculated.flaw.flaw_kw === '70') { // Limited
+                    const choice = (SRD_DATA.keywords[calculated.flaw.comp_kw] || {}).choices;
+                    if(choice && choice.length > 0) {
+                        const compKwChoice = SRD_DATA.keywords[calculated.flaw.comp_kw].choices.indexOf('HP'); // This is a placeholder for actual choice logic
+                        if (compKwChoice === 0) d.maxHP -=5;
+                        if (compKwChoice === 1) d.maxSP -=5;
+                        if (compKwChoice === 2) d.maxEP -=5;
+                    }
+                }
+
+                // Passive slots
+                d.innatePassiveSlots = d.stats.F;
+                d.gearPassiveSlots = d.stats.E;
+                d.slottedInnateCount = calculated.keywords.filter(kw => kw.isSlotted).length;
+                break;
+            case 'Animation':
+                d.level = calculated.keywords.length - 1;
+                d.stats = { M:1, A:1, B:1, W:1, E:1, T:1, P:1, I:1, F:1 };
+                // SRD: total stat points are 9 + level. For simplicity, we just calculate level. Full stat build is manual.
+                const animStatValues = Object.values(d.stats).sort((a, b) => b - a);
+                d.resistance = animStatValues.slice(0,3).reduce((a,b)=>a+b, 0) + d.level; // Simplified resistance for NPCs
+                d.maxHP = 10; d.maxSP = 10; d.maxEP = 10;
+                d.innatePassiveSlots = Math.min(d.level, 5);
+                d.slottedInnateCount = calculated.keywords.filter(kw => kw.isSlotted).length;
+                break;
+            case 'Item':
+                 d.maxKeywords = calculated.level >= 4 ? 5 : calculated.level;
+                 break;
+            case 'Faction':
+                // No derived values needed from string for now
+                break;
+        }
+
+        return calculated;
+    },
+    
+    /**
+     * Converts a full ecosystem object back into a blueprint string.
+     * @param {object} ecosystemObject - A full ecosystem object.
+     * @returns {string} The complete blueprint string.
+     */
+    stringifyEcosystem(ecosystemObject) {
+        if (!ecosystemObject || !ecosystemObject.character) return '';
+        let parts = [this.stringify(ecosystemObject.character)];
+        
+        if (ecosystemObject.attachments) {
+            ecosystemObject.attachments.forEach(att => {
+                parts.push(this._stringifyAttachment(att, '@'));
+            });
+        }
+        
+        return parts.join('');
+    },
+    
+    _stringifyAttachment(entity, delimiter) {
+        let str = delimiter + this.stringify(entity);
+        if (entity.attachments) {
+            entity.attachments.forEach(nestedAtt => {
+                str += this._stringifyAttachment(nestedAtt, '/');
+            });
+        }
+        return str;
+    },
+
+    /**
+     * Converts a single parsed and calculated entity object back into a blueprint string.
+     * @param {object} entityObject - The object to stringify.
+     * @returns {string} The entity's blueprint string.
+     */
+    stringify(entityObject) {
+         if (!entityObject) return '';
+         let parts = [];
+         
+         const stringifyKw = (kw) => {
+            let s = '';
+            if (kw.isSlotted) s += '!';
+            s += kw.id;
+            if (kw.choice !== null) s += `(${kw.choice})`;
+            return s;
+         };
+         
+         const addFlaw = (entity) => {
+             if (entity.flaw) {
+                 return `+${entity.flaw.flaw_kw}${entity.flaw.comp_kw}`;
+             }
+             return '';
+         };
+
+         switch (entityObject.type) {
+             case 'Character':
+                 parts.push('C:');
+                 if(entityObject.profile) parts.push(entityObject.profile.join(''));
+                 
+                 const flawPart = addFlaw(entityObject);
+
+                 let progressionChunks = [];
+                 let currentChunk = [];
+                 
+                 if (entityObject.keywords.length > 0) {
+                    progressionChunks.push(stringifyKw(entityObject.keywords[0]));
+                 }
+                 if (entityObject.keywords.length >= 4) {
+                    progressionChunks.push(entityObject.keywords.slice(1,4).map(stringifyKw).join('.'));
+                 }
+                 
+                 let statIndex = 0;
+                 for(let i=4; i < entityObject.keywords.length; i+=2) {
+                    let chunk = entityObject.keywords.slice(i, i+2).map(stringifyKw).join('.');
+                    if (entityObject.stat_allocations && statIndex < entityObject.stat_allocations.length) {
+                        chunk += `.${entityObject.stat_allocations[statIndex]}`;
+                        statIndex++;
+                    }
+                    progressionChunks.push(chunk);
+                 }
+                 
+                 let finalString = progressionChunks.join('-');
+                 if(flawPart) finalString += `-${flawPart}`;
+                 parts.push(finalString);
+                 break;
+
+             case 'Animation':
+                 parts.push('A:');
+                 let animStr = entityObject.keywords.map(stringifyKw).join('.');
+                 if(entityObject.flaw) animStr += `-${addFlaw(entityObject)}`;
+                 parts.push(animStr);
+                 break;
+
+             case 'Item':
+                 parts.push(`I:L${entityObject.level}`);
+                 let itemStr = entityObject.keywords.map(stringifyKw).join('.');
+                 if(entityObject.flaw) itemStr += `-${addFlaw(entityObject)}`;
+                 if(itemStr) parts.push(`-${itemStr}`);
+                 break;
+                 
+             case 'Faction':
+                 parts.push('F:');
+                 if(entityObject.profile) parts.push(entityObject.profile.join(''));
+                 if(entityObject.level) parts.push(`-L${entityObject.level}`);
+                 if(entityObject.systems) parts.push(`[S${entityObject.systems.join('.')}]`);
+                 if(entityObject.keywords && entityObject.keywords.length > 0) parts.push(`[K${entityObject.keywords.map(k=>k.id).join('.')}]`);
+                 break;
+         }
+         return parts.join('');
+    },
+    
+    generateRandomString(type, level) {
+        level = parseInt(level);
+        if(isNaN(level) || level < 0 || level > 9) level = 1;
+
+        const d100 = () => ('0' + Math.floor(Math.random() * 100)).slice(-2);
+        
+        let blueprint = '';
+        
+        switch (type) {
+            case 'Character':
+                const profile = Array.from({length: 5}, () => Math.floor(Math.random() * 10)).join('');
+                let kwCount = 1; // Seed
+                if(level > 0) kwCount += 3; // Awakening
+                if(level > 1) kwCount += (level - 1) * 2;
+                
+                let keywords = Array.from({length: kwCount}, d100);
+                
+                let flawPackage = '';
+                const flawCheck = keywords.findIndex(kw => parseInt(kw) % 10 === 0);
+                if (flawCheck > -1) {
+                    flawPackage = `+${keywords[flawCheck]}${d100()}`;
+                    keywords[flawCheck] = d100(); // Reroll to ensure it's not a flaw trigger
+                }
+                
+                let statAllocs = [];
+                if (level >= 2) {
+                    const points = [0,0,1,2,3,4,6,8,10,12][level];
+                    statAllocs = Array.from({length: points}, () => Object.keys(SRD_DATA.stats)[Math.floor(Math.random() * 9)]);
+                }
+                
+                let charParts = [];
+                charParts.push(`C:${profile}`);
+                charParts.push(keywords[0]);
+                if (level > 0) charParts.push(keywords.slice(1,4).join('.'));
+
+                let statIndex = 0;
+                for(let i=4; i < keywords.length; i+=2) {
+                    let chunk = keywords.slice(i, i+2).join('.');
+                    if(statIndex < statAllocs.length) {
+                        chunk += `.${statAllocs[statIndex]}`;
+                        statIndex++;
+                    }
+                     if(statIndex < statAllocs.length && level >= 6) { // 2 stat points for L6+
+                        chunk += `.${statAllocs[statIndex]}`;
+                        statIndex++;
+                    }
+                    charParts.push(chunk);
+                }
+                if (flawPackage) charParts.push(flawPackage);
+                blueprint = charParts.join('-');
+
+                break;
+
+            case 'Animation':
+                const animKwCount = level + 1;
+                const animKeywords = Array.from({length: animKwCount}, d100);
+                blueprint = `A:${animKeywords.join('.')}`;
+                break;
+                
+            case 'Item':
+                const itemLvl = Math.min(level, 5); // Items cap at 5kw, effectively
+                const itemKwCount = Math.max(1, itemLvl);
+                const itemKeywords = Array.from({length: itemKwCount}, d100);
+                blueprint = `I:L${itemLvl}-${itemKeywords.join('.')}`;
+                break;
+                
+            case 'Faction':
+                 const fProfile = Array.from({length: 5}, () => Math.floor(Math.random() * 10)).join('');
+                 blueprint = `F:${fProfile}-L${level}`;
+                 break;
+        }
+        return blueprint;
+    }
+};
+
+
+/*************************************************************************************************/
+/*************************************************************************************************/
+/***                                                                                         ***/
+/***                #    #####  #####        #    #####  #####  #    #   ####                ***/
+/***               # #   #    # #    #       #    #    # #    # ##   #  #                     ***/
+/***              #   #  #    # #    #       #    #    # #    # # #  #   ####                 ***/
+/***             #####  #    # #    #       #    #####  #    # #  # #       #                ***/
+/***            #     # #    # #    # #     #    #      #    # #   ##  #    #                ***/
+/***           #     # #####  #####   #####     #      #####  #    #   ####                 ***/
+/***                                                                                         ***/
+/*************************************************************************************************/
+/*************************************************************************************************/
+
+
+const App = {
+    db: {
+        characters: {},
+        activeCharacterId: null,
+    },
+    
+    // Holds the fully parsed and calculated character object for rendering
+    activeCharacter: null, 
+    
+    dom: {}, // To hold all DOM element references
+
+    init() {
+        console.log("Resonance Companion Initializing...");
+        this.cacheDom();
+        this.bindEvents();
+        this.loadDb();
+        this.populateStaticDropdowns();
+        
+        if (!this.db.activeCharacterId || !this.db.characters[this.db.activeCharacterId]) {
+            this.createNewCharacter("New Character", "C:00000-03"); // Default Level 0 character
+        } else {
+            this.loadCharacter(this.db.activeCharacterId);
+        }
+    },
+
+    cacheDom() {
+        // This function queries the DOM once and stores all needed elements
+        // Global
+        this.dom.addCharBtn = document.getElementById('add-char-btn');
+        this.dom.importBlueprintBtn = document.getElementById('import-blueprint-btn');
+        this.dom.diceRollerBtn = document.getElementById('dice-roller-btn');
+        this.dom.randomStringBtn = document.getElementById('random-string-btn');
+
+        // Build Pane
+        this.dom.charNameInput = document.getElementById('char-name-input');
+        this.dom.charLevelDisplay = document.getElementById('char-level-display');
+        this.dom.karmaValue = document.getElementById('karma-value');
+        this.dom.karmaIncreaseBtn = document.getElementById('karma-increase-btn');
+        this.dom.karmaDecreaseBtn = document.getElementById('karma-decrease-btn');
+        
+        // Profile
+        this.dom.profileCard = document.getElementById('motivational-profile-card');
+        this.dom.profileGoal = document.getElementById('profile-goal');
+        this.dom.profileMethod = document.getElementById('profile-method');
+        this.dom.profilePurpose = document.getElementById('profile-purpose');
+        this.dom.profileExtConflict = document.getElementById('profile-ext-conflict');
+        this.dom.profileIntConflict = document.getElementById('profile-int-conflict');
+
+        // Stats & Resources
+        this.dom.hpClocks = document.getElementById('hp-clocks');
+        this.dom.spClocks = document.getElementById('sp-clocks');
+        this.dom.epClocks = document.getElementById('ep-clocks');
+        this.dom.hpDisplay = document.getElementById('hp-display');
+        this.dom.spDisplay = document.getElementById('sp-display');
+        this.dom.epDisplay = document.getElementById('ep-display');
+        this.dom.resistanceValue = document.getElementById('resistance-value');
+        // Stats
+        ['m','a','b','w','e','t','p','i','f'].forEach(s => {
+            this.dom[`stat${s.toUpperCase()}`] = document.getElementById(`stat-${s}`);
+        });
+
+        // Keywords
+        this.dom.keywordList = document.getElementById('keyword-list');
+        this.dom.innateSlotsDisplay = document.getElementById('innate-slots-display');
+        this.dom.addKeywordSelect = document.getElementById('add-keyword-select');
+        this.dom.addKeywordBtn = document.getElementById('add-keyword-btn');
+        this.dom.removeLastKeywordBtn = document.getElementById('remove-last-keyword-btn');
+        this.dom.statAllocationContainer = document.getElementById('stat-allocation-container');
+        this.dom.statPointsMessage = document.getElementById('stat-points-message');
+        this.dom.statAllocationForm = document.getElementById('stat-allocation-form');
+        this.dom.statAllocationSelect = document.getElementById('stat-allocation-select');
+
+        // Blueprint
+        this.dom.blueprintCard = document.getElementById('live-blueprint-card');
+        this.dom.liveBlueprintInput = document.getElementById('live-blueprint-input');
+
+        // Play Pane
+        this.dom.tabButtons = document.querySelectorAll('.tab-button');
+        this.dom.tabContents = document.querySelectorAll('.tab-content');
+        
+        // Tags
+        this.dom.boostTagList = document.getElementById('boost-tag-list');
+        this.dom.statusTagList = document.getElementById('status-tag-list');
+        this.dom.addBoostForm = document.getElementById('add-boost-form');
+        this.dom.addStatusForm = document.getElementById('add-status-form');
+        this.dom.addBoostSelect = document.getElementById('add-boost-select');
+        this.dom.addStatusSelect = document.getElementById('add-status-select');
+        this.dom.boostCount = document.getElementById('boost-count');
+        this.dom.statusCount = document.getElementById('status-count');
+        
+        // Inventory
+        this.dom.inventoryList = document.getElementById('inventory-list');
+        this.dom.addItemName = document.getElementById('add-item-name');
+        this.dom.addItemString = document.getElementById('add-item-string');
+        this.dom.addItemBtn = document.getElementById('add-item-btn');
+        this.dom.gearSlotsDisplay = document.getElementById('gear-slots-display');
+        
+        // Companions
+        this.dom.companionList = document.getElementById('companion-list');
+        this.dom.addCompanionName = document.getElementById('add-companion-name');
+        this.dom.addCompanionString = document.getElementById('add-companion-string');
+        this.dom.addCompanionBtn = document.getElementById('add-companion-btn');
+
+        // Factions
+        this.dom.factionList = document.getElementById('faction-list');
+        this.dom.addFactionName = document.getElementById('add-faction-name');
+        this.dom.addFactionString = document.getElementById('add-faction-string');
+        this.dom.addFactionBtn = document.getElementById('add-faction-btn');
+
+        // Codex Vault
+        this.dom.codexVaultCard = document.getElementById('codex-vault-card');
+        this.dom.codexVaultList = document.getElementById('codex-vault-list');
+        
+        // Collapsibles
+        this.dom.collapsibles = document.querySelectorAll('.collapsible-header');
+
+        // Dice Roller
+        this.dom.diceRollerModal = document.getElementById('dice-roller-modal');
+        this.dom.diceDisplay = document.getElementById('dice-display');
+        this.dom.diceRollerStatSelect = document.getElementById('dice-roller-stat-select');
+        this.dom.performRollBtn = document.getElementById('perform-roll-btn');
+        this.dom.closeRollerBtn = document.getElementById('close-roller-btn');
+        this.dom.diceCritIndicator = document.getElementById('dice-crit-indicator');
+        this.dom.diceResultTotal = document.getElementById('dice-result-total');
+    },
+
+    bindEvents() {
+        // Global
+        this.dom.addCharBtn.addEventListener('click', () => {
+            const name = prompt("Enter new entity name:", "New Entity");
+            if (name) {
+                const type = prompt("Enter type (Character, Animation, Item, Faction):", "Character").toLowerCase();
+                let defaultString = "C:00000-03";
+                if(type.startsWith('a')) defaultString = "A:03";
+                if(type.startsWith('i')) defaultString = "I:L1-03";
+                if(type.startsWith('f')) defaultString = "F:00000-L1[S0]";
+                this.createNewCharacter(name, defaultString);
+            }
+        });
+        this.dom.importBlueprintBtn.addEventListener('click', () => {
+            const blueprint = prompt("Paste blueprint string to update current character:");
+            if (blueprint) this.updateActiveCharacterBlueprint(blueprint);
+        });
+
+        // Name and Karma
+        this.dom.charNameInput.addEventListener('change', (e) => {
+            this.activeCharacter.name = e.target.value;
+            this.saveDb();
+            this.renderCodexVault();
+        });
+        this.dom.karmaIncreaseBtn.addEventListener('click', () => this.updateKarma(1));
+        this.dom.karmaDecreaseBtn.addEventListener('click', () => this.updateKarma(-1));
+
+        // Clocks
+        this.dom.hpClocks.addEventListener('click', (e) => this.handleClockClick(e, 'hp'));
+        this.dom.spClocks.addEventListener('click', (e) => this.handleClockClick(e, 'sp'));
+        this.dom.epClocks.addEventListener('click', (e) => this.handleClockClick(e, 'ep'));
+        
+        // Live Blueprint
+        this.dom.liveBlueprintInput.addEventListener('change', (e) => this.updateActiveCharacterBlueprint(e.target.value));
+
+        // Keywords
+        this.dom.addKeywordBtn.addEventListener('click', () => this.addKeyword());
+        this.dom.removeLastKeywordBtn.addEventListener('click', () => this.removeLastKeyword());
+        this.dom.keywordList.addEventListener('click', (e) => {
+             if (e.target.classList.contains('keyword-toggle')) {
+                const index = e.target.closest('.keyword-item').dataset.kwIndex;
+                this.toggleKeywordSlotted(parseInt(index));
+            }
+        });
+        this.dom.keywordList.addEventListener('change', (e) => {
+            if (e.target.tagName === 'SELECT') {
+                const index = e.target.closest('.keyword-item').dataset.kwIndex;
+                const choice = e.target.value;
+                this.setKeywordChoice(parseInt(index), parseInt(choice));
+            }
+        });
+        
+        // Stat Progression
+        this.dom.statAllocationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.allocateStatPoint();
+        });
+
+        // Tabs
+        this.dom.tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                this.dom.tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                this.dom.tabContents.forEach(content => {
+                    content.id === `tab-content-${tab}` ? content.classList.remove('hidden') : content.classList.add('hidden');
+                });
+            });
+        });
+        
+        // Tags
+        this.dom.addBoostForm.addEventListener('submit', (e) => { e.preventDefault(); this.addTag('boost'); });
+        this.dom.addStatusForm.addEventListener('submit', (e) => { e.preventDefault(); this.addTag('status'); });
+        this.dom.boostTagList.addEventListener('click', (e) => this.handleTagControls(e, 'boosts'));
+        this.dom.statusTagList.addEventListener('click', (e) => this.handleTagControls(e, 'statuses'));
+
+        // Play Pane Items/Companions/Factions
+        this.dom.addItemBtn.addEventListener('click', () => this.addPlayPaneItem('inventory'));
+        this.dom.addCompanionBtn.addEventListener('click', () => this.addPlayPaneItem('companions'));
+        this.dom.addFactionBtn.addEventListener('click', () => this.addPlayPaneItem('factions'));
+        
+        this.dom.inventoryList.addEventListener('click', (e) => this.handlePlayCardEvents(e, 'inventory'));
+        this.dom.companionList.addEventListener('click', (e) => this.handlePlayCardEvents(e, 'companions'));
+        this.dom.factionList.addEventListener('click', (e) => this.handlePlayCardEvents(e, 'factions'));
+        
+        this.dom.inventoryList.addEventListener('change', (e) => this.handlePlayCardEvents(e, 'inventory'));
+        this.dom.companionList.addEventListener('change', (e) => this.handlePlayCardEvents(e, 'companions'));
+        this.dom.factionList.addEventListener('change', (e) => this.handlePlayCardEvents(e, 'factions'));
+        
+        // Codex Vault
+        this.dom.codexVaultList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('codex-delete-btn')) {
+                const id = e.target.closest('li').dataset.id;
+                this.deleteCharacter(id);
+            } else if (e.target.closest('li')) {
+                const id = e.target.closest('li').dataset.id;
+                this.loadCharacter(id);
+            }
+        });
+        
+        // Collapsibles
+        this.dom.collapsibles.forEach(header => {
+            header.addEventListener('click', () => {
+                header.closest('.card').classList.toggle('collapsed');
+            });
+        });
+
+        // Dice Roller
+        this.dom.diceRollerBtn.addEventListener('click', () => this.dom.diceRollerModal.classList.remove('hidden'));
+        this.dom.closeRollerBtn.addEventListener('click', () => this.dom.diceRollerModal.classList.add('hidden'));
+        this.dom.performRollBtn.addEventListener('click', () => this.performDiceRoll());
+        
+        // Random String Generator
+        this.dom.randomStringBtn.addEventListener('click', this.showRandomStringGenerator);
+    },
+    
+    // --- DATABASE & CHARACTER MANAGEMENT --- //
+    
+    saveDb() {
+        if (this.activeCharacter) {
+            this.db.characters[this.db.activeCharacterId] = this.activeCharacter;
+        }
+        localStorage.setItem('resonanceCompanionDb', JSON.stringify(this.db));
+    },
+
+    loadDb() {
+        const storedDb = localStorage.getItem('resonanceCompanionDb');
+        if (storedDb) {
+            this.db = JSON.parse(storedDb);
+        } else {
+            // Initialize with empty DB structure
+            this.db = { characters: {}, activeCharacterId: null };
+        }
+    },
+    
+    createNewCharacter(name, blueprint) {
+        const id = Date.now().toString();
+        this.db.characters[id] = {
+            id: id,
+            name: name,
+            blueprint: blueprint,
+            runtime: {
+                karma: 0,
+                hp: 10, sp: 10, ep: 10,
+                tags: { boosts: [], statuses: [] },
+                inventory: [],
+                companions: [],
+                factions: [],
+            }
+        };
+        this.db.activeCharacterId = id;
+        this.saveDb();
+        this.loadCharacter(id);
+    },
+
+    loadCharacter(id) {
+        if (!this.db.characters[id]) {
+            console.error("Character not found:", id);
+            // Fallback to first character or create new
+             const firstId = Object.keys(this.db.characters)[0];
+             if(firstId) this.loadCharacter(firstId);
+             else this.createNewCharacter("New Character", "C:00000-03");
+            return;
+        }
+        this.db.activeCharacterId = id;
+        this.activeCharacter = this.db.characters[id];
+        this.activeCharacter.parsedData = CodexEngine.parseEcosystem(this.activeCharacter.blueprint);
+        if (this.activeCharacter.parsedData) {
+            this.activeCharacter.parsedData.character = CodexEngine.calculate(this.activeCharacter.parsedData.character);
+            this.activeCharacter.parsedData.attachments.forEach((att, i) => {
+                this.activeCharacter.parsedData.attachments[i] = CodexEngine.calculate(att);
+            });
+        }
+        
+        // Ensure runtime state exists
+        if (!this.activeCharacter.runtime) {
+            this.activeCharacter.runtime = { karma: 0, hp: 10, sp: 10, ep: 10, tags: { boosts: [], statuses: [] }, inventory: [], companions: [], factions: [] };
+        }
+        
+        this.saveDb();
+        this.renderAll();
+    },
+    
+    deleteCharacter(idToDelete) {
+        if (!confirm(`Are you sure you want to delete "${this.db.characters[idToDelete].name}"?`)) return;
+        
+        delete this.db.characters[idToDelete];
+        
+        if(this.db.activeCharacterId === idToDelete) {
+            this.db.activeCharacterId = null;
+        }
+
+        this.saveDb();
+
+        const remainingIds = Object.keys(this.db.characters);
+        if (remainingIds.length > 0) {
+            this.loadCharacter(remainingIds[0]);
+        } else {
+            this.createNewCharacter("New Character", "C:00000-03");
+        }
+    },
+
+    updateActiveCharacterBlueprint(newBlueprint) {
+        const parsed = CodexEngine.parseEcosystem(newBlueprint);
+        if (!parsed) {
+            alert("Invalid blueprint string. Reverting.");
+            this.renderAll(); // Revert the input field
+            return;
+        }
+        this.activeCharacter.blueprint = newBlueprint;
+        this.loadCharacter(this.db.activeCharacterId); // Reload to recalculate everything
+    },
+    
+    rebuildAndSaveBlueprint() {
+        if (!this.activeCharacter || !this.activeCharacter.parsedData) return;
+        const newBlueprint = CodexEngine.stringifyEcosystem(this.activeCharacter.parsedData);
+        this.activeCharacter.blueprint = newBlueprint;
+        this.saveDb();
+        this.loadCharacter(this.db.activeCharacterId);
+    },
+
+    // --- RENDER FUNCTIONS --- //
+
+    renderAll() {
+        if (!this.activeCharacter || !this.activeCharacter.parsedData) {
+            console.error("No active character or parsed data to render.");
+            return;
+        }
+        
+        const charData = this.activeCharacter.parsedData.character;
+        const runtime = this.activeCharacter.runtime;
+        
+        // Header
+        this.dom.charNameInput.value = this.activeCharacter.name;
+        this.dom.charLevelDisplay.textContent = `Level ${charData.derived.level}`;
+        
+        // Karma
+        this.dom.karmaValue.textContent = runtime.karma;
+
+        // Profile
+        this.dom.profileGoal.textContent = SRD_DATA.motivations[charData.profile[0]];
+        this.dom.profileMethod.textContent = SRD_DATA.motivations[charData.profile[1]];
+        this.dom.profilePurpose.textContent = SRD_DATA.motivations[charData.profile[2]];
+        this.dom.profileExtConflict.textContent = SRD_DATA.motivations[charData.profile[3]];
+        this.dom.profileIntConflict.textContent = SRD_DATA.motivations[charData.profile[4]];
+        
+        // Resources & Stats
+        this.renderClocks('hp', runtime.hp, charData.derived.maxHP);
+        this.renderClocks('sp', runtime.sp, charData.derived.maxSP);
+        this.renderClocks('ep', runtime.ep, charData.derived.maxEP);
+        this.dom.resistanceValue.textContent = charData.derived.resistance;
+        for (const stat in charData.derived.stats) {
+            this.dom[`stat${stat.toUpperCase()}`].textContent = charData.derived.stats[stat];
+        }
+
+        // Keywords & Progression
+        this.renderKeywords();
+        this.renderStatProgression();
+        
+        // Blueprint
+        this.dom.liveBlueprintInput.value = this.activeCharacter.blueprint;
+        
+        // Play Pane
+        this.renderTags();
+        this.renderPlayPaneList('inventory');
+        this.renderPlayPaneList('companions');
+        this.renderPlayPaneList('factions');
+
+        // Codex Vault
+        this.renderCodexVault();
+
+        // Dice Roller Stat options
+        this.populateDiceRollerStats();
+    },
+    
+    renderClocks(type, current, max) {
+        const container = this.dom[`${type}Clocks`];
+        const display = this.dom[`${type}Display`];
+        
+        container.innerHTML = ''; // Clear previous pips
+        for (let i = 1; i <= max; i++) {
+            const pip = document.createElement('div');
+            pip.className = 'clock-pip';
+            pip.dataset.value = i;
+            if (i <= current) {
+                pip.classList.add('filled');
+            }
+            container.appendChild(pip);
+        }
+        display.textContent = `${current}/${max}`;
+    },
+    
+    renderKeywords() {
+        const charData = this.activeCharacter.parsedData.character;
+        const keywords = charData.keywords;
+        
+        this.dom.innateSlotsDisplay.textContent = `Slotted: ${charData.derived.slottedInnateCount}/${charData.derived.innatePassiveSlots}`;
+        
+        const kwItems = this.dom.keywordList.querySelectorAll('.keyword-item');
+        kwItems.forEach((item, index) => {
+            if (index < keywords.length) {
+                const kwData = keywords[index];
+                const kwInfo = SRD_DATA.keywords[kwData.id];
+                
+                item.classList.remove('hidden');
+                item.querySelector('.keyword-name').textContent = kwInfo ? kwInfo.name : `Unknown (${kwData.id})`;
+                const toggle = item.querySelector('.keyword-toggle');
+                toggle.classList.toggle('active', kwData.isSlotted);
+
+                const choiceDiv = item.querySelector('.keyword-choice');
+                const choiceSelect = choiceDiv.querySelector('select');
+                if (kwInfo && kwInfo.choices) {
+                    choiceDiv.classList.remove('hidden');
+                    choiceSelect.innerHTML = '';
+                    kwInfo.choices.forEach((choice, choiceIndex) => {
+                        const option = document.createElement('option');
+                        option.value = choiceIndex;
+                        option.textContent = choice;
+                        option.selected = kwData.choice === choiceIndex;
+                        choiceSelect.appendChild(option);
+                    });
+                } else {
+                    choiceDiv.classList.add('hidden');
+                }
+
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    },
+    
+    renderStatProgression() {
+        const charData = this.activeCharacter.parsedData.character;
+        if (charData.derived.availableStatPoints > 0) {
+            this.dom.statAllocationContainer.classList.remove('hidden');
+            this.dom.statPointsMessage.textContent = `You have ${charData.derived.availableStatPoints} stat point(s) to allocate.`;
+        } else {
+            this.dom.statAllocationContainer.classList.add('hidden');
+        }
+    },
+    
+    renderTags() {
+        const { boosts, statuses } = this.activeCharacter.runtime.tags;
+
+        const renderTagList = (list, container) => {
+            container.innerHTML = '';
+            list.forEach(tag => {
+                const item = document.createElement('div');
+                item.className = 'tag-item';
+                item.innerHTML = `
+                    <button class="tag-controls tag-decrease-btn" data-name="${tag.name}">-</button>
+                    <span class="tag-quantity">${tag.quantity}</span>
+                    <button class="tag-controls tag-increase-btn" data-name="${tag.name}">+</button>
+                    <span class="tag-name">${tag.name}</span>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        renderTagList(boosts, this.dom.boostTagList);
+        renderTagList(statuses, this.dom.statusTagList);
+        
+        const boostTotal = boosts.reduce((acc, t) => acc + t.quantity, 0);
+        const statusTotal = statuses.reduce((acc, t) => acc + t.quantity, 0);
+        this.dom.boostCount.textContent = `${boostTotal}/10`;
+        this.dom.statusCount.textContent = `${statusTotal}/10`;
+    },
+
+    renderPlayPaneList(type) {
+        const listContainer = this.dom[`${type}List`];
+        const items = this.activeCharacter.runtime[type];
+        listContainer.innerHTML = '';
+
+        if (type === 'inventory') {
+            const charExpertise = this.activeCharacter.parsedData.character.derived.stats.E;
+            let slottedCount = 0;
+            items.forEach(item => {
+                const parsedItem = CodexEngine.calculate(CodexEngine.parse(item.blueprint));
+                if (parsedItem) {
+                    parsedItem.keywords.forEach(kw => {
+                        if (kw.isSlotted) slottedCount++;
+                    });
+                }
+            });
+            this.dom.gearSlotsDisplay.textContent = `Slotted: ${slottedCount}/${charExpertise}`;
+        }
+        
+        items.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'play-card';
+            card.dataset.index = index;
+            
+            let content = '';
+            const parsed = CodexEngine.calculate(CodexEngine.parse(item.blueprint));
+
+            switch (type) {
+                case 'inventory':
+                    let kws = '';
+                    if (parsed && parsed.keywords) {
+                        kws = parsed.keywords.map((kw, kwIndex) => {
+                            const kwInfo = SRD_DATA.keywords[kw.id];
+                            return `<div class="keyword-item" style="font-size: 9pt;">
+                                <div class="keyword-toggle item-kw-toggle ${kw.isSlotted ? 'active' : ''}" data-kw-index="${kwIndex}"></div>
+                                <span class="keyword-name">${kwInfo ? kwInfo.name : 'Unknown'}</span>
+                            </div>`;
+                        }).join('');
+                    }
+                    content = `<div class="keyword-list">${kws}</div>`;
+                    break;
+                case 'companions':
+                    let compStats = '...';
+                    if (parsed && parsed.derived) {
+                       compStats = `Lvl: ${parsed.derived.level} | Res: ${parsed.derived.resistance} | HP: 10 SP: 10 EP: 10`;
+                    }
+                    content = `<div class="companion-card-stats">${compStats}</div>`;
+                    break;
+                case 'factions':
+                     let trustLevel = item.trust || 'Neutral';
+                     content = `<div class="faction-trust">
+                        <span>Trust:</span>
+                        <select class="faction-trust-select flex-grow">
+                            <option value="Ally" ${trustLevel === 'Ally' ? 'selected' : ''}>Ally</option>
+                            <option value="Neutral" ${trustLevel === 'Neutral' ? 'selected' : ''}>Neutral</option>
+                            <option value="Enemy" ${trustLevel === 'Enemy' ? 'selected' : ''}>Enemy</option>
+                        </select>
+                     </div>`;
+                    break;
+            }
+            
+            card.innerHTML = `
+                <button class="play-card-remove-btn">X</button>
+                <div class="play-card-header">
+                    <input type="text" class="play-card-name" value="${item.name}">
+                    <span style="font-size: 8pt; color: var(--blue-color);">${parsed ? `(${parsed.type})` : ''}</span>
+                </div>
+                ${content}
+            `;
+            listContainer.appendChild(card);
+        });
+    },
+
+    renderCodexVault() {
+        this.dom.codexVaultList.innerHTML = '';
+        Object.values(this.db.characters).forEach(char => {
+            const li = document.createElement('li');
+            li.dataset.id = char.id;
+            if (char.id === this.db.activeCharacterId) {
+                li.classList.add('selected');
+            }
+            
+            const parsed = CodexEngine.parse(char.blueprint);
+            const type = parsed ? parsed.type : 'Unknown';
+            
+            li.innerHTML = `
+                <span>${char.name} <em style="color: var(--silver-color); font-size: 8pt;">(${type})</em></span>
+                <button class="codex-delete-btn" data-id="${char.id}">Delete</button>
+            `;
+            this.dom.codexVaultList.appendChild(li);
+        });
+    },
+    
+    // --- EVENT HANDLERS --- //
+    
+    updateKarma(amount) {
+        this.activeCharacter.runtime.karma = Math.max(0, this.activeCharacter.runtime.karma + amount);
+        this.dom.karmaValue.textContent = this.activeCharacter.runtime.karma;
+        this.saveDb();
+    },
+    
+    handleClockClick(event, type) {
+        if (!event.target.classList.contains('clock-pip')) return;
+        const value = parseInt(event.target.dataset.value);
+        let currentVal = this.activeCharacter.runtime[type];
+        
+        // If clicking the last filled pip, set to 0. Otherwise set to clicked value.
+        this.activeCharacter.runtime[type] = (value === currentVal) ? 0 : value;
+
+        const max = this.activeCharacter.parsedData.character.derived[`max${type.toUpperCase()}`];
+        this.renderClocks(type, this.activeCharacter.runtime[type], max);
+        this.saveDb();
+    },
+
+    addKeyword() {
+        const charData = this.activeCharacter.parsedData.character;
+        if (charData.keywords.length >= 22) {
+            alert("Maximum number of keywords (22) reached.");
+            return;
+        }
+
+        const newKwId = this.dom.addKeywordSelect.value;
+        const newKw = { id: newKwId, isSlotted: false, choice: null };
+        
+        if (parseInt(newKwId) % 10 === 0 && !charData.flaw) { // Flaw keyword
+            const compId = prompt(`You've selected a Flaw (${SRD_DATA.keywords[newKwId].name}). Enter the two-digit ID for its Compensation Keyword:`);
+            if (compId && SRD_DATA.keywords[compId]) {
+                this.activeCharacter.parsedData.character.flaw = { flaw_kw: newKwId, comp_kw: compId };
+            } else {
+                alert("Invalid Compensation Keyword ID.");
+                return;
+            }
+        } else {
+             this.activeCharacter.parsedData.character.keywords.push(newKw);
+        }
+
+        this.rebuildAndSaveBlueprint();
+    },
+
+    removeLastKeyword() {
+        if (!confirm("Are you sure you want to remove the last keyword? This cannot be undone.")) return;
+
+        const charData = this.activeCharacter.parsedData.character;
+        if (charData.keywords.length > 1) { // Can't remove the seed
+            // Also need to check if we're removing a stat point
+            const kwCountBefore = charData.keywords.length;
+            const levelBefore = 1 + Math.floor((kwCountBefore - 4) / 2);
+            
+            charData.keywords.pop();
+            
+            const kwCountAfter = charData.keywords.length;
+            const levelAfter = 1 + Math.floor((kwCountAfter - 4) / 2);
+
+            if (levelAfter < levelBefore && charData.stat_allocations.length > 0) {
+                charData.stat_allocations.pop();
+            }
+            
+            this.rebuildAndSaveBlueprint();
+        } else {
+            alert("Cannot remove the Seed keyword.");
+        }
+    },
+    
+    toggleKeywordSlotted(index) {
+        const kw = this.activeCharacter.parsedData.character.keywords[index];
+        kw.isSlotted = !kw.isSlotted;
+        this.rebuildAndSaveBlueprint();
+    },
+
+    setKeywordChoice(index, choice) {
+        this.activeCharacter.parsedData.character.keywords[index].choice = choice;
+        this.rebuildAndSaveBlueprint();
+    },
+
+    allocateStatPoint() {
+        const stat = this.dom.statAllocationSelect.value;
+        this.activeCharacter.parsedData.character.stat_allocations.push(stat);
+        this.rebuildAndSaveBlueprint();
+    },
+
+    addTag(type) {
+        const select = this.dom[`add${type.charAt(0).toUpperCase() + type.slice(1)}Select`];
+        const tagName = select.value;
+        const tagPool = this.activeCharacter.runtime.tags[`${type}s`];
+        
+        const existingTag = tagPool.find(t => t.name === tagName);
+        if (existingTag) {
+            if (existingTag.quantity < 5) existingTag.quantity++;
+            else alert(`Cannot have more than 5 stacks of ${tagName}.`);
+        } else {
+             const totalTags = tagPool.reduce((sum, t) => sum + t.quantity, 0);
+             if (totalTags < 10) {
+                 tagPool.push({ name: tagName, quantity: 1 });
+             } else {
+                 alert(`Cannot have more than 10 total ${type} tags.`);
+             }
+        }
+        this.saveDb();
+        this.renderTags();
+    },
+
+    handleTagControls(event, pool) {
+        const tagName = event.target.dataset.name;
+        if (!tagName) return;
+
+        const tagList = this.activeCharacter.runtime.tags[pool];
+        const tagIndex = tagList.findIndex(t => t.name === tagName);
+        if (tagIndex === -1) return;
+
+        if (event.target.classList.contains('tag-increase-btn')) {
+            if (tagList[tagIndex].quantity < 5) tagList[tagIndex].quantity++;
+        } else if (event.target.classList.contains('tag-decrease-btn')) {
+            tagList[tagIndex].quantity--;
+            if (tagList[tagIndex].quantity <= 0) {
+                tagList.splice(tagIndex, 1);
+            }
+        }
+        this.saveDb();
+        this.renderTags();
+    },
+    
+    addPlayPaneItem(type) {
+        const nameInput = this.dom[`add${type.slice(0, -1)}Name`];
+        const stringInput = this.dom[`add${type.slice(0, -1)}String`];
+        
+        const name = nameInput.value || `New ${type.slice(0,-1)}`;
+        let blueprint = stringInput.value;
+
+        if (!blueprint) {
+             switch (type) {
+                case 'inventory': blueprint = 'I:L0-03'; break;
+                case 'companions': blueprint = 'A:03'; break;
+                case 'factions': blueprint = 'F:00000-L1[S0]'; break;
+             }
+        }
+        
+        const parsed = CodexEngine.parse(blueprint);
+        if (!parsed) {
+            alert("Invalid blueprint string.");
+            return;
+        }
+
+        const newItem = { name, blueprint };
+        if(type === 'factions') newItem.trust = 'Neutral';
+
+        this.activeCharacter.runtime[type].push(newItem);
+        
+        nameInput.value = '';
+        stringInput.value = '';
+        this.saveDb();
+        this.renderPlayPaneList(type);
+    },
+
+    handlePlayCardEvents(event, type) {
+        const card = event.target.closest('.play-card');
+        if (!card) return;
+        const index = parseInt(card.dataset.index);
+        const item = this.activeCharacter.runtime[type][index];
+        
+        if (event.target.classList.contains('play-card-remove-btn')) {
+            if (confirm(`Remove ${item.name}?`)) {
+                this.activeCharacter.runtime[type].splice(index, 1);
+                this.saveDb();
+                this.renderPlayPaneList(type);
+            }
+        }
+        else if (event.target.classList.contains('play-card-name') && event.type === 'change') {
+            item.name = event.target.value;
+            this.saveDb();
+            // No re-render needed for name change
+        }
+        else if (event.target.classList.contains('item-kw-toggle')) {
+            const kwIndex = parseInt(event.target.dataset.kwIndex);
+            let parsed = CodexEngine.parse(item.blueprint);
+            parsed.keywords[kwIndex].isSlotted = !parsed.keywords[kwIndex].isSlotted;
+            item.blueprint = CodexEngine.stringify(parsed);
+            this.saveDb();
+            this.renderPlayPaneList(type);
+        }
+        else if (event.target.classList.contains('faction-trust-select')) {
+            item.trust = event.target.value;
+            this.saveDb();
+            // No re-render needed
+        }
+    },
+
+    // --- UTILITY & STATIC POPULATION --- //
+    populateStaticDropdowns() {
+        // All keywords
+        const allKeywords = Object.entries(SRD_DATA.keywords);
+        this.dom.addKeywordSelect.innerHTML = allKeywords.map(([id, kw]) => `<option value="${id}">${kw.name} (${id})</option>`).join('');
+        
+        // Stat allocation
+        this.dom.statAllocationSelect.innerHTML = Object.entries(SRD_DATA.stats).map(([id, name]) => `<option value="${id}">${name}</option>`).join('');
+        
+        // Tags
+        this.dom.addBoostSelect.innerHTML = SRD_DATA.tags.boosts.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+        this.dom.addStatusSelect.innerHTML = SRD_DATA.tags.statuses.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+    },
+    
+    populateDiceRollerStats() {
+        const stats = this.activeCharacter.parsedData.character.derived.stats;
+        let options = '<option value="none">No Stat Bonus</option>';
+        for (const [key, value] of Object.entries(stats)) {
+            options += `<option value="${value}">${SRD_DATA.stats[key]} (+${value})</option>`;
+        }
+        this.dom.diceRollerStatSelect.innerHTML = options;
+    },
+
+    performDiceRoll() {
+        this.dom.performRollBtn.disabled = true;
+        this.dom.diceDisplay.textContent = '...';
+        this.dom.diceCritIndicator.textContent = '';
+        this.dom.diceResultTotal.textContent = '-';
+
+        let jumbleCount = 0;
+        const jumbleInterval = setInterval(() => {
+            this.dom.diceDisplay.textContent = Math.ceil(Math.random() * 10);
+            jumbleCount++;
+            if (jumbleCount > 10) {
+                clearInterval(jumbleInterval);
+                this.resolveDiceRoll();
+                this.dom.performRollBtn.disabled = false;
+            }
+        }, 50);
+    },
+
+    resolveDiceRoll() {
+        let totalSR = 0;
+        let isCritical = false;
+        let rollAgain = true;
+        
+        while(rollAgain) {
+            const d1 = Math.ceil(Math.random() * 10);
+            const d2 = Math.ceil(Math.random() * 10);
+
+            if (d1 === d2) {
+                totalSR += (d1 + d2);
+                isCritical = true;
+                rollAgain = true; // Roll again
+            } else {
+                totalSR += d1; // Main die
+                rollAgain = false;
+            }
+        }
+        
+        this.dom.diceDisplay.textContent = totalSR;
+        if(isCritical) {
+            this.dom.diceCritIndicator.textContent = "CRITICAL!";
+        }
+        if(totalSR >= 31) {
+            this.dom.diceCritIndicator.textContent = "SUPER CRITICAL!";
+        }
+
+        const charLevel = this.activeCharacter.parsedData.character.derived.level;
+        const statBonus = parseInt(this.dom.diceRollerStatSelect.value) || 0;
+        const totalEV = totalSR + charLevel + statBonus;
+        
+        this.dom.diceResultTotal.textContent = totalEV;
+    },
+
+    showRandomStringGenerator() {
+        const type = prompt("Generate for type (Character, Animation, Item, Faction):", "Character");
+        if (!type) return;
+        
+        const level = prompt(`Enter level (0-9) for ${type}:`, "1");
+        if(!level || isNaN(parseInt(level))) return;
+        
+        const randomString = CodexEngine.generateRandomString(type, level);
+        
+        prompt(`Generated ${type} (Lvl ${level}). Copy to clipboard:`, randomString);
+    }
+};
+
+// --- APPLICATION START --- //
+document.addEventListener('DOMContentLoaded', () => {
+    App.init();
+});
+</script>
 </body>
 </html>
