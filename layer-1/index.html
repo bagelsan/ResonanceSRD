@@ -520,7 +520,7 @@
         <li class="md-nav__item">
   <a href="#10-the-standard-roll-sr" class="md-nav__link">
     <span class="md-ellipsis">
-      1.0: The Standard Roll (SR)
+      1.0 : The Standard Roll (SR)
     </span>
   </a>
   
@@ -554,9 +554,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#50-priority-and-turn-order" class="md-nav__link">
+  <a href="#50-priority-and-turn-order-card-based-system" class="md-nav__link">
     <span class="md-ellipsis">
-      5.0: Priority and Turn Order
+      5.0: Priority and Turn Order (Card-Based System)
     </span>
   </a>
   
@@ -569,9 +569,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="6.0: Surprise">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#meet-sparks-our-example-character" class="md-nav__link">
     <span class="md-ellipsis">
       MEET SPARKS: OUR EXAMPLE CHARACTER
@@ -596,6 +597,11 @@
       Sparks in Action: Her First Roll
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1956,7 +1962,7 @@
         <li class="md-nav__item">
   <a href="#10-the-standard-roll-sr" class="md-nav__link">
     <span class="md-ellipsis">
-      1.0: The Standard Roll (SR)
+      1.0 : The Standard Roll (SR)
     </span>
   </a>
   
@@ -1990,9 +1996,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#50-priority-and-turn-order" class="md-nav__link">
+  <a href="#50-priority-and-turn-order-card-based-system" class="md-nav__link">
     <span class="md-ellipsis">
-      5.0: Priority and Turn Order
+      5.0: Priority and Turn Order (Card-Based System)
     </span>
   </a>
   
@@ -2005,9 +2011,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="6.0: Surprise">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#meet-sparks-our-example-character" class="md-nav__link">
     <span class="md-ellipsis">
       MEET SPARKS: OUR EXAMPLE CHARACTER
@@ -2039,6 +2046,11 @@
     </nav>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
     </ul>
   
@@ -2056,158 +2068,81 @@
 
 
 
-<h1 id="layer-1-the-dice-and-objectives">Layer 1: The Dice and Objectives</h1>
+<h1 id="layer-1-the-dice-and-objectives">Layer 1 : The Dice and Objectives</h1>
 <p>This first layer contains the absolute essential mechanics needed to play the game at its most basic level.</p>
-<hr />
-<h3 id="10-the-standard-roll-sr">1.0: The Standard Roll (SR)</h3>
+<h2 id="10-the-standard-roll-sr">1.0 : The Standard Roll (SR)</h2>
 <p>The Core Roll: All actions are resolved with a Standard Roll (SR).</p>
-<ol>
-<li><strong>(1.1) Roll two ten-sided dice (2d10).</strong> Designate one as the Main Die and the other as the Lucky Die. Your result is the number on the Main Die, unless both dice show the same number (a "double").</li>
-<li><strong>(1.2) Chaining Doubles:</strong> If you roll doubles during any roll that requires an SR, add their combined total (e.g., a double 7s is 14) to a running total and roll both dice again. Repeat this process for any subsequent doubles. Your final SR is the sum of all chained doubles plus the final, non-double result from your Main Die.</li>
-<li><strong>(1.3) Advantage &amp; Disadvantage:</strong> With Advantage, use the higher of the two dice for your non-double result. With Disadvantage, use the lower. This only applies to the final roll in a chain.</li>
-<li><strong>(1.4) Criticals:</strong> Any double is also a Critical. A Critical can also apply one of the following options.<ul>
-<li><strong>Edge (cutting/tearing effects):</strong> Apply Weaken Tag</li>
-<li><strong>Point (piercing/penetrating effects):</strong> Apply Blight Tag</li>
-<li><strong>Surface (blunt/impact effects):</strong> Apply Daze Tag</li>
-<li><strong>Restore (healing or value recovery effects):</strong> Restore the target clock to its maximum or revive an eligible target</li>
-<li><strong>Damage:</strong> Any clock decrease caused by this effect is doubled.</li>
-</ul>
-</li>
-<li><strong>(1.5) An effect is considered successful</strong> if it meets any of the following conditions:<ul>
-<li>It causes a change in the targeted clock (HP, SP, or EP)</li>
-<li>It applies a tag (such as Weaken, Blight, or Daze)</li>
-<li>It imposes movement or a condition (e.g., knockback, stunned, silenced)</li>
-</ul>
-</li>
-<li><strong>(1.6) An effect is considered a miss</strong> only if the initial roll is made with Disadvantage and the lower of the two dice is a 1. This represents a catastrophic fumble or clear misfire.<ul>
-<li>A miss always fails, regardless of total EV or target Resistance.</li>
-<li>Misses do not apply value loss, keywords, tags, or effects of any kind.<blockquote>
-<p><em>Example: A character makes an effect roll with Disadvantage and rolls a 1 and a 6. The result is 1, which causes the effect to miss entirely, even if the final EV would have exceeded Resistance.</em></p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li><strong>(1.7) When a character achieves a final Standard Roll (SR) result of 31 or higher, it is a Super Critical.</strong></li>
-<li><strong>(1.8) In addition to the critical effects of the action, a Super Critical grants the following benefit:</strong><ul>
-<li><strong>Heroics:</strong> Immediately remove 1 point from the current Situation Clock. This represents an act of legendary prowess that quickly overcomes the situation.</li>
-</ul>
-</li>
-</ol>
-<hr />
-<h3 id="20-depleting-clocks-the-core-mechanic">2.0: Depleting Clocks: The Core Mechanic</h3>
+<p><strong>(1.1)</strong> Roll two ten-sided dice (2d10). Designate one as the Main Die and the other as the Lucky Die. Your result is the number on the Main Die, unless both dice show the same number (a "double").</p>
+<p><strong>(1.2) Chaining Doubles:</strong> If you roll doubles during any roll that requires an SR, add their combined total (e.g., 14) to a running total and roll both dice again. Repeat this process for any subsequent doubles. Your final SR is the sum of all chained doubles plus the final, non-double result from your Main Die.</p>
+<p><strong>(1.3) Advantage &amp; Disadvantage:</strong> With Advantage, use the higher of the two dice for your non-double result. With Disadvantage, use the lower. This only applies to the final roll in a chain.</p>
+<p><strong>(1.4) Criticals:</strong> Any double is also a Critical. A Critical can also apply one of the following options.
+*   <strong>Edge</strong> (cutting/tearing effects): Apply Weaken Tag
+*   <strong>Point</strong> (piercing/penetrating effects): Apply Blight Tag
+*   <strong>Surface</strong> (blunt/impact effects): Apply Daze Tag
+*   <strong>Restore</strong> (healing or value recovery effects): Restore the target clock to its maximum or revive an eligible target
+*   <strong>Damage:</strong> Any clock decrease caused by this effect is doubled.</p>
+<p><strong>(1.5)</strong> An effect is considered successful if it meets any of the following conditions:
+*   It causes a change in the targeted clock (HP, SP, or EP)
+*   It applies a tag (such as Weaken, Blight, or Daze)
+*   It imposes movement or a condition (e.g., knockback, stunned, silenced)</p>
+<p><strong>(1.6)</strong> An effect is considered a miss only if the initial roll is made with Disadvantage and the lower of the two dice is a 1. This represents a catastrophic fumble or clear misfire.
+*   A miss always fails, regardless of total EV or target Resistance.
+*   Misses do not apply value loss, keywords, tags, or effects of any kind.</p>
+<p><strong>(1.7)</strong> When a character achieves a final Standard Roll (SR) result of 31 or higher, it is a <strong>Super Critical</strong>.</p>
+<p><strong>(1.8)</strong> In addition to the critical effects of the action, a Super Critical grants the following benefit:
+*   <strong>Heroics:</strong> Immediately remove 1 point from the current Situation Clock. This represents an act of legendary prowess that quickly overcomes the situation.</p>
+<h2 id="20-depleting-clocks-the-core-mechanic">2.0: Depleting Clocks: The Core Mechanic</h2>
 <p>Your goal is to deplete a target's Clock to 0. If your roll exceeds the Target Number (TN) you deplete the targeted clock by the difference.</p>
-<ul>
-<li><strong>(2.1) Progressing the Scene (vs. The Situation):</strong> Any clock you resolve depletes the situation clock by 1.<ul>
-<li><strong>(2.1.1) Target Defense (vs. Entities):</strong> Your Effect Value (EV) (<code>SR + Level + Stat</code>) must exceed the target's Resistance (<code>Sum of 3 highest Stats</code>). The difference between the EV and Resistance is the amount the targeted clock is reduced.</li>
-<li><strong>(2.1.2) Challenge Difficulty (vs. non Entity Clocks):</strong> Your Effort Roll (<code>SR + Level + Stat</code>) must exceed the challenge's Target Number (TN). The difference in the Effort Roll and TN is the amount the targeted clock is reduced.</li>
-</ul>
-</li>
-<li><strong>(2.2) A clock is resolved when it reaches 0.</strong></li>
-<li><strong>(2.3) When the Situation Clock reaches 0 the Situation reaches its endpoint.</strong></li>
-<li><strong>(2.4) The length of a Clock determines how much effort is required to resolve a challenge.</strong> Use the following table as a guideline to set the starting value for Task Clocks based on the narrative complexity of the challenge.</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Difficulty</th>
-<th style="text-align: left;">Suggested Clock Length</th>
-<th style="text-align: left;">Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Trivial</td>
-<td style="text-align: left;">1-2</td>
-<td style="text-align: left;">A simple lock, a quick persuasion.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Easy</td>
-<td style="text-align: left;">3-4</td>
-<td style="text-align: left;">A standard reinforced door, a skeptical guard.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Average</td>
-<td style="text-align: left;">5-7</td>
-<td style="text-align: left;">A complex mechanism, a well-argued debate.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Difficult</td>
-<td style="text-align: left;">8-10</td>
-<td style="text-align: left;">A bank vault door, an interrogation of a hostile witness.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Challenging</td>
-<td style="text-align: left;">11-14</td>
-<td style="text-align: left;">Disarming an ancient magical ward, swaying a council’s vote.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Heroic</td>
-<td style="text-align: left;">15+</td>
-<td style="text-align: left;">Breaching a fortress wall, changing a faction’s core ideology.</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>(2.5) Using Clocks in Play:</strong><ul>
-<li><strong>Binary Checks:</strong> For simple, pass/fail tasks, a Clock of 1 is often sufficient. If the player’s Effort Roll exceeds the TN, the task is complete.</li>
-<li><strong>Complex Tasks:</strong> Longer Clocks are excellent for representing multi-stage challenges that require teamwork or repeated effort over time. Each successful Effort Roll chips away at the problem until it is solved.</li>
-<li><strong>Curator Discretion:</strong> These numbers are a guide, not a rigid rule. As the Curator of Play, you should always feel empowered to adjust Clock lengths up or down to match the pacing and tension of the scene.</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p><em>Example: The heroes need to get through a heavy, barred oak door. The Curator decides this is an ‘Easy’ challenge. Consulting the tables, they set the Target Number (TN) to 6 and the door’s Task Clock to 4. The players will need to make one or more successful Effort Rolls to accumulate at least 4 points of progress to break down the door.</em></p>
-</blockquote>
-<hr />
-<h3 id="30-target-numbers-tn">3.0: Target Numbers (TN)</h3>
+<p><strong>(2.1) Progressing the Scene (vs. The Situation):</strong> Any clock you resolve depletes the situation clock by 1.</p>
+<p><strong>(2.1.1) Target Defense (vs. Entities):</strong> Your Effect Value (EV) (<code>SR + Level + Stat</code>) must exceed the target's Resistance (<code>Sum of 3 highest Stats</code>). The difference between the EV and Resistance is the amount the targeted clock is reduced</p>
+<p><strong>(2.1.2) Challenge Difficulty (vs. non Entity Clocks):</strong> Your Effort Roll (<code>SR + Level + Stat</code>) must exceed the challenge's Target Number (TN). The difference in the Effort Roll and TN is the amount the targeted clock is reduced.</p>
+<p><strong>(2.2)</strong> A clock is resolved when it reaches 0.</p>
+<p><strong>(2.3)</strong> When the Situation Clock reaches 0 the Situation reaches its endpoint.</p>
+<p><strong>(2.4)</strong> The length of a Clock determines how much effort is required to resolve a challenge. Use the provided tables as a guideline to set the starting value for Task Clocks.</p>
+<p><strong>(2.5) Using Clocks in Play:</strong>
+*   <strong>Binary Checks:</strong> For simple, pass/fail tasks, a Clock of 1 is often sufficient.
+*   <strong>Complex Tasks:</strong> Longer Clocks are excellent for representing multi-stage challenges.
+*   <strong>Curator Discretion:</strong> These numbers are a guide, not a rigid rule.</p>
+<h2 id="30-target-numbers-tn">3.0: Target Numbers (TN)</h2>
 <p>The TN represents the difficulty of the task. A player must roll equal to or higher than the TN to succeed.</p>
-<ul>
-<li><strong>(3.1) A reference list of TNs to set difficulty:</strong><ul>
-<li>3 - Trivial</li>
-<li>6 - Easy</li>
-<li>9 - Average</li>
-<li>12 - Difficult</li>
-<li>15 - Challenging</li>
-<li>18+ - Heroic</li>
-</ul>
-</li>
-</ul>
-<p>The TN is a Curator's primary tool for communicating the scale of a challenge. For example, if heroes face a wide chasm, setting the TN to jump across at a Heroic <strong>18</strong> signals that a simple roll is not the intended solution. This high TN encourages players to look for creative alternatives, like pushing over a nearby pillar. The Curator can then present this new, more interesting task with a manageable <strong>Average TN of 9</strong>, rewarding the players' ingenuity and guiding the narrative without saying a word.</p>
-<hr />
-<h3 id="40-story-structure">4.0: Story Structure</h3>
+<p><strong>(3.1)</strong> A reference list of TNs to set difficulty:
+*   3 - Trivial
+*   6 - Easy
+*   9 - Average
+*   12 - Difficult
+*   15 - Challenging
+*   18+ - Heroic</p>
+<h2 id="40-story-structure">4.0: Story Structure</h2>
 <p>The Story is the overarching narrative, composed of two main phases: Episodes and Downtime.</p>
-<ul>
-<li><strong>(4.1) Episode:</strong> This is the active, story-driven periods of play. During an Episode, characters interact with the world, undertake actions, and confront challenges.</li>
-<li><strong>(4.2) An Episode consists of a smaller unit referred to as Scenes (3 is Average).</strong></li>
-<li><strong>(4.3) Scenes are comprised of any combination of the following to establish an arc or major chapter of an episode:</strong><ul>
-<li>Travel, which covers journeys or movement within the episode.</li>
-<li>Situations, which are high-stakes encounters such as combat or tense social conflicts, and challenges.</li>
-<li>Rests, which are brief opportunities for recovery.</li>
-</ul>
-</li>
-<li><strong>(4.4) Downtime:</strong> This is a longer period between episodes focused on rest, recovery, and long-term advancement. During Downtime, characters fully recover their resources and may engage in crafting, training, or managing narrative choices.</li>
-</ul>
-<hr />
-<h3 id="50-priority-and-turn-order">5.0: Priority and Turn Order</h3>
-<p>At the beginning of a situation that requires turn order to be tracked, the player who is currently acting or the character that wins the initiative has priority for the first round and may take their actions.</p>
-<ol>
-<li><strong>(5.1) Initiative is won by the character with the highest combined roll of a D10 plus their Wit stat (Priority Roll).</strong></li>
-<li><strong>(5.2) Organize the remaining Priority Roll results for each entity participating in the situation from highest to lowest to determine the turn order.</strong></li>
-<li><strong>(5.3) If the Result is a Tie, the tiebreaker can be either an opposed SR with the highest result gaining priority, or the character with the highest Alacrity.</strong></li>
-<li><strong>(5.4) Once the character has completed all of their actions, or when they decide, their turn is ended and priority is passed.</strong></li>
-<li><strong>(5.5) Priority passes to the entity with the next highest result for the priority roll as recorded in the turn order list.</strong></li>
-<li><strong>(5.6) When all participants in the situation have taken their turn, and used or declined their allotted actions per turn this concludes the round.</strong></li>
-<li><strong>(5.7) A character can only receive one turn per round unless another effect specifically grants them Priority whilst they have available unspent actions.</strong></li>
-<li><strong>(5.8) At the end of an ally’s turn a player may spend a stamina to increase their position in the turn order. The amount of stamina required is equal to the number of entities that the player will skip in the turn order list by going next.</strong></li>
-</ol>
-<hr />
-<h3 id="60-surprise">6.0: Surprise</h3>
-<p>When a group or individual initiates a combat against unaware targets they gain surprise for the first round.</p>
-<ul>
-<li><strong>(6.1) Surprise is gained when the targeted group is unaware of the incoming effects.</strong></li>
-<li><strong>(6.2) The Surprised entities have Disadvantage on all Reactions during the first round.</strong></li>
-<li><strong>(6.3) Entities that are surprised also cannot gain priority on the first round until all the surprising entities have taken their turn for the round.</strong></li>
-</ul>
+<p><strong>(4.1) Episode:</strong> This is the active, story-driven period of play.</p>
+<p><strong>(4.2)</strong> An Episode consists of a smaller unit referred to as Scenes (3 is Average).</p>
+<p><strong>(4.3)</strong> Scenes are any combination of Travel, Situations, and Rests.</p>
+<p><strong>(4.4) Downtime:</strong> This is a longer period between episodes focused on rest, recovery, and long-term advancement.</p>
+<h2 id="50-priority-and-turn-order-card-based-system">5.0: Priority and Turn Order (Card-Based System)</h2>
+<p>At the beginning of a situation that requires turn order to be tracked, priority is determined using an initiative deck.</p>
+<p><strong>(5.1) Setup</strong>
+Each combatant and any recurring environmental effects are assigned a unique card.</p>
+<p><strong>(5.2) The Round and Turn Order</strong>
+The Curator draws the top card of the initiative deck. The character on that card has priority and takes their turn. After a character's turn is complete, their card is placed in a discard pile. This process continues until the initiative deck is empty.</p>
+<p><strong>(5.3) Subsequent Rounds</strong>
+When the initiative deck is empty, the round is over. If the situation is not resolved, the cards of all surviving combatants are collected from the discard pile and shuffled to create a new deck for the next round.</p>
+<p><strong>(5.4) Action Economy</strong>
+A character's <strong>Alacrity</strong> stat determines their total number of available actions <strong>per round</strong>. This pool of actions is refreshed at the start of each new round (when the deck is shuffled) and can be spent across any number of turns a character may get within that round.</p>
+<p><strong>(5.5) Ceding Priority (Pass Action)</strong>
+A character may choose to end their current turn early by using the <strong>Pass</strong> action. The resolution depends on whether they have actions remaining in their pool for the round.
+*   If the character has actions remaining: Their initiative card is moved to the <strong>bottom of the deck</strong>. They will act again later in the round after all other cards have been drawn.
+*   If the character has zero actions remaining: Their turn ends and their card is placed in the <strong>discard pile</strong> as normal.</p>
+<p><strong>(5.6) Seizing Priority (Interrupts)</strong>
+If an effect (such as a successful <code>Parry</code> reaction) allows a character to immediately gain priority, the turn order is manipulated as follows:
+1.  The character seizing priority has their card pulled from its current location (either the deck or the discard pile). They immediately become the active character.
+2.  The turn of the character who was just interrupted ends. Their card is placed directly on top of the initiative deck.
+3.  The character who seized priority now takes their turn, spending actions from their action pool as normal. Any free actions granted by the effect do not consume the action pool.</p>
+<h2 id="60-surprise">6.0: Surprise</h2>
+<p>When a group or individual initiates combat against unaware targets, they gain <strong>surprise</strong> for the first round. Turn order is determined by creating two piles of initiative cards.
+*   The cards of all combatants with surprise are shuffled into a "Surprise Pile."
+*   The cards of all combatants who are surprised are shuffled into a "No Surprise Pile."
+*   The Surprise Pile is placed on top of the No Surprise Pile to create the initiative deck for the first round.
+*   Surprised entities still have Disadvantage on all Reactions during the first round.</p>
 <hr />
 <blockquote>
 <h3 id="meet-sparks-our-example-character">MEET SPARKS: OUR EXAMPLE CHARACTER</h3>
