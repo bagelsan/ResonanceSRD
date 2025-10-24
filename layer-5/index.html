@@ -2210,9 +2210,15 @@ Your character is defined by nine core Stats arranged in a 3x3 grid:</p>
 <li>
 <p><strong>Grid:</strong></p>
 <ul>
-<li><strong>Row 1 (Body):</strong> Movement (Control), Alacrity (Execution), Brawn (Foundation)</li>
-<li><strong>Row 2 (Mind):</strong> Wit (Control), Expertise (Execution), Technique (Foundation)</li>
-<li><strong>Row 3 (Essence):</strong> Power (Control), Influence (Execution), Force (Foundation)</li>
+<li>
+<p><strong>Row 1 (Body):</strong> Movement (Control), Alacrity (Execution), Brawn (Foundation)</p>
+</li>
+<li>
+<p><strong>Row 2 (Mind):</strong> Wit (Control), Expertise (Execution), Technique (Foundation)</p>
+</li>
+<li>
+<p><strong>Row 3 (Essence):</strong> Power (Control), Influence (Execution), Force (Foundation)</p>
+</li>
 </ul>
 </li>
 </ul>
@@ -2522,6 +2528,133 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 <p><strong>(8.4.9)</strong> Commerce - Aid Unlocked: Trade Goods, Surpluses and rare access.</p>
 <p><strong>(8.4.10)</strong> Military - Aid Unlocked: Property, Bases, fortresses, and command.</p>
 <p><strong>(8.5)</strong> Characters earn or lose Faction Trust through story actions, success or failure of a situation, or defeat of faction members.</p>
+<p><strong>(8.6) Faction Scale: Population and Member Proficiency</strong></p>
+<p>A Faction's Level is not just an abstract measure of its development; it provides a direct approximation of its size and the general competence of its members. This allows a Curator to quickly assess a faction's influence and strength at a glance.</p>
+<ul>
+<li>
+<p><strong>(8.6.1) Supported Population:</strong> The number of individuals a faction can reliably support (including citizens, workers, soldiers, etc.) is determined by its Level. The population is equal to <strong>10 raised to the power of the Faction's Level (10^L)</strong>. As a faction establishes more Civil Systems and its Level increases, its capacity to support a larger population grows exponentially.</p>
+<ul>
+<li>
+<p><strong>Level 0 (10⁰):</strong> ~1 member. A single individual or bonded pair.</p>
+</li>
+<li>
+<p><strong>Level 1 (10¹):</strong> ~10 members. A family or a small survivalist cell.</p>
+</li>
+<li>
+<p><strong>Level 2 (10²):</strong> ~100 members. A large tribe or a small village.</p>
+</li>
+<li>
+<p><strong>Level 3 (10³):</strong> ~1,000 members. A large village or a small town's garrison.</p>
+</li>
+<li>
+<p><strong>Level 4 (10⁴):</strong> ~10,000 members. A thriving town or a significant military force.</p>
+</li>
+<li>
+<p><strong>Level 5 (10⁵):</strong> ~100,000 members. A small city-state or a major regional power.</p>
+</li>
+<li>
+<p><strong>Level 6 (10⁶):</strong> ~1,000,000 members. A major city-state or a sprawling kingdom.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>(8.5.2) Member Proficiency:</strong> By default, the Level of a generic, unnamed member of a faction (such as a guard, artisan, or citizen) is considered <strong>equal to the Faction's Level</strong>. This serves as a baseline for generating common NPCs quickly. Named characters, leaders, veterans, and other specialists are exceptions and should be built as distinct entities with their own levels.</p>
+</li>
+</ul>
+<p><strong>(8.6) Faction Leadership: The Civil Council</strong></p>
+<p>For a faction to be more than just a collection of individuals, it requires structure. Every Civil System established by a faction is overseen by a leader, an NPC who champions that system's function and represents its interests. Collectively, these leaders form the faction's "Civil Council."</p>
+<ul>
+<li>
+<p><strong>(8.6.1) The Mandate of Leadership:</strong> Every established Civil System (as listed in 8.4) must have a designated leader.</p>
+</li>
+<li>
+<p><strong>(8.6.2) Generating a Civil Leader:</strong> To generate a leader for a specific Civil System on the fly:</p>
+<ol>
+<li>
+<p><strong>Inherit the Goal:</strong> The leader's Primary Motivation (Goal) is always identical to the faction's Primary Motivation.</p>
+</li>
+<li>
+<p><strong>Assign the Method:</strong> The leader's Secondary Motivation (Method) is determined by the color motivation associated with their Civil System's code (S0-S9).</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>(8.6.3) Civil System Motivation Matrix:</strong></p>
+<ul>
+<li>
+<p><strong>Food (S0 / Null):</strong> The leader's Secondary Motivation is <strong>Discovery</strong>.</p>
+</li>
+<li>
+<p><strong>Water (S1 / Silver):</strong> The leader's Secondary Motivation is <strong>Absolution</strong>.</p>
+</li>
+<li>
+<p><strong>Shelter (S2 / Yellow):</strong> The leader's Secondary Motivation is <strong>Ambition</strong>.</p>
+</li>
+<li>
+<p><strong>Infrastructure (S3 / Green):</strong> The leader's Secondary Motivation is <strong>Security</strong>.</p>
+</li>
+<li>
+<p><strong>Humanitarian (S4 / Black):</strong> The leader's Secondary Motivation is <strong>Legacy</strong>.</p>
+</li>
+<li>
+<p><strong>Education (S5 / Orange):</strong> The leader's Secondary Motivation is <strong>Innovation</strong>.</p>
+</li>
+<li>
+<p><strong>Healthcare (S6 / White):</strong> The leader's Secondary Motivation is <strong>Purity</strong>.</p>
+</li>
+<li>
+<p><strong>Government (S7 / Red):</strong> The leader's Secondary Motivation is <strong>Glory</strong>.</p>
+</li>
+<li>
+<p><strong>Commerce (S8 / Blue):</strong> The leader's Secondary Motivation is <strong>Influence</strong>.</p>
+</li>
+<li>
+<p><strong>Military (S9 / Purple):</strong> The leader's Secondary Motivation is <strong>Faith</strong>.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>(8.7) The Nation Tier: Alliances and Ideology</strong></p>
+<p>When Factions unite, they can form a <strong>Nation</strong>, a meta-entity representing a formal alliance. The identity of a Nation is not defined by new resources, but by the combined ideology of its core leadership.</p>
+<ul>
+<li>
+<p><strong>(8.7.1) Formation:</strong> A Nation can be formed when <strong>three or more Factions</strong> agree to a formal union. This is a major narrative event that establishes a new power bloc in the world.</p>
+</li>
+<li>
+<p><strong>(8.7.2) The National Council:</strong> The leadership of the Nation is its Council, composed of the primary leaders from each member Faction.</p>
+</li>
+<li>
+<p><strong>(8.7.3) The Trinity of Governance &amp; National Profile:</strong> A Nation's 5-Point Motivational Profile is a composite, derived directly from its three most influential founding members, known as the <strong>Trinity of Governance</strong>.</p>
+<ol>
+<li>
+<p><strong>The Goal Faction:</strong> The Faction with the highest Level at the time of formation becomes the ideological core. The Nation's <strong>Primary Motivation (Goal)</strong> is inherited directly from this Faction.</p>
+</li>
+<li>
+<p><strong>The Method Faction:</strong> The Faction whose ideology is best suited to executing the Goal becomes the second pillar. The Nation's <strong>Secondary Motivation (Method)</strong> is inherited from this Faction's Primary Motivation. The Curator adjudicates which Faction best fits this role.</p>
+</li>
+<li>
+<p><strong>The Purpose Faction:</strong> The Faction that provides the strongest philosophical or moral justification for the Nation's existence becomes the third pillar. The Nation's <strong>Tertiary Motivation (Purpose)</strong> is inherited from this Faction's Primary Motivation.</p>
+</li>
+<li>
+<p><em>The Nation's Conflicts (External and Internal)</em> are inherited from the Goal Faction, establishing the new Nation's primary antagonists and internal struggles from the outset.</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>(8.7.4) National Scale and Identity:</strong></p>
+<ul>
+<li>
+<p><strong>Level:</strong> A Nation does not have its own Level. Its power and influence are represented by the combined Levels and resources of its member Factions.</p>
+</li>
+<li>
+<p><strong>Population:</strong> The Nation's total population is the sum of the populations of all its member Factions.</p>
+</li>
+<li>
+<p><strong>Trust:</strong> Gaining Trust with a Nation is a complex endeavor. Actions that please one member of the Trinity may displease another, requiring players to navigate the internal politics of the alliance.</p>
+</li>
+</ul>
+</li>
+</ul>
 <blockquote>
 <h4 id="example-faction-the-rivertown-coalition">Example Faction: The Rivertown Coalition</h4>
 <p>A hardy group of survivors who have built a fortified settlement on the banks of a wide, defensible river. They are pragmatic and self-sufficient, valuing tangible contributions and deeds over words. While wary of strangers, they are willing to trade and cooperate with those who prove themselves trustworthy.</p>
