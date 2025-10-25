@@ -2221,10 +2221,16 @@ Your character is defined by nine core Stats arranged in a 3x3 grid:</p>
 </li>
 </ul>
 </li>
-</ul>
+<li>
 <p><strong>(1.2.1)</strong> An Entity has a value of 1 for each stat at level 0.</p>
+</li>
+<li>
 <p><strong>(1.2.2)</strong> A Character has a value of 2 for each stat at level 1.</p>
+</li>
+<li>
 <p><strong>(1.2.3)</strong> An Animation gains 1 stat point per level above 0. Its total stat points are equal to <strong>9 + its level</strong>, to a maximum score of 5 in any single stat.</p>
+</li>
+<li>
 <p><strong>(1.2.4)</strong> A Character gains points based on their level that can be allocated to any stat to a maximum score of 5.</p>
 <ul>
 <li>
@@ -2234,21 +2240,51 @@ Your character is defined by nine core Stats arranged in a 3x3 grid:</p>
 <p>Level 6-9: 2 points per Level</p>
 </li>
 </ul>
+</li>
+</ul>
 <p><strong>(1.3)</strong> Stat Definitions</p>
+<ul>
+<li>
 <p><strong>(1.3.1)</strong> Movement (M - Body Control): Determines range bands traveled in a Move action.</p>
+</li>
+<li>
 <p><strong>(1.3.2)</strong> Alacrity (A - Body Execution): Determines the number of actions a character can make <strong>per round</strong>.</p>
+</li>
+<li>
 <p><strong>(1.3.3)</strong> Brawn (B - Body Foundation): Determines the Bonus SP given during initiative and the restoration of stamina from the Recharge Action. Your Brawn may also determine how many Status Tags you can physically shrug off with the Recover action.</p>
+</li>
+<li>
 <p><strong>(1.3.4)</strong> Wit (W - Mind Control): Governs the effectiveness of the Ready and Recover action. Also determines who gets first priority in combat.</p>
+</li>
+<li>
 <p><strong>(1.3.5)</strong> Expertise (E - Mind Execution): Sets the hard limit for the number of item keywords you can use in an action; determines your Gear Passive Slot limit (Expertise).</p>
+</li>
+<li>
 <p><strong>(1.3.6)</strong> Technique (T - Mind Foundation): Determines scaling for numerous Keyword Effects.</p>
+</li>
+<li>
 <p><strong>(1.3.7)</strong> Power (P - Essence Control): Reduces EP cost of using active Innate keywords. And governs the Recharge Action.</p>
+</li>
+<li>
 <p><strong>(1.3.8)</strong> Influence (I - Essence Execution): Determines the quantity of Boost Tags you apply, and is one of the stats you can choose to determine how many Status Tags you remove with the Recover action. Also determines maximum number of persistent animations.</p>
+</li>
+<li>
 <p><strong>(1.3.9)</strong> Force (F - Essence Foundation): Determines your Innate Passive Slot limit (Force).</p>
+</li>
+</ul>
 <p><strong>(1.4)</strong> Core Values: HP, SP, and EP Clocks
 All Entities, Characters and Animations, have three Core Values (Clocks): Health Points (HP), Stamina Points (SP), and Energy Points (EP). </p>
+<ul>
+<li>
 <p><strong>(1.4.1)</strong>These values reflect the state of an actor’s body, effort, and inner power.</p>
+</li>
+<li>
 <p><strong>(1.4.2)</strong> Each value has a maximum of 10 unless modified by abilities, keywords, conditions, or gear.</p>
+</li>
+<li>
 <p><strong>(1.4.3)</strong> These values do not scale with level and must be managed carefully during play.</p>
+</li>
+<li>
 <p><strong>(1.4.4)</strong> Health Points (HP) Represents an actor’s physical durability and ability to still defend and react.</p>
 <ul>
 <li>
@@ -2256,7 +2292,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </li>
 <li>
 <p>Recovery:</p>
-<ul>
+</li>
 <li>
 <p>During Situations: Effects may restore HP.</p>
 </li>
@@ -2268,7 +2304,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </li>
 </ul>
 </li>
-</ul>
+<li>
 <p><strong>(1.4.5)</strong> Stamina Points (SP) Represents physical exertion and endurance and is spent on maneuvers, reactions, and other physical actions.</p>
 <ul>
 <li>
@@ -2276,7 +2312,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </li>
 <li>
 <p>Recovery:</p>
-<ul>
+</li>
 <li>
 <p>During Situations: Certain effects may restore SP.</p>
 </li>
@@ -2286,12 +2322,12 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <li>
 <p>At Initiative: At the start of a Situation, when initiative is rolled, each actor regains SP equal to their Brawn stat. This recovery can exceed their maximum, creating temporary SP.</p>
 </li>
-</ul>
-</li>
 <li>
 <p>During Downtime: SP is fully restored at no Karma cost.</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(1.4.6)</strong> Energy Points (EP) Represents inner strength, magical power, or narrative potential and is spent on applying keywords to actions and effects.</p>
 <ul>
 <li>
@@ -2299,7 +2335,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </li>
 <li>
 <p>Recovery:</p>
-<ul>
+</li>
 <li>
 <p>During Situations: Certain effects may restore EP.</p>
 </li>
@@ -2314,7 +2350,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </li>
 </ul>
 </li>
-</ul>
+<li>
 <p><strong>(1.4.7)</strong> Resistance: A character’s Resistance is the sum of their three highest stats.</p>
 <ul>
 <li>
@@ -2324,21 +2360,49 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <p>Passive abilities and actions can modify a character’s Resistance.</p>
 </li>
 </ul>
+</li>
+</ul>
 <h3 id="20-character-progression">2.0: Character Progression:</h3>
 <p>A character's growth in the Resonance system is a multi-stage journey, beginning at Level 0 and advancing as they master new keywords and unlock their full potential.</p>
 <p><strong>(2.1)</strong> The Level 0 Entity (The Seed):</p>
+<ul>
+<li>
 <p><strong>(2.1.1)</strong>A character begins play at Level 0.</p>
+</li>
+<li>
 <p><strong>(2.1.2)</strong> A character begins with one (1) Seed Keyword: This is a single, defining keyword that represents the character's origin, innate quirk, or latent potential.</p>
+</li>
+<li>
 <p><strong>(2.1.3)</strong> All of the character's stats have a base value of 1.</p>
+</li>
+</ul>
 <p><strong>(2.2)</strong> The Awakening (Becoming Level 1):</p>
+<ul>
+<li>
 <p><strong>(2.2.1)</strong>The transition from Level 0 to Level 1 is a significant narrative event decided and granted by the DM. (Usually the conclusion of the first Episode or Scene)</p>
+</li>
+<li>
 <p><strong>(2.2.2)</strong>The character immediately learns three new keywords, bringing their total known keywords to four.</p>
+</li>
+<li>
 <p><strong>(2.2.3)</strong>The character's Level officially becomes 1.</p>
+</li>
+<li>
 <p><strong>(2.2.4)</strong> All nine of the character's stats are raised to a new baseline value, and new minimum, of 2.</p>
+</li>
+</ul>
 <p><strong>(2.3)</strong> Leveling Up (Level 2 and Beyond):</p>
+<ul>
+<li>
 <p><strong>(2.3.1)</strong> After the Awakening, progression is measured by the total number of permanent keywords a character has learned.</p>
+</li>
+<li>
 <p><strong>(2.3.2)</strong> For every two new permanent keywords learned, the character's Level increases by one.</p>
+</li>
+<li>
 <p><strong>(2.3.3)</strong> Each time a character gains a level, they are rewarded with stat points to allocate to any of their nine stats. </p>
+</li>
+<li>
 <p><strong>(2.3.4)</strong> The number of stat points granted is based on the level achieved:</p>
 <ul>
 <li>
@@ -2348,7 +2412,9 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <p>Levels 6 through 9 (Superhuman): The character gains two (2) stat points per level.</p>
 </li>
 </ul>
-<p><strong>(2.4)</strong> Level Progression Table</p>
+</li>
+</ul>
+<p><strong>(2.4)</strong> Level Progression:</p>
 <ul>
 <li>
 <p><strong>Level 1:</strong> 4 Total Keywords, (All stats set to 2)</p>
@@ -2380,10 +2446,20 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 </ul>
 <p><strong>(2.5)</strong> The Stress Roll: Mid-Situation Growth
 A character can achieve a breakthrough in the heat of battle through a Stress Roll . This is a special check piggybacked onto an EV roll.</p>
+<ul>
+<li>
 <p><strong>(2.5.1)</strong> Before making an EV roll, the player declares they are attempting a Stress Roll and names the specific keyword they are trying to learn.</p>
+</li>
+<li>
 <p><strong>(2.5.2)</strong>The player makes their EV roll as normal.</p>
+</li>
+<li>
 <p><strong>(2.5.3)</strong>The action's effect is resolved first, without the benefit of the attempted keyword.</p>
+</li>
+<li>
 <p><strong>(2.5.4)</strong> The Standard Roll (SR) from the dice is compared to the character's total number of known keywords at the time of the roll. If the SR is greater than this total, the check succeeds.</p>
+</li>
+</ul>
 <blockquote>
 <p><strong>Note on Flaws:</strong> For the purpose of this roll <em>only</em>, a character's Flaw Package (the Flaw itself and its paired Compensation ability) counts as <strong>two keywords</strong>. This increases the difficulty of the Stress Roll, reinforcing the significant trade-off made to acquire the Flaw. This does not affect the keyword count for normal leveling purposes.
 </p>
@@ -2392,10 +2468,20 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <p>Powerful modifiers that can be applied to a variety of actions to mechanically alter effects.</p>
 <p><strong>(3.1)</strong>Keywords are gained through 3 primary methods, awakening, stress rolls, and karma.</p>
 <p><strong>(3.2)</strong>Keywords possess an Active Effect, a Passive Effect, and a Gear Effect.</p>
+<ul>
+<li>
 <p><strong>(3.2.1)</strong> The Active Effect of a keyword is applied to an action and costs 1 EP per application.</p>
+</li>
+<li>
 <p><strong>(3.2.2)</strong> The Passive Effect of a Keyword is a constant effect on the character.</p>
+</li>
+<li>
 <p><strong>(3.2.3)</strong> The Gear Effect of all keywords possessed by the item are constantly applied to the item passively.</p>
+</li>
+</ul>
 <p><strong>(3.3)</strong> An Entity can only benefit from a limited number of ongoing passive effects at one time, managed through two types of slots</p>
+<ul>
+<li>
 <p><strong>(3.3.1)</strong> Innate Passive Slots: These are for keywords on the entity.</p>
 <ul>
 <li>
@@ -2405,6 +2491,8 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <p>During Downtime, a player may choose to slot or unslot their keywords as passive.</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(3.3.2)</strong> Gear Passive Slots: These are for keywords on equipped items.</p>
 <ul>
 <li>
@@ -2414,27 +2502,63 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <p>A character may choose to slot or unslot a gear passive as an action.</p>
 </li>
 </ul>
+</li>
+</ul>
 <p><strong>(3.4)</strong>Universal Keyword Rules:</p>
+<ul>
+<li>
 <p><strong>(3.4.1)</strong> If a Keyword says you can do something the rules say you cannot, you can when the Keyword is applied.</p>
+</li>
+<li>
 <p><strong>(3.4.2)</strong> All Keyword applications cost 1 EP per Keyword unless the total cost is reduced or paid by another source.</p>
+</li>
+<li>
 <p><strong>(3.4.3)</strong> A Single Keyword cannot be applied to an effect multiple times unless that Keyword requires a choice. Each choice is a separate instance of the Keyword.</p>
+</li>
+<li>
 <p><strong>(3.4.4)</strong> All Boost and Status Keywords grant a Tag that has specific triggers that define when they are removed and how they are resolved.</p>
+</li>
+<li>
 <p><strong>(3.4.5)</strong> All Flaw Keywords require a chosen Keyword to replace the flaw's active ability. This chosen keyword is the flaw's Compensation Keyword.</p>
+</li>
+<li>
 <p><strong>(3.4.6)</strong> When an Entity or Item receives a flaw they may also take an additional Keyword that does not count towards their progression.</p>
+</li>
+<li>
 <p><strong>(3.4.7)</strong> An Entity or Item is Limited to one Flaw Keyword.</p>
+</li>
+<li>
 <p><strong>(3.4.8)</strong> If a Keyword alters a mechanic by a numerical value, if it is not based on a Stat Value (1-5), then it is assumed to be ±1 or a Multiplier.</p>
+</li>
+</ul>
 <p><strong>(3.5)</strong> Simple Awakening</p>
+<ul>
+<li>
 <p><strong>(3.5.1)</strong> When a Character awakens if you want an easy way to pick the three Keywords you can choose the category 1-3 keyword of the same color as the character’s Seed Keyword.</p>
+</li>
+<li>
 <p><strong>(3.5.2)</strong> If the package contains a Keyword the character already has as their Seed Keyword, select another Keyword of the same color to replace the duplicate.</p>
+</li>
+</ul>
 <h3 id="40-animations">4.0: Animations</h3>
 <p>Animations are entities with simplified rules, often created or controlled by Characters, and are commonly summoned creatures, machines, or otherwise autonomous entities.</p>
 <p><strong>(4.1)</strong> An Animation starts at Level 0 with a single seed keyword and all stats set to 1, same as a Character.</p>
 <p><strong>(4.2)</strong> An Animation also starts with 3 Values (HP, SP, EP) with a maximum of 10, Same as a Character.</p>
-<p><strong>(4.2.1)</strong> An Animation is affected by actions, conditions, and tags in the same way as a Character.</p>
+<ul>
+<li><strong>(4.2.1)</strong> An Animation is affected by actions, conditions, and tags in the same way as a Character.</li>
+</ul>
 <p><strong>(4.3)</strong> An Animation will not advance on its own, it maintains a level one below its master or controller.</p>
+<ul>
+<li>
 <p><strong>(4.3.1)</strong> Animations used as NPCs or that otherwise have no master have their level set by the Curator.</p>
+</li>
+<li>
 <p><strong>(4.3.2)</strong> An Animation can be designated as a Minion</p>
+</li>
+<li>
 <p><strong>(4.3.3)</strong> A Minion has a Max HP of 1 and is defeated if any EV exceeds its Resistance.</p>
+</li>
+</ul>
 <p><strong>(4.4)</strong> An Animation begins at Level 0 with all stats at 1 (for a base total of 9 stat points). For each level above 0, an Animation gains 1 keyword and 1 stat point to allocate. This simple progression means an Animation’s total stat points will always be equal to <strong>9 + its level</strong>, providing a quick way to budget stats for a new Animation or verify an existing one.</p>
 <p><strong>(4.5)</strong> An Animation has a number of innate passive slots equal to their level to a maximum of 5.</p>
 <p><strong>(4.6)</strong> Animations may have a number of Gear Passives slotted equal to their Expertise.</p>
@@ -2459,13 +2583,29 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <h3 id="50-npcs">5.0: NPCs</h3>
 <p>An NPC is an Entity that is fully controlled by the Curator.</p>
 <p><strong>(5.1)</strong> The type of entity and NPC determines its characteristics.</p>
+<ul>
+<li>
 <p><strong>(5.1.1)</strong> NPC Characters include fully built characters that portray allies, villains and companions on par with the growth and potential of the players.</p>
+</li>
+<li>
 <p><strong>(5.1.2)</strong> NPC Animations include minions, summons, or similar background characters that have little to no narrative or mechanical impact to the scene.</p>
+</li>
+</ul>
 <p><strong>(5.2)</strong> Companions are a special type of NPC bonded to a player character.</p>
+<ul>
+<li>
 <p><strong>(5.2.1)</strong> Companions are always 1 level lower than their bonded PC.</p>
+</li>
+<li>
 <p><strong>(5.2.2.)</strong> They act independently and are controlled by the Curator, but must be passed priority by their bonded Character to act during a situation.</p>
+</li>
+<li>
 <p><strong>(5.2.3)</strong> Only one companion may be bonded per PC at a time unless stated otherwise.</p>
+</li>
+<li>
 <p><strong>(5.2.4)</strong> A companion can be bonded during Downtime for 1 Karma.</p>
+</li>
+</ul>
 <h3 id="60-gear">6.0: Gear</h3>
 <p>All entities can utilize items and gear to perform actions or gain passive effects.</p>
 <p><strong>(6.1)</strong> A character may carry any number of items that are narratively appropriate, but they are limited to a number of passive equipment keywords equal to their Expertise stat.</p>
@@ -2474,8 +2614,14 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <p><strong>(6.4)</strong>An item can hold 1 keyword per level, up to a maximum of 5 keywords at Level 4.</p>
 <p><strong>(6.5)</strong> When using the item to create an effect, use the item’s level in place of the character’s level to calculate the Effect Value (EV). If the level of the item is higher than the character's, use the character's level instead.</p>
 <p><strong>(6.6)</strong> When using gear to create an effect, you may combine any of its embedded keywords. </p>
+<ul>
+<li>
 <p><strong>(6.6.1)</strong> Only those keywords can be used in the effect for no cost. Any innate keywords added to the item's effect cost 1 EP each.</p>
+</li>
+<li>
 <p><strong>(6.6.2)</strong> The gear effect of each keyword applies to the item it is embedded in passively and does not consume the character’s equipment passive slots.</p>
+</li>
+</ul>
 <p><strong>(6.7)</strong> An item has a single Durability clock of 2, each successful effect that targets an item reduces its clock by one.</p>
 <ul>
 <li>
@@ -2517,16 +2663,38 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 <p><strong>(8.2)</strong> During Downtime, a character can spend Karma to grant a civil system to a faction.</p>
 <p><strong>(8.3)</strong> A Faction’s level is determined by the number of Civil Systems they have Established.</p>
 <p><strong>(8.4)</strong> Civil Systems and Faction Growth:</p>
+<ul>
+<li>
 <p><strong>(8.4.1)</strong> Food - Aid Unlocked: Info, Rumors, secrets, maps, and intelligence.</p>
+</li>
+<li>
 <p><strong>(8.4.2)</strong> Water - Aid Unlocked: Access, Passes, safehouses, and travel routes.</p>
+</li>
+<li>
 <p><strong>(8.4.3)</strong> Shelter - Aid Unlocked: Downtime, Free rest, conversion, recovery.</p>
+</li>
+<li>
 <p><strong>(8.4.4)</strong> Infrastructure - Aid Unlocked: Equipment, Tools, upgrades, and unique gear.</p>
+</li>
+<li>
 <p><strong>(8.4.5)</strong> Humanitarian - Aid Unlocked: Protection, Guards, rescues, or sheltering.</p>
+</li>
+<li>
 <p><strong>(8.4.6)</strong> Education - Aid Unlocked: Training, Boosts, upgrades, techniques.</p>
+</li>
+<li>
 <p><strong>(8.4.7)</strong> Healthcare - Aid Unlocked: Companions, Allies, or NPCs.</p>
+</li>
+<li>
 <p><strong>(8.4.8)</strong> Government - Aid Unlocked: Influence, Change laws, secure leverage.</p>
+</li>
+<li>
 <p><strong>(8.4.9)</strong> Commerce - Aid Unlocked: Trade Goods, Surpluses and rare access.</p>
+</li>
+<li>
 <p><strong>(8.4.10)</strong> Military - Aid Unlocked: Property, Bases, fortresses, and command.</p>
+</li>
+</ul>
 <p><strong>(8.5)</strong> Characters earn or lose Faction Trust through story actions, success or failure of a situation, or defeat of faction members.</p>
 <p><strong>(8.6) Faction Scale: Population and Member Proficiency</strong></p>
 <p>A Faction's Level is not just an abstract measure of its development; it provides a direct approximation of its size and the general competence of its members. This allows a Curator to quickly assess a faction's influence and strength at a glance.</p>
@@ -2558,17 +2726,17 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 </ul>
 </li>
 <li>
-<p><strong>(8.5.2) Member Proficiency:</strong> By default, the Level of a generic, unnamed member of a faction (such as a guard, artisan, or citizen) is considered <strong>equal to the Faction's Level</strong>. This serves as a baseline for generating common NPCs quickly. Named characters, leaders, veterans, and other specialists are exceptions and should be built as distinct entities with their own levels.</p>
+<p><strong>(8.6.2) Member Proficiency:</strong> By default, the Level of a generic, unnamed member of a faction (such as a guard, artisan, or citizen) is considered <strong>equal to the Faction's Level</strong>. This serves as a baseline for generating common NPCs quickly. Named characters, leaders, veterans, and other specialists are exceptions and should be built as distinct entities with their own levels.</p>
 </li>
 </ul>
-<p><strong>(8.6) Faction Leadership: The Civil Council</strong></p>
+<p><strong>(8.7) Faction Leadership: The Civil Council</strong></p>
 <p>For a faction to be more than just a collection of individuals, it requires structure. Every Civil System established by a faction is overseen by a leader, an NPC who champions that system's function and represents its interests. Collectively, these leaders form the faction's "Civil Council."</p>
 <ul>
 <li>
-<p><strong>(8.6.1) The Mandate of Leadership:</strong> Every established Civil System (as listed in 8.4) must have a designated leader.</p>
+<p><strong>(8.7.1) The Mandate of Leadership:</strong> Every established Civil System (as listed in 8.4) must have a designated leader.</p>
 </li>
 <li>
-<p><strong>(8.6.2) Generating a Civil Leader:</strong> To generate a leader for a specific Civil System on the fly:</p>
+<p><strong>(8.7.2) Generating a Civil Leader:</strong> To generate a leader for a specific Civil System on the fly:</p>
 <ol>
 <li>
 <p><strong>Inherit the Goal:</strong> The leader's Primary Motivation (Goal) is always identical to the faction's Primary Motivation.</p>
@@ -2579,7 +2747,7 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 </ol>
 </li>
 <li>
-<p><strong>(8.6.3) Civil System Motivation Matrix:</strong></p>
+<p><strong>(8.7.3) Civil System Motivation Matrix:</strong></p>
 <ul>
 <li>
 <p><strong>Food (S0 / Null):</strong> The leader's Secondary Motivation is <strong>Discovery</strong>.</p>
@@ -2614,17 +2782,17 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 </ul>
 </li>
 </ul>
-<p><strong>(8.7) The Nation Tier: Alliances and Ideology</strong></p>
+<p><strong>(8.8) The Nation Tier: Alliances and Ideology</strong></p>
 <p>When Factions unite, they can form a <strong>Nation</strong>, a meta-entity representing a formal alliance. The identity of a Nation is not defined by new resources, but by the combined ideology of its core leadership.</p>
 <ul>
 <li>
-<p><strong>(8.7.1) Formation:</strong> A Nation can be formed when <strong>three or more Factions</strong> agree to a formal union. This is a major narrative event that establishes a new power bloc in the world.</p>
+<p><strong>(8.8.1) Formation:</strong> A Nation can be formed when <strong>three or more Factions</strong> agree to a formal union. This is a major narrative event that establishes a new power bloc in the world.</p>
 </li>
 <li>
-<p><strong>(8.7.2) The National Council:</strong> The leadership of the Nation is its Council, composed of the primary leaders from each member Faction.</p>
+<p><strong>(8.8.2) The National Council:</strong> The leadership of the Nation is its Council, composed of the primary leaders from each member Faction.</p>
 </li>
 <li>
-<p><strong>(8.7.3) The Trinity of Governance &amp; National Profile:</strong> A Nation's 5-Point Motivational Profile is a composite, derived directly from its three most influential founding members, known as the <strong>Trinity of Governance</strong>.</p>
+<p><strong>(8.8.3) The Trinity of Governance &amp; National Profile:</strong> A Nation's 5-Point Motivational Profile is a composite, derived directly from its three most influential founding members, known as the <strong>Trinity of Governance</strong>.</p>
 <ol>
 <li>
 <p><strong>The Goal Faction:</strong> The Faction with the highest Level at the time of formation becomes the ideological core. The Nation's <strong>Primary Motivation (Goal)</strong> is inherited directly from this Faction.</p>
@@ -2641,7 +2809,7 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 </ol>
 </li>
 <li>
-<p><strong>(8.7.4) National Scale and Identity:</strong></p>
+<p><strong>(8.8.4) National Scale and Identity:</strong></p>
 <ul>
 <li>
 <p><strong>Level:</strong> A Nation does not have its own Level. Its power and influence are represented by the combined Levels and resources of its member Factions.</p>
@@ -2695,6 +2863,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Karma is a special resource representing narrative influence, earned through dramatic roleplay and as a reward for resolving a situation.</p>
 <p><strong>(9.1)</strong> Karma can be spent at any time to reroll the result of an action or effort roll. The new roll replaced the previous.</p>
 <p><strong>(9.3)</strong> Karma can also be spent during a situation or downtime to gain specific benefits:</p>
+<ul>
+<li>
 <p><strong>(9.3.1) Rest (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2704,6 +2874,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Restore all Values to Max (No Karma Cost)</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.2) Restore (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2713,6 +2885,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Remove the Injured Condition</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.3) Recharge (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2722,6 +2896,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Upgrade one gear item to be at an equal level with your character</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.4) Learn (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2731,6 +2907,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Begin your next situation with Surprise</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.5) Grow ( Level/2 Karma, rounded Up)</strong></p>
 <ul>
 <li>
@@ -2740,6 +2918,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Add a new Innate Keyword to your Character, limited to once per Downtime</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.6) Create (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2749,6 +2929,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Grant a Faction a keyword to utilize for Gear and Entities</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.7) Inspire (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2758,6 +2940,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Grant a Faction a new Civil System and increase its Level</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.8) Mentor (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2767,6 +2951,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <p>Downtime: Bond with an Animation or Companion limited to one level below your character's level</p>
 </li>
 </ul>
+</li>
+<li>
 <p><strong>(9.3.9) Amplify (1 Karma)</strong></p>
 <ul>
 <li>
@@ -2774,6 +2960,8 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 </li>
 <li>
 <p>Downtime: Create a permanent Environmental Effect or Trap equal to your level</p>
+</li>
+</ul>
 </li>
 </ul>
 <blockquote>
