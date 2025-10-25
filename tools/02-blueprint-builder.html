@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Blueprint Builder</title>
+    <style>
+        /* GLOBAL STYLES & ART-DECO THEME */
+        :root {
+            --color-null: #dea193;
+            --color-silver: #a7a9ac;
+            --color-yellow: #f5d36c;
+            --color-green: #688d4c;
+            --color-black: #414042;
+            --color-orange: #f7855d;
+            --color-white: #e3e1da;
+            --color-red: #a95b5a;
+            --color-blue: #88bfe8;
+            --color-purple: #957fa3;
+            --color-background: #222222;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-white);
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        h2, h3, h4 {
+            font-weight: normal;
+            color: var(--color-null);
+        }
+
+        h3 {
+            color: var(--color-silver);
+            margin-top: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        h4 {
+            color: var(--color-yellow);
+        }
+
+        .section {
+            border: 1px solid var(--color-black);
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        
+        button {
+            background-color: var(--color-black);
+            color: var(--color-white);
+            border: 1px solid var(--color-silver);
+            padding: 8px 12px;
+            font-family: Calibri, sans-serif;
+            font-size: 10pt;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: var(--color-silver);
+            color: var(--color-black);
+        }
+
+        .button-small {
+            padding: 4px 8px;
+            font-size: 9pt;
+        }
+        .remove-button {
+            background-color: var(--color-red);
+        }
+        
+        input[type="text"], input[type="number"], textarea, select {
+            background-color: #333;
+            border: 1px solid var(--color-silver);
+            color: var(--color-white);
+            padding: 8px;
+            font-family: Calibri, sans-serif;
+            width: 100%;
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position-x: 100%;
+            background-position-y: 5px;
+        }
+
+        label {
+            font-size: 10pt;
+            color: var(--color-silver);
+            display: block;
+            margin-top: 10px;
+        }
+
+        .output-section {
+            position: relative;
+        }
+
+        #copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        #output-string {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11pt;
+            background-color: #1a1a1a;
+            color: var(--color-yellow);
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .grid-5, .grid-3, .grid-2 {
+            display: grid;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-2 { grid-template-columns: 2fr 1fr; }
+
+        .hidden { display: none; }
+        .card {
+            background-color: #333;
+            border-left: 3px solid var(--color-blue);
+            padding: 15px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .card .remove-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .level-up-card {
+            border-left-color: var(--color-green);
+        }
+        .animation-card {
+            border-left-color: var(--color-yellow);
+        }
+        .faction-card {
+             border-left-color: var(--color-purple);
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #444;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="builder-container">
+        <!-- OUTPUT SECTION -->
+        <div class="section output-section">
+            <h2>Generated Blueprint String</h2>
+            <textarea id="output-string" readonly></textarea>
+            <button id="copy-button" class="button-small">Copy</button>
+        </div>
+
+        <!-- CHARACTER BUILDER -->
+        <div class="section">
+            <h2>Character Builder</h2>
+            
+            <div id="character-builder">
+                <h3>Motivational Profile</h3>
+                <div class="grid-5" id="profile-selectors">
+                    <div><label for="goal">Goal</label><select id="goal"></select></div>
+                    <div><label for="method">Method</label><select id="method"></select></div>
+                    <div><label for="purpose">Purpose</label><select id="purpose"></select></div>
+                    <div><label for="external">External Conflict</label><select id="external"></select></div>
+                    <div><label for="internal">Internal Conflict</label><select id="internal"></select></div>
+                </div>
+
+                <h3>Progression</h3>
+                <div><label for="seed-keyword">Seed Keyword</label><select id="seed-keyword"></select></div>
+                
+                <div id="awakening-card" class="card">
+                    <h4>Level 1: Awakening</h4>
+                    <div class="grid-3" id="awakening-keywords">
+                        <div><label>Keyword 1</label><select></select></div>
+                        <div><label>Keyword 2</label><select></select></div>
+                        <div><label>Keyword 3</label><select></select></div>
+                    </div>
+                    <hr>
+                    <label style="display: inline-flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" class="add-flaw-checkbox" data-level="1"> Add Flaw Here
+                    </label>
+                    <div class="flaw-selectors-container hidden">
+                        <div class="grid-2">
+                           <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
+                           <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="level-up-container"></div>
+                <button id="add-level-button" style="margin-top: 15px;">Add Level</button>
+            </div>
+        </div>
+
+        <!-- ATTACHMENTS BUILDER -->
+        <div class="section">
+            <h2>Attachments</h2>
+            <div id="attachments-container"></div>
+            <div class="grid-3" style="margin-top: 15px; align-items: flex-end;">
+                 <div style="grid-column: 1 / 3;"><label for="add-attachment-type">Attachment Type</label><select id="add-attachment-type">
+                    <option value="item">Item</option>
+                    <option value="animation">Animation</option>
+                    <option value="faction">Faction</option>
+                </select></div>
+                <button id="add-attachment-button">Add Attachment</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const MOTIVATIONS = { '0': 'Discovery', '1': 'Absolution', '2': 'Ambition', '3': 'Security', '4': 'Legacy', '5': 'Innovation', '6': 'Purity', '7': 'Glory', '8': 'Influence', '9': 'Faith' };
+            const STAT_CODES = { 'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn', 'W': 'Wit', 'E': 'Expertise', 'T': 'Technique', 'P': 'Power', 'I': 'Influence', 'F': 'Force' };
+            const CIVIL_SYSTEMS = { 'S0': 'Food', 'S1': 'Water', 'S2': 'Shelter', 'S3': 'Infrastructure', 'S4': 'Humanitarian', 'S5': 'Education', 'S6': 'Healthcare', 'S7': 'Government', 'S8': 'Commerce', 'S9': 'Military' };
+            const KEYWORDS = { '00':{name:"Restricted",intent:"A fundamental limitation or flaw."},'01':{name:"Aura",intent:"A tangible field of energy."},'02':{name:"Specialist",intent:"Focused mastery over a domain."},'03':{name:"Alert",intent:"Preternatural awareness."},'04':{name:"Liberate",intent:"Freedom from restraint."},'05':{name:"Mark",intent:"Expose a fundamental weakness."},'06':{name:"Indirect",intent:"Bypass obstacles to strike."},'07':{name:"Adaptive",intent:"Change an effect's nature."},'08':{name:"Gamble",intent:"Reliance on pure chance."},'09':{name:"Edit",intent:"Fundamentally rewrite properties."},'10':{name:"Bane",intent:"A specific, acute vulnerability."},'11':{name:"Traveller",intent:"Innate unconventional movement."},'12':{name:"Martial",intent:"Proficiency in close-quarters combat."},'13':{name:"Attuned",intent:"A deep link to a target."},'14':{name:"Augment",intent:"Grant additional abilities."},'15':{name:"Impair",intent:"Drains a target's stamina."},'16':{name:"Reactive",intent:"Weave abilities into defensive maneuvers."},'17':{name:"Phasing",intent:"Become intangible to strike essence."},'18':{name:"Brutal",intent:"Overwhelmingly powerful critical blows."},'19':{name:"Translocate",intent:"Mastery of teleportation."},'20':{name:"Anxious",intent:"Difficulty with focus or precision."},'21':{name:"Acrobatic",intent:"Extraordinary grace and movement."},'22':{name:"Sentry",intent:"Rapidly assess a target's nature."},'23':{name:"Eidetic",intent:"A perfect, flawless memory."},'24':{name:"Haste",intent:"A surge of supernatural speed."},'25':{name:"Slow",intent:"Reduce a target's ability to act."},'26':{name:"Snap",intent:"An effect too fast to be reacted to."},'27':{name:"Condense",intent:"Applying greater force by concentration."},'28':{name:"Rapid",intent:"A flurry of multiple strikes."},'29':{name:"Reckless",intent:"Abandoning all defense for pure offense."},'30':{name:"Hesitant",intent:"Inability to react quickly."},'31':{name:"Sturdy",intent:"Unshakeable physical presence."},'32':{name:"Brawler",intent:"Expertise in grappling and maneuvers."},'33':{name:"Stubborn",intent:"Refusal to accept failure."},'34':{name:"Ward",intent:"Negate a single incoming threat."},'35':{name:"Daze",intent:"A disorienting blow."},'36':{name:"Sculpt",intent:"Alter the superficial shape or form."},'37':{name:"Defensive",intent:"Outlasting through superior fortitude."},'38':{name:"Impact",intent:"Immense kinetic force."},'39':{name:"Shift",intent:"Fundamentally alter one's own form."},'40':{name:"Feeble",intent:"Chronic physical weakness."},'41':{name:"Survivor",intent:"Incredible tenacity for life."},'42':{name:"Stoic",intent:"Unshakable mental focus."},'43':{name:"Ageless",intent:"Outside the normal flow of time."},'44':{name:"Bless",intent:"A boon of fortune."},'45':{name:"Curse",intent:"A withering hex of misfortune."},'46':{name:"Piercing",intent:"Unstoppable, penetrating force."},'47':{name:"Flux",intent:"Convert vitality or energy into power."},'48':{name:"Siphon",intent:"Forcibly transfer life force."},'49':{name:"Animate",intent:"Granting temporary life to the inanimate."},'50':{name:"Gremlins",intent:"Persistent streak of bad luck."},'51':{name:"Sensor",intent:"Possession of a supernatural sense."},'52':{name:"Improvisor",intent:"Talent for using components in novel ways."},'53':{name:"Crafty",intent:"Knack for creating permanent effects."},'54':{name:"Charge",intent:"Infusion of raw energy."},'55':{name:"Bind",intent:"Entraps or ensnares a target."},'56':{name:"Imbue",intent:"Temporarily investing an object with power."},'57':{name:"Material",intent:"Consume an object to fuel an effect."},'58':{name:"Leverage",intent:"Mastery of physics and positioning."},'59':{name:"Manifest",intent:"Create temporary, functional items."},'60':{name:"Vulnerable",intent:"A glaring weakness to precise strikes."},'61':{name:"Tolerant",intent:"Exceptional resilience to negative effects."},'62':{name:"Deadeye",intent:"Expert eye for weak points."},'63':{name:"Immunized",intent:"Innate defense against a specific ailment."},'64':{name:"Cure",intent:"A purifying power that cleanses afflictions."},'65':{name:"Weaken",intent:"Corrodes a target's defenses."},'66':{name:"Sticky",intent:"An effect that adheres and triggers later."},'67':{name:"Restore",intent:"A healing power that mends wounds."},'68':{name:"Exploit",intent:"Turning an enemy's weakness against them."},'69':{name:"Growth",intent:"Manipulate a target's age and biology."},'70':{name:"Limited",intent:"A permanent reduction in vital reserves."},'71':{name:"Resilient",intent:"A permanent increase in vital reserves."},'72':{name:"Font",intent:"Use any personal energy to fuel powers."},'73':{name:"Insulated",intent:"Immunity to environmental dangers."},'74':{name:"Regen",intent:"Rapid, continuous healing over time."},'75':{name:"Blight",intent:"A decaying curse that rots life force."},'76':{name:"Area",intent:"Blankets a wide area."},'77':{name:"Ranged",intent:"A projectile or thrown effect."},'78':{name:"Multiply",intent:"Strike multiple, discrete targets."},'79':{name:"Split",intent:"Divide oneself into multiple copies."},'80':{name:"Awkward",intent:"Social or mental clumsiness."},'81':{name:"Charismatic",intent:"Innate magnetism and personality."},'82':{name:"Leader",intent:"Natural command over allies."},'83':{name:"Insightful",intent:"Deep empathy and perception."},'84':{name:"Enhance",intent:"A boon of targeted inspiration."},'85':{name:"Silence",intent:"Severs connection to inner power."},'86':{name:"Splash",intent:"Effect splashes from the primary target."},'87':{name:"Lingering",intent:"An effect that persists or has lasting impact."},'88':{name:"Spread",intent:"Move an affliction from one target to another."},'89':{name:"Potent",intent:"Applies secondary effects even when resisted."},'90':{name:"Mundane",intent:"Innate disconnect from essence."},'91':{name:"Aware",intent:"Sense and identify supernatural powers."},'92':{name:"Stealthy",intent:"Talent for concealment."},'93':{name:"Trickster",intent:"Use of illusion and misdirection."},'94':{name:"Obscure",intent:"A boon of concealment."},'95':{name:"Nullify",intent:"Disrupts a target's innate abilities."},'96':{name:"Chain",intent:"Effect leaps from one target to the next."},'97':{name:"Natural",intent:"Ability is treated as part of one's body."},'98':{name:"Ambience",intent:"Influence the surrounding environment."},'99':{name:"Channel",intent:"Share innate powers with others."}};
+
+            const container = document.getElementById('builder-container');
+            const outputStringEl = document.getElementById('output-string');
+
+            // --- HELPER FUNCTIONS ---
+            function createDropdown(options, placeholder, filterFn = () => true) {
+                const select = document.createElement('select');
+                if(placeholder) select.innerHTML = `<option value="">${placeholder}</option>`;
+                Object.entries(options).filter(filterFn).forEach(([value, name]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+                return select;
+            }
+             function createKeywordDropdown(placeholder, filterFn) {
+                const options = Object.fromEntries(Object.entries(KEYWORDS).map(([code, data]) => [code, `${code}: ${data.name}`]));
+                return createDropdown(options, placeholder, filterFn);
+            }
+
+            // --- DYNAMIC UI BUILDERS ---
+            function addLevelUpSection() {
+                const levelUpContainer = document.getElementById('level-up-container');
+                const currentLevel = 2 + levelUpContainer.children.length;
+                if (currentLevel > 9) {
+                    alert("Maximum level (9) reached.");
+                    return;
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'card level-up-card';
+                card.dataset.level = currentLevel;
+                card.innerHTML = `
+                    <h4>Level ${currentLevel}</h4>
+                    <button class="remove-button button-small">Remove</button>
+                    <div class="grid-2">
+                        <div><label>Keywords (Pick 2)</label></div>
+                        <div><label>Stat Point${currentLevel >= 6 ? 's (Pick 2)' : ''}</label></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="grid-2 keyword-selectors"></div>
+                        <div class="stat-selectors"></div>
+                    </div>
+                    <hr>
+                    <label style="display: inline-flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" class="add-flaw-checkbox" data-level="${currentLevel}"> Add Flaw Here
+                    </label>
+                    <div class="flaw-selectors-container hidden">
+                         <div class="grid-2">
+                           <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
+                           <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
+                        </div>
+                    </div>
+                `;
+
+                const keywordGrid = card.querySelector('.keyword-selectors');
+                keywordGrid.appendChild(createKeywordDropdown('Keyword 1...'));
+                keywordGrid.appendChild(createKeywordDropdown('Keyword 2...'));
+
+                const statContainer = card.querySelector('.stat-selectors');
+                statContainer.appendChild(createDropdown(STAT_CODES, 'Stat...'));
+                if (currentLevel >= 6) {
+                    statContainer.appendChild(createDropdown(STAT_CODES, 'Stat...'));
+                }
+                
+                populateFlawDropdowns(card);
+                levelUpContainer.appendChild(card);
+                generateBlueprintString();
+            }
+
+            function addAttachment(type) {
+                const attachmentsContainer = document.getElementById('attachments-container');
+                const card = document.createElement('div');
+                card.className = `card ${type}-card`;
+                card.dataset.type = type;
+
+                if (type === 'item') {
+                    card.innerHTML = `<h4>Item Attachment</h4><button class="remove-button button-small">Remove</button><label>Item Level</label>`;
+                    const levelSelect = createDropdown({0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9}, 'Lvl...');
+                    levelSelect.classList.add('item-level-select');
+                    card.appendChild(levelSelect);
+                    card.innerHTML += `<label>Keywords</label><div class="keyword-slots"></div>`;
+                } else if (type === 'animation') {
+                     card.innerHTML = `<h4>Animation Attachment</h4><button class="remove-button button-small">Remove</button><div class="keyword-slots"></div><button class="button-small add-anim-keyword">Add Keyword</button>`;
+                     const seedSlot = document.createElement('div');
+                     seedSlot.innerHTML = `<label>Seed Keyword</label>`;
+                     seedSlot.appendChild(createKeywordDropdown('Seed...'));
+                     card.querySelector('.keyword-slots').appendChild(seedSlot);
+                } else if (type === 'faction') {
+                    card.innerHTML = `<h4>Faction Attachment</h4><button class="remove-button button-small">Remove</button>...`; // Simplified for now
+                }
+                
+                attachmentsContainer.appendChild(card);
+                generateBlueprintString();
+            }
+            
+            function populateFlawDropdowns(parent) {
+                parent.querySelector('.flaw-keyword-select').innerHTML = createKeywordDropdown('Select Flaw...', ([code]) => code.endsWith('0')).innerHTML;
+                parent.querySelector('.comp-keyword-select').innerHTML = createKeywordDropdown('Select Compensation...', ([code]) => !code.endsWith('0')).innerHTML;
+            }
+
+            // --- CORE GENERATION LOGIC ---
+            function generateBlueprintString() {
+                let parts = [];
+                
+                // Profile
+                const profile = Array.from(document.getElementById('profile-selectors').querySelectorAll('select')).map(s => s.value || '0').join('');
+                
+                // Progression Segments
+                let progressionSegments = new Map();
+
+                const seed = document.getElementById('seed-keyword').value;
+                if (seed) progressionSegments.set(0, seed);
+
+                const awakeningKws = Array.from(document.getElementById('awakening-keywords').querySelectorAll('select')).map(s => s.value).filter(Boolean);
+                if (awakeningKws.length > 0) progressionSegments.set(1, awakeningKws.join('.'));
+
+                Array.from(document.getElementById('level-up-container').children).forEach(card => {
+                    const level = card.dataset.level;
+                    const kws = Array.from(card.querySelectorAll('.keyword-selectors select')).map(s => s.value).filter(Boolean);
+                    const stats = Array.from(card.querySelectorAll('.stat-selectors select')).map(s => s.value).filter(Boolean);
+                    let segment = kws.join('.');
+                    if (stats.length > 0) segment += `.${stats.join('')}`;
+                    if (segment) progressionSegments.set(parseInt(level), segment);
+                });
+                
+                // Flaw Insertion
+                const checkedFlawBox = document.querySelector('.add-flaw-checkbox:checked');
+                if (checkedFlawBox) {
+                    const level = parseInt(checkedFlawBox.dataset.level);
+                    const container = checkedFlawBox.closest('.card, #awakening-card');
+                    const flaw = container.querySelector('.flaw-keyword-select').value;
+                    const comp = container.querySelector('.comp-keyword-select').value;
+                    if(flaw && comp) {
+                        let segment = progressionSegments.get(level) || '';
+                        segment += `+${flaw}${comp}`;
+                        progressionSegments.set(level, segment);
+                    }
+                }
+
+                // Assemble String
+                let str = `C:${profile}`;
+                const sortedLevels = Array.from(progressionSegments.keys()).sort((a,b)=>a-b);
+                sortedLevels.forEach(level => {
+                    str += `-${progressionSegments.get(level)}`;
+                });
+
+                // Attachments
+                Array.from(document.getElementById('attachments-container').children).forEach(card => {
+                    const type = card.dataset.type;
+                    if (type === 'item') {
+                        const level = card.querySelector('.item-level-select').value;
+                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(s => s.value).filter(Boolean);
+                        if(level){
+                             str += `@I:L${level}`;
+                             if(kws.length > 0) str += `-${kws.join('.')}`;
+                        }
+                    } else if (type === 'animation') {
+                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(s => s.value).filter(Boolean);
+                         if(kws.length > 0) {
+                             str += `@A:${kws.join('.')}`;
+                         }
+                    }
+                });
+                
+                outputStringEl.value = str;
+            }
+
+
+            // --- EVENT LISTENERS ---
+            container.addEventListener('change', generateBlueprintString);
+
+            document.getElementById('add-level-button').addEventListener('click', addLevelUpSection);
+            document.getElementById('add-attachment-button').addEventListener('click', () => {
+                const type = document.getElementById('add-attachment-type').value;
+                addAttachment(type);
+            });
+            
+            document.getElementById('copy-button').addEventListener('click', () => {
+                outputStringEl.select();
+                document.execCommand('copy');
+            });
+            
+            // Delegated event listeners for dynamic elements
+            container.addEventListener('click', e => {
+                if(e.target.classList.contains('remove-button')) {
+                    e.target.closest('.card').remove();
+                    generateBlueprintString();
+                }
+                if(e.target.classList.contains('add-anim-keyword')) {
+                    const keywordSlots = e.target.previousElementSibling;
+                    const slot = document.createElement('div');
+                    const labelNum = keywordSlots.children.length;
+                    slot.innerHTML = `<label>Keyword ${labelNum+1}</label>`;
+                    slot.appendChild(createKeywordDropdown('Keyword...'));
+                    keywordSlots.appendChild(slot);
+                    generateBlueprintString();
+                }
+            });
+
+            container.addEventListener('change', e => {
+                 if(e.target.classList.contains('item-level-select')) {
+                    const level = parseInt(e.target.value) || 0;
+                    const slotsContainer = e.target.closest('.card').querySelector('.keyword-slots');
+                    slotsContainer.innerHTML = '';
+                    const maxKeywords = Math.min(level, 5);
+                    for(let i=0; i<maxKeywords; i++) {
+                        slotsContainer.appendChild(createKeywordDropdown(`Keyword ${i+1}...`));
+                    }
+                    generateBlueprintString();
+                 }
+                 if(e.target.classList.contains('add-flaw-checkbox')) {
+                    const checkbox = e.target;
+                    const container = checkbox.closest('.card, #awakening-card');
+                    container.querySelector('.flaw-selectors-container').classList.toggle('hidden', !checkbox.checked);
+
+                    document.querySelectorAll('.add-flaw-checkbox').forEach(box => {
+                        if (box !== checkbox) {
+                            box.disabled = checkbox.checked;
+                        }
+                    });
+                    generateBlueprintString();
+                 }
+            });
+
+
+            // --- INITIALIZATION ---
+            function init() {
+                // Populate Profile
+                document.querySelectorAll('#profile-selectors select').forEach(sel => {
+                    Object.entries(MOTIVATIONS).forEach(([val, name]) => sel.add(new Option(name, val)));
+                });
+                
+                // Populate static keyword dropdowns
+                const seedSelect = document.getElementById('seed-keyword');
+                seedSelect.innerHTML = createKeywordDropdown('Select Seed...').innerHTML;
+
+                document.querySelectorAll('#awakening-keywords select').forEach(sel => {
+                    sel.innerHTML = createKeywordDropdown('Select Keyword...').innerHTML;
+                });
+                
+                populateFlawDropdowns(document.getElementById('awakening-card'));
+                
+                generateBlueprintString();
+            }
+
+            init();
+
+        });
+    </script>
+</body>
+</html>

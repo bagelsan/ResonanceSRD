@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Dice Roller</title>
+    <style>
+        /* GLOBAL STYLES & ART-DECO THEME */
+        :root {
+            --color-null: #dea193;
+            --color-silver: #a7a9ac;
+            --color-yellow: #f5d36c;
+            --color-green: #688d4c;
+            --color-black: #414042;
+            --color-orange: #f7855d;
+            --color-white: #e3e1da;
+            --color-red: #a95b5a;
+            --color-blue: #88bfe8;
+            --color-purple: #957fa3;
+            --color-background: #222222;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-white);
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        h2, h3 {
+            font-weight: normal;
+            color: var(--color-null);
+        }
+
+        h3 {
+            color: var(--color-silver);
+            margin-top: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .section {
+            border: 1px solid var(--color-black);
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        
+        button {
+            background-color: var(--color-blue);
+            color: var(--color-black);
+            font-weight: bold;
+            border: 1px solid var(--color-silver);
+            padding: 12px 15px;
+            font-family: Calibri, sans-serif;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background-color 0.2s, opacity 0.2s;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            background-color: var(--color-silver);
+        }
+
+        button:disabled {
+            background-color: var(--color-black);
+            color: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        input[type="number"] {
+            background-color: #333;
+            border: 1px solid var(--color-silver);
+            color: var(--color-white);
+            padding: 8px;
+            font-family: Calibri, sans-serif;
+            width: 100%;
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        label {
+            font-size: 10pt;
+            color: var(--color-silver);
+            display: block;
+            margin-top: 10px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .advantage-group {
+            margin-top: 10px;
+        }
+        .advantage-group label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 11pt;
+        }
+        
+        .checkbox-group label {
+             display: inline-flex;
+             align-items: center;
+             gap: 8px;
+             font-size: 11pt;
+        }
+
+        .output-section {
+            text-align: center;
+        }
+
+        #final-result-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: var(--color-yellow);
+            line-height: 1;
+        }
+        #final-result-label {
+            font-size: 1em;
+            color: var(--color-silver);
+            margin-bottom: 10px;
+        }
+        
+        #critical-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--color-red);
+            margin-top: 10px;
+            min-height: 2em;
+        }
+
+        #roll-log {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10pt;
+            text-align: left;
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            min-height: 100px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- OUTPUT -->
+        <div class="section output-section">
+            <div id="final-result-label">Effect Value / Effort Roll</div>
+            <div id="final-result-display">0</div>
+            <div id="critical-display"></div>
+            <pre id="roll-log">Roll log will appear here...</pre>
+        </div>
+
+        <!-- INPUTS -->
+        <div class="section">
+            <h2>Roll Modifiers</h2>
+            <div class="input-grid">
+                <div>
+                    <label for="level-input">Level</label>
+                    <input type="number" id="level-input" value="1" min="0">
+                </div>
+                <div>
+                    <label for="stat-input">Stat</label>
+                    <input type="number" id="stat-input" value="2" min="0">
+                </div>
+            </div>
+
+            <div class="advantage-group">
+                <label><input type="radio" name="advantage" value="normal" checked> Normal</label>
+                <label><input type="radio" name="advantage" value="advantage"> Advantage</label>
+                <label><input type="radio" name="advantage" value="disadvantage"> Disadvantage</label>
+            </div>
+            
+            <div class="checkbox-group" style="margin-top: 15px;">
+                <label>
+                    <input type="checkbox" id="add-level-twice-checkbox"> Add Level a Second Time
+                </label>
+            </div>
+
+            <button id="roll-button">Roll!</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const levelInput = document.getElementById('level-input');
+            const statInput = document.getElementById('stat-input');
+            const addLevelTwiceCheckbox = document.getElementById('add-level-twice-checkbox');
+            const rollButton = document.getElementById('roll-button');
+            const finalResultDisplay = document.getElementById('final-result-display');
+            const criticalDisplay = document.getElementById('critical-display');
+            const rollLog = document.getElementById('roll-log');
+
+            function performRoll() {
+                // 1. Disable button and clear previous results for anticipation
+                rollButton.disabled = true;
+                criticalDisplay.textContent = "";
+                rollLog.textContent = "Rolling...";
+
+                // 2. Perform all calculations in the background
+                let log = "";
+                const level = parseInt(levelInput.value) || 0;
+                const stat = parseInt(statInput.value) || 0;
+                const advantageStatus = document.querySelector('input[name="advantage"]:checked').value;
+                
+                let standardRoll = 0;
+                let runningTotal = 0;
+                let isCritical = false;
+
+                while (true) {
+                    const d1 = Math.floor(Math.random() * 10) + 1;
+                    const d2 = Math.floor(Math.random() * 10) + 1;
+                    log += `> Rolled: ${d1} (Main) and ${d2} (Lucky)\n`;
+
+                    if (d1 === d2) {
+                        isCritical = true;
+                        const doubleValue = d1 + d2;
+                        runningTotal += doubleValue;
+                        log += `  ↳ Doubles! Adding ${doubleValue}. Current total: ${runningTotal}. Re-rolling...\n`;
+                        continue;
+                    } else {
+                        let finalDie = d1;
+                        if (advantageStatus === 'advantage') {
+                            finalDie = Math.max(d1, d2);
+                            log += `  ↳ Using Advantage: took the higher value (${finalDie})\n`;
+                        } else if (advantageStatus === 'disadvantage') {
+                            finalDie = Math.min(d1, d2);
+                            log += `  ↳ Using Disadvantage: took the lower value (${finalDie})\n`;
+                        }
+                        
+                        standardRoll = runningTotal + finalDie;
+                        log += `\nStandard Roll (SR) = ${runningTotal} (doubles) + ${finalDie} (final die) = ${standardRoll}\n`;
+                        break;
+                    }
+                }
+
+                let finalEV = standardRoll + level + stat;
+                log += `Base EV = ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}\n`;
+                
+                if (addLevelTwiceCheckbox.checked) {
+                    finalEV += level;
+                    log += `Adding Level again: ${finalEV - level} + ${level} = ${finalEV}\n`;
+                }
+
+                let criticalText = "";
+                if (isCritical) {
+                    criticalText = "CRITICAL HIT!";
+                }
+                if (standardRoll >= 31) {
+                    criticalText = "SUPER CRITICAL!";
+                }
+
+                // 3. Start the scramble animation
+                const scrambleDuration = 3000;
+                const scrambleInterval = 50;
+
+                const scrambleEffect = setInterval(() => {
+                    const randomValue = Math.floor(Math.random() * 100);
+                    finalResultDisplay.textContent = randomValue;
+                }, scrambleInterval);
+
+                // 4. After 3 seconds, reveal everything at once
+                setTimeout(() => {
+                    clearInterval(scrambleEffect);
+                    finalResultDisplay.textContent = finalEV;
+                    rollLog.textContent = log;
+                    criticalDisplay.textContent = criticalText;
+                    rollButton.disabled = false;
+                }, scrambleDuration);
+            }
+
+            rollButton.addEventListener('click', performRoll);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Resonance Toolkit</title>
+    <!-- This link will be dynamically populated with the inline manifest by our script -->
+    <link rel="manifest">
+    <meta name="theme-color" content="#222222">
+    <style>
+        :root {
+            --color-yellow: #f5d36c; --color-silver: #a7a9ac; --color-black: #414042;
+            --color-background: #222222;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            height: 100%; margin: 0; padding: 0; font-family: Calibri, sans-serif;
+            background-color: var(--color-background); overflow: hidden;
+        }
+        .app-container { display: flex; flex-direction: column; height: 100%; }
+        .content-area { flex-grow: 1; position: relative; }
+        .tool-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: none; visibility: hidden; background-color: var(--color-background);
+        }
+        .tool-frame.active { visibility: visible; }
+        .bottom-nav {
+            display: flex; background-color: #1a1a1a; border-top: 1px solid var(--color-black);
+            flex-shrink: 0;
+        }
+        .nav-button {
+            flex-grow: 1; padding: 10px 5px; background: none; border: none;
+            color: var(--color-silver); font-size: 8pt; /* Smaller for more tabs */
+            cursor: pointer; border-top: 3px solid transparent;
+        }
+        .nav-button.active {
+            color: var(--color-yellow); border-top-color: var(--color-yellow);
+            background-color: var(--color-black);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <main class="content-area">
+            <iframe src="01-profile-quiz.html" class="tool-frame active" data-tool="quiz"></iframe>
+            <iframe src="02-blueprint-builder.html" class="tool-frame" data-tool="builder"></iframe>
+            <iframe src="03-character-sheet.html" class="tool-frame" data-tool="sheet"></iframe>
+            <iframe src="04-dice-roller.html" class="tool-frame" data-tool="roller"></iframe>
+            <iframe src="05-scene-generator.html" class="tool-frame" data-tool="generator"></iframe>
+            <iframe src="06-curator-dashboard.html" class="tool-frame" data-tool="dashboard"></iframe>
+            <iframe src="07-companion.html" class="tool-frame" data-tool="companion"></iframe>
+        </main>
+        <nav class="bottom-nav">
+            <button class="nav-button active" data-tool="quiz">Quiz</button>
+            <button class="nav-button" data-tool="builder">Builder</button>
+            <button class="nav-button" data-tool="sheet">Sheet</button>
+            <button class="nav-button" data-tool="roller">Roller</button>
+            <button class="nav-button" data-tool="generator">Generator</button>
+            <button class="nav-button" data-tool="dashboard">Dashboard</button>
+            <button class="nav-button" data-tool="companion">Companion</button>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- PWA SETUP (INLINE MANIFEST & SERVICE WORKER) ---
+
+            // 1. Manifest Data Object
+            const manifestJSON = {
+                "name": "Resonance Toolkit",
+                "short_name": "Resonance",
+                "start_url": "index.html",
+                "display": "standalone",
+                "background_color": "#222222",
+                "theme_color": "#222222",
+                "description": "A complete digital toolkit for the Resonance TTRPG.",
+                "icons": [
+                    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+                    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+                ]
+            };
+
+            // 2. Service Worker Code as a String
+            const serviceWorkerCode = `
+                const CACHE_NAME = 'resonance-toolkit-v1';
+                // Define all files to be cached for offline use
+                const URLS_TO_CACHE = [
+                    './',
+                    'index.html',
+                    '01-profile-quiz.html',
+                    '02-blueprint-builder.html',
+                    '03-character-sheet.html',
+                    '04-dice-roller.html',
+                    '05-scene-generator.html',
+                    '06-curator-dashboard.html',
+                    '07-companion.html',
+                    'icons/icon-192x192.png',
+                    'icons/icon-512x512.png'
+                ];
+
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                console.log('Opened cache and caching files.');
+                                return cache.addAll(URLS_TO_CACHE);
+                            })
+                    );
+                });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                // Cache hit - return response from cache
+                                if (response) {
+                                    return response;
+                                }
+                                // Not in cache - fetch from network
+                                return fetch(event.request);
+                            })
+                    );
+                });
+            `;
+
+            // 3. Dynamic Injection and Registration
+            
+            // Inject the manifest as a data URI
+            const manifestString = JSON.stringify(manifestJSON);
+            const manifestUrl = 'data:application/json;base64,' + btoa(manifestString);
+            document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
+
+            // Register the service worker from a blob
+            if ('serviceWorker' in navigator) {
+                const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            }
+
+            // --- NAVIGATION LOGIC ---
+            const navButtons = document.querySelectorAll('.nav-button');
+            const toolFrames = document.querySelectorAll('.tool-frame');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTool = button.dataset.tool;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    toolFrames.forEach(frame => {
+                        frame.classList.toggle('active', frame.dataset.tool === targetTool);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

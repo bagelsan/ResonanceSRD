@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Keyword & Action Companion</title>
+    <style>
+        /* GLOBAL STYLES & ART-DECO THEME */
+        :root {
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-white);
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            padding: 10px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        h2 { font-weight: normal; color: var(--color-null); }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
+        
+        input[type="text"] {
+            background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white);
+            padding: 10px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; font-size: 1.1em;
+        }
+
+        /* TABS */
+        .tabs { display: flex; border-bottom: 1px solid var(--color-black); }
+        .tab-button {
+            padding: 10px 20px; background-color: #333; border: none; color: var(--color-silver);
+            cursor: pointer; font-size: 1.1em; border-top-left-radius: 3px; border-top-right-radius: 3px;
+        }
+        .tab-button.active { background-color: var(--color-black); color: var(--color-yellow); font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* KEYWORD COMPANION */
+        .keyword-companion { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 15px; }
+        #keyword-list { list-style: none; height: 500px; overflow-y: auto; background-color: #1a1a1a; padding: 5px; border-radius: 3px; }
+        #keyword-list li { padding: 10px; cursor: pointer; border-left: 3px solid transparent; }
+        #keyword-list li:hover { background-color: #444; }
+        #keyword-list li.active { background-color: var(--color-black); font-weight: bold; }
+        #keyword-details-view { background-color: #333; padding: 20px; border-radius: 3px; height: 500px; overflow-y: auto; }
+        #keyword-details-view h3 { color: var(--color-yellow); margin-top: 0; border: none; }
+        #keyword-details-view p { margin: 10px 0; line-height: 1.6; }
+        #keyword-details-view strong { color: var(--color-silver); }
+
+        /* ACTION CATALOG */
+        #action-catalog details {
+            margin-top: 15px;
+            background-color: #333;
+            border-radius: 3px;
+            border-left: 3px solid var(--color-blue);
+        }
+        #action-catalog summary {
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--color-silver);
+            cursor: pointer;
+        }
+        .action-item {
+            padding: 15px;
+            border-top: 1px solid #444;
+        }
+        .action-item h4 {
+            color: var(--color-white);
+            margin: 0;
+        }
+        .action-item .action-cost {
+            font-size: 9pt;
+            color: var(--color-yellow);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .action-item p {
+            font-size: 11pt;
+            line-height: 1.6;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="section">
+            <h2>Resonance Companion</h2>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="keywords">Keyword Encyclopedia</button>
+                <button class="tab-button" data-tab="actions">Action Catalog</button>
+            </div>
+
+            <!-- KEYWORDS TAB -->
+            <div id="keywords" class="tab-content active">
+                <input type="text" id="keyword-search" placeholder="Search for a keyword..." style="margin-top: 15px;">
+                <div class="keyword-companion">
+                    <ul id="keyword-list"></ul>
+                    <div id="keyword-details-view">Select a keyword to see its details.</div>
+                </div>
+            </div>
+
+            <!-- ACTIONS TAB -->
+            <div id="actions" class="tab-content">
+                <div id="action-catalog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const KEYWORDS_DATA = {
+                '00': { name: "Restricted", intent: "A fundamental limitation or flaw that inhibits the use of one's full power.", passive: "Each keyword you use costs double the Energy (EP) to activate.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "All costs to activate this item's keywords are doubled." },
+                '01': { name: "Aura", intent: "The outward manifestation of one's inner power as a tangible field of energy.", passive: "You are surrounded by a tangible field of energy that you can manipulate with thought to physically interact with the world.", active: "Grants a +1 to the EV of any roll with a keyword that matches your aura color.", gear: "The item can manifest simple, non-mechanical objects made of light or pure force." },
+                '02': { name: "Specialist", intent: "A deep, focused mastery over a particular domain of one's own capabilities.", passive: "Choose one Stat Grid category (Body, Mind, or Essence). You have Advantage on all non-combat Effort Rolls that use a stat from your chosen category.", active: "Once per Situation, you may gain Advantage on a reaction or action that uses a stat of your chosen category.", gear: "The wielder gains Advantage on Effort Rolls made using this item." },
+                '03': { name: "Alert", intent: "An uncanny and preternatural awareness of one's immediate surroundings.", passive: "You cannot be surprised unless you are incapacitated.", active: "Gain Advantage on effects targeting concealed targets.", gear: "The item passively indicates to the wielder any activity parameters set at its creation." },
+                '04': { name: "Liberate", intent: "The power to grant or achieve absolute freedom from physical or magical restraint.", passive: "At the start of combat, gain a number of Liberate Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target the Liberate Tag and add stacks to their Total Boosts pool equal to your Influence.", gear: "As an action, the wielder can use this item to remove a restraint or lock." },
+                '05': { name: "Mark", intent: "The act of designating a target, exposing a fundamental weakness for all to see.", passive: "The next incoming effect treats you as exposed. After the effect is resolved, remove a Mark Tag.", active: "When this keyword is part of a successful effect, grant the target the Mark Tag.", gear: "On a successful hit, this item grants the target the Mark Tag and adds stacks to their Total Statuses pool equal to the wielder’s Influence." },
+                '06': { name: "Indirect", intent: "An effect that can bypass obstacles, striking from an unexpected angle or origin.", passive: "You maintain awareness of targets regardless of cover.", active: "This effect can strike a target and ignore cover.", gear: "Attacks made with this item ignore the defensive benefits of Cover." },
+                '07': { name: "Adaptive", intent: "The ability for an effect to change its nature to target a different aspect of a foe's resilience.", passive: "You can choose which value (HP, SP, or EP) your effects will target.", active: "You can choose which value (HP, SP, or EP) this specific effect will damage.", gear: "Choose a value when this keyword is added to an item. Effects made with this item always target the chosen value." },
+                '08': { name: "Gamble", intent: "A reliance on pure chance, surrendering control for unpredictable, potentially powerful outcomes.", passive: "You may choose to replace any single level or stat value in a roll with a d10 roll. If improvising equipment to apply a Status, the die result (0-9) determines the Status Tag applied.", active: "You may replace all level and stat values in this roll with separate d10 rolls.", gear: "You may replace the item's Level in an EV calculation with a d10 roll." },
+                '09': { name: "Edit", intent: "The power to fundamentally rewrite the properties of oneself, another, or an object.", passive: "As an action, you may change one of your known keywords to another keyword of the same Category.", active: "On a successful hit, you may change one of the target's keywords until their next Downtime.", gear: "The wielder may use an action to change any keyword on this item to another keyword they personally know." },
+                '10': { name: "Bane", intent: "A specific, acute vulnerability to a certain type of power or substance.", passive: "Choose a Color when you take this Flaw. If an effect contains a keyword of that color, it ignores your resistances.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "This item is immediately destroyed if successfully affected by an effect containing a keyword of your chosen Bane Color." },
+                '11': { name: "Traveller", intent: "An innate affinity for a specific, unconventional mode of movement.", passive: "Choose a Color. You permanently gain the associated movement type.", active: "As part of this effect, you may immediately move according to a chosen movement type.", gear: "The wielder gains access to the chosen movement type while this item is equipped." },
+                '12': { name: "Martial", intent: "Proficiency in close-quarters combat and the ability to react instantly to threats.", passive: "You can make a basic EV attack against a target that moves into your touch range. This reaction cannot use keywords.", active: "Gain Advantage on a reaction.", gear: "Gain Advantage when using this item as part of a reaction." },
+                '13': { name: "Attuned", intent: "A deep, persistent sympathetic link to a person, place, or thing.", passive: "During Downtime, you can link yourself to a willing or non-living target. You always know the target's location and status.", active: "This effect can target your attuned target regardless of range, distance, or cover.", gear: "Items linked together via the Attuned passive can target each other with their effects when utilized." },
+                '14': { name: "Augment", intent: "The power to temporarily grant additional abilities or options to an ally or oneself.", passive: "At the start of combat, gain a number of Augment Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Augment Tags equal to your Influence", gear: "The object can be used to grant access to a single keyword to its wielder (chosen at crafting)." },
+                '15': { name: "Impair", intent: "A curse that drains a target's stamina, making every action more difficult.", passive: "If you would make an action or reaction that would cost SP increase that cost by one then remove an Impair Tag", active: "When this keyword is part of a successful effect, grant the target the Impair Tag.", gear: "On a successful hit, this item grants the target the Impair Tag." },
+                '16': { name: "Reactive", intent: "The ability to seamlessly weave potent abilities into defensive maneuvers.", passive: "you may add keywords to dodge reactions up to your TEC, you must still pay all EP costs.", active: "Whenever you apply this keyword to a Dodge reaction, you may add a Chosen Stat to the SR an additional time.", gear: "When used in a Dodge reaction, the reaction has no SP cost." },
+                '17': { name: "Phasing", intent: "An effect that becomes intangible, passing through physical defenses to strike a target's essence.", passive: "Your effects can be designated to ignore objects , specified targets, and physical cover.", active: "Effects with this keyword ignore all resistances from gear and cover.", gear: "This gear ignores physical barriers, cover, and gear; it only affects the target’s Energy." },
+                '18': { name: "Brutal", intent: "A fighting style focused on overwhelming, devastatingly powerful critical blows.", passive: "Critical effects from this character are multiplied by 3 instead of 2.", active: "Effects with this keyword are a critical hit on a SR result of 6+.", gear: "Effects from this gear are a critical hit on a SR result of 6+." },
+                '19': { name: "Translocate", intent: "The mastery of teleportation and the manipulation of spatial boundaries.", passive: "You have a personal pocket dimension to store and recall targets.", active: "As part of this effect, you may instantly change a target’s position to another target location.", gear: "This object contains a portal to a set location, a storage pocket dimension, or can be re-equipped as part of any action regardless of its location." },
+                '20': { name: "Anxious", intent: "A nervous disposition that makes it difficult to focus or aim with precision.", passive: "Your Focus actions cost double.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "Effects from this gear cannot be used to make a called shot." },
+                '21': { name: "Acrobatic", intent: "The ability to move with extraordinary grace, blending movement and action into one.", passive: "You may ignore any hindering environmental effects that would affect movement or positioning.", active: "You can apply this keyword to any action to make a Move action as part of the effect.", gear: "The wielder may make a Move action as part of an action that utilizes this gear." },
+                '22': { name: "Sentry", intent: "A keen eye for detail and the ability to rapidly assess a target's nature.", passive: "You can make one free assessment when encountering a target for the first time.", active: "You may perform an Assess action as a single action instead of a full turn action.", gear: "Choose one clue type at creation. When this gear affects a target, the wielder learns that specific clue." },
+                '23': { name: "Eidetic", intent: "A perfect, flawless memory of all sensory experiences.", passive: "You can remember all details you have experienced, including visual, audio, and any other sense.", active: "This effect gains Advantage against any target type you have encountered before.", gear: "This item can store sensory information." },
+                '24': { name: "Haste", intent: "A surge of supernatural speed, granting additional actions in a flurry of motion.", passive: "At the start of combat, gain the Haste Tag and add stacks to your Total Boosts pool equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Haste Tags equal to your Influence.", gear: "You may make an additional action your turn utilizing this item." },
+                '25': { name: "Slow", intent: "A temporal effect that traps a target, reducing their ability to act.", passive: "At the beginning of your turn, reduce your total actions by 1 for that turn and remove one Slow Tag from your Tag pool.", active: "When this keyword is part of a successful effect, grant the target the Slow Tag and add stacks to their Total Statuses pool equal to your Influence.", gear: "On a successful hit, this item grants the target the Slow Tag." },
+                '26': { name: "Snap", intent: "An effect so fast it is impossible to react to.", passive: "You can make reactions to any effect, including those with Snap.", active: "This effect cannot be responded to. It is limited to a single strike or trigger, regardless of other keywords.", gear: "This equipment can be used to react to any effect." },
+                '27': { name: "Condense", intent: "The principle of applying greater force by concentrated effort or material.", passive: "You may focus or condense materials energy or forces into a focal point.", active: "You may apply another stat of your choice to the EV calculation, this can duplicate the initial chosen stat.", gear: "If the wielder uses only this item for the effect, they may apply another stat of their choice to the EV calculation of its effects." },
+                '28': { name: "Rapid", intent: "A flurry of multiple, successive strikes or triggers.", passive: "You can spend 1 SP to replicate any form of travel during a move action.", active: "This effect strikes or triggers a number of additional times equal to your Technique (TEC). You do not add your Level to the EV of these hits; instead, you apply the chosen stat a second time to the EV calculation.", gear: "When used, this item's effect strikes or triggers a number of additional times equal to the wielder's Expertise (EXP). These extra hits do not add the item's Level to the EV; instead, the wielder may apply their Expertise a second time to the EV calculation." },
+                '29': { name: "Reckless", intent: "A dangerous state of abandoning all defense for pure, unadulterated offense.", passive: "As part of an action, you can toggle a reckless state. While in this state, you are Exposed, and all of your own effects gain Advantage.", active: "If you are currently Locked On to the target, you may add your Level to the effect's EV an additional time.", gear: "If the wielder is Locked On to a target, they may add the item's Level to the effect's EV an additional time.." },
+                '30': { name: "Hesitant", intent: "A chronic inability to react quickly, leaving one vulnerable.", passive: "You have Disadvantage on all React Actions you take.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "Utilizing this gear takes a full turn instead of a single action." },
+                '31': { name: "Sturdy", intent: "An unshakeable physical presence, impossible to move or knock down.", passive: "Maneuvers that target you gain Disadvantage. You also cannot be forced to move or made prone.", active: "Add your Level to reactions against maneuvers.", gear: "The wielder adds this gear’s Level to their reactions made against Maneuver actions." },
+                '32': { name: "Brawler", intent: "Expertise in grappling and other physical maneuvers in combat.", passive: "You can make Maneuver actions without costing Stamina (SP).", active: "You may apply this keyword to a Maneuver action to allow you to add other keywords you know to it, up to a number equal to your Technique (TEC).", gear: "Utilizing this gear to perform a Maneuver action removes the action's SP cost." },
+                '33': { name: "Stubborn", intent: "A sheer refusal to accept failure, allowing one to try again.", passive: "You can spend 1 SP to reroll any Effort Roll you make.", active: "If this effect is successfully reacted to by the target, you may spend 1 SP to immediately reroll your EV to change the outcome.", gear: "The wielder can spend 1 SP to reroll an Effort Roll when utilizing this gear." },
+                '34': { name: "Ward", intent: "A protective blessing that can completely negate a single incoming threat.", passive: "At the start of combat, add a number of Ward Tags to your Tag pool equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Ward Tags to your Tag pool equal to your Influence..", gear: "This item can be used to replace its wielder as the target for an effect as a reaction." },
+                '35': { name: "Daze", intent: "A disorienting blow to the mind or senses that leaves a target unable to act coherently.", passive: "when you would roll for EV reduce the. Result by the number of Daze Tags in your tag pool, then remove one Daze Tag from your tag pool.", active: "When this keyword is part of a successful effect, grant the target the Daze Tag.", gear: "On a successful hit, this item grants the target the Daze Tag.." },
+                '36': { name: "Sculpt", intent: "The power to alter the superficial shape or form of an object or target.", passive: "As an action, you can change the cosmetic appearance or superficial form of an object or target (without changing its raw materials).", active: "This effect occupies a space that fits within 5 connected 1-meter cubes × your Technique (TEC).", gear: "This equipment can be used to change the shape or form of a target." },
+                '37': { name: "Defensive", intent: "The philosophy of outlasting an opponent through superior fortitude and resilience.", passive: "You may add a number of keywords to a Block reaction up to your Technique Stat and all EP costs must still be paid", active: "You add your Level to your resistance.", gear: "When used in a block reaction, that reaction has no SP cost." },
+                '38': { name: "Impact", intent: "An effect that carries immense kinetic force, knocking targets around the battlefield.", passive: "You ignore secondary damage from striking or being struck by Impact effects.", active: "This effect forces the target to move or be knocked down. If the forced movement causes the target to strike another object, your EV is rolled a second time and affects both.", gear: "Effects from this item can force a target to move or be knocked down." },
+                '39': { name: "Shift", intent: "The ability to fundamentally alter one's own physical form and attributes.", passive: "As part of an action, you can relocate a number of stat points equal to your Technique (TEC). You can also change your form/appearance.", active: "This effect will change the target’s appearance and form.", gear: "This item can change its appearance and form as part of an effect." },
+                '40': { name: "Feeble", intent: "A chronic physical weakness that hinders bodily action.", passive: "You have Disadvantage on any roll that uses a Body stat.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "The wielder has Disadvantage when applying a Body stat to effects made with this gear." },
+                '41': { name: "Survivor", intent: "An incredible tenacity for life, allowing one to cling to existence beyond normal limits.", passive: "All of your values must be zero for you to be downed.", active: "As a reaction that costs 1 SP, if an effect would reduce your HP to 0, you may use this keyword to instead be reduced to 1 HP.", gear: "As long as this item is not broken, the wielder cannot be downed unless their Stamina is zero." },
+                '42': { name: "Stoic", intent: "An unshakable mental focus and economy of action.", passive: "You may make a focus action as a single action instead of taking a full turn.", active: "When this keyword is applied to an effect the EV roll can not have Disadvantage or Advantage applied.", gear: "This gear may be used to perform a designated Focus action as a single action." },
+                '43': { name: "Ageless", intent: "The state of being outside the normal flow of time and aging.", passive: "Once you reach maturity, you no longer age and can no longer die of natural causes.", active: "Effects with this keyword are immune to the Growth keyword.", gear: "This item is immune to the Growth keyword." },
+                '44': { name: "Bless", intent: "A boon of fortune that enhances positive outcomes and aids restoration.", passive: "At the start of combat, gain a number of Bless Tags to your Tag pool equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Bless Tags to your Tag pool equal to your Influence.", gear: "Choose a value. When the wielder has that value restored, increase the amount by 1." },
+                '45': { name: "Curse", intent: "A withering hex that invites misfortune and foils attempts to recover.", passive: "When you make a roll, gain disadvantage on that roll and remove a Curse Tag", active: "When this keyword is part of a successful effect, grant the target the Curse Tag.", gear: "On a successful hit, this item grants the target the Curse Tag." },
+                '46': { name: "Piercing", intent: "An unstoppable, penetrating force that ignores all defenses but deals minimal harm.", passive: "You can set the origin point of an effect to anywhere within your current range.", active: "This effect hits everything in its path and continues to maximum range, ignoring cover and resistance and bypassing Ward.", gear: "This item or its parts can pass through anything. Its EV is fixed at 1 and it bypasses resistance, cover, and Ward." },
+                '47': { name: "Flux", intent: "The ability to convert one's own vitality or energy into raw power.", passive: "As an action, you can spend any of your values to grant them to another target as a separate resource pool. This pool disappears at the end of the target's turn.", active: "You may choose to spend a value to increase this effect's EV by the amount spent up to a maximum of your Technique.", gear: "This item can be used to store and dispense values as part of an effect (storage maximum equal to items level)." },
+                '48': { name: "Siphon", intent: "The principle of forcibly transferring essence or life force from one being to another.", passive: "As an action, you can siphon values from willing targets. Values gained this way cannot exceed your maximum.", active: "When this ability deals value loss to a target, you restore 1 point to one of your own Values.", gear: "This object stores values targeted by its effect, up to a maximum capacity equal to the equipment’s Level. The wielder can expend these stored points as if they were their own." },
+                '49': { name: "Animate", intent: "The power of necromancy or artifice, granting temporary life to the inanimate.", passive: "You can passively maintain a number of animations whose combined levels are equal to your own level.", active: "As part of an effect, you can animate a non-living target, turning it into a temporary Animation under your control. The new Animation's level cannot exceed your own level minus the combined levels of any other Animations you already control.", gear: "This item has a specific animation bonded to it, which can be manifested and controlled. This bonded animation does not count toward your character's normal limit." },
+                '50': { name: "Gremlins", intent: "A persistent streak of bad luck, causing critical failures at the worst moments.", passive: "A die result of 1 on any roll is a miss or failed effect.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "A die result of 1 when using this gear will break it and cause the effect to miss or fail." },
+                '51': { name: "Sensor", intent: "The possession of a supernatural or technological sense beyond the mundane.", passive: "Choose a Color. You permanently gain the associated sense at a range set by your Wit (WIT) stat.", active: "Utilize a sense of your choice at full range in a radius around the target.", gear: "The wielder gains access to the chosen sense type while this item is equipped." },
+                '52': { name: "Improvisor", intent: "An innate talent for using disparate components together in novel, effective ways.", passive: "This character can change their Innate Passive Keywords as an action instead of just during downtime.", active: "You may add your Level to the EV of any effect created using improvised gear.", gear: "You can use your level instead of this item’s level when determining EV." },
+                '53': { name: "Crafty", intent: "A knack for creating permanent, lasting effects with ease and efficiency.", passive: "You can create permanent effects without reducing your maximum SP.", active: "You can use this keyword to create a permanent effect or item with a level up to your Technique stat. It may contain any keyword also in an entity or item within close range.", gear: "When this item is used to create a permanent effect or item, it reduces the crafting time to a Full Action." },
+                '54': { name: "Charge", intent: "An infusion of raw energy that can be used to fuel one's abilities.", passive: "At the start of combat, gain a number of Charge Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Charge Tags equal to your Influence.", gear: "When utilized as part of an effect reduce the total EP cost by 1" },
+                '55': { name: "Bind", intent: "An effect that entraps or ensnares a target, rooting them to the spot.", passive: "Your movement is reduced to 0, you may spend 1SP and an action to remove one Bind Tag", active: "When this keyword is part of a successful effect, grant the target the Bind Tag.", gear: "On a successful hit, this item grants the target the Bind Tag" },
+                '56': { name: "Imbue", intent: "The act of temporarily investing in an object or person with a known power.", passive: "You may grant a keyword you know to a target as part of any action.", active: "You may add a keyword to the effect from a source within close range.", gear: "Choose a keyword you know when this keyword is added to the item. The wielder gains access to that chosen keyword while the gear is equipped." },
+                '57': { name: "Material", intent: "The power to consume an object to fuel or enhance an effect.", passive: "You can consume objects to apply their keywords to your effects (the EP cost must still be paid for each keyword.)", active: "Consume an object as part of an effect to increase the EV by your Expertise (EXP) or the consumed item's Level, whichever is higher.", gear: 'This item has a "Reload" property. As a Reload action, you can consume an item to increase the EV of the next effect by your EXP or the consumed item\'s Level (whichever is higher). If the consumed item has keywords, their active effects can be applied.' },
+                '58': { name: "Leverage", intent: "A mastery of physics and positioning to gain an advantage in physical contests.", passive: "When using equipment in an Effort Roll, add the item’s Level to the effort value.", active: "Maneuvers gain Advantage.", gear: "Maneuvers or Effort rolls made using this gear gain Advantage." },
+                '59': { name: "Manifest", intent: "The power to create temporary, functional items out of pure energy or ambient materials.", passive: "You can manifest items that persist only while being utilized. These manifestations may have a number of keywords equal to your Technique (TEC) and a level equal to yours.", active: "As part of this effect, create an item (1 cubic foot per TEC). It gains a number of keywords equal to your TEC, chosen from nearby sources.", gear: "This item can manifest temporary items with a number of keywords up to the wielder's TEC." },
+                '60': { name: "Vulnerable", intent: "A glaring weakness or lack of structural integrity that invites precise, debilitating strikes.", passive: "Effects do not require Advantage to be a called shot when targeting you.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "Called Shots targeting this item will destroy it." },
+                '61': { name: "Tolerant", intent: "An exceptional resilience to negative effects, requiring immense pressure to be affected.", passive: "When you would remove a Status tag, Remove 2 instead.", active: "As part of any action that uses this keyword, you may remove a status tag from your pool.", gear: "As an action, the wielder can use this item to remove a Status Tags** from themself." },
+                '62': { name: "Deadeye", intent: "An expert eye for identifying and striking at a target's weak points.", passive: "You know all weak points, flaws, and Status Tags on a target.", active: "You may make a Called Shot with this effect without needing to have Advantage.", gear: "When targeting an Exposed target with an effect utilizing this item, the effect is Critical." },
+                '63': { name: "Immunized", intent: "A perfect, innate defense against a single, specific type of ailment or curse.", passive: "Choose a single Status Tag. You can no longer gain that Tag.", active: "This effect removes the chosen Tag from the target.", gear: "This equipment can remove all instances of one type of Tag from a target as an action." },
+                '64': { name: "Cure", intent: "A purifying power that can cleanse negative conditions and afflictions.", passive: "At the start of combat, gain a number of Cure Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Boost Tags equal to your Influence.", gear: "As an action, use this item to grant the wielder the Cure Tag." },
+                '65': { name: "Weaken", intent: "An effect that corrodes a target's defenses, leaving them brittle and vulnerable.", passive: "When you are targeted by an effect, reduce your resistance by 1 for each Weaken Tag in your Tag pool, then remove one Weaken Tag from your Tag pool.", active: "When this keyword is part of a successful effect, grant the target the Weaken Tag.", gear: "On a successful hit, this item grants the target the Weaken Tag." },
+                '66': { name: "Sticky", intent: "An effect that adheres to a target, delivering a payload after a delay.", passive: "You can cling to and climb on any solid surface. You can also permanently connect two objects for 1 SP", active: "This effect leaves a persistent object on the target, which triggers again at the end of each of the target’s turns. It can be removed with a Focus action.", gear: "This item leaves an object on a target that triggers at the end of their turn; it can be removed with a Focus action." },
+                '67': { name: "Restore", intent: "A healing power that mends wounds and restores vitality.", passive: "As an action, you can repair or heal cosmetic/superficial cuts, breaks, and abrasions or ease nausea or pain on a target.", active: "This effect restores a target's value by an amount equal to your Technique (TEC).", gear: "As an action, this item can be used to restore a target's value by an amount equal to the wielder's Expertise (EXP)." },
+                '68': { name: "Exploit", intent: "A ruthless tactic of turning an enemy's weakness against them for increased power.", passive: "You gain Advantage on all effects targeting an enemy who currently has any Status Tag.", active: "You may remove a number of Status Tags from the target to increase this effect's EV by that amount. This can be done a number of times equal to your Technique stat.", gear: "You may remove a Status Tag from a target to increase this item's EV by an amount equal to the wielder's Expertise (EXP)." },
+                '69': { name: "Growth", intent: "The power to manipulate a target's age, growth, and biological processes.", passive: "You can cause a target to age, regress, propagate, grow, or shrink as part of an effect in exchange for not targeting any values.", active: "This effect causes a target to age or regress by up to 1 year per point of your Technique (TEC).", gear: "This item can alter its own age or size as part of an effect." },
+                '70': { name: "Limited", intent: "A permanent reduction in one's vital reserves, limiting endurance.", passive: "Choose one of your Values (HP, SP, or EP). Its maximum is permanently reduced by 5.", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "This item cannot be utilized when broken." },
+                '71': { name: "Resilient", intent: "A permanent increase in one's vital reserves, enhancing endurance.", passive: "Choose one of your Values (HP, SP, or EP). Its maximum is permanently increased by 5.", active: "As part of this effect, you may add your Technique (TEC) to your resistances.", gear: "This item does not suffer Disadvantage on its effect rolls for being broken." },
+                '72': { name: "Font", intent: "The ability to use any form of personal energy to fuel one's powers.", passive: "You are not considered dead unless your Energy (EP) is 0.", active: "You may choose to pay any keyword cost for this effect by spending any of your values instead of Energy.", gear: "The wielder may use any of their values (including those stored in this item) to pay for costs." },
+                '73': { name: "Insulated", intent: "A natural immunity to the dangers of the surrounding environment.", passive: "You are unaffected by the negative effects of environmental changes.", active: "This effect is immune to being altered by the ambient environmental conditions.", gear: "The wielder and the item itself are unaffected by environmental changes." },
+                '74': { name: "Regen", intent: "A blessing of rapid, continuous healing over time.", passive: "At the start of combat, gain a number of Regen Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Regen Tags equal to your Influence.", gear: "At the end of the wielder’s turn, restore the chosen value by 1." },
+                '75': { name: "Blight", intent: "A decaying curse that causes a target's life force to slowly rot away.", passive: "The next time you take any action or reaction, you immediately suffer 1 unavoidable point of value loss. After the damage is dealt, one Blight Tag is removed from your Tag pool", active: "When this keyword is part of a successful effect, grant the target the Blight Tag.", gear: "On a successful hit, this item grants the target the Blight Tag." },
+                '76': { name: "Area", intent: "An effect that blankets a wide area, sacrificing power for coverage.", passive: "You can elect not to add your Level to an effect to instead affect everything in a radius (1 range band per Technique/TEC).", active: "This effect targets everything within a radius (1 range band per Technique/TEC) around a central point. You do not add your Level to the EV of this effect.", gear: "This item's effect targets everything within a radius (1 range band per Expertise/EXP). The wielder does not add the item's Level to the EV." },
+                '77': { name: "Ranged", intent: "The property of being a projectile or thrown effect that strikes from a distance.", passive: "The origin point of your effects can be set to any point you can see within your normal range.", active: "This effect is not penalized for being made at a range further than Melee.", gear: "Ranged effects utilized by this equipment suffer no penalties for targets further than melee." },
+                '78': { name: "Multiply", intent: "The ability for an effect to strike multiple, discrete targets simultaneously.", passive: "Your Teamwork effort action can target all allies within range.", active: "This effect can strike a number of additional targets equal to your Technique (TEC). You do not add your Level to the EV of this effect.", gear: "This item's effect can strike a number of additional targets equal to the wielder's Expertise (EXP). The wielder does not add the item's Level to the EV." },
+                '79': { name: "Split", intent: "The power to divide oneself or an object into multiple, smaller copies or parts.", passive: "As a full turn action, you can split into a number of copies of yourself, up to your Force stat. These copies are Level 1 Animations that look identical to you. Your current HP, SP, and EP are divided as you choose among yourself and all copies. They share your keywords and stats but act on your command.", active: "This effect causes the target to split into a number of equal-level animations under your control, up to your Technique (TEC). The target's values are divided among them.", gear: "This item can separate into a number of smaller parts. The item’s keywords are divided among the parts. Each part may contain as little as one keyword. The number of keywords contained in a part determines that part's level." },
+                '80': { name: "Awkward", intent: "A social or mental clumsiness that hinders intellectual and influential actions.", passive: "You have Disadvantage on any roll that uses a Mind stat (Wit, Expertise, Technique).", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "Utilizing this gear requires two Interact actions instead of one to equip or stow." },
+                '81': { name: "Charismatic", intent: "An innate magnetism and force of personality that sways others.", passive: "You have Advantage on Social Effort Rolls regardless of Faction Reputation.", active: "The target of this effect has Disadvantage on any Effort Roll made to resist its social or intellectual influence.", gear: "The wielder has Advantage on Taunt and Social Effort Rolls while this item is visibly equipped." },
+                '82': { name: "Leader", intent: "A natural command over allies and subordinates, directing them with ease.", passive: "Increase the number of Animations you may have passively by your Influence.", active: "A willing Companion or Animation may apply one of its keywords to your Effect.", gear: "A Companion or Animation bonded to this item does not require a Command action to use its keywords." },
+                '83': { name: "Insightful", intent: "A deep empathy and perception for the emotional and mental state of others.", passive: "You can passively sense the surface-level emotional state of characters around you and can tell if someone is knowingly speaking a lie.", active: "This effect grants you one free Clue from the Assess action on the target.", gear: "The wielder can use this item to determine if a target is telling the truth as an Assess action." },
+                '84': { name: "Enhance", intent: "A boon of targeted inspiration or power that improves any single action.", passive: "At the start of combat, gain a number of Enhance Tags equal to your Influence.", active: "When this keyword is part of an effect, grant the target a number of Enhance Tags equal to your Influence.", gear: "The wielder may spend 1 SP as an action to grant themselves the Enhance Tag." },
+                '85': { name: "Silence", intent: "An effect that severs a target's connection to their inner power, preventing them from using innate abilities.", passive: "when you would make an action or reaction that would allow you to apply keywords, you forfeit the application and remove a Silence Tag from your Tag Pool.", active: "When this keyword is part of a successful effect, grant the target the Silence Tag.", gear: "On a successful hit, this item grants the target the Silence Tag." },
+                '86': { name: "Splash", intent: "An effect that splashes or arcs from the primary target, spreading its nature but not its intensity.", passive: "When you successfully grant a target with a Tag, you may choose one adjacent target. The secondary target gains one instance of any Tag that was granted to the primary target as part of the effect.", active: "This effect hits the primary target and all targets adjacent to it. The primary target is affected as normal. All secondary targets are not dealt value loss, but they gain a copy of all of the Tags the effect applied to the primary target.", gear: "On a successful hit, this item's effect splashes to an adjacent target to the original target, applying all of the effect's Tags to that secondary target." },
+                '87': { name: "Lingering", intent: "An effect that persists in an area or has an enhanced, lasting impact on its target.", passive: "If you would grant a target Tags, grant them an additional tag of one of the types granted.", active: "When this effect successfully grants Tags, the total number of each Tag granted is doubled.", gear: "If this item is utilized as part of an effect that grants a Tag, grant an additional Tag of one of the types granted." },
+                '88': { name: "Spread", intent: "The ability to move an affliction from one target to another.", passive: "As an action, choose a target with at least one Status Tag in their pool. You may then choose a second target within touch range and copy one of those Tags to the second target's pool.", active: "If this effect successfully exceeds the target's resistance, you may copy one of the target's tags to another target within close range of the original target.", gear: "If an effect that utilizes these items successfully exceeds the target's resistance you may copy one of the target's status tags to another target within close range of the original target." },
+                '89': { name: "Potent", intent: "A power so strong that it applies its secondary effects even when the primary effect is resisted.", passive: "As part of any successful `Activate` action, you may choose to deal no value loss. If you do, the target automatically gains the effect's Tags. This action can still be Dodged, Parried or Clashed against to mitigate its effect.", active: "This effect automatically grants its Tags, ignoring the target's Resistance. This action does not cause value loss.", gear: "Effects from this item automatically grant their Tags, ignoring the target's Resistance. They do not cause value loss." },
+                '90': { name: "Mundane", intent: "An innate disconnect from one's essence, hindering the use of supernatural abilities.", passive: "You have Disadvantage on any roll that uses an Essence stat (Power, Influence, Force).", active: "When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.", gear: "The wielder cannot add their innate keywords to effects made with this gear." },
+                '91': { name: "Aware", intent: "The ability to sense and identify the use of supernatural powers.", passive: "You can passively sense the use of any keyword within a range determined by your Wit stat, knowing its Color and general location.", active: "On a successful hit, you learn all keywords the target currently has slotted as a passive.", gear: "Choose a keyword at creation. This item can be used as an Assess action to sense and locate any use of that specific keyword." },
+                '92': { name: "Stealthy", intent: "A natural talent for concealment and moving undetected.", passive: "You have Advantage on all rolls made to hide, move silently, or conceal objects.", active: "You may make a Hide action as part of this Effect Action.", gear: "Attempts to find this item via the Assess action are made with Disadvantage." },
+                '93': { name: "Trickster", intent: "The use of illusion, misdirection, and psychological manipulation to create openings.", passive: "You can create minor, simple sensory illusions as an action (e.g., a sound, a smell, a light) to serve as distractions or communication.", active: "Actions or reactions made against effects with this keyword are made with Disadvantage.", gear: "When activated, this item can emit a pre-set sensory illusion." },
+                '94': { name: "Obscure", intent: "A boon of concealment that can render one undetectable to a chosen sense.", passive: "At the start of combat, gain a number of Obscure Tags equal to your Influence.", active: "When this keyword is part of an effect, grant a target a number of Obscure Tags equal to your Influence.", gear: "The wielder may spend 1 SP as an action to grant themselves the Obscure Tag." },
+                '95': { name: "Nullify", intent: "An effect that disrupts a target's innate abilities, shutting down their passive powers.", passive: "When applied, the target’s passive keywords are rendered inactive for as long as they have a nullify tag in their pool. When a nullify tag is added to the pool, remove a boost tag from the pool. A Nullify tag is removed when you gain priority for the first time in a round.", active: "When this keyword is part of a successful effect, grant the target the Nullify Tag.", gear: "On a successful hit, this item grants the target the Nullify Tag." },
+                '96': { name: "Chain", intent: "An effect that leaps from one target to the next.", passive: "Effects that target a willing ally can be made to chain to additional willing allies, up to your Technique (TEC).", active: "After this effect hits its primary target, it may 'chain' to one adjacent enemy, dealing a fixed EV of 1.", gear: "On a successful hit, this item's effect may chain to an additional target within close range, dealing 1 point of value loss." },
+                '97': { name: "Natural", intent: "The quality of an ability being so innate it is treated as part of one's own body.", passive: "You can add any innate keyword you know to a Gear effect at no extra EP cost, up to your Technique (TEC).", active: "This effect can be used even if you are Silenced.", gear: "This gear is considered part of the wielder. It cannot be Disarmed and can be used to channel any of the wielder’s keywords at no additional EP cost." },
+                '98': { name: "Ambience", intent: "The power to influence and control the surrounding environment itself.", passive: "As an action, you can alter the ambient environmental conditions around you by one step. This persists as long as you concentrate.", active: "You may modify one environmental hazard within range by a number of steps up to your Technique (TEC).", gear: "This item can be activated to change a chosen environmental condition within a small radius by a number of steps equal to the wielder's Expertise (EXP)." },
+                '99': { name: "Channel", intent: "The ability to share one's own innate powers and passive abilities with others.", passive: "When this keyword is placed in a passive slot, you combine your gear and innate passive pools into one unified pool. This unified pool can then slot passive keywords from either innate or gear keywords. The unified pool is increased in capacity by one to provide a slot for this keyword.", active: "A willing target of this effect gains the passive benefits of a number of your passive slotted keywords (up to your TEC) until the end of their next turn.", gear: "The wielder can grant a passive from this item to a willing target as an action." }
+            };
+
+            const ACTIONS_DATA = {
+                "Effect Actions": [
+                    { name: "Activate", cost: "Single Action", desc: "The primary action for causing an effect. The base roll is an Effect Value (EV = SR + Level + Stat). Apply Keyword Active Effects for 1 EP each (reduced by Power stat)." },
+                    { name: "Called Shot", cost: "Single Action", desc: "Make a specialized Activate action with Disadvantage to target a weak point or an item. Targeting an item deals value loss to its Durability. Targeting an entity is an automatic Critical Hit." }
+                ],
+                "Move Actions": [
+                     { name: "Move", cost: "Single Action", desc: "Travel up to a number of range bands equal to your Movement stat." },
+                     { name: "Mount", cost: "Single Action", desc: "Perform an Interact action to gain the Riding condition on a valid target." },
+                     { name: "Dismount", cost: "Single Action", desc: "Perform an Interact action to end the Riding condition." },
+                     { name: "Hide", cost: "Single Action", desc: "Make an Effort Roll (SR + Level + Stat) to become Hidden. The result is the TN to find you." }
+                ],
+                "Maneuver Actions": [
+                    { name: "Shove", cost: "Single Action, costs 1 SP", desc: "Make an EV roll vs. target's Resistance to push them or knock them Prone." },
+                    { name: "Disarm", cost: "Single Action, costs 1 SP", desc: "Make an opposed EV roll to force a target to drop an item." },
+                    { name: "Restrain", cost: "Single Action, costs 1 SP", desc: "Make an EV roll to grant the Bind Tag to a target." },
+                    { name: "Lunge", cost: "Single Action, costs 1 SP", desc: "Make a melee strike that can target an enemy at Close range instead of Touch range." },
+                    { name: "Lock On", cost: "Single Action, costs 1 SP", desc: "Gain Advantage against a target, who also gains Advantage against you." },
+                    { name: "Taunt", cost: "Single Action, costs 1 SP", desc: "Make an opposed EV roll to force a target to use Lock On against you." },
+                    { name: "Improvise", cost: "Single Action, costs 1 SP", desc: "Use the environment or an item to apply a Status Tag without dealing value loss." },
+                    { name: "Multi-Attack", cost: "Single Action, costs 1 SP", desc: "When making an attack action, for an additional 1 SP, you may add the Level and one keyword from a second equipped item to your effect. The keyword added from this second item costs 1 EP to apply." },
+                    { name: "Feint", cost: "Single Action, costs 1 SP", desc: "Make an opposed EV roll to make the target Exposed." }
+                ],
+                "Focus & Assess Actions": [
+                    { name: "Recharge", cost: "Full Turn Action, costs 1 SP", desc: "Choose one: Restore SP equal to Brawn, or restore EP equal to Wit." },
+                    { name: "Recover", cost: "Full Turn Action, costs 1 SP", desc: "Remove a number of Tags of your choice equal to Brawn, Wit, or Influence." },
+                    { name: "Ready", cost: "Full Turn Action, costs 1 SP", desc: "Add your Wit stat to your Resistance value until the start of your next turn." },
+                    { name: "Advantage", cost: "Full Turn Action, costs 1 SP", desc: "Gain Advantage on the first SR you make on your next turn." },
+                    { name: "Reveal", cost: "Full Turn Action, costs 1 SP", desc: "Make an Effort Roll against a Hidden target's Hide roll to locate and target them." },
+                    { name: "Clue", cost: "Full Turn Action, costs 1 SP", desc: "Learn a number of facts about a target equal to your Technique stat." }
+                ],
+                 "Effort & Team Actions": [
+                    { name: "Effort Roll", cost: "Single Action", desc: "The primary action for targeting a Barrier's Task Clock or solving a Puzzle." },
+                    { name: "Teamwork", cost: "Single Action", desc: "Grant a stat of your choice as a bonus to an ally’s next Effort Roll." },
+                    { name: "Sabotage", cost: "Single Action", desc: "A target suffers Disadvantage on their next Effort Roll." }
+                ],
+                "Reaction Actions": [
+                     { name: "Avoid (Dodge)", cost: "Reaction, costs 1 SP", desc: "Make an opposed EV roll to negate an incoming effect." },
+                     { name: "Resist (Block)", cost: "Reaction, costs 1 SP", desc: "Add your Level to your Resistance against a single incoming effect." },
+                     { name: "Parry", cost: "Reaction, costs 3 SP", desc: "Make an opposed EV roll to negate an incoming effect. If successful, ignore the effect and immediately gain priority. If you have no actions remaining for the round, you may make 1 free action." },
+                     { name: "Clash", cost: "Reaction, costs 2 SP", desc: "Use your own effect to intercept another; the loser takes the combined value loss." },
+                     { name: "Reflect", cost: "Reaction, costs 1 SP", desc: "After a successful Avoid or Resist, redirect the original effect back at the attacker." },
+                     { name: "Counter", cost: "Reaction, costs 1 SP", desc: "After a successful Avoid or Resist, make an immediate Basic Activate action." },
+                     { name: "Guard", cost: "Ally Reaction, costs 1 SP", desc: "Intercept an attack targeting an ally, become the target of the effect and allow you to react if able. The ally must be within close proximity." },
+                     { name: "Combo", cost: "Ally Reaction, costs 1 SP", desc: "Add a stat of your choice and one of your known keywords to an ally’s effect." },
+                     { name: "Flank", cost: "Ally Reaction, costs 1 SP", desc: "If an ally attacks an enemy adjacent to you, grant that enemy Disadvantage on their next action." }
+                ],
+                 "Setup & Command Actions": [
+                    { name: "Reload", cost: "Single Action", desc: "Required by the Material keyword; consumes an item." },
+                    { name: "Assist", cost: "Single Action", desc: "Designate one target. All allies gain Advantage on their next action against that target." },
+                    { name: "Pass", cost: "Single Action", desc: "End your turn, ceding Priority. Your initiative card is moved to the bottom of the deck if you have actions remaining, or discarded if you do not." },
+                    { name: "Command", cost: "Single Action", desc: "Direct a Companion, Animation, or Mount under your control to act in place of your action." }
+                ]
+            };
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const keywordSearch = document.getElementById('keyword-search');
+            const keywordList = document.getElementById('keyword-list');
+            const keywordDetailsView = document.getElementById('keyword-details-view');
+            const actionCatalog = document.getElementById('action-catalog');
+
+            function populateKeywordList(filter = '') {
+                keywordList.innerHTML = '';
+                Object.entries(KEYWORDS_DATA).forEach(([code, data]) => {
+                    if (data.name.toLowerCase().includes(filter.toLowerCase()) || code.includes(filter)) {
+                        const li = document.createElement('li');
+                        li.textContent = `${code}: ${data.name}`;
+                        li.dataset.code = code;
+                        const colorIndex = code.substring(0,1);
+                        li.style.borderLeftColor = `var(--color-${['null', 'silver', 'yellow', 'green', 'black', 'orange', 'white', 'red', 'blue', 'purple'][colorIndex]})`;
+                        keywordList.appendChild(li);
+                    }
+                });
+            }
+
+            function displayKeywordDetails(code) {
+                const data = KEYWORDS_DATA[code];
+                if (!data) return;
+                
+                document.querySelectorAll('#keyword-list li').forEach(li => li.classList.remove('active'));
+                const activeLi = document.querySelector(`#keyword-list li[data-code="${code}"]`);
+                if (activeLi) activeLi.classList.add('active');
+
+                keywordDetailsView.innerHTML = `
+                    <h3>${code}: ${data.name}</h3>
+                    <p><strong>Intent:</strong> ${data.intent}</p>
+                    <p><strong>Active:</strong> ${data.active || 'N/A'}</p>
+                    <p><strong>Passive:</strong> ${data.passive || 'N/A'}</p>
+                    <p><strong>Gear:</strong> ${data.gear || 'N/A'}</p>
+                `;
+            }
+            
+            function populateActionCatalog() {
+                actionCatalog.innerHTML = '';
+                Object.entries(ACTIONS_DATA).forEach(([category, actions]) => {
+                    const details = document.createElement('details');
+                    let actionsHTML = '';
+                    actions.forEach(action => {
+                        actionsHTML += `
+                            <div class="action-item">
+                                <h4>${action.name}</h4>
+                                <div class="action-cost">${action.cost}</div>
+                                <p>${action.desc}</p>
+                            </div>
+                        `;
+                    });
+                    details.innerHTML = `<summary>${category}</summary>${actionsHTML}`;
+                    actionCatalog.appendChild(details);
+                });
+            }
+
+            // --- Event Listeners ---
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.classList.toggle('active', content.id === tab.dataset.tab);
+                    });
+                });
+            });
+
+            keywordSearch.addEventListener('input', () => {
+                populateKeywordList(keywordSearch.value);
+            });
+
+            keywordList.addEventListener('click', (e) => {
+                if(e.target.tagName === 'LI') {
+                    displayKeywordDetails(e.target.dataset.code);
+                }
+            });
+
+            // --- Initialization ---
+            populateKeywordList();
+            populateActionCatalog();
+        });
+    </script>
+</body>
+</html>
