@@ -14,3 +14,20 @@ blockquote p {
   font-style: italic;
   font-size: 0.95em;
 }
+
+/* Apply the Calibri font stack to the main content body.
+   The .md-typeset class targets the rendered Markdown content. */
+.md-typeset {
+  font-family: "Calibri", "Candara", "Segoe", "Segoe UI", "Optima", "Arial", sans-serif;
+}
+
+/* Apply the Oswald font to all headers within the content.
+   We add 'sans-serif' as a fallback in case Oswald fails to load. */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: "Oswald", sans-serif;
+}
