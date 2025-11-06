@@ -587,13 +587,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#10-scene-clock-situation-types" class="md-nav__link">
+  <a href="#10-scene-clock-and-situation-types" class="md-nav__link">
     <span class="md-ellipsis">
-      1.0: Scene Clock &amp; Situation Types
+      1.0: Scene Clock and Situation Types
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1.0: Scene Clock &amp; Situation Types">
+    <nav class="md-nav" aria-label="1.0: Scene Clock and Situation Types">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1799,13 +1799,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#10-scene-clock-situation-types" class="md-nav__link">
+  <a href="#10-scene-clock-and-situation-types" class="md-nav__link">
     <span class="md-ellipsis">
-      1.0: Scene Clock &amp; Situation Types
+      1.0: Scene Clock and Situation Types
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1.0: Scene Clock &amp; Situation Types">
+    <nav class="md-nav" aria-label="1.0: Scene Clock and Situation Types">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1840,32 +1840,37 @@
 
 <h1 id="layer-4-the-strategic-game">Layer 4: The Strategic Game</h1>
 <p>This layer reveals the full game structure, the rules for resolving different types of situations.</p>
-<h2 id="10-scene-clock-situation-types">1.0: Scene Clock &amp; Situation Types</h2>
+<hr />
+<h2 id="10-scene-clock-and-situation-types">1.0: Scene Clock and Situation Types</h2>
 <p>The outcome of an entire Scene is determined by the party's ability to deplete the Scene Clock , which represents completing their primary objective through a series of situations, travel, and rest periods.</p>
 <p><strong>(1.1) The Scene Clock:</strong> This clock tracks progress towards the players' goal. It starts with a value based on the Scene's complexity (typically 8-15 points). It is depleted by 1 when Situation Clocks are resolved, Travel occurs, or a Rest is taken.</p>
 <p><strong>(1.2) Scenes are resolved using the standard Situation system.</strong> However, a Race Situation introduces a hard time limit via the Threat Clock.</p>
 <ul>
 <li>
 <p><strong>(1.2.1) Standard Situation (Combat, Exploration, Social)</strong></p>
-<ul>
-<li><strong>Mechanic:</strong> Threat is managed through narrative consequences.</li>
+</li>
+<li>
+<p><strong>Mechanic:</strong> Threat is managed through narrative consequences.</p>
+</li>
 <li><strong>Success:</strong> The Situation Clock is reduced to 0.</li>
 <li><strong>Failure Consequence:</strong> When a Situation is failed, the scene is not ended, the Curator may introduce a Complication (e.g., more enemies arrive, the objective becomes harder, an ally is put in danger).</li>
-<li><strong>Resolution:</strong> The Scene is a Success if the Scene Clock is depleted. A Situation is considered failed if the players are all defeated or are forced to retreat before its clock can be depleted to 0. When a Situation is failed, the scene does not necessarily end. Instead, the Curator may introduce a Complication.</li>
-</ul>
+<li>
+<p><strong>Resolution:</strong> The Scene is a Success if the Scene Clock is depleted. A Situation is considered failed if the players are all defeated or are forced to retreat before its clock can be depleted to 0. When a Situation is failed, the scene does not necessarily end. Instead, the Curator may introduce a Complication.</p>
 </li>
 <li>
 <p><strong>(1.2.2) Race Situation (Timed, High-Stakes)</strong></p>
-<ul>
-<li><strong>Mechanic:</strong> This special situation type introduces the Threat Clock , turning the scene into a direct race against time.</li>
+</li>
+<li>
+<p><strong>Mechanic:</strong> This special situation type introduces the Threat Clock , turning the scene into a direct race against time.</p>
+</li>
 <li><strong>Success:</strong> The Situation Clock is depleted to 0.</li>
 <li><strong>Partial Success:</strong> The Scene ends prematurely and the Scene Clock has fewer points remaining than the Threat Clock.</li>
 <li><strong>Failure:</strong> The Threat Clock is depleted to 0, or the Scene ends with the Threat Clock having fewer or equal points remaining than the Scene Clock.</li>
 </ul>
-</li>
-</ul>
 <p><strong>(1.3) The Threat Clock:</strong> This mechanic is only used during a Race situation. Its size is determined by a simple lookup table, providing a "threat budget" based on the scene's difficulty.</p>
-<p><strong>(1.3.1)</strong> When a Timed Situation begins, the Curator determines its Difficulty Category based on its Level Modifier (relative to the party's average level). They then consult the table below, cross-referencing the Situation Level with the Difficulty Category to find the Threat Clock's starting value. This value is set for the entire scene.</p>
+<ul>
+<li><strong>(1.3.1)</strong> When a Timed Situation begins, the Curator determines its Difficulty Category based on its Level Modifier (relative to the party's average level). They then consult the table below, cross-referencing the Situation Level with the Difficulty Category to find the Threat Clock's starting value. This value is set for the entire scene.</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1892,7 +1897,9 @@
 </tr>
 </tbody>
 </table>
-<p><strong>(1.3.2) Threat Budget Table:</strong></p>
+<ul>
+<li><strong>(1.3.2) Threat Budget Table:</strong></li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1923,11 +1930,12 @@
 </tr>
 </tbody>
 </table>
-<p><strong>(1.3.3) Depleting the Clock (The Cost of Action &amp; Time):</strong></p>
-<ol>
+<ul>
+<li><strong>(1.3.3) Depleting the Clock (The Cost of Action &amp; Time):</strong></li>
 <li><strong>Action Cost:</strong> Whenever a player <strong>attempts</strong> an Effort Roll against a Barrier or Puzzle (regardless of success), the Threat Clock is immediately depleted by 1 point.</li>
 <li><strong>Time Cost:</strong> At the end of every Round during a combat or other time-sensitive conflict within the Race, the Threat Clock is depleted by 1 point.</li>
-</ol>
+</ul>
+<blockquote>
 <h3 id="sparks-in-action-racing-the-clock">SPARKS IN ACTION: RACING THE CLOCK</h3>
 <p>Sparks and Rook are now Level 3. They are in a Race Situation. A bomb is set to go off in a power conduit.</p>
 <p><strong>Curator Setup:</strong> "This is a Race Situation. The Scene Clock starts at 5. You need to get through two Barriers (an outer and inner door) and defeat a final 'Boss' Sentry Turret to reach the bomb. Your main objective is the Situation Clock, which starts at 3 (for the three challenges)."</p>
@@ -1938,7 +1946,10 @@
 <li><strong>Barrier 2:</strong> Sparks takes over on the second door, which is a complex electronic lock (a Puzzle). She uses her Technique stat for her Effort Rolls. She succeeds, depleting the second clock. The Situation Clock is now at 2. The Threat clock is now at 12.</li>
 <li><strong>The Boss:</strong> They face the Sentry Turret. It's a tough fight that lasts two rounds. The Situation Clock is now at 0, the Threat Clock is now at 10.</li>
 </ul>
-<p>They successfully finish the situation with time to spare!</p>
+<p>They successfully finish the situation with time to spare!
+</p>
+</blockquote>
+<hr />
 
 
 
