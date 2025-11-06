@@ -2086,10 +2086,8 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <ul>
 <li>
 <p><strong>Activate:</strong> The primary action for causing an effect. The base roll for an Activate action is called an Effect Value (EV).</p>
-</li>
-<li>
-<p>The EV is calculated by adding a Standard Roll, The Character's Level, and the Character's Chosen Stat.</p>
-</li>
+<ul>
+<li>The EV is calculated by adding a Standard Roll, The Character's Level, and the Character's Chosen Stat.</li>
 <li>
 <p>Keyword Active Effects can be applied for a cost of one EP per keyword. To calculate the final Energy Point (EP) cost for applying keywords to this action, follow these steps in order:</p>
 <ul>
@@ -2101,13 +2099,15 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li>
 <p>If the EV does not exceed the target's Resistance, the Action has no effect unless a keyword states otherwise.</p>
 </li>
+</ul>
+</li>
 <li>
 <p><strong>Called Shot:</strong> You make a specialized Activate action with Disadvantage to target a specific weak point on an enemy Character or to target an item they are holding.</p>
-</li>
-<li>
-<p><strong>Targeting an Item:</strong> A successful hit deals value loss to the item's Durability Clock instead of the wielder's HP. The wielder defends with their normal Resistance.</p>
-</li>
+<ul>
+<li><strong>Targeting an Item:</strong> A successful hit deals value loss to the item's Durability Clock instead of the wielder's HP. The wielder defends with their normal Resistance.</li>
 <li><strong>Targeting an Entity:</strong> A successful Called Shot against an Entity is a Critical Hit, granting the choice of its bonus effects. If this attack reduces the target's HP Clock to 0, they are killed instantly, bypassing the normal Unconscious state (unless a passive keyword or other effect prevents this).</li>
+</ul>
+</li>
 </ul>
 <p><strong>(4.4) Move Actions (Single Action)</strong></p>
 <ul>
@@ -2133,13 +2133,11 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <ul>
 <li>
 <p><strong>Recharge:</strong> As a full turn action that costs 1 SP, you may choose one of the following effects:</p>
-</li>
-<li>
-<p>Restore Stamina Points (SP) equal to your Brawn stat.</p>
-</li>
+<ul>
+<li>Restore Stamina Points (SP) equal to your Brawn stat.</li>
 <li>Restore Energy Points (EP) equal to your Wit stat.</li>
-<li>
-<p>This action cannot be performed if you have 0 SP, as its cost cannot be paid.</p>
+<li>This action cannot be performed if you have 0 SP, as its cost cannot be paid.</li>
+</ul>
 </li>
 <li>
 <p><strong>Recover:</strong> Remove a number of Tags of your choice equal to either Brawn, Wit, or Influence from your Tag pool.</p>
@@ -2573,29 +2571,27 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <li><strong>(1.4.3)</strong> These values do not scale with level and must be managed carefully during play.</li>
 <li><strong>(1.4.4) Health Points (HP)</strong> Represents an actor’s physical durability and ability to still defend and react.</li>
 <li><strong>At 0:</strong> The actor becomes unguarded, incapacitated, or otherwise removed from the scene. The next source of value loss is fatal if chosen to be.</li>
-<li>
-<p><strong>Recovery:</strong></p>
-</li>
-<li>
-<p>During Situations: Effects may restore HP.</p>
-</li>
+<li><strong>Recovery:</strong><ul>
+<li>During Situations: Effects may restore HP.</li>
 <li>Between Situations: The character may use Rest to recover 1 HP.</li>
 <li>During Downtime: HP is fully restored at no Karma cost.</li>
+</ul>
+</li>
 </ul>
 <p><strong>(1.4.5) Stamina Points (SP)</strong> Represents physical exertion and endurance and is spent on maneuvers, reactions, and other physical actions.
 *   <strong>At 0:</strong> The actor becomes Exhausted and suffers disadvantage on all rolls.
 *   <strong>Recovery:</strong>
-*   During Situations: Certain effects may restore SP.
-*   The Recharge Focus Action restores SP equal to your Brawn stat.
-*   At Initiative: At the start of a Situation, when initiative is rolled, each actor regains SP equal to their Brawn stat. This recovery can exceed their maximum, creating temporary SP.
-*   During Downtime: SP is fully restored at no Karma cost.</p>
+    *   During Situations: Certain effects may restore SP.
+    *   The Recharge Focus Action restores SP equal to your Brawn stat.
+    *   At Initiative: At the start of a Situation, when initiative is rolled, each actor regains SP equal to their Brawn stat. This recovery can exceed their maximum, creating temporary SP.
+    *   During Downtime: SP is fully restored at no Karma cost.</p>
 <p><strong>(1.4.6) Energy Points (EP)</strong> Represents inner strength, magical power, or narrative potential and is spent on applying keywords to actions and effects.
 *   <strong>At 0:</strong> The actor becomes Silenced, unable to use innate keywords.
 *   <strong>Recovery:</strong>
-*   During Situations: Certain effects may restore EP.
-*   The Recharge action (see Layer 2, Section 4.6) can be used to restore EP equal to your Wit stat.
-*   Between Situations: The actor must Rest to recover EP equal to their Force stat.
-*   During Downtime: EP is fully restored at no Karma cost.</p>
+    *   During Situations: Certain effects may restore EP.
+    *   The Recharge action (see Layer 2, Section 4.6) can be used to restore EP equal to your Wit stat.
+    *   Between Situations: The actor must Rest to recover EP equal to their Force stat.
+    *   During Downtime: EP is fully restored at no Karma cost.</p>
 <p><strong>(1.4.7) Resistance:</strong> A character’s Resistance is the sum of their three highest stats.</p>
 <ul>
 <li>Resistance is used to reduce incoming Effect Values (EVs).</li>
@@ -2615,10 +2611,12 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <li><strong>(2.2.1)</strong> The transition from Level 0 to Level 1 is a significant narrative event decided and granted by the Curator (usually at the conclusion of the first Episode).This is the standard rule for narrative campaigns. For alternate game modes, see the relevant appendix for specific Awakening triggers.</li>
 <li><strong>(2.2.2)</strong> Keyword Growth: The character learns three new keywords, bringing their total to four.</li>
 <li><strong>(2.2.3)</strong> Stat Baseline: All nine of the character's stats are raised to a new baseline value of 2, for a total of 18 stat points.</li>
-<li><strong>(2.2.4)</strong> Trinity Stat Bonus: The character then gains three (3) additional stat points that are directly tied to their 5-Point Motivational Profile(see Appendix D) .</li>
+<li><strong>(2.2.4)</strong> Trinity Stat Bonus: The character then gains three (3) additional stat points that are directly tied to their 5-Point Motivational Profile(see Appendix D) .<ul>
 <li>One point must be allocated to a stat associated with the color of their Primary Motivation (Goal).</li>
 <li>One point must be allocated to a stat associated with the color of their Secondary Motivation (Method).</li>
 <li>One point must be allocated to a stat associated with the color of their Tertiary Motivation (Purpose).</li>
+</ul>
+</li>
 <li><strong>(2.2.5)</strong> A newly Awakened Level 1 character begins with a total of 21 stat points.</li>
 </ul>
 <p><strong>(2.3) Leveling Up (Level 2 and Beyond):</strong></p>
@@ -2744,13 +2742,17 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <li><strong>(3.2.1)</strong> The Active Effect of a keyword is applied to an action and costs 1 EP per application.</li>
 <li><strong>(3.2.2)</strong> The Passive Effect of a Keyword is a constant effect on the character.</li>
 <li><strong>(3.2.3)</strong> The Gear Effect of all keywords possessed by the item are constantly applied to the item passively.
-  <strong>(3.3)</strong> An Entity can only benefit from a limited number of ongoing passive effects at one time, managed through two types of slots.</li>
-<li><strong>(3.3.1)</strong> Innate Passive Slots: These are for keywords on the entity.</li>
+<strong>(3.3)</strong> An Entity can only benefit from a limited number of ongoing passive effects at one time, managed through two types of slots.</li>
+<li><strong>(3.3.1)</strong> Innate Passive Slots: These are for keywords on the entity.<ul>
 <li>A character has a number of Innate Passive Slots equal to their Force stat .</li>
 <li>During Downtime, a player may swap which of their known keywords are active in their Innate Passive Slots.</li>
-<li><strong>(3.3.2)</strong> Gear Passive Slots: These are for keywords on equipped items.</li>
+</ul>
+</li>
+<li><strong>(3.3.2)</strong> Gear Passive Slots: These are for keywords on equipped items.<ul>
 <li>A character can benefit from a number of passive keywords from their equipped gear equal to their Expertise.</li>
 <li>As a single action, a character may swap which passive keywords from their equipped gear are active in their Gear Passive Slots.</li>
+</ul>
+</li>
 </ul>
 <p><strong>(3.4)</strong> Universal Keyword Rules:</p>
 <ul>
@@ -2764,19 +2766,19 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 <p><strong>(3.5) The Flaw Package: A Trade-Off of Power</strong></p>
 <p>Gaining a Flaw is a significant narrative event, representing a permanent sacrifice made in exchange for a unique and immediate boost in power. A character can only ever have <strong>one</strong> Flaw. When an entity gains a Flaw, they receive the full "Flaw Package," which consists of one Detriment and two distinct Benefits.</p>
 <ul>
-<li><strong>(3.5.1)</strong> A Flaw can be gained in multiple ways:</li>
+<li><strong>(3.5.1)</strong> A Flaw can be gained in multiple ways:<ul>
 <li>Curator Adjucation based on the narrative</li>
 <li>Player spends their downtime to gain a Flaw, this prevents Karma expenditure for that downtime</li>
 <li>During character Creation</li>
+</ul>
+</li>
 <li><strong>(3.5.2)</strong> The character gains the permanent, passive penalty from their chosen <strong>Flaw Keyword</strong> (any keyword from the "0. Flaw" category, such as <code>Restricted</code>, <code>Feeble</code>, or <code>Anxious</code>). This is the price they pay. This penalty is always active and cannot be negated.</li>
-<li><strong>(3.5.3)</strong> In exchange for this permanent Detriment, the character immediately gains two benefits:</li>
-<li>
-<p><strong>A Compensation Keyword:</strong> The player chooses any other keyword from the master list. This becomes their <strong>Compensation Keyword</strong>.</p>
+<li><strong>(3.5.3)</strong> In exchange for this permanent Detriment, the character immediately gains two benefits:<ul>
+<li><strong>A Compensation Keyword:</strong> The player chooses any other keyword from the master list. This becomes their <strong>Compensation Keyword</strong>.<ul>
+<li>The character gains access to the <strong>Active effect</strong> of this keyword <em>only</em>. They do not gain its Passive or Gear effects.</li>
+<li>This does <strong>not</strong> count as a "learned keyword" for the purposes of leveling up. It is a special ability gained from the Flaw itself.</li>
+</ul>
 </li>
-<li>
-<p>The character gains access to the <strong>Active effect</strong> of this keyword <em>only</em>. They do not gain its Passive or Gear effects.</p>
-</li>
-<li>This does <strong>not</strong> count as a "learned keyword" for the purposes of leveling up. It is a special ability gained from the Flaw itself.<ul>
 <li><strong>A Bonus Stat Point:</strong> The character gains one (1) bonus stat point. This point must be allocated to a stat associated with the color of the chosen <strong>Compensation Keyword</strong> and cannot raise that stat above the maximum of 5.</li>
 </ul>
 </li>
