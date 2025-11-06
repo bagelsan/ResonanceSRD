@@ -1,43 +1,16 @@
-/* Import the Oswald font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+/* in docs/stylesheets/extra.css */
 
-/* --- Font Rules for Resonance SRD --- */
-
-/* 1. Set the default body font to Calibri */
-/* The browser will try Calibri first. If the user doesn't have it, it will fall back to a standard sans-serif font. */
-body {
-  font-family: "Calibri", sans-serif;
+blockquote {
+  background-color: rgba(72, 118, 255, 0.1); /* Translucent blue background */
+  border: 1px solid rgba(72, 118, 255, 0.5); /* Blue border on all sides */
+  border-left: 5px solid #448aff; /* Thicker left border */
+  border-radius: 5px;
+  padding: 1.5em;
+  margin: 1.5em 0;
 }
 
-/* --- Custom Header Logo Size --- */
-.md-header__button.md-logo img {
-  height: 3.1rem; 
+/* You can also style the text inside the blockquote */
+blockquote p {
+  font-style: italic;
+  font-size: 0.95em;
 }
-
-.md-header__button.md-logo svg {
-  height: 3.0rem;
-  width: auto;
-}
-
-/* 2. Set all header fonts to Oswald */
-/* This targets all heading levels, from h1 (the page title) down to h6. */
-h1, h2, h3, h4 {
-  font-family: "Oswald", sans-serif;
-}
-
-/* 3. Set the font for call-out boxes (admonitions) and their titles to Lora */
-/* This targets the special boxes for notes, warnings, etc. */
-.md-typeset .admonition,
-.md-typeset .admonition-title {
-  font-family: "Lora", serif;
-}
-
-
-/* --- Custom Table Style --- */
-.md-typeset table:not([class]) th {
-  background-color: #dea193;
-	color: #111111;
-}
-.md-typeset table:not([class]) tr:nth-child(even) {
-  background-color: #111111;
-
