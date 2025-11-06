@@ -2914,17 +2914,15 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 <ul>
 <li>
 <p><strong>(8.6.1) Supported Population:</strong> The number of individuals a faction can reliably support (including citizens, workers, soldiers, etc.) is determined by its Level. The population is equal to <strong>10 raised to the power of the Faction's Level (10^L)</strong>. As a faction establishes more Civil Systems and its Level increases, its capacity to support a larger population grows exponentially.</p>
-</li>
-<li>
-<p><strong>Level 0 (10⁰):</strong> ~1 member. A single individual or bonded pair.</p>
-</li>
+<ul>
+<li><strong>Level 0 (10⁰):</strong> ~1 member. A single individual or bonded pair.</li>
 <li><strong>Level 1 (10¹):</strong> ~10 members. A family or a small survivalist cell.</li>
 <li><strong>Level 2 (10²):</strong> ~100 members. A large tribe or a small village.</li>
 <li><strong>Level 3 (10³):</strong> ~1,000 members. A large village or a small town's garrison.</li>
 <li><strong>Level 4 (10⁴):</strong> ~10,000 members. A thriving town or a significant military force.</li>
 <li><strong>Level 5 (10⁵):</strong> ~100,000 members. A small city-state or a major regional power.</li>
-<li>
-<p><strong>Level 6 (10⁶):</strong> ~1,000,000 members. A major city-state or a sprawling kingdom.</p>
+<li><strong>Level 6 (10⁶):</strong> ~1,000,000 members. A major city-state or a sprawling kingdom.</li>
+</ul>
 </li>
 <li>
 <p><strong>(8.6.2) Member Proficiency:</strong> By default, the Level of a generic, unnamed member of a faction (such as a guard, artisan, or citizen) is considered <strong>equal to the Faction's Level</strong>. This serves as a baseline for generating common NPCs quickly. These generics are animations. Named characters, leaders, veterans, and other specialists are exceptions and should be built as distinct characters with their own levels.</p>
@@ -2935,19 +2933,15 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 <li><strong>(8.7.1) The Mandate of Leadership:</strong> Every established Civil System (as listed in 8.4) must have a designated leader.</li>
 <li>
 <p><strong>(8.7.2) Generating a Civil Leader:</strong> To generate a leader for a specific Civil System on the fly:</p>
-</li>
-<li>
-<p><strong>Inherit the Goal:</strong> The leader's Primary Motivation (Goal) is always identical to the faction's Primary Motivation.</p>
-</li>
-<li>
-<p><strong>Assign the Method:</strong> The leader's Secondary Motivation (Method) is determined by the color motivation associated with their Civil System's code (S0-S9).</p>
+<ol>
+<li><strong>Inherit the Goal:</strong> The leader's Primary Motivation (Goal) is always identical to the faction's Primary Motivation.</li>
+<li><strong>Assign the Method:</strong> The leader's Secondary Motivation (Method) is determined by the color motivation associated with their Civil System's code (S0-S9).</li>
+</ol>
 </li>
 <li>
 <p><strong>(8.7.3) Civil System Motivation Matrix:</strong></p>
-</li>
-<li>
-<p><strong>Food (S0 / Null):</strong> The leader's Secondary Motivation is <strong>Discovery</strong>.</p>
-</li>
+<ul>
+<li><strong>Food (S0 / Null):</strong> The leader's Secondary Motivation is <strong>Discovery</strong>.</li>
 <li><strong>Water (S1 / Silver):</strong> The leader's Secondary Motivation is <strong>Absolution</strong>.</li>
 <li><strong>Shelter (S2 / Yellow):</strong> The leader's Secondary Motivation is <strong>Ambition</strong>.</li>
 <li><strong>Infrastructure (S3 / Green):</strong> The leader's Secondary Motivation is <strong>Security</strong>.</li>
@@ -2957,6 +2951,8 @@ When you make an Activate action to strike an enemy with this gauntlet, you use 
 <li><strong>Government (S7 / Red):</strong> The leader's Secondary Motivation is <strong>Glory</strong>.</li>
 <li><strong>Commerce (S8 / Blue):</strong> The leader's Secondary Motivation is <strong>Influence</strong>.</li>
 <li><strong>Military (S9 / Purple):</strong> The leader's Secondary Motivation is <strong>Faith</strong>.</li>
+</ul>
+</li>
 </ul>
 <p><strong>(8.8) The Nation Tier: Alliances and Ideology</strong>: When Factions unite, they can form a <strong>Nation</strong>, a meta-entity representing a formal alliance. The identity of a Nation is not defined by new resources, but by the combined ideology of its core leadership.</p>
 <ul>
@@ -3023,83 +3019,67 @@ During a Downtime phase, a player who is trusted by the Coalition can choose to 
 <ul>
 <li>
 <p><strong>(9.3.1) Rest (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Add 1 point to your current HP</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Restore all Values to Max (No Karma Cost)</p>
+<ul>
+<li><strong>Situation:</strong> Add 1 point to your current HP</li>
+<li><strong>Downtime:</strong> Restore all Values to Max (No Karma Cost)</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.2) Restore (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Remove a Number of Status Tags from Your pool equal to your Brawn, Wit, or Influence</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Remove the Injured Condition</p>
+<ul>
+<li><strong>Situation:</strong> Remove a Number of Status Tags from Your pool equal to your Brawn, Wit, or Influence</li>
+<li><strong>Downtime:</strong> Remove the Injured Condition</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.3) Recharge (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Add your Wit to your current EP</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Upgrade one gear item to be at an equal level with your character</p>
+<ul>
+<li><strong>Situation:</strong> Add your Wit to your current EP</li>
+<li><strong>Downtime:</strong> Upgrade one gear item to be at an equal level with your character</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.4) Learn (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Grant your next roll Advantage</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Begin your next situation with Surprise</p>
+<ul>
+<li><strong>Situation:</strong> Grant your next roll Advantage</li>
+<li><strong>Downtime:</strong> Begin your next situation with Surprise</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.5) Grow ( Level/2 Karma, rounded Up)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Add any Keyword to an Activate action (1 Karma)</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Add a new Innate Keyword to your Character, limited to once per Downtime</p>
+<ul>
+<li><strong>Situation:</strong> Add any Keyword to an Activate action (1 Karma)</li>
+<li><strong>Downtime:</strong> Add a new Innate Keyword to your Character, limited to once per Downtime</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.6) Create (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Manifest an item equal to your Characters level until the end of the situation</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Grant a Faction a keyword to utilize for Gear and Entities</p>
+<ul>
+<li><strong>Situation:</strong> Manifest an item equal to your Characters level until the end of the situation</li>
+<li><strong>Downtime:</strong> Grant a Faction a keyword to utilize for Gear and Entities</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.7) Inspire (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Grant a target or yourself a number of any one Boost Tag equal to your Wit</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Grant a Faction a new Civil System and increase its Level</p>
+<ul>
+<li><strong>Situation:</strong> Grant a target or yourself a number of any one Boost Tag equal to your Wit</li>
+<li><strong>Downtime:</strong> Grant a Faction a new Civil System and increase its Level</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.8) Mentor (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Allow an Animation or Companion under your control the ability to use keywords without a command action on their next turn.</p>
-</li>
-<li>
-<p><strong>Downtime:</strong> Bond with an Animation or Companion limited to one level below your character's level</p>
+<ul>
+<li><strong>Situation:</strong> Allow an Animation or Companion under your control the ability to use keywords without a command action on their next turn.</li>
+<li><strong>Downtime:</strong> Bond with an Animation or Companion limited to one level below your character's level</li>
+</ul>
 </li>
 <li>
 <p><strong>(9.3.9) Amplify (1 Karma)</strong></p>
-</li>
-<li>
-<p><strong>Situation:</strong> Your next roll is considered critical.</p>
-</li>
+<ul>
+<li><strong>Situation:</strong> Your next roll is considered critical.</li>
 <li><strong>Downtime:</strong> Create a permanent Environmental Effect or Trap equal to your level</li>
+</ul>
+</li>
 </ul>
 <blockquote>
 <h3 id="sparks-in-action-the-stress-roll">SPARKS IN ACTION: THE STRESS ROLL</h3>
