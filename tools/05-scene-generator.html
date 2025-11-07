@@ -41,26 +41,20 @@
         label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
 
         /* --- LAYOUT FIXES START HERE --- */
-        .output-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .output-header h2 {
-            margin: 0;
-            padding: 0;
-            border: none;
-        }
-        #copy-button {
-            flex-shrink: 0; /* Prevents the button from shrinking */
-        }
-        /* --- LAYOUT FIXES END HERE --- */
-        
         #output-string {
             font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a;
             color: var(--color-yellow); min-height: 80px; resize: vertical; width: 100%;
         }
+
+        #copy-button {
+            width: auto; /* No longer full width */
+            display: block; /* Allows margin auto to work */
+            margin-left: auto; /* Pushes the button to the right */
+            margin-right: 0;
+            margin-top: 10px; /* Creates space between textarea and button */
+        }
+        /* --- LAYOUT FIXES END HERE --- */
+        
         #manifest-details {
             font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left;
             background-color: #1a1a1a; padding: 15px; border-radius: 3px; white-space: pre-wrap;
@@ -82,11 +76,10 @@
 
         <!-- OUTPUT -->
         <div class="section output-section">
-            <div class="output-header">
-                <h2>Generated Blueprint</h2>
-                <button id="copy-button" class="button-small">Copy</button>
-            </div>
+            <h2>Generated Blueprint</h2>
             <textarea id="output-string" readonly>Click 'Generate Scene' to begin...</textarea>
+            <!-- BUTTON MOVED TO HERE -->
+            <button id="copy-button" class="button-small">Copy</button>
             
             <h3>Manifest Details</h3>
             <pre id="manifest-details">Details will appear here...</pre>
@@ -94,8 +87,8 @@
     </div>
 
     <script>
-        // The JavaScript logic remains the same as the '-updated' version,
-        // as it was already correct. Only the HTML structure and CSS were changed.
+        // The JavaScript logic does not need to change.
+        // It correctly finds the elements by their IDs regardless of their position.
         document.addEventListener('DOMContentLoaded', () => {
 
             const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
@@ -162,7 +155,7 @@
 
                 for (let i = 2; i <= level; i++) {
                     const stat = STAT_CODES_ARRAY[roll(STAT_CODES_ARRAY.length)-1];
-                    const kwIndex = 2 + i * 2 - 2; // Adjusted index
+                    const kwIndex = 2 + i * 2 - 2;
                     finalProgression += `-${allKeywords[kwIndex]}.${allKeywords[kwIndex+1]}.${stat}`;
                     if(flawSlot.hasFlaw && level === i) finalProgression += flawSlot.flawString;
                 }
@@ -194,7 +187,6 @@
             }
 
             function parseAndFormat(blueprint) {
-                // ... (This function is for display only, so it's fine as-is)
                 let details = "";
                 if (blueprint.startsWith('C:')) {
                     const charString = blueprint.substring(2);
@@ -234,7 +226,6 @@
                 let blueprintString = "";
                 let manifestDetails = "";
 
-                // 1. Scene Structure
                 const complexity = Math.ceil(roll(10) / 2);
                 const theme = rollD100String();
                 const situations = [];
@@ -252,7 +243,6 @@
                 blueprintString = `(${complexity})[${theme}]-${situations.map(s => `${s.isRace ? '*' : ''}${s.code}`).join('|')}:`;
                 manifestDetails += `SCENE: ${complexity} Situations, Theme: ${KEYWORDS[theme]?.name || 'Unknown'}\n\n`;
 
-                // 2. Manifest for each situation
                 const allManifests = [];
                 situations.forEach((sit, index) => {
                     manifestDetails += `SITUATION ${index + 1} (${sit.typeName}${sit.isRace ? ', RACE' : ''}):\n`;
@@ -297,12 +287,10 @@
                 
                 blueprintString += '[' + allManifests.join('],[') + ']';
 
-                // Update UI
                 outputStringEl.value = blueprintString;
                 manifestDetailsEl.textContent = manifestDetails;
             }
 
-            // --- EVENT LISTENERS ---
             generateButton.addEventListener('click', generateScene);
             copyButton.addEventListener('click', () => {
                 outputStringEl.select();
@@ -311,7 +299,7 @@
                 setTimeout(() => copyButton.textContent = 'Copy', 1500);
             });
             
-            generateScene(); // Initial generation
+            generateScene();
         });
     </script>
 </body>
