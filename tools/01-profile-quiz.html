@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5-Point Motivational Profile Generator</title>
+    <title>Psychromattica 5-Point Motivational Profile Generator</title>
     <style>
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
@@ -30,16 +30,16 @@
         .question-block p { font-weight: bold; color: var(--color-silver); margin-bottom: 10px; line-height: 1.4; }
         .question-block label { display: block; background-color: #333; padding: 10px; margin: 5px 0; border-radius: 2px; cursor: pointer; transition: background-color 0.2s; line-height: 1.5; }
         .question-block label:hover { background-color: #444; }
-        .question-block input[type="radio"] { margin-right: 10px; vertical-align: top; margin-top: 4px; }
+        .question-block input[type="radio"]:checked + span { color: var(--color-yellow); font-weight: bold; }
+        .question-block input[type="radio"] { display: none; }
         #results-section { display: none; }
         .results-list { list-style: none; padding: 0; margin-top: 15px; }
         .results-list li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
         .result-name { width: 120px; font-weight: bold; }
-        .result-bar-container { flex-grow: 1; background-color: #1a1a1a; border-radius: 3px; }
-        .result-bar { height: 20px; background-color: var(--color-yellow); border-radius: 3px; transition: width 0.5s ease-out; }
-        .result-score { width: 30px; font-weight: bold; text-align: right; }
+        .result-bar-container { flex-grow: 1; background-color: #1a1a1a; border-radius: 3px; height: 20px; overflow: hidden;}
+        .result-bar { height: 100%; background-color: var(--color-yellow); border-radius: 3px; transition: width 0.5s ease-out; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--color-black); font-weight: bold;}
         .profile-summary { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; }
-        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
         .profile-card { background-color: #333; padding: 15px; border-radius: 2px; }
         .profile-card h4 { margin: 0 0 10px 0; padding-bottom: 5px; }
         .profile-card ul { list-style: none; padding: 0; }
@@ -54,18 +54,18 @@
         <div class="section">
             <h1>5-Point Motivational Profile Generator</h1>
             <p class="instructions">
-                This assessment uses the 27 questions from the Psychromattic Assessment (Appendix C) to generate a 5-Psychroma Profile. Your answers will be weighted to determine your core drives. Your top three motivations form your Trinity of Ideals, while your conflicts are determined by the lowest scoring Psychroma.
+                Answer the 27 questions below to generate your unique 5-Psychroma Profile. Your choices across all three sections—Motivation, Context, and Perspective—are weighted to create a holistic view of your character's core drives. Your top three results form your Trinity of Ideals, while your bottom two reveal your Duality of Conflict.
             </p>
         </div>
         <div class="section">
             <form id="quiz-form">
-                <button type="submit">Generate My 5-Point Profile</button>
+                <!-- Questions will be dynamically inserted here by JavaScript -->
             </form>
         </div>
         <div class="section" id="results-section">
             <h2>Your Profile Results</h2>
             <h3>Weighted Motivation Ranking</h3>
-            <p class="instructions">This is your complete motivational stack, ranked from most to least dominant. The scores are calculated by combining your answers from the Motivation and Context axes.</p>
+            <p class="instructions">This is your complete motivational stack. It's calculated by combining your Motivation and Context scores, then applying a significant weight based on your dominant Perspective.</p>
             <ul class="results-list" id="results-list"></ul>
             <div class="profile-summary">
                 <h3>Your 5-Point Profile</h3>
@@ -119,7 +119,6 @@
             const resultsList = document.getElementById('results-list');
             const trinityList = document.getElementById('trinity-list');
             const dualityList = document.getElementById('duality-list');
-            const WHEEL_OF_CHANGE = ['Green', 'White', 'Orange', 'Blue', 'Silver', 'Red', 'Black', 'Purple', 'Yellow'];
 
             function initializeQuiz() {
                 let quizHTML = "";
@@ -129,82 +128,100 @@
                         currentSection = data.section;
                         quizHTML += `<h3>${currentSection}</h3>`;
                     }
-                    quizHTML += `<div class="question-block"><p>Question ${index + 1}/${QUESTIONS_DATA.length}: ${data.q}</p>`;
+                    quizHTML += `<div class="question-block" id="q-block-${index}"><p>Question ${index + 1}/${QUESTIONS_DATA.length}: ${data.q}</p>`;
                     data.answers.forEach(answer => {
-                        quizHTML += `<label><input type="radio" name="q${index}" value="${answer.value}"> ${answer.text}</label>`;
+                        quizHTML += `<label><input type="radio" name="q${index}" value="${answer.value}"><span> ${answer.text}</span></label>`;
                     });
                     quizHTML += `</div>`;
                 });
-                const submitButton = quizForm.querySelector('button');
-                submitButton.insertAdjacentHTML('beforebegin', quizHTML);
+                quizForm.innerHTML = quizHTML;
+                const submitButton = document.createElement('button');
+                submitButton.type = 'submit';
+                submitButton.textContent = 'Generate My 5-Point Profile';
+                quizForm.appendChild(submitButton);
             }
 
             function calculateResults(e) {
                 e.preventDefault();
-                const axisScores = { Body: 0, Mind: 0, Essence: 0, Foundation: 0, Control: 0, Execution: 0 };
+                const scores = {
+                    motivation: { Body: 0, Mind: 0, Essence: 0 },
+                    context: { Foundation: 0, Control: 0, Execution: 0 },
+                    perspective: { Internal: 0, External: 0, Collaborative: 0 }
+                };
+                
                 const formData = new FormData(quizForm);
-                let answeredQuestions = 0;
-                // Only first 18 questions matter for motivation scores
-                for (let i = 0; i < 18; i++) {
-                    if (formData.has(`q${i}`)) {
-                        answeredQuestions++;
-                        const value = formData.get(`q${i}`);
-                        if(axisScores.hasOwnProperty(value)) {
-                            axisScores[value]++;
-                        }
+                let answeredCount = 0;
+                for (let i = 0; i < QUESTIONS_DATA.length; i++) {
+                    const value = formData.get(`q${i}`);
+                    if (value) {
+                        answeredCount++;
+                        if (i < 9) scores.motivation[value]++;
+                        else if (i < 18) scores.context[value]++;
+                        else scores.perspective[value]++;
                     }
                 }
                 
-                if (answeredQuestions < 18) {
-                    alert("Please answer all 27 questions before calculating your profile.");
+                if (answeredCount < QUESTIONS_DATA.length) {
+                    alert(`Please answer all ${QUESTIONS_DATA.length} questions to generate your profile.`);
                     return;
                 }
 
-                displayResults(axisScores);
+                displayResults(scores);
             }
 
-            function displayResults(axisScores) {
-                const motivationScores = [
-                    { name: 'Ambition', color: 'Silver', score: axisScores.Body + axisScores.Control },
-                    { name: 'Freedom', color: 'Yellow', score: axisScores.Body + axisScores.Execution },
-                    { name: 'Security', color: 'Green', score: axisScores.Body + axisScores.Foundation },
-                    { name: 'Legacy', color: 'Black', score: axisScores.Mind + axisScores.Control },
-                    { name: 'Innovation', color: 'Orange', score: axisScores.Mind + axisScores.Execution },
-                    { name: 'Purity', color: 'White', score: axisScores.Mind + axisScores.Foundation },
-                    { name: 'Glory', color: 'Red', score: axisScores.Essence + axisScores.Control },
-                    { name: 'Influence', color: 'Blue', score: axisScores.Essence + axisScores.Execution },
-                    { name: 'Faith', color: 'Purple', score: axisScores.Essence + axisScores.Foundation }
+            function displayResults({ motivation, context, perspective }) {
+                // Step 1: Calculate base scores for the 9 Psychroma
+                let psychromaScores = [
+                    { name: 'Ambition', color: 'Silver', score: motivation.Body + context.Control },
+                    { name: 'Freedom', color: 'Yellow', score: motivation.Body + context.Execution },
+                    { name: 'Security', color: 'Green', score: motivation.Body + context.Foundation },
+                    { name: 'Legacy', color: 'Black', score: motivation.Mind + context.Control },
+                    { name: 'Innovation', color: 'Orange', score: motivation.Mind + context.Execution },
+                    { name: 'Purity', color: 'White', score: motivation.Mind + context.Foundation },
+                    { name: 'Glory', color: 'Red', score: motivation.Essence + context.Control },
+                    { name: 'Influence', color: 'Blue', score: motivation.Essence + context.Execution },
+                    { name: 'Faith', color: 'Purple', score: motivation.Essence + context.Foundation }
                 ];
-                
-                motivationScores.sort((a, b) => b.score - a.score);
+
+                // Step 2: Determine Dominant Perspective and Apply Weighting
+                const dominantPerspective = Object.entries(perspective).sort((a, b) => b[1] - a[1])[0][0];
+                const PERSPECTIVE_BONUS = 2; // A significant but not overwhelming bonus
+
+                const PERSPECTIVE_WEIGHTS = {
+                    Internal: ['Purity', 'Faith', 'Security'],
+                    External: ['Influence', 'Glory', 'Innovation'],
+                    Collaborative: ['Ambition', 'Freedom', 'Legacy']
+                };
+
+                const weightedPsychroma = PERSPECTIVE_WEIGHTS[dominantPerspective];
+                psychromaScores.forEach(p => {
+                    if (weightedPsychroma.includes(p.name)) {
+                        p.score += PERSPECTIVE_BONUS;
+                    }
+                });
+
+                // Step 3: Sort final scores and render the list
+                psychromaScores.sort((a, b) => b.score - a.score);
                 resultsList.innerHTML = "";
-                const maxScore = motivationScores[0].score;
-                motivationScores.forEach(result => {
-                    const percentage = maxScore > 0 ? (result.score / maxScore) * 100 : 0;
+                const maxScore = Math.max(...psychromaScores.map(p => p.score), 1);
+
+                psychromaScores.forEach(result => {
+                    const percentage = (result.score / maxScore) * 100;
                     const li = document.createElement('li');
-                    li.innerHTML = `<span class="result-name">${result.name}</span><div class="result-bar-container"><div class="result-bar" style="width: ${percentage}%;"></div></div><span class="result-score">${result.score}</span>`;
+                    li.innerHTML = `
+                        <span class="result-name" style="color: var(--color-${result.color.toLowerCase()})">${result.name}</span>
+                        <div class="result-bar-container">
+                            <div class="result-bar" style="width: ${percentage}%; background-color: var(--color-${result.color.toLowerCase()})">
+                                ${result.score}
+                            </div>
+                        </div>
+                    `;
                     resultsList.appendChild(li);
                 });
                 
-                // --- SRD Compliant 5-Point Profile Derivation ---
-                const trinity = motivationScores.slice(0, 3);
-                
-                // Find conflicts based on the Goal (top score)
-                const goal = trinity[0];
-                const goalIndex = WHEEL_OF_CHANGE.indexOf(goal.color);
-                
-                // External conflict is directly opposite
-                const externalConflictIndex = (goalIndex + Math.floor(WHEEL_OF_CHANGE.length / 2)) % WHEEL_OF_CHANGE.length;
-                const externalConflictColor = WHEEL_OF_CHANGE[externalConflictIndex];
-                
-                // Internal conflict is one step away from the external conflict on the wheel
-                // As per Appendix D, this is the neighbor of the external conflict.
-                const internalConflictIndex = (externalConflictIndex + 1) % WHEEL_OF_CHANGE.length;
-                const internalConflictColor = WHEEL_OF_CHANGE[internalConflictIndex];
-                
-                // Find the full motivation objects for the conflict colors
-                const externalConflict = motivationScores.find(m => m.color === externalConflictColor);
-                const internalConflict = motivationScores.find(m => m.color === internalConflictColor);
+                // Step 4: Derive and display the 5-Point Profile
+                const trinity = psychromaScores.slice(0, 3);
+                const duality = psychromaScores.slice(-2).reverse(); // Last two, reversed so lowest is Internal struggle
 
                 trinityList.innerHTML = `
                     <li><strong>Goal:</strong> ${trinity[0].name} (${trinity[0].color})</li>
@@ -212,8 +229,8 @@
                     <li><strong>Purpose:</strong> ${trinity[2].name} (${trinity[2].color})</li>
                 `;
                 dualityList.innerHTML = `
-                    <li><strong>External:</strong> ${externalConflict.name} (${externalConflict.color})</li>
-                    <li><strong>Internal:</strong> ${internalConflict.name} (${internalConflict.color})</li>
+                    <li><strong>External Conflict:</strong> ${duality[0].name} (${duality[0].color})</li>
+                    <li><strong>Internal Struggle:</strong> ${duality[1].name} (${duality[1].color})</li>
                 `;
                 
                 resultsSection.style.display = 'block';
