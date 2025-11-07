@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Psychromattica Toolkit</title>
-    <!-- This link will be dynamically populated with the inline manifest by our script -->
+    <!-- This link will be dynamically populated with the inline manifest -->
     <link rel="manifest">
     <meta name="theme-color" content="#222222">
     <style>
@@ -30,9 +30,9 @@
         }
         .nav-button {
             flex-grow: 1; padding: 10px 5px; background: none; border: none;
-            color: var(--color-silver); font-size: 8pt; /* Smaller for more tabs */
+            color: var(--color-silver); font-size: 8pt;
             cursor: pointer; border-top: 3px solid transparent;
-            -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
+            -webkit-tap-highlight-color: transparent;
         }
         .nav-button.active {
             color: var(--color-yellow); border-top-color: var(--color-yellow);
@@ -42,15 +42,23 @@
 </head>
 <body>
 
+    <!--
+        PWA DEPENDENCY NOTE:
+        For the "Add to Home Screen" functionality to work, you must have an 'icons' folder
+        in the same directory as this PWA.html file. That folder must contain:
+        - icon-192x192.png
+        - icon-512x512.png
+    -->
+
     <div class="app-container">
         <main class="content-area">
-            <iframe src="01-profile-quiz.html" class="tool-frame active" data-tool="quiz"></iframe>
-            <iframe src="02-blueprint-builder.html" class="tool-frame" data-tool="builder"></iframe>
-            <iframe src="03-character-sheet.html" class="tool-frame" data-tool="sheet"></iframe>
-            <iframe src="04-dice-roller.html" class="tool-frame" data-tool="roller"></iframe>
-            <iframe src="05-scene-generator.html" class="tool-frame" data-tool="generator"></iframe>
-            <iframe src="06-curator-dashboard.html" class="tool-frame" data-tool="dashboard"></iframe>
-            <iframe src="07-companion.html" class="tool-frame" data-tool="companion"></iframe>
+            <iframe src="01-profile-quiz.html" class="tool-frame active" data-tool="quiz" id="frame-quiz"></iframe>
+            <iframe src="02-blueprint-builder.html" class="tool-frame" data-tool="builder" id="frame-builder"></iframe>
+            <iframe src="03-character-sheet.html" class="tool-frame" data-tool="sheet" id="frame-sheet"></iframe>
+            <iframe src="04-dice-roller.html" class="tool-frame" data-tool="roller" id="frame-roller"></iframe>
+            <iframe src="05-scene-generator.html" class="tool-frame" data-tool="generator" id="frame-generator"></iframe>
+            <iframe src="06-curator-dashboard.html" class="tool-frame" data-tool="dashboard" id="frame-dashboard"></iframe>
+            <iframe src="07-companion.html" class="tool-frame" data-tool="companion" id="frame-companion"></iframe>
         </main>
         <nav class="bottom-nav">
             <button class="nav-button active" data-tool="quiz">Quiz</button>
@@ -67,102 +75,68 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- PWA SETUP (INLINE MANIFEST & SERVICE WORKER) ---
-            // NOTE: For this to work, you must have an 'icons' folder next to this HTML file
-            // with 'icon-192x192.png' and 'icon-512x512.png'.
-
-            // 1. Manifest Data Object
             const manifestJSON = {
-                "name": "Psychromattica Toolkit",
-                "short_name": "Psychromattica",
-                "start_url": "PWA.html", // Correct start URL
-                "display": "standalone",
-                "background_color": "#222222",
-                "theme_color": "#222222",
+                "name": "Psychromattica Toolkit", "short_name": "Psychro-Kit", "start_url": "PWA.html",
+                "display": "standalone", "background_color": "#222222", "theme_color": "#222222",
                 "description": "A complete digital toolkit for the Psychromattica TTRPG.",
                 "icons": [
                     { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
                     { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
                 ]
             };
-
-            // 2. Service Worker Code as a String
             const serviceWorkerCode = `
-                const CACHE_NAME = 'psychromattica-toolkit-v1';
-                // CRITICAL: Updated list of all files to be cached for offline use
+                const CACHE_NAME = 'psychromattica-toolkit-v3';
                 const URLS_TO_CACHE = [
-                    './',
-                    'PWA.html',
-                    '01-profile-quiz.html',
-                    '02-blueprint-builder.html',
-                    '03-character-sheet.html',
-                    '04-dice-roller.html',
-                    '05-scene-generator.html',
-                    '06-curator-dashboard.html',
-                    '07-companion.html',
-                    'icons/icon-192x192.png',
-                    'icons/icon-512x512.png'
+                    './', 'PWA.html', '01-profile-quiz.html', '02-blueprint-builder.html', '03-character-sheet.html',
+                    '04-dice-roller.html', '05-scene-generator.html', '06-curator-dashboard.html', '07-companion.html',
+                    'icons/icon-192x192.png', 'icons/icon-512x512.png'
                 ];
-
                 self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                console.log('Opened cache and caching files.');
-                                return cache.addAll(URLS_TO_CACHE);
-                            })
-                    );
+                    event.waitUntil(caches.open(CACHE_NAME).then(cache => {
+                        console.log('Service Worker: Caching app shell.');
+                        return cache.addAll(URLS_TO_CACHE);
+                    }));
                 });
-
                 self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request)
-                            .then(response => {
-                                // Cache hit - return response from cache
-                                if (response) {
-                                    return response;
-                                }
-                                // Not in cache - fetch from network
-                                return fetch(event.request);
-                            })
-                    );
+                    event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
                 });
             `;
-
-            // 3. Dynamic Injection and Registration
-            
-            // Inject the manifest as a data URI
             const manifestString = JSON.stringify(manifestJSON);
             const manifestUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestString)));
             document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
-
-            // Register the service worker from a blob
             if ('serviceWorker' in navigator) {
                 try {
                     const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
                     const swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl)
-                        .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
-                        .catch(err => console.log('ServiceWorker registration failed: ', err));
-                } catch (e) {
-                    console.error('Service Worker registration failed.', e);
-                }
+                    navigator.serviceWorker.register(swUrl).then(reg => console.log('ServiceWorker registered.', reg.scope)).catch(err => console.error('ServiceWorker registration failed:', err));
+                } catch (e) { console.error('Service Worker registration failed.', e); }
             }
 
-            // --- NAVIGATION LOGIC ---
+            // --- NAVIGATION & INTER-TOOL COMMUNICATION ---
             const navButtons = document.querySelectorAll('.nav-button');
             const toolFrames = document.querySelectorAll('.tool-frame');
+            
+            function setActiveTool(toolName) {
+                navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tool === toolName));
+                toolFrames.forEach(frame => frame.classList.toggle('active', frame.dataset.tool === toolName));
+            }
 
             navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTool = button.dataset.tool;
+                button.addEventListener('click', () => setActiveTool(button.dataset.tool));
+            });
 
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-
-                    toolFrames.forEach(frame => {
-                        frame.classList.toggle('active', frame.dataset.tool === targetTool);
-                    });
-                });
+            // Listen for messages from child iframes
+            window.addEventListener('message', (event) => {
+                const { type, payload } = event.data;
+                if (type === 'LOAD_BLUEPRINT') {
+                    const sheetFrame = document.getElementById('frame-sheet');
+                    if (sheetFrame) {
+                        // Forward the message to the character sheet iframe
+                        sheetFrame.contentWindow.postMessage({ type: 'LOAD_BLUEPRINT', payload: payload }, '*');
+                        // Switch to the character sheet tab
+                        setActiveTool('sheet');
+                    }
+                }
             });
         });
     </script>

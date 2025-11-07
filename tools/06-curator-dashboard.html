@@ -159,7 +159,7 @@
                         card.className = 'initiative-card';
                         card.textContent = name;
                         if (name === initiativeState.selected) card.style.backgroundColor = 'var(--color-blue)';
-                        card.onclick = () => { initiativeState.selected = name; seizePriorityBtn.disabled = !initiativeState.current; renderInitiative(); };
+                        card.onclick = () => { initiativeState.selected = name; renderInitiative(); };
                         listEl.appendChild(card);
                     });
                     document.getElementById(`${pile}-count`).textContent = initiativeState[pile].length;
@@ -176,12 +176,12 @@
 
             startCombatBtn.addEventListener('click', () => {
                 const allNames = Array.from(combatants.keys());
-                initiativeState.deck = allNames.filter(name => !initiativeState.discard.includes(name));
                 if (initiativeState.current) initiativeState.discard.push(initiativeState.current);
+                initiativeState.deck = allNames.filter(name => !initiativeState.discard.includes(name) && initiativeState.current !== name);
                 initiativeState.deck.push(...initiativeState.discard);
                 initiativeState.discard = [];
                 initiativeState.current = null;
-                initiativeState.selected = null; // Clear selection on new round
+                initiativeState.selected = null;
                 shuffleArray(initiativeState.deck);
                 combatants.forEach(data => { if (data.isEntity) data.actions.current = data.actions.max; });
                 renderAllEntityActions();
@@ -224,25 +224,29 @@
             function addCombatant(midRound = false) {
                  const nameInput = document.getElementById('manual-combatant-name');
                  const name = nameInput.value.trim();
-                 if(name && !combatants.has(name) && !initiativeState.deck.includes(name) && !initiativeState.discard.includes(name)) {
-                    if(midRound && initiativeState.deck.length > 0) {
-                        initiativeState.deck.push(name);
-                        shuffleArray(initiativeState.deck);
-                    } else {
-                        initiativeState.discard.push(name);
-                    }
-                    if (!combatants.has(name)) combatants.set(name, { isEntity: false, actions: { max: 2, current: 2 } });
-                    nameInput.value = '';
-                    renderInitiative();
+                 if (!name) return;
+                 if (combatants.has(name) || initiativeState.deck.includes(name) || initiativeState.discard.includes(name)) {
+                     return alert("A combatant with that name already exists in the tracker.");
                  }
+                 if(midRound && initiativeState.deck.length > 0) {
+                     initiativeState.deck.push(name);
+                     shuffleArray(initiativeState.deck);
+                 } else {
+                     initiativeState.discard.push(name);
+                 }
+                 if (!combatants.has(name)) combatants.set(name, { isEntity: false, actions: { max: 2, current: 2 } });
+                 nameInput.value = '';
+                 renderInitiative();
             }
 
             function addEntity() {
-                entityCounter++;
+                let entityName = `Entity ${++entityCounter}`;
+                while (combatants.has(entityName)) {
+                    entityName = `Entity ${++entityCounter}`;
+                }
                 const card = document.createElement('div');
                 card.className = 'card entity-card';
                 const idPrefix = `entity-${entityCounter}`;
-                const entityName = `Entity ${entityCounter}`;
                 card.dataset.name = entityName;
                 card.id = idPrefix;
                 card.innerHTML = `<div class="card-header"><input type="text" value="${entityName}" class="entity-name-input"><button class="remove-button button-small">Remove</button></div><div class="entity-info-grid"><div><div class="stat-input-grid">${STAT_NAMES.map(stat => `<div><label>${stat}</label><input type="number" class="stat-input" data-stat="${stat}" value="${stat === 'A' ? 2 : 1}"></div>`).join('')}</div><label>Resistance: <span class="resistance-value">4</span></label></div><div><label>Action Pool</label><div class="action-pool"><button class="action-minus">-</button><span class="action-current">2</span> / <span class="action-max">2</span><button class="action-plus">+</button></div></div></div><hr style="margin: 10px 0;"><div class="clock"><div class="clock-header"><span>HP</span><span><span id="${idPrefix}-hp-value">0/10</span> Max: <input type="number" id="${idPrefix}-hp-max" value="10" min="1"></span></div><div class="clock-pips hp-pips" id="${idPrefix}-hp-pips"></div></div><div class="clock"><div class="clock-header"><span>SP</span><span><span id="${idPrefix}-sp-value">0/10</span> Max: <input type="number" id="${idPrefix}-sp-max" value="10" min="1"></span></div><div class="clock-pips sp-pips" id="${idPrefix}-sp-pips"></div></div><div class="clock"><div class="clock-header"><span>EP</span><span><span id="${idPrefix}-ep-value">0/10</span> Max: <input type="number" id="${idPrefix}-ep-max" value="10" min="1"></span></div><div class="clock-pips ep-pips" id="${idPrefix}-ep-pips"></div></div>`;
@@ -275,8 +279,8 @@
 
             document.body.addEventListener('change', e => {
                 if(e.target.classList.contains('entity-name-input')) {
-                    const card = e.target.closest('.card'); const oldName = card.dataset.name; const newName = e.target.value;
-                    if (combatants.has(newName)) { e.target.value = oldName; return alert("A combatant with that name already exists."); }
+                    const card = e.target.closest('.card'); const oldName = card.dataset.name; const newName = e.target.value.trim();
+                    if (combatants.has(newName) && oldName !== newName) { e.target.value = oldName; return alert("A combatant with that name already exists."); }
                     const data = combatants.get(oldName); combatants.delete(oldName); combatants.set(newName, data);
                     card.dataset.name = newName;
                     ['deck', 'discard'].forEach(p => initiativeState[p] = initiativeState[p].map(n => n === oldName ? newName : n));

@@ -21,11 +21,13 @@
         button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: background-color 0.2s, color 0.2s; }
         button:hover { background-color: var(--color-silver); color: var(--color-black); }
         .button-small { padding: 4px 8px; font-size: 9pt; }
+        .button-load { background-color: var(--color-green); color: var(--color-black); font-weight: bold; }
         .remove-button { background-color: var(--color-red); }
         input[type="text"], input[type="number"], textarea, select { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 100%; background-position-y: 5px; }
         select[multiple] { background-image: none; height: 100px; }
         label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
+        .output-controls { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
         #output-string { font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a; color: var(--color-yellow); min-height: 80px; resize: vertical; }
         .grid-5, .grid-3, .grid-2 { display: grid; gap: 10px; margin-top: 5px; }
         .grid-5 { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
@@ -40,7 +42,7 @@
         hr { border: none; border-top: 1px solid #444; margin: 15px 0; }
         .keyword-option-container { display: flex; gap: 5px; }
         .keyword-option-container > * { flex: 1; }
-        .inline-checkbox { display: inline-flex; align-items: center; gap: 10px; }
+        .inline-checkbox { display: inline-flex; align-items: center; gap: 10px; font-size: 10pt; }
     </style>
 </head>
 <body>
@@ -48,7 +50,10 @@
         <div class="section output-section">
             <h2>Generated Blueprint String</h2>
             <textarea id="output-string" readonly></textarea>
-            <button id="copy-button" class="button-small" style="margin-top: 10px; float: right;">Copy</button>
+            <div class="output-controls">
+                <button id="copy-button" class="button-small">Copy</button>
+                <button id="load-to-sheet-button" class="button-small button-load">Load to Sheet</button>
+            </div>
         </div>
         <div class="section">
             <h2>Character Builder</h2>
@@ -110,16 +115,13 @@
             const MOTIVATION_COLORS = {'1':'Silver', '2':'Yellow', '3':'Green', '4':'Black', '5':'Orange', '6':'White', '7':'Red', '8':'Blue', '9':'Purple', '0':'Null'};
             const COLOR_TO_STAT_ASSOC = { 'Silver': ['M', 'I'], 'Yellow': ['A', 'W'], 'Green': ['B', 'A'], 'Black': ['W', 'P'], 'Orange': ['E', 'T'], 'White': ['T', 'B'], 'Red': ['P', 'F'], 'Blue': ['I', 'E'], 'Purple': ['F', 'M'], 'Null': Object.keys(STAT_CODES) };
             const KEYWORDS = {'00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:'Traveler',options:{'0':'Walk','1':'Teleport','2':'Fly','3':'Dig','4':'Permeation','5':'Jump','6':'Parkour','7':'Climb','8':'Swim','9':'Lightfoot'}},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:'Sensor',options:{'0':'Karma','1':'Keywords','2':'Echolocation','3':'Vibration','4':'Energy','5':'Materials','6':'Life','7':'Infrared','8':'Emotion','9':'The Weave'}},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
-
             const container = document.getElementById('builder-container');
             const outputStringEl = document.getElementById('output-string');
 
             function createDropdown(options, placeholder = '', filterFn = () => true) {
                 const select = document.createElement('select');
                 if (placeholder) select.innerHTML = `<option value="">${placeholder}</option>`;
-                Object.entries(options).filter(filterFn).forEach(([value, name]) => {
-                    select.add(new Option(name, value));
-                });
+                Object.entries(options).filter(filterFn).forEach(([value, name]) => select.add(new Option(name, value)));
                 return select;
             }
 
@@ -135,6 +137,15 @@
                 parent.querySelector('.comp-keyword-select').innerHTML = createKeywordDropdown('Select Compensation...', ([code]) => !code.endsWith('0')).innerHTML;
             }
             
+            function relabelLevels() {
+                document.querySelectorAll('.level-up-card').forEach((card, index) => {
+                    const newLevel = 2 + index;
+                    card.dataset.level = newLevel;
+                    card.querySelector('h4').textContent = `Level ${newLevel}`;
+                    card.querySelector('.add-flaw-checkbox').dataset.level = newLevel;
+                });
+            }
+
             function addLevelUpSection() {
                 const levelUpContainer = document.getElementById('level-up-container');
                 const currentLevel = 2 + levelUpContainer.children.length;
@@ -156,12 +167,10 @@
                         <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
                         <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
                     </div></div>`;
-
                 const keywordContainer = card.querySelector('.keyword-selectors');
                 keywordContainer.appendChild(createKeywordDropdown('Keyword 1...'));
                 keywordContainer.appendChild(createKeywordDropdown('Keyword 2...'));
                 card.querySelector('.stat-selectors').appendChild(createDropdown(STAT_CODES, 'Stat...'));
-                
                 populateFlawDropdowns(card);
                 levelUpContainer.appendChild(card);
                 generateBlueprintString();
@@ -172,7 +181,6 @@
                 const card = document.createElement('div');
                 card.className = `card ${type}-card`;
                 card.dataset.type = type;
-
                 if (type === 'item') {
                     card.innerHTML = `<h4>Item Attachment</h4><button class="remove-button button-small">Remove</button><label>Item Level</label>`;
                     const levelSelect = createDropdown({0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9}, 'Lvl...');
@@ -186,24 +194,17 @@
                      seedSlot.appendChild(createKeywordDropdown('Seed...'));
                      card.querySelector('.keyword-slots').appendChild(seedSlot);
                 } else if (type === 'faction') {
-                    card.innerHTML = `
-                        <h4>Faction Attachment</h4><button class="remove-button button-small">Remove</button>
-                        <div class="grid-5" id="faction-profile-selectors"></div>
-                        <div><label>Faction Level</label><input type="number" class="faction-level" min="0" max="10" value="0"></div>
-                        <div><label>Civil Systems</label><select class="faction-systems" multiple></select></div>
-                        <div><label>Keywords</label><div class="keyword-slots"></div><button class="button-small add-faction-keyword">Add Keyword</button></div>
-                    `;
+                    card.innerHTML = `<h4>Faction Attachment</h4><button class="remove-button button-small">Remove</button><div class="grid-5" id="faction-profile-selectors"></div><div><label>Faction Level</label><input type="number" class="faction-level" min="0" max="10" value="0"></div><div><label>Civil Systems</label><select class="faction-systems" multiple></select></div><div><label>Keywords</label><div class="keyword-slots"></div><button class="button-small add-faction-keyword">Add Keyword</button></div>`;
                     const profileContainer = card.querySelector('#faction-profile-selectors');
-                     ['Goal','Method','Purpose','External','Internal'].forEach(name => {
+                    ['Goal','Method','Purpose','External','Internal'].forEach(name => {
                         const div = document.createElement('div');
                         div.innerHTML = `<label>${name}</label>`;
                         div.appendChild(createDropdown(MOTIVATIONS, 'Select...'));
                         profileContainer.appendChild(div);
-                     });
+                    });
                     const systemSelect = card.querySelector('.faction-systems');
                     Object.entries(CIVIL_SYSTEMS).forEach(([val, name]) => systemSelect.add(new Option(name, val)));
                 }
-                
                 attachmentsContainer.appendChild(card);
                 generateBlueprintString();
             }
@@ -213,9 +214,7 @@
                 let str = selectElement.value;
                 const wrapper = selectElement.parentElement;
                 const optionSelect = wrapper.querySelector('.keyword-option-select');
-                if (optionSelect && optionSelect.value) {
-                    str += `(${optionSelect.value})`;
-                }
+                if (optionSelect && optionSelect.value) str += `(${optionSelect.value})`;
                 return str;
             }
 
@@ -226,18 +225,14 @@
                     if (!progressionSegments.has(level)) progressionSegments.set(level, []);
                     progressionSegments.get(level).push(part);
                 };
-
                 const profile = Array.from(document.getElementById('profile-selectors').querySelectorAll('select')).map(s => s.value || '0').join('');
                 addSegment(0, getKeywordString(document.getElementById('seed-keyword')));
 
-                // Level 1: Awakening KWs + Trinity Stats
                 const awakeningKws = Array.from(document.getElementById('awakening-keywords').querySelectorAll('select')).map(getKeywordString).filter(Boolean);
                 if (awakeningKws.length > 0) addSegment(1, awakeningKws.join('.'));
-                
                 const trinityStats = Array.from(document.getElementById('trinity-stats-container').querySelectorAll('select')).map(s => s.value).filter(Boolean);
                 if (trinityStats.length > 0) addSegment(1, trinityStats.join(''));
 
-                // Higher Levels
                 document.querySelectorAll('.level-up-card').forEach(card => {
                     const level = parseInt(card.dataset.level);
                     const kws = Array.from(card.querySelectorAll('.keyword-selectors select')).map(getKeywordString).filter(Boolean);
@@ -246,7 +241,6 @@
                     if (stat) addSegment(level, stat);
                 });
                 
-                // Flaw Package
                 const checkedFlawBox = document.querySelector('.add-flaw-checkbox:checked');
                 if (checkedFlawBox) {
                     const level = parseInt(checkedFlawBox.dataset.level);
@@ -256,17 +250,13 @@
                     if (flaw && comp) addSegment(level, `+${flaw}${comp}`);
                 }
 
-                // Assemble Character String
                 let str = `C:${profile}`;
                 const sortedLevels = Array.from(progressionSegments.keys()).sort((a, b) => a - b);
                 sortedLevels.forEach(level => {
-                    const parts = progressionSegments.get(level);
-                    if (parts && parts.length > 0) {
-                        str += `-${parts.join('.')}`;
-                    }
+                    const parts = progressionSegments.get(level).filter(p => p.length > 0);
+                    if (parts && parts.length > 0) str += `-${parts.join('.')}`;
                 });
                 
-                // Assemble Attachments
                 document.querySelectorAll('#attachments-container > .card').forEach(card => {
                     const type = card.dataset.type;
                     let attachmentStr = '';
@@ -286,7 +276,6 @@
                     }
                     str += attachmentStr;
                 });
-                
                 outputStringEl.value = str;
             }
 
@@ -294,21 +283,15 @@
                 const goalColor = MOTIVATION_COLORS[document.getElementById('goal').value];
                 const methodColor = MOTIVATION_COLORS[document.getElementById('method').value];
                 const purposeColor = MOTIVATION_COLORS[document.getElementById('purpose').value];
-                
                 const populate = (selectId, labelId, color) => {
                     const select = document.getElementById(selectId);
                     const label = document.getElementById(labelId);
-                    select.innerHTML = '';
+                    select.innerHTML = '<option value="">...</option>';
                     if(color && COLOR_TO_STAT_ASSOC[color]) {
                         label.textContent = `${color} Stat`;
-                        COLOR_TO_STAT_ASSOC[color].forEach(statCode => {
-                             select.add(new Option(STAT_CODES[statCode], statCode));
-                        });
-                    } else {
-                        label.textContent = `Stat`;
-                    }
+                        COLOR_TO_STAT_ASSOC[color].forEach(statCode => select.add(new Option(STAT_CODES[statCode], statCode)));
+                    } else { label.textContent = `Stat`; }
                 };
-                
                 populate('trinity-goal-stat', 'trinity-goal-label', goalColor);
                 populate('trinity-method-stat', 'trinity-method-label', methodColor);
                 populate('trinity-purpose-stat', 'trinity-purpose-label', purposeColor);
@@ -316,28 +299,23 @@
             
             function updateAwakeningKeywordFilters() {
                 const useFilter = document.getElementById('focused-awakening-filter').checked;
-                const trinityColors = [
-                    document.getElementById('goal').value,
-                    document.getElementById('method').value,
-                    document.getElementById('purpose').value
-                ];
-                
+                const trinityColors = [ document.getElementById('goal').value, document.getElementById('method').value, document.getElementById('purpose').value ];
                 document.querySelectorAll('.awakening-kw').forEach(select => {
                     const currentValue = select.value;
                     const parent = select.parentElement;
-                    parent.innerHTML = ''; // Clear and rebuild
-                    parent.appendChild(createKeywordDropdown('Select Keyword...', ([code]) => {
-                        if (!useFilter) return true;
-                        const kwColor = code.charAt(0);
-                        return trinityColors.includes(kwColor);
-                    }));
-                    parent.querySelector('select').value = currentValue; // Restore selection if possible
+                    const newSelect = createKeywordDropdown('Select Keyword...', ([code]) => !useFilter || trinityColors.includes(code.charAt(0)));
+                    newSelect.classList.add('awakening-kw');
+                    parent.replaceChild(newSelect, select);
+                    if (newSelect.querySelector(`option[value="${currentValue}"]`)) {
+                        newSelect.value = currentValue;
+                    }
                 });
             }
 
             container.addEventListener('click', e => {
                 if(e.target.classList.contains('remove-button')) {
                     e.target.closest('.card').remove();
+                    relabelLevels();
                     generateBlueprintString();
                 }
                 if(e.target.classList.contains('add-anim-keyword') || e.target.classList.contains('add-faction-keyword')) {
@@ -350,10 +328,10 @@
 
             container.addEventListener('change', e => {
                 if(e.target.classList.contains('item-level-select')) {
-                    const level = parseInt(e.target.value) || 0;
+                    const level = parseInt(e.target.value);
                     const slotsContainer = e.target.closest('.card').querySelector('.keyword-slots');
                     slotsContainer.innerHTML = '';
-                    const maxKeywords = Math.min(level + 1, 5);
+                    const maxKeywords = (level >= 0) ? Math.min(level + 1, 5) : 0;
                     for(let i=0; i<maxKeywords; i++) {
                         const wrapper = document.createElement('div');
                         wrapper.appendChild(createKeywordDropdown(`Keyword ${i+1}...`));
@@ -372,18 +350,15 @@
                     const wrapper = select.parentElement;
                     const existingOption = wrapper.querySelector('.keyword-option-select');
                     if(existingOption) existingOption.remove();
-                    
                     const kwData = KEYWORDS[select.value];
                     if (kwData && kwData.options) {
                         wrapper.classList.add('keyword-option-container');
                         const optionSelect = createDropdown(kwData.options, 'Select Option...');
                         optionSelect.classList.add('keyword-option-select');
                         wrapper.appendChild(optionSelect);
-                    } else {
-                        wrapper.classList.remove('keyword-option-container');
-                    }
+                    } else { wrapper.classList.remove('keyword-option-container'); }
                 }
-                if (e.target.id.startsWith('goal') || e.target.id.startsWith('method') || e.target.id.startsWith('purpose') || e.target.id === 'focused-awakening-filter') {
+                if (e.target.closest('#profile-selectors') || e.target.id === 'focused-awakening-filter') {
                     updateTrinityStatDropdowns();
                     updateAwakeningKeywordFilters();
                 }
@@ -397,21 +372,22 @@
                     const btn = document.getElementById('copy-button');
                     btn.textContent = 'Copied!';
                     setTimeout(() => btn.textContent = 'Copy', 1500);
-                }).catch(err => console.error('Failed to copy text: ', err));
+                });
+            });
+            document.getElementById('load-to-sheet-button').addEventListener('click', () => {
+                const blueprint = outputStringEl.value;
+                if(blueprint) window.parent.postMessage({ type: 'LOAD_BLUEPRINT', payload: blueprint }, '*');
             });
 
             function init() {
-                document.querySelectorAll('#profile-selectors select').forEach(sel => {
-                    Object.entries(MOTIVATIONS).forEach(([val, name]) => sel.add(new Option(name, val)));
-                });
-                
+                document.querySelectorAll('#profile-selectors select').forEach(sel => Object.entries(MOTIVATIONS).forEach(([val, name]) => sel.add(new Option(name, val))));
                 document.getElementById('seed-keyword').parentElement.replaceChild(createKeywordDropdown('Select Seed Keyword...'), document.getElementById('seed-keyword'));
                 document.querySelectorAll('#awakening-keywords > div').forEach(div => {
                     div.innerHTML = '<label>Keyword</label>';
-                    div.appendChild(createKeywordDropdown('Select Keyword...'));
-                    div.querySelector('select').classList.add('awakening-kw');
+                    const newSelect = createKeywordDropdown('Select Keyword...');
+                    newSelect.classList.add('awakening-kw');
+                    div.appendChild(newSelect);
                 });
-                
                 populateFlawDropdowns(document.getElementById('awakening-card'));
                 updateTrinityStatDropdowns();
                 updateAwakeningKeywordFilters();
