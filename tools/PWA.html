@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Resonance Toolkit</title>
+    <title>Psychromattica Toolkit</title>
     <!-- This link will be dynamically populated with the inline manifest by our script -->
     <link rel="manifest">
     <meta name="theme-color" content="#222222">
@@ -32,6 +32,7 @@
             flex-grow: 1; padding: 10px 5px; background: none; border: none;
             color: var(--color-silver); font-size: 8pt; /* Smaller for more tabs */
             cursor: pointer; border-top: 3px solid transparent;
+            -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
         }
         .nav-button.active {
             color: var(--color-yellow); border-top-color: var(--color-yellow);
@@ -66,16 +67,18 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- PWA SETUP (INLINE MANIFEST & SERVICE WORKER) ---
+            // NOTE: For this to work, you must have an 'icons' folder next to this HTML file
+            // with 'icon-192x192.png' and 'icon-512x512.png'.
 
             // 1. Manifest Data Object
             const manifestJSON = {
-                "name": "Resonance Toolkit",
-                "short_name": "Resonance",
-                "start_url": "index.html",
+                "name": "Psychromattica Toolkit",
+                "short_name": "Psychromattica",
+                "start_url": "PWA.html", // Correct start URL
                 "display": "standalone",
                 "background_color": "#222222",
                 "theme_color": "#222222",
-                "description": "A complete digital toolkit for the Resonance TTRPG.",
+                "description": "A complete digital toolkit for the Psychromattica TTRPG.",
                 "icons": [
                     { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
                     { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
@@ -84,11 +87,11 @@
 
             // 2. Service Worker Code as a String
             const serviceWorkerCode = `
-                const CACHE_NAME = 'resonance-toolkit-v1';
-                // Define all files to be cached for offline use
+                const CACHE_NAME = 'psychromattica-toolkit-v1';
+                // CRITICAL: Updated list of all files to be cached for offline use
                 const URLS_TO_CACHE = [
                     './',
-                    'index.html',
+                    'PWA.html',
                     '01-profile-quiz.html',
                     '02-blueprint-builder.html',
                     '03-character-sheet.html',
@@ -129,16 +132,20 @@
             
             // Inject the manifest as a data URI
             const manifestString = JSON.stringify(manifestJSON);
-            const manifestUrl = 'data:application/json;base64,' + btoa(manifestString);
+            const manifestUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestString)));
             document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
 
             // Register the service worker from a blob
             if ('serviceWorker' in navigator) {
-                const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl)
-                    .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
-                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+                try {
+                    const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+                    navigator.serviceWorker.register(swUrl)
+                        .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+                        .catch(err => console.log('ServiceWorker registration failed: ', err));
+                } catch (e) {
+                    console.error('Service Worker registration failed.', e);
+                }
             }
 
             // --- NAVIGATION LOGIC ---

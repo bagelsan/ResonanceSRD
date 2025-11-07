@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Archive Scene Generator</title>
+    <title>Psychromattica Scene Generator</title>
     <style>
         /* GLOBAL STYLES & ART-DECO THEME */
         :root {
@@ -44,6 +44,7 @@
 
         h2, h3 {
             font-weight: normal;
+            font-family: 'Oswald', sans-serif;
             color: var(--color-null);
         }
 
@@ -145,7 +146,7 @@
         <div class="section">
             <h2>Scene Generator</h2>
             <div>
-                <label for="player-level-input">Player Level</label>
+                <label for="player-level-input">Average Player Level</label>
                 <input type="number" id="player-level-input" value="1" min="1" max="9">
             </div>
             <button id="generate-button">Generate Scene</button>
@@ -155,7 +156,7 @@
         <div class="section output-section">
             <h2>Generated Blueprint String</h2>
             <textarea id="output-string" readonly>Click 'Generate Scene' to begin...</textarea>
-            <button id="copy-button" class="button-small">Copy to Clipboard</button>
+            <button id="copy-button" class="button-small">Copy</button>
             
             <h3>Manifest Details</h3>
             <pre id="manifest-details">Details will appear here...</pre>
@@ -165,9 +166,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            const MOTIVATIONS = { '0': 'Discovery', '1': 'Absolution', '2': 'Ambition', '3': 'Security', '4': 'Legacy', '5': 'Innovation', '6': 'Purity', '7': 'Glory', '8': 'Influence', '9': 'Faith' };
+            const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
             const STAT_CODES_ARRAY = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
-            const KEYWORDS = { '00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:"Traveller"},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:"Sensor"},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
+            const KEYWORDS = {'00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:"Traveler"},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:"Sensor"},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
 
             const playerLevelInput = document.getElementById('player-level-input');
             const generateButton = document.getElementById('generate-button');
@@ -179,60 +180,6 @@
             const roll = (sides) => Math.floor(Math.random() * sides) + 1;
             const rollD100String = () => String(roll(100) - 1).padStart(2, '0');
 
-            // --- PARSING & FORMATTING LOGIC ---
-            function parseAndFormat(blueprint) {
-                if (blueprint.startsWith('C:')) {
-                    const charString = blueprint.substring(2);
-                    const parts = charString.split('-');
-                    const profile = parts.shift();
-                    
-                    let allKws = [];
-                    parts.forEach(p => {
-                        let cleanPart = p.replace(/\+[0-9]{4}/, '').replace(/[MABWETPIF]/g, '');
-                        allKws.push(...(cleanPart.match(/!?\d{2}/g) || []));
-                    });
-                    
-                    const level = (allKws.length < 4) ? 0 : 1 + Math.floor((allKws.length - 4) / 2);
-                    const flawMatch = charString.match(/\+(\d{2})(\d{2})/);
-
-                    let details = `  - Full Random Character (Level ${level})\n`;
-                    details += `    Profile: ${profile} (Goal: ${MOTIVATIONS[profile[0]]})\n`;
-                    if(flawMatch) {
-                        details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
-                    }
-                    details += `    Keywords:\n`;
-                    allKws.forEach(kw => {
-                         details += `      - ${kw.replace('!','')}: ${KEYWORDS[kw.replace('!','')].name}\n`;
-                    });
-                    return { blueprint, details };
-
-                } else if (blueprint.startsWith('A:')) {
-                    const animString = blueprint.substring(2);
-                    const kws = animString.replace(/\+[0-9]{4}/, '').split('.');
-                    const level = kws.length - 1;
-                    const flawMatch = animString.match(/\+(\d{2})(\d{2})/);
-
-                    let details = `  - Generic Animation (Level ${level})\n`;
-                     if(flawMatch) {
-                        details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
-                    }
-                    details += `    Keywords:\n`;
-                    kws.forEach(kw => {
-                         details += `      - ${kw.replace('!','')}: ${KEYWORDS[kw.replace('!','')].name}\n`;
-                    });
-                    return { blueprint, details };
-                } else if (blueprint.startsWith('I:')) {
-                    const itemString = blueprint.substring(2);
-                    const level = parseInt(itemString.match(/L(\d+)/)[1]);
-                    const kws = (itemString.split('-')[1] || '').replace(/\+[0-9]{4}/, '').split('.');
-                    
-                    let details = `  - Random Item (Level ${level})\n`;
-                    details += `    Keywords: \n${kws.filter(k=>k).map(kw => `      - ${kw.replace('!','')}: ${KEYWORDS[kw.replace('!','')].name}`).join('\n')}\n`;
-                    return { blueprint, details };
-                }
-                return { blueprint, details: "" }; // Fallback
-            }
-
             // --- GENERATION LOGIC (Based on SRD Appendix I) ---
 
             function getLevelMod(playerLevel) {
@@ -240,100 +187,121 @@
                 let mod = 0;
                 if (r <= 4) mod = -1;
                 else if (r === 9) mod = 1;
-                else if (r === 10) mod = 2;
+                else if (r === 10) mod = 2; // Boss
                 const finalLevel = Math.max(0, playerLevel + mod);
                 return { level: finalLevel, modString: `L${mod >= 0 ? '+' : ''}${mod}` };
             }
-
-            function generateFullCharacter(level) {
-                let blueprint = `C:`;
-                const profile = Array(5).fill(0).map(() => roll(10) - 1).join('');
-                blueprint += profile;
-                
-                let hasFlaw = false;
-                let keywordCount = 0;
-
-                const addKeyword = () => {
+            
+            function generateKeywords(count, flawSlot) {
+                let kws = [];
+                let hasFlaw = flawSlot.hasFlaw;
+                for(let i=0; i<count; i++){
                     let kwRoll;
-                    do {
-                       kwRoll = rollD100String();
-                    } while (parseInt(kwRoll) % 10 === 0 && hasFlaw);
-
+                    do { kwRoll = rollD100String(); } while ((parseInt(kwRoll) % 10 === 0 && hasFlaw) || kws.includes(kwRoll));
+                    
                     if (parseInt(kwRoll) % 10 === 0 && !hasFlaw) {
                         const compRoll = rollD100String();
-                        blueprint += `+${kwRoll}${compRoll}`;
+                        flawSlot.flawString = `+${kwRoll}${compRoll}`;
                         hasFlaw = true;
-                        kwRoll = addKeyword(); // Reroll for the actual keyword slot
+                        flawSlot.hasFlaw = true;
+                        // Reroll for the actual keyword for this slot
+                        do { kwRoll = rollD100String(); } while(parseInt(kwRoll) % 10 === 0 || kws.includes(kwRoll));
                     }
-                    keywordCount++;
-                    return kwRoll;
-                };
+                    kws.push(kwRoll);
+                }
+                return kws;
+            }
 
-                blueprint += `-${addKeyword()}`; // Seed
-                blueprint += `-${Array(3).fill(0).map(() => addKeyword()).join('.')}`; // Awakening
+            function generateFullCharacter(level) {
+                const profile = Array(5).fill(0).map(() => roll(10) - 1).join('');
+                let blueprint = `C:${profile}`;
+                
+                let flawSlot = { hasFlaw: false, flawString: ''};
+                let allKeywords = [];
 
-                let currentLvl = 1;
-                while (currentLvl < level) {
-                    const kws = Array(2).fill(0).map(() => addKeyword());
-                    const stat = STAT_CODES_ARRAY[roll(9)-1];
-                    blueprint += `-${kws.join('.')}.${stat}`;
-                    currentLvl++;
+                // Seed
+                allKeywords.push(...generateKeywords(1, flawSlot));
+
+                // Awakening
+                allKeywords.push(...generateKeywords(3, flawSlot));
+                
+                // Leveling Up
+                for (let i = 2; i <= level; i++) {
+                    allKeywords.push(...generateKeywords(2, flawSlot));
+                }
+
+                let finalProgression = `-${allKeywords[0]}`;
+                if(flawSlot.hasFlaw && level === 0) finalProgression += flawSlot.flawString;
+                
+                finalProgression += `-${allKeywords.slice(1,4).join('.')}`;
+                if(flawSlot.hasFlaw && level === 1) finalProgression += flawSlot.flawString;
+
+                for (let i = 2; i <= level; i++) {
+                    const stat = STAT_CODES_ARRAY[roll(STAT_CODES_ARRAY.length)-1];
+                    const kwIndex = 4 + (i-2)*2;
+                    finalProgression += `-${allKeywords[kwIndex]}.${allKeywords[kwIndex+1]}.${stat}`;
+                    if(flawSlot.hasFlaw && level === i) finalProgression += flawSlot.flawString;
                 }
                 
+                blueprint += finalProgression;
                 return parseAndFormat(blueprint);
             }
             
             function generateAnimation(level) {
                  let blueprint = `A:`;
-                 let hasFlaw = false;
-                 let kws = [];
-                 for(let i=0; i <= level; i++) {
-                     let kwRoll;
-                     do {
-                        kwRoll = rollD100String();
-                     } while (parseInt(kwRoll) % 10 === 0 && hasFlaw);
-
-                     if (parseInt(kwRoll) % 10 === 0 && !hasFlaw) {
-                        const compRoll = rollD100String();
-                        blueprint += `+${kwRoll}${compRoll}`;
-                        hasFlaw = true;
-                        kwRoll = (() => { // IIFE to get a non-flaw keyword
-                           let tempKw;
-                           do { tempKw = rollD100String(); } while(parseInt(tempKw) % 10 === 0);
-                           return tempKw;
-                        })();
-                     }
-                     kws.push(kwRoll);
-                 }
+                 let flawSlot = { hasFlaw: false, flawString: ''};
+                 let kws = generateKeywords(level + 1, flawSlot);
                  blueprint += kws.join('.');
+                 if(flawSlot.hasFlaw) blueprint += flawSlot.flawString;
                  return parseAndFormat(blueprint);
             }
             
             function generateItem() {
                 const itemLevel = roll(10) - 1;
                 let blueprint = `I:L${itemLevel}`;
-                let hasFlaw = false;
-                let kws = [];
-                for(let i=0; i < Math.min(itemLevel, 5); i++) {
-                     let kwRoll;
-                      do {
-                        kwRoll = rollD100String();
-                     } while (parseInt(kwRoll) % 10 === 0 && hasFlaw);
-
-                     if (parseInt(kwRoll) % 10 === 0 && !hasFlaw) {
-                        const compRoll = rollD100String();
-                        blueprint += `+${kwRoll}${compRoll}`;
-                        hasFlaw = true;
-                         kwRoll = (() => {
-                           let tempKw;
-                           do { tempKw = rollD100String(); } while(parseInt(tempKw) % 10 === 0);
-                           return tempKw;
-                        })();
-                     }
-                     kws.push(kwRoll);
+                const numKeywords = Math.min(itemLevel, 5);
+                if (numKeywords > 0) {
+                    let flawSlot = { hasFlaw: false, flawString: ''};
+                    let kws = generateKeywords(numKeywords, flawSlot);
+                    blueprint += `-${kws.join('.')}`;
+                    if(flawSlot.hasFlaw) blueprint += flawSlot.flawString;
                 }
-                if (kws.length > 0) blueprint += `-${kws.join('.')}`;
                 return parseAndFormat(blueprint);
+            }
+            
+             function parseAndFormat(blueprint) {
+                let details = "";
+                if (blueprint.startsWith('C:')) {
+                    const charString = blueprint.substring(2);
+                    const parts = charString.split('-');
+                    const profile = parts.shift();
+                    const allKws = parts.flatMap(p => p.match(/!?\d{2}/g) || []);
+                    const level = (allKws.length < 4) ? 0 : 1 + Math.floor((allKws.length - 4) / 2);
+                    const flawMatch = charString.match(/\+(\d{2})(\d{2})/);
+
+                    details = `  - Full Random Character (Level ${level})\n`;
+                    details += `    Profile: ${profile}\n`;
+                    if (flawMatch) details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
+                    details += `    Keywords: ${allKws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
+
+                } else if (blueprint.startsWith('A:')) {
+                    const animString = blueprint.substring(2);
+                    const kws = animString.match(/!?\d{2}/g) || [];
+                    const level = kws.length - 1;
+                    const flawMatch = animString.match(/\+(\d{2})(\d{2})/);
+
+                    details = `  - Random Animation (Level ${level})\n`;
+                    if (flawMatch) details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
+                    details += `    Keywords: ${kws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
+                } else if (blueprint.startsWith('I:')) {
+                    const itemString = blueprint.substring(2);
+                    const level = parseInt(itemString.match(/L(\d+)/)[1]);
+                    const kws = (itemString.split('-')[1] || '').match(/!?\d{2}/g) || [];
+                    
+                    details = `  - Random Item (Level ${level})\n`;
+                    if (kws.length > 0) details += `    Keywords: ${kws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
+                }
+                return { blueprint, details };
             }
 
 
@@ -358,16 +326,16 @@
                 }
                 
                 blueprintString = `(${complexity})[${theme}]-${situations.map(s => `${s.isRace ? '*' : ''}${s.code}`).join('|')}:`;
-                manifestDetails += `SCENE: ${complexity} Situations, Theme: ${KEYWORDS[theme].name}\n\n`;
+                manifestDetails += `SCENE: ${complexity} Situations, Theme: ${KEYWORDS[theme]?.name || 'Unknown'}\n\n`;
 
                 // 2. Manifest for each situation
                 const allManifests = [];
                 situations.forEach((sit, index) => {
                     manifestDetails += `SITUATION ${index + 1} (${sit.typeName}${sit.isRace ? ', RACE' : ''}):\n`;
                     let numPackages = 0;
-                    if(sit.code === 1) numPackages = Math.floor(roll(10)/3) + 1;
-                    else if ([2,3,4].includes(sit.code)) numPackages = Math.floor(roll(10)/3);
-                    else if (sit.code === 5) numPackages = 1;
+                    if(sit.code === 1) numPackages = Math.floor(roll(10)/3) + 1; // Conflict
+                    else if ([0,2,3,4].includes(sit.code)) numPackages = Math.floor(roll(10)/3); // Others
+                    else if (sit.code === 5) numPackages = 1; // Twist
 
                     const situationPackages = [];
                     for(let i=0; i<numPackages; i++) {
@@ -380,18 +348,18 @@
                         } else if (packageRoll <= 50) { // Generic Animation
                             const { level, modString } = getLevelMod(playerLevel);
                             const seed = rollD100String();
-                            pkg.blueprint = `Gen:A-${modString}-Seed${seed}`;
+                            pkg.blueprint = `[Gen:A-${modString}-Seed${seed}]`;
                             pkg.details = `  - Generic Animation (Level ${level}), Seed: ${seed} (${KEYWORDS[seed].name})\n`;
                         } else if (packageRoll <= 70) { // Generic Character
                             const { level, modString } = getLevelMod(playerLevel);
                             const seed = rollD100String();
-                            pkg.blueprint = `Gen:C-${modString}-Seed${seed}`;
+                            pkg.blueprint = `[Gen:C-${modString}-Seed${seed}]`;
                             pkg.details = `  - Generic Character (Level ${level}), Seed: ${seed} (${KEYWORDS[seed].name})\n`;
                         } else if (packageRoll <= 85) { // Item
                             const itemData = generateItem();
-                            pkg.blueprint = itemData.blueprint;
+                            pkg.blueprint = `[${itemData.blueprint}]`;
                             pkg.details = itemData.details;
-                        } else if (packageRoll <= 100) { // Full Random Character
+                        } else { // Full Random Character (96-00)
                             const { level } = getLevelMod(playerLevel);
                             const charData = generateFullCharacter(level);
                             pkg.blueprint = `(${charData.blueprint})`; // Encapsulate full string
@@ -400,10 +368,18 @@
                         situationPackages.push(pkg.blueprint);
                         manifestDetails += pkg.details;
                     }
-                     allManifests.push(`[${situationPackages.join(',')}]`);
+                     allManifests.push(situationPackages.join(','));
                 });
                 
-                blueprintString += allManifests.join(',');
+                blueprintString += allManifests.join('],['); // Join situations
+                 if (allManifests.length > 0) {
+                    blueprintString = blueprintString.replace(':,', ':[');
+                    if (allManifests.length > 1) {
+                         blueprintString = blueprintString.substring(0, blueprintString.length - 2);
+                    } else {
+                         blueprintString += ']';
+                    }
+                }
 
                 // Update UI
                 outputStringEl.value = blueprintString;
@@ -415,11 +391,16 @@
             copyButton.addEventListener('click', () => {
                 outputStringEl.select();
                 document.execCommand('copy');
+                const btn = document.getElementById('copy-button');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 1500);
             });
             
             // Initial generation
             generateScene();
         });
     </script>
+</body>
+</html>script>
 </body>
 </html>

@@ -3,225 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Curator Dashboard</title>
+    <title>Psychromattica Curator Dashboard</title>
     <style>
-        /* GLOBAL STYLES & ART-DECO THEME */
         :root {
-            --color-null: #dea193;
-            --color-silver: #a7a9ac;
-            --color-yellow: #f5d36c;
-            --color-green: #688d4c;
-            --color-black: #414042;
-            --color-orange: #f7855d;
-            --color-white: #e3e1da;
-            --color-red: #a95b5a;
-            --color-blue: #88bfe8;
-            --color-purple: #957fa3;
-            --color-background: #222222;
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--color-background);
-            color: var(--color-white);
-            font-family: Calibri, sans-serif;
-            font-size: 12pt;
-            padding: 10px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        h2, h3 {
-            font-weight: normal;
-            color: var(--color-null);
-        }
-
-        h3 {
-            color: var(--color-silver);
-            margin-top: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-
-        .section {
-            border: 1px solid var(--color-black);
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 3px;
-        }
-        
-        button {
-            background-color: var(--color-black);
-            color: var(--color-white);
-            border: 1px solid var(--color-silver);
-            padding: 8px 12px;
-            font-family: Calibri, sans-serif;
-            font-size: 10pt;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: background-color 0.2s;
-        }
-        
-        button:hover {
-            background-color: var(--color-silver);
-            color: var(--color-black);
-        }
-
-        button:disabled {
-            background-color: #1a1a1a;
-            color: #555;
-            border-color: #444;
-            cursor: not-allowed;
-        }
-
-        .button-small {
-            padding: 4px 8px;
-            font-size: 9pt;
-        }
-        .remove-button {
-            background-color: var(--color-red);
-        }
-        
-        input[type="text"], input[type="number"] {
-            background-color: #333;
-            border: 1px solid var(--color-silver);
-            color: var(--color-white);
-            padding: 8px;
-            font-family: Calibri, sans-serif;
-            width: 100%;
-            border-radius: 2px;
-        }
-        
-        label {
-            font-size: 10pt;
-            color: var(--color-silver);
-            display: block;
-            margin-top: 10px;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
+        h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
+        button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+        button:hover:not(:disabled) { background-color: var(--color-silver); color: var(--color-black); }
+        button:disabled { background-color: #1a1a1a; color: #555; border-color: #444; cursor: not-allowed; }
+        .button-small { padding: 4px 8px; font-size: 9pt; }
+        .remove-button { background-color: var(--color-red); }
+        input[type="text"], input[type="number"] { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; }
+        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        
-        .card {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 2px;
-            margin-top: 15px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .card-header input[type="text"] {
-            font-size: 1.1em;
-            font-weight: bold;
-            background: none;
-            border: none;
-            border-bottom: 1px solid #555;
-            padding: 4px;
-        }
-        
+        .card { background-color: #333; padding: 15px; border-radius: 2px; margin-top: 15px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .card-header input[type="text"] { font-size: 1.1em; font-weight: bold; background: none; border: none; border-bottom: 1px solid #555; padding: 4px; }
         .entity-card { border-left: 3px solid var(--color-yellow); }
         .barrier-card { border-left: 3px solid var(--color-blue); }
-
-        .clock { margin-bottom: 10px; }
-        .clock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 10pt;
-            margin-bottom: 5px;
-        }
-        .clock-header .max-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .clock-header input[type="number"] {
-            width: 50px;
-            padding: 2px 5px;
-            text-align: center;
-        }
         .clock-pips { display: flex; gap: 3px; height: 20px; flex-wrap: wrap; }
         .pip { flex-grow: 1; min-width: 5px; border: 1px solid var(--color-silver); cursor: pointer; border-radius: 1px; transition: background-color 0.1s; }
         .pip.active { background-color: var(--color-silver); }
+        .clock { margin-bottom: 10px; }
+        .clock-header { display: flex; justify-content: space-between; align-items: center; font-size: 10pt; margin-bottom: 5px; }
+        .clock-header input[type="number"] { width: 50px; padding: 2px 5px; text-align: center; }
         .hp-pips .pip.active { background-color: var(--color-green); }
         .sp-pips .pip.active { background-color: var(--color-orange); }
         .ep-pips .pip.active { background-color: var(--color-purple); }
         .threat-pips .pip.active { background-color: var(--color-red); }
-
-        /* Initiative Tracker Styles */
-        #initiative-tracker .grid-3 {
-            text-align: center;
-        }
-        .initiative-list {
-            background-color: #1a1a1a;
-            min-height: 100px;
-            padding: 10px;
-            border-radius: 3px;
-        }
-        .initiative-card {
-            background-color: var(--color-black);
-            color: var(--color-silver);
-            padding: 5px 8px;
-            border-radius: 2px;
-            margin-bottom: 5px;
-            font-size: 10pt;
-        }
-        #current-turn-card {
-            background-color: var(--color-yellow);
-            color: var(--color-black);
-            font-weight: bold;
-            font-size: 1.3em;
-            padding: 15px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .manual-add-combatant {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
+        #initiative-tracker .grid-3 { text-align: center; }
+        .initiative-list { background-color: #1a1a1a; min-height: 100px; padding: 10px; border-radius: 3px; }
+        .initiative-card { background-color: var(--color-black); color: var(--color-silver); padding: 5px 8px; border-radius: 2px; margin-bottom: 5px; font-size: 10pt; cursor: pointer; }
+        .initiative-card:hover { background-color: #444; }
+        #current-turn-card { background-color: var(--color-yellow); color: var(--color-black); font-weight: bold; font-size: 1.3em; padding: 15px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .manual-add-combatant { display: flex; gap: 10px; margin-top: 10px; }
+        .stat-input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
+        .stat-input-grid label { font-size: 8pt; margin: 0; text-align: center; }
+        .stat-input-grid input { padding: 4px; text-align: center; }
+        .entity-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;}
+        .action-pool { display: flex; align-items: center; gap: 5px; justify-content: center; }
+        .action-pool button { padding: 2px 8px; font-size: 12pt; line-height: 1; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <!-- SCENE CLOCKS -->
         <div class="section">
             <h2>Scene Clocks</h2>
             <div class="grid-2">
-                <div>
-                    <div class="clock">
-                        <div class="clock-header"><span>Situation Clock</span><div class="max-input-wrapper"><span id="situation-value">0/10</span> Max: <input type="number" id="situation-max" value="10" min="1"></div></div>
-                        <div class="clock-pips" id="situation-pips"></div>
-                    </div>
-                </div>
-                 <div>
-                    <div class="clock">
-                        <div class="clock-header"><span>Threat Clock</span><div class="max-input-wrapper"><span id="threat-value">0/10</span> Max: <input type="number" id="threat-max" value="10" min="1"></div></div>
-                        <div class="clock-pips threat-pips" id="threat-pips"></div>
-                    </div>
-                </div>
+                <div><div class="clock"><div class="clock-header"><span>Situation Clock</span><span><span id="situation-value">0/0</span> Max: <input type="number" id="situation-max" value="0" min="0"></span></div><div class="clock-pips" id="situation-pips"></div></div></div>
+                <div><div class="clock"><div class="clock-header"><span>Threat Clock</span><span><span id="threat-value">0/10</span> Max: <input type="number" id="threat-max" value="10" min="1"></span></div><div class="clock-pips threat-pips" id="threat-pips"></div></div></div>
             </div>
         </div>
         
@@ -230,93 +71,84 @@
             <h2>Initiative Tracker</h2>
             <div class="grid-3">
                 <div><h3>Deck (<span id="deck-count">0</span>)</h3><div class="initiative-list" id="deck-list"></div></div>
-                <div><h3>Current Turn</h3><div class="initiative-list" id="current-turn-list"><div id="current-turn-card"></div></div></div>
+                <div><h3>Current Turn</h3><div id="current-turn-card"></div></div>
                 <div><h3>Discard (<span id="discard-count">0</span>)</h3><div class="initiative-list" id="discard-list"></div></div>
             </div>
-            <div class="grid-2" style="margin-top: 15px;">
-                <button id="start-combat-button">Start Combat</button>
+            <div class="grid-3" style="margin-top: 15px;">
+                <button id="start-combat-button">Start Round</button>
                 <button id="draw-card-button" disabled>Draw Card</button>
+                <button id="pass-turn-button" disabled title="End current turn. Moves card to bottom of deck if actions remain, otherwise to discard.">Pass Turn</button>
             </div>
              <div class="manual-add-combatant">
-                <input type="text" id="manual-combatant-name" placeholder="Add custom combatant (e.g. PC name)...">
-                <button id="add-manual-combatant-button" style="margin-top:0;">Add</button>
+                <input type="text" id="manual-combatant-name" placeholder="Add combatant (e.g. PC name)...">
+                <button id="add-manual-combatant-button" style="margin-top:0;">Add to Discard</button>
+                <button id="add-mid-round-button" style="margin-top:0;" title="Add the combatant and shuffle them into the remaining deck.">Enter Mid-Round</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <button id="seize-priority-button" class="button-small" disabled title="Select a card from the Deck or Discard, then click here to make it the current turn.">Seize Priority</button>
             </div>
         </div>
 
+        <div class="grid-2">
+            <!-- BARRIERS -->
+            <div class="section">
+                <h2>Barriers & Puzzles</h2>
+                <div id="barriers-container"></div>
+                <button id="add-barrier-button">Add Task</button>
+            </div>
 
-        <!-- BARRIERS -->
-        <div class="section">
-            <h2>Barriers</h2>
-            <div id="barriers-container"></div>
-            <button id="add-barrier-button" style="margin-top: 15px;">Add Barrier</button>
+            <!-- ENTITIES -->
+            <div class="section">
+                <h2>Entities</h2>
+                <div id="entities-container"></div>
+                <button id="add-entity-button">Add Entity</button>
+            </div>
         </div>
-
-        <!-- ENTITIES -->
-        <div class="section">
-            <h2>Entities</h2>
-            <div id="entities-container"></div>
-            <button id="add-entity-button" style="margin-top: 15px;">Add Entity</button>
-        </div>
-
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const barriersContainer = document.getElementById('barriers-container');
-            const entitiesContainer = document.getElementById('entities-container');
-            const addBarrierButton = document.getElementById('add-barrier-button');
-            const addEntityButton = document.getElementById('add-entity-button');
-            
+            const STAT_NAMES = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
             let entityCounter = 0;
             let barrierCounter = 0;
+            let combatants = new Map();
+            const initiativeState = { deck: [], discard: [], current: null, selected: null };
 
-            // Initiative State
-            let allCombatants = [];
-            let initiativeDeck = [];
-            let discardPile = [];
-            let currentTurn = null;
-
+            // --- GENERIC CLOCK LOGIC ---
             function setupClock(prefix) {
                 const maxInput = document.getElementById(`${prefix}-max`);
                 const pipsContainer = document.getElementById(`${prefix}-pips`);
                 const valueDisplay = document.getElementById(`${prefix}-value`);
                 
-                const redrawPips = () => {
-                    let max = parseInt(maxInput.value) || 10;
+                function redrawPips() {
+                    let max = parseInt(maxInput.value) || 0;
                     let current = pipsContainer.querySelectorAll('.pip.active').length;
-                    if (current === 0 && pipsContainer.children.length === 0) {
-                        current = max;
-                    }
-
+                    if (pipsContainer.children.length === 0) current = max; // Initialize full
+                    
                     pipsContainer.innerHTML = '';
                     for (let i = 0; i < max; i++) {
                         const pip = document.createElement('div');
-                        pip.className = 'pip';
-                        if (i < current) pip.classList.add('active');
+                        pip.className = i < current ? 'pip active' : 'pip';
                         pip.dataset.index = i;
                         pipsContainer.appendChild(pip);
                     }
                     updateClockValue();
-                };
+                }
 
-                const updateClockValue = () => {
-                    let max = parseInt(maxInput.value) || 10;
+                function updateClockValue() {
+                    let max = parseInt(maxInput.value) || 0;
                     const current = pipsContainer.querySelectorAll('.pip.active').length;
                     if(valueDisplay) valueDisplay.textContent = `${current}/${max}`;
-                };
+                }
 
-                pipsContainer.addEventListener('click', (e) => {
+                pipsContainer.addEventListener('click', e => {
                     if (e.target.classList.contains('pip')) {
                         const targetIndex = parseInt(e.target.dataset.index);
-                        const pips = pipsContainer.querySelectorAll('.pip');
-                        const isCurrentlyActive = pips[targetIndex].classList.contains('active');
-                        const currentActiveCount = Array.from(pips).filter(p => p.classList.contains('active')).length;
-
-                        if (isCurrentlyActive && currentActiveCount === targetIndex + 1) {
-                            pips[targetIndex].classList.remove('active');
-                        } else {
-                            pips.forEach((pip, i) => pip.classList.toggle('active', i <= targetIndex));
-                        }
+                        const pips = Array.from(pipsContainer.children);
+                        const currentActive = pips.filter(p => p.classList.contains('active')).length;
+                        let newActive = targetIndex + 1;
+                        if (currentActive === targetIndex + 1) newActive = targetIndex;
+                        pips.forEach((pip, i) => pip.classList.toggle('active', i < newActive));
                         updateClockValue();
                     }
                 });
@@ -324,75 +156,97 @@
                 maxInput.addEventListener('change', redrawPips);
                 redrawPips();
             }
-            
+
             // --- INITIATIVE LOGIC ---
-            const startCombatButton = document.getElementById('start-combat-button');
-            const drawCardButton = document.getElementById('draw-card-button');
-            const addManualCombatantButton = document.getElementById('add-manual-combatant-button');
-            
-            function shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-            }
+            const startCombatBtn = document.getElementById('start-combat-button');
+            const drawCardBtn = document.getElementById('draw-card-button');
+            const passTurnBtn = document.getElementById('pass-turn-button');
+            const seizePriorityBtn = document.getElementById('seize-priority-button');
 
             function renderInitiative() {
-                const deckList = document.getElementById('deck-list');
-                const discardList = document.getElementById('discard-list');
-                const currentTurnCard = document.getElementById('current-turn-card');
-
-                deckList.innerHTML = initiativeDeck.map(name => `<div class="initiative-card">${name}</div>`).join('');
-                discardList.innerHTML = discardPile.map(name => `<div class="initiative-card">${name}</div>`).join('');
-                currentTurnCard.textContent = currentTurn || '';
+                ['deck', 'discard'].forEach(pile => {
+                    const listEl = document.getElementById(`${pile}-list`);
+                    listEl.innerHTML = '';
+                    initiativeState[pile].forEach(name => {
+                        const card = document.createElement('div');
+                        card.className = 'initiative-card';
+                        card.textContent = name;
+                        if (name === initiativeState.selected) card.style.backgroundColor = 'var(--color-blue)';
+                        card.onclick = () => { initiativeState.selected = name; seizePriorityBtn.disabled = !initiativeState.current; renderInitiative(); };
+                        listEl.appendChild(card);
+                    });
+                    document.getElementById(`${pile}-count`).textContent = initiativeState[pile].length;
+                });
+                document.getElementById('current-turn-card').textContent = initiativeState.current || '';
                 
-                document.getElementById('deck-count').textContent = initiativeDeck.length;
-                document.getElementById('discard-count').textContent = discardPile.length;
-
-                if (initiativeDeck.length === 0) {
-                    drawCardButton.disabled = true;
-                    startCombatButton.disabled = false;
-                    startCombatButton.textContent = "Next Round";
-                }
+                drawCardBtn.disabled = initiativeState.deck.length === 0 || !initiativeState.current && initiativeState.deck.length > 0 && startCombatBtn.disabled === false;
+                passTurnBtn.disabled = !initiativeState.current;
+                startCombatBtn.disabled = initiativeState.deck.length > 0;
+                startCombatBtn.textContent = (initiativeState.deck.length === 0 && (initiativeState.discard.length > 0 || initiativeState.current)) ? "Next Round" : "Start Combat";
             }
             
-            function startCombat() {
-                discardPile = [];
-                currentTurn = null;
-                initiativeDeck = [...allCombatants];
-                shuffleArray(initiativeDeck);
-
-                startCombatButton.disabled = true;
-                drawCardButton.disabled = false;
-                startCombatButton.textContent = "Start Combat"; // Reset text
+            startCombatBtn.addEventListener('click', () => {
+                const allNames = Array.from(combatants.keys());
+                initiativeState.deck = [...allNames, ...initiativeState.discard.filter(n => !combatants.has(n))];
+                initiativeState.discard = [];
+                initiativeState.current = null;
+                shuffleArray(initiativeState.deck);
+                combatants.forEach(data => { if (data.isEntity) data.actions.current = data.actions.max; });
+                renderAllEntityActions();
+                drawCardBtn.disabled = false;
+                startCombatBtn.disabled = true;
                 renderInitiative();
-            }
+            });
 
-            function drawCard() {
-                if(currentTurn) {
-                    discardPile.push(currentTurn);
+            drawCardBtn.addEventListener('click', () => {
+                if (initiativeState.current) initiativeState.discard.push(initiativeState.current);
+                initiativeState.current = initiativeState.deck.shift();
+                renderInitiative();
+            });
+
+            passTurnBtn.addEventListener('click', () => {
+                if (!initiativeState.current) return;
+                const combatant = combatants.get(initiativeState.current);
+                if (combatant && combatant.isEntity && combatant.actions.current > 0) {
+                    initiativeState.deck.push(initiativeState.current); // To bottom of deck
+                } else {
+                    initiativeState.discard.push(initiativeState.current);
                 }
-                currentTurn = initiativeDeck.shift(); // Takes from the start of the array
+                initiativeState.current = null;
                 renderInitiative();
-            }
+            });
+
+            seizePriorityBtn.addEventListener('click', () => {
+                if (!initiativeState.selected || !initiativeState.current) return;
+                initiativeState.deck.unshift(initiativeState.current);
+                initiativeState.deck = initiativeState.deck.filter(c => c !== initiativeState.selected);
+                initiativeState.discard = initiativeState.discard.filter(c => c !== initiativeState.selected);
+                initiativeState.current = initiativeState.selected;
+                initiativeState.selected = null;
+                seizePriorityBtn.disabled = true;
+                renderInitiative();
+            });
+
+            document.getElementById('add-manual-combatant-button').addEventListener('click', () => addCombatant(false));
+            document.getElementById('add-mid-round-button').addEventListener('click', () => addCombatant(true));
             
-            function addManualCombatant() {
-                const nameInput = document.getElementById('manual-combatant-name');
-                const name = nameInput.value.trim();
-                if(name && !allCombatants.includes(name)) {
-                    allCombatants.push(name);
-                    discardPile.push(name); // Add to discard to be included in next shuffle
+            function addCombatant(midRound = false) {
+                 const nameInput = document.getElementById('manual-combatant-name');
+                 const name = nameInput.value.trim();
+                 if(name && !combatants.has(name)) {
+                    combatants.set(name, { isEntity: false, actions: { max: 2, current: 2 } });
+                    if(midRound && initiativeState.deck.length > 0) {
+                        initiativeState.deck.push(name);
+                        shuffleArray(initiativeState.deck);
+                    } else {
+                        initiativeState.discard.push(name);
+                    }
                     nameInput.value = '';
                     renderInitiative();
-                }
+                 }
             }
 
-            startCombatButton.addEventListener('click', startCombat);
-            drawCardButton.addEventListener('click', drawCard);
-            addManualCombatantButton.addEventListener('click', addManualCombatant);
-
-
-            // --- ENTITY & BARRIER LOGIC ---
+            // --- ENTITY & BARRIER MANAGEMENT ---
             function addEntity() {
                 entityCounter++;
                 const card = document.createElement('div');
@@ -400,55 +254,30 @@
                 const idPrefix = `entity-${entityCounter}`;
                 const entityName = `Entity ${entityCounter}`;
                 card.dataset.name = entityName;
+                card.id = idPrefix;
 
                 card.innerHTML = `
-                    <div class="card-header">
-                        <input type="text" value="${entityName}" placeholder="Entity Name...">
-                        <button class="remove-button button-small">Remove</button>
+                    <div class="card-header"><input type="text" value="${entityName}" class="entity-name-input"><button class="remove-button button-small">Remove</button></div>
+                    <div class="entity-info-grid">
+                        <div><div class="stat-input-grid">${STAT_NAMES.map(stat => `<div><label>${stat}</label><input type="number" class="stat-input" data-stat="${stat}" value="${stat === 'A' ? 2 : 1}"></div>`).join('')}</div><label>Resistance: <span class="resistance-value">3</span></label></div>
+                        <div><label>Action Pool</label><div class="action-pool"><button class="action-minus">-</button><span class="action-current">2</span> / <span class="action-max">2</span><button class="action-plus">+</button></div></div>
                     </div>
-                    <div class="grid-3" style="margin-bottom: 15px;">
-                         <div><label>Level</label><input type="number" value="1"></div>
-                         <div><label>Resistance</label><input type="number" value="3"></div>
-                         <div><label>Highest Stat</label><input type="text" value="Brawn"></div>
-                    </div>
-                    <div class="clock">
-                        <div class="clock-header"><span>HP</span><div class="max-input-wrapper"><span id="${idPrefix}-hp-value">0/10</span> Max: <input type="number" id="${idPrefix}-hp-max" value="10" min="1"></div></div>
-                        <div class="clock-pips hp-pips" id="${idPrefix}-hp-pips"></div>
-                    </div>
-                    <div class="clock">
-                        <div class="clock-header"><span>SP</span><div class="max-input-wrapper"><span id="${idPrefix}-sp-value">0/10</span> Max: <input type="number" id="${idPrefix}-sp-max" value="10" min="1"></div></div>
-                        <div class="clock-pips sp-pips" id="${idPrefix}-sp-pips"></div>
-                    </div>
-                    <div class="clock">
-                        <div class="clock-header"><span>EP</span><div class="max-input-wrapper"><span id="${idPrefix}-ep-value">0/10</span> Max: <input type="number" id="${idPrefix}-ep-max" value="10" min="1"></div></div>
-                        <div class="clock-pips ep-pips" id="${idPrefix}-ep-pips"></div>
-                    </div>
+                    <hr style="margin: 10px 0;">
+                    <div class="clock"><div class="clock-header"><span>HP</span><span><span id="${idPrefix}-hp-value">0/10</span> Max: <input type="number" id="${idPrefix}-hp-max" value="10" min="1"></span></div><div class="clock-pips hp-pips" id="${idPrefix}-hp-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>SP</span><span><span id="${idPrefix}-sp-value">0/10</span> Max: <input type="number" id="${idPrefix}-sp-max" value="10" min="1"></span></div><div class="clock-pips sp-pips" id="${idPrefix}-sp-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>EP</span><span><span id="${idPrefix}-ep-value">0/10</span> Max: <input type="number" id="${idPrefix}-ep-max" value="10" min="1"></span></div><div class="clock-pips ep-pips" id="${idPrefix}-ep-pips"></div></div>
                 `;
                 entitiesContainer.appendChild(card);
                 
-                // Add to initiative
-                allCombatants.push(entityName);
-                discardPile.push(entityName);
+                const stats = {};
+                card.querySelectorAll('.stat-input').forEach(input => stats[input.dataset.stat] = parseInt(input.value));
+                combatants.set(entityName, { isEntity: true, element: card, stats: stats, actions: { max: stats.A, current: stats.A } });
+
+                initiativeState.discard.push(entityName);
+                updateSituationClockMax();
                 renderInitiative();
 
-                setupClock(`${idPrefix}-hp`);
-                setupClock(`${idPrefix}-sp`);
-                setupClock(`${idPrefix}-ep`);
-
-                // Add listener for name changes
-                card.querySelector('input[type="text"]').addEventListener('change', (e) => {
-                    const oldName = card.dataset.name;
-                    const newName = e.target.value;
-                    
-                    // Update all combatant lists
-                    allCombatants = allCombatants.map(name => name === oldName ? newName : name);
-                    initiativeDeck = initiativeDeck.map(name => name === oldName ? newName : name);
-                    discardPile = discardPile.map(name => name === oldName ? newName : name);
-                    if (currentTurn === oldName) currentTurn = newName;
-                    
-                    card.dataset.name = newName; // Update the card's data attribute
-                    renderInitiative();
-                });
+                ['hp', 'sp', 'ep'].forEach(c => setupClock(`${idPrefix}-${c}`));
             }
 
             function addBarrier() {
@@ -456,43 +285,84 @@
                 const card = document.createElement('div');
                 card.className = 'card barrier-card';
                 const idPrefix = `barrier-${barrierCounter}`;
-
                 card.innerHTML = `
-                     <div class="card-header">
-                        <input type="text" value="Barrier ${barrierCounter}" placeholder="Barrier Name...">
-                        <button class="remove-button button-small">Remove</button>
-                    </div>
-                    <div class="clock">
-                        <div class="clock-header"><span>Task Clock</span><div class="max-input-wrapper"><span id="${idPrefix}-value">0/6</span> Max: <input type="number" id="${idPrefix}-max" value="6" min="1"></div></div>
-                        <div class="clock-pips" id="${idPrefix}-pips"></div>
-                    </div>
+                     <div class="card-header"><input type="text" value="Task ${barrierCounter}" placeholder="Barrier/Puzzle Name..."><button class="remove-button button-small">Remove</button></div>
+                    <div class="clock"><div class="clock-header"><span>Task Clock</span><span><span id="${idPrefix}-value">0/6</span> Max: <input type="number" id="${idPrefix}-max" value="6" min="1"></span></div><div class="clock-pips" id="${idPrefix}-pips"></div></div>
                 `;
                 barriersContainer.appendChild(card);
+                updateSituationClockMax();
                 setupClock(idPrefix);
             }
+            
+            function updateSituationClockMax() {
+                const count = entitiesContainer.children.length + barriersContainer.children.length;
+                const clockInput = document.getElementById('situation-max');
+                clockInput.value = count;
+                clockInput.dispatchEvent(new Event('change'));
+            }
 
-            addEntityButton.addEventListener('click', addEntity);
-            addBarrierButton.addEventListener('click', addBarrier);
-
-            document.body.addEventListener('click', (e) => {
+            // --- EVENT DELEGATION & HELPERS ---
+            document.body.addEventListener('change', e => {
+                if(e.target.classList.contains('entity-name-input')) {
+                    const card = e.target.closest('.card'); const oldName = card.dataset.name; const newName = e.target.value;
+                    const data = combatants.get(oldName); combatants.delete(oldName); combatants.set(newName, data);
+                    card.dataset.name = newName;
+                    ['deck', 'discard'].forEach(p => initiativeState[p] = initiativeState[p].map(n => n === oldName ? newName : n));
+                    if(initiativeState.current === oldName) initiativeState.current = newName;
+                    renderInitiative();
+                }
+                if(e.target.classList.contains('stat-input')) {
+                     const card = e.target.closest('.card'); const name = card.dataset.name; const combatant = combatants.get(name);
+                     if(combatant) {
+                        const newStats = {};
+                        card.querySelectorAll('.stat-input').forEach(input => newStats[input.dataset.stat] = parseInt(input.value) || 0);
+                        combatant.stats = newStats;
+                        const sortedStats = Object.values(newStats).sort((a,b)=>b-a);
+                        card.querySelector('.resistance-value').textContent = sortedStats.slice(0,3).reduce((a,b)=>a+b, 0);
+                        combatant.actions.max = newStats.A;
+                        combatant.actions.current = Math.min(combatant.actions.current, newStats.A);
+                        renderEntityActions(name);
+                     }
+                }
+            });
+            
+             document.body.addEventListener('click', e => {
                 if (e.target.classList.contains('remove-button')) {
                     const card = e.target.closest('.card');
                     if (card.classList.contains('entity-card')) {
                          const nameToRemove = card.dataset.name;
-                         allCombatants = allCombatants.filter(name => name !== nameToRemove);
-                         initiativeDeck = initiativeDeck.filter(name => name !== nameToRemove);
-                         discardPile = discardPile.filter(name => name !== nameToRemove);
-                         if(currentTurn === nameToRemove) currentTurn = null;
-                         renderInitiative();
+                         combatants.delete(nameToRemove);
+                         ['deck', 'discard'].forEach(p => initiativeState[p] = initiativeState[p].filter(n => n !== nameToRemove));
+                         if(initiativeState.current === nameToRemove) initiativeState.current = null;
                     }
-                    card.remove();
+                    card.remove(); updateSituationClockMax(); renderInitiative();
                 }
+                 if (e.target.classList.contains('action-minus') || e.target.classList.contains('action-plus')) {
+                    const card = e.target.closest('.card'); const combatant = combatants.get(card.dataset.name);
+                    if(combatant) {
+                        if(e.target.classList.contains('action-minus')) combatant.actions.current = Math.max(0, combatant.actions.current - 1);
+                        else combatant.actions.current = Math.min(combatant.actions.max, combatant.actions.current + 1);
+                        renderEntityActions(card.dataset.name);
+                    }
+                 }
             });
+            
+            function renderAllEntityActions(){ combatants.forEach((data, name) => { if(data.isEntity) renderEntityActions(name); }); }
+            function renderEntityActions(name) {
+                const combatant = combatants.get(name);
+                if (!combatant || !combatant.isEntity) return;
+                combatant.element.querySelector('.action-current').textContent = combatant.actions.current;
+                combatant.element.querySelector('.action-max').textContent = combatant.actions.max;
+            }
+            function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } }
 
             // --- INITIALIZATION ---
-            setupClock('situation');
-            setupClock('threat');
+            setupClock('situation'); setupClock('threat');
+            document.getElementById('add-entity-button').addEventListener('click', addEntity);
+            document.getElementById('add-barrier-button').addEventListener('click', addBarrier);
+            
             addEntity();
+            addBarrier();
         });
     </script>
 </body>

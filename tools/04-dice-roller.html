@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Dice Roller</title>
+    <title>Psychromattica Dice Roller</title>
     <style>
         /* GLOBAL STYLES & ART-DECO THEME */
         :root {
@@ -44,6 +44,7 @@
 
         h2, h3 {
             font-weight: normal;
+            font-family: 'Oswald', sans-serif;
             color: var(--color-null);
         }
 
@@ -127,6 +128,12 @@
              gap: 8px;
              font-size: 11pt;
         }
+        .checkbox-group small {
+            display: block;
+            font-size: 9pt;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
 
         .output-section {
             text-align: center;
@@ -198,8 +205,9 @@
             
             <div class="checkbox-group" style="margin-top: 15px;">
                 <label>
-                    <input type="checkbox" id="add-level-twice-checkbox"> Add Level a Second Time
+                    <input type="checkbox" id="add-stat-twice-checkbox"> Rapid / Reckless Effect
                 </label>
+                <small>(Adds chosen Stat a second time, replacing Level for extra hits)</small>
             </div>
 
             <button id="roll-button">Roll!</button>
@@ -210,19 +218,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             const levelInput = document.getElementById('level-input');
             const statInput = document.getElementById('stat-input');
-            const addLevelTwiceCheckbox = document.getElementById('add-level-twice-checkbox');
+            const addStatTwiceCheckbox = document.getElementById('add-stat-twice-checkbox');
             const rollButton = document.getElementById('roll-button');
             const finalResultDisplay = document.getElementById('final-result-display');
             const criticalDisplay = document.getElementById('critical-display');
             const rollLog = document.getElementById('roll-log');
 
             function performRoll() {
-                // 1. Disable button and clear previous results for anticipation
                 rollButton.disabled = true;
                 criticalDisplay.textContent = "";
                 rollLog.textContent = "Rolling...";
 
-                // 2. Perform all calculations in the background
                 let log = "";
                 const level = parseInt(levelInput.value) || 0;
                 const stat = parseInt(statInput.value) || 0;
@@ -231,7 +237,9 @@
                 let standardRoll = 0;
                 let runningTotal = 0;
                 let isCritical = false;
+                let isMiss = false;
 
+                // --- SR Calculation Loop ---
                 while (true) {
                     const d1 = Math.floor(Math.random() * 10) + 1;
                     const d2 = Math.floor(Math.random() * 10) + 1;
@@ -242,49 +250,64 @@
                         const doubleValue = d1 + d2;
                         runningTotal += doubleValue;
                         log += `  ↳ Doubles! Adding ${doubleValue}. Current total: ${runningTotal}. Re-rolling...\n`;
-                        continue;
-                    } else {
-                        let finalDie = d1;
-                        if (advantageStatus === 'advantage') {
-                            finalDie = Math.max(d1, d2);
-                            log += `  ↳ Using Advantage: took the higher value (${finalDie})\n`;
-                        } else if (advantageStatus === 'disadvantage') {
-                            finalDie = Math.min(d1, d2);
-                            log += `  ↳ Using Disadvantage: took the lower value (${finalDie})\n`;
+                        continue; // Re-roll
+                    } 
+                    
+                    // --- Final Roll Logic ---
+                    log += `  ↳ Final Roll.\n`;
+                    let finalDie = d1;
+                    
+                    if (advantageStatus === 'advantage') {
+                        finalDie = Math.max(d1, d2);
+                        log += `  ↳ Advantage: took higher die (${finalDie})\n`;
+                    } else if (advantageStatus === 'disadvantage') {
+                        finalDie = Math.min(d1, d2);
+                        log += `  ↳ Disadvantage: took lower die (${finalDie})\n`;
+                        // Check for Miss condition (Rule 1.6)
+                        if (finalDie === 1) {
+                            isMiss = true;
+                            log += `  ↳ MISS! A 1 was rolled with Disadvantage.\n`;
                         }
-                        
-                        standardRoll = runningTotal + finalDie;
-                        log += `\nStandard Roll (SR) = ${runningTotal} (doubles) + ${finalDie} (final die) = ${standardRoll}\n`;
-                        break;
+                    }
+                    
+                    standardRoll = runningTotal + finalDie;
+                    log += `\nStandard Roll (SR) = ${runningTotal} (doubles) + ${finalDie} (final die) = ${standardRoll}\n`;
+                    break;
+                }
+
+                // --- Final Value Calculation ---
+                let finalEV = 0;
+                let criticalText = "";
+
+                if (isMiss) {
+                    finalEV = 0;
+                    criticalText = "MISS!";
+                    log += `\nFinal EV/ER is 0 due to a Miss.\n`;
+                } else {
+                    finalEV = standardRoll + level + stat;
+                    log += `Base EV = ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}\n`;
+                    
+                    if (addStatTwiceCheckbox.checked) {
+                        finalEV += stat;
+                        log += `Rapid/Reckless: Added Stat again: ${finalEV - stat} + ${stat} = ${finalEV}\n`;
+                    }
+
+                    if (isCritical) {
+                        criticalText = "CRITICAL HIT!";
+                    }
+                    if (standardRoll >= 31) {
+                        criticalText = "SUPER CRITICAL!";
                     }
                 }
 
-                let finalEV = standardRoll + level + stat;
-                log += `Base EV = ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}\n`;
-                
-                if (addLevelTwiceCheckbox.checked) {
-                    finalEV += level;
-                    log += `Adding Level again: ${finalEV - level} + ${level} = ${finalEV}\n`;
-                }
-
-                let criticalText = "";
-                if (isCritical) {
-                    criticalText = "CRITICAL HIT!";
-                }
-                if (standardRoll >= 31) {
-                    criticalText = "SUPER CRITICAL!";
-                }
-
-                // 3. Start the scramble animation
-                const scrambleDuration = 3000;
+                // --- Display Results with Animation ---
+                const scrambleDuration = 1500;
                 const scrambleInterval = 50;
 
                 const scrambleEffect = setInterval(() => {
-                    const randomValue = Math.floor(Math.random() * 100);
-                    finalResultDisplay.textContent = randomValue;
+                    finalResultDisplay.textContent = Math.floor(Math.random() * 100);
                 }, scrambleInterval);
 
-                // 4. After 3 seconds, reveal everything at once
                 setTimeout(() => {
                     clearInterval(scrambleEffect);
                     finalResultDisplay.textContent = finalEV;

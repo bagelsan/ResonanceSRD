@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Motivational Profile Assessment</title>
+    <title>5-Point Motivational Profile Generator</title>
     <style>
         /* GLOBAL STYLES & ART-DECO THEME */
         :root {
@@ -46,9 +46,15 @@
             gap: 15px;
         }
 
-        h2, h3 {
+        h1, h2, h3 {
             font-weight: normal;
+            font-family: 'Oswald', sans-serif; /* Assumes Oswald is loaded, but will fallback */
             color: var(--color-null);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
         }
 
         h3 {
@@ -197,28 +203,27 @@
 
     <div class="container">
         <div class="section">
-            <h2>Motivational Profile Assessment</h2>
+            <h1>5-Point Motivational Profile Generator</h1>
             <p class="instructions">
-                This assessment is designed to identify your core motivations. Read each question and choose the one answer that feels most true to your natural way of thinking or acting. Don't overthink your answers; your first instinct is often the most accurate.
+                This assessment uses the 27 questions from the Psychromattic Assessment (Appendix C) to generate a 5-Point Motivational Profile. Your answers will be weighted to determine your core drives. Your top three motivations form your **Trinity of Ideals**, while your bottom two form your **Duality of Conflict**.
             </p>
         </div>
 
         <div class="section">
             <form id="quiz-form">
                 <!-- Questions will be injected here by JavaScript -->
-                <button type="submit">Calculate My Profile</button>
+                <button type="submit">Generate My 5-Point Profile</button>
             </form>
         </div>
 
         <div class="section" id="results-section">
-            <h2>Your Motivational Profile Results</h2>
-            <h3>Weighted Breakdown</h3>
-            <p class="instructions">This is your complete motivational stack, ranked from most to least dominant. The scores reflect how frequently your choices aligned with each core drive.</p>
+            <h2>Your Profile Results</h2>
+            <h3>Weighted Motivation Ranking</h3>
+            <p class="instructions">This is your complete motivational stack, ranked from most to least dominant. The scores are calculated by combining your answers from the Motivation and Context axes.</p>
             <ul class="results-list" id="results-list"></ul>
             
             <div class="profile-summary">
                 <h3>Your 5-Point Profile</h3>
-                <p class="instructions">Based on your results, this is your derived 5-Point Profile. Your top three scores form your ideals, while your bottom two form your conflicts. In cases of a tie, the motivation appearing first on the list is chosen.</p>
                 <div class="profile-grid">
                     <div class="profile-card trinity-card">
                         <h4>Trinity of Ideals</h4>
@@ -235,147 +240,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            const MOTIVATIONS = ["Discovery", "Absolution", "Ambition", "Security", "Legacy", "Innovation", "Purity", "Glory", "Influence", "Faith"];
             
+            // The 27 Questions from Appendix C
             const QUESTIONS_DATA = [
-                { q: "Your community's only water source is poisoned. What is your immediate, primary focus?", answers: [
-                    { text: "The physical well-being of the people. I organize teams to find clean water and ration supplies to prevent sickness.", motivation: "Security" },
-                    { text: "The systemic failure. I launch an investigation to find the poison's source and create a new system to ensure this never happens again.", motivation: "Innovation" },
-                    { text: "The moral violation. This was a malicious act. My focus is on finding the person responsible and ensuring justice is served.", motivation: "Purity" }
-                ]},
-                { q: "You look back on a period of intense personal growth. What is the clearest sign of your progress?", answers: [
-                    { text: "I have acquired new knowledge and can now understand complex systems I couldn't before.", motivation: "Innovation" },
-                    { text: "I am more in tune with who I truly am, and my actions are more aligned with my core values.", motivation: "Faith" },
-                    { text: "I am physically healthier, my senses are sharper, and my gut instincts are more reliable.", motivation: "Security" }
-                ]},
-                { q: "What truly makes a house a 'home'?", answers: [
-                    { text: "It is a place of authentic self-expression, where I feel a true sense of belonging and purpose.", motivation: "Faith" },
-                    { text: "It is a place of physical comfort, security, and sensory peace.", motivation: "Security" },
-                    { text: "It is an orderly and efficient space where the social dynamics are clear, fair, and logical.", motivation: "Influence" }
-                ]},
-                 { q: "You discover a trusted leader has been lying to the community. Which aspect of the betrayal cuts the deepest?", answers: [
-                    { text: "The violation of a core principle. Honesty is fundamental, and they broke that sacred trust.", motivation: "Purity" },
-                    { text: "The emotional manipulation and the hurt it has caused the people who believed in them.", motivation: "Influence" },
-                    { text: "The logical breakdown. The system of trust was based on false data, meaning all subsequent decisions are flawed.", motivation: "Innovation" }
-                ]},
-                { q: "If you had to choose a metaphorical 'weapon' to solve your problems, what would it be?", answers: [
-                    { text: "A perfectly balanced hammer. A direct, physical tool for both building and breaking.", motivation: "Glory" },
-                    { text: "A grand library. Access to all the world's information and the logic to use it.", motivation: "Discovery" },
-                    { text: "An inspiring symbol. An icon that represents my will and rallies others to my cause.", motivation: "Legacy" }
-                ]},
-                { q: "What frustrates you the most in others?", answers: [
-                    { text: "Willful ignorance and illogical thinking.", motivation: "Purity" },
-                    { text: "Hypocrisy and inauthenticity.", motivation: "Faith" },
-                    { text: "Physical carelessness and a lack of situational awareness.", motivation: "Security" }
-                ]},
-                { q: "Which experience brings you the most profound sense of joy?", answers: [
-                    { text: "A moment of deep, purposeful connection with another person or a cause.", motivation: "Influence" },
-                    { text: "A thrilling physical experience that makes you feel alive and fully present in your body.", motivation: "Discovery" },
-                    { text: "The 'eureka' moment when a complex problem suddenly becomes clear and you see the perfect solution.", motivation: "Innovation" }
-                ]},
-                { q: "When making a life-altering decision, what is your ultimate tie-breaker?", answers: [
-                    { text: "My gut instinct and the physical sensations in my body.", motivation: "Security" },
-                    { text: "The hard data and a logical analysis of the potential outcomes.", motivation: "Purity" },
-                    { text: "My unwavering moral compass and core principles.", motivation: "Faith" }
-                ]},
-                { q: "The story of your life should be, above all, a story of...", answers: [
-                    { text: "Intellectual contribution and the systems you helped build or improve.", motivation: "Legacy" },
-                    { text: "Unwavering character and the positive impact your will had on the world.", motivation: "Influence" },
-                    { text: "Rich, visceral experiences and incredible physical feats.", motivation: "Discovery" }
-                ]},
-                { q: "An ancient, powerful technology is discovered. What is your first order of business?", answers: [
-                    { text: "Understand its core principles. We cannot use it until we understand the fundamental theory of why it works.", motivation: "Purity" },
-                    { text: "Establish strict protocols. We must secure it, manage access, and monitor it to ensure it is handled safely.", motivation: "Security" },
-                    { text: "Test its functionality. The best way to learn is by doing. I would begin careful, hands-on experiments immediately.", motivation: "Discovery" }
-                ]},
-                { q: "You are tasked with building a highly effective team. What is the most critical component?", answers: [
-                    { text: "A clear and disciplined operational structure with well-defined roles and rules of engagement.", motivation: "Influence" },
-                    { text: "Recruiting the most skilled individuals and empowering them to execute their tasks with minimal interference.", motivation: "Ambition" },
-                    { text: "A shared, foundational vision and a powerful mission statement that everyone believes in.", motivation: "Legacy" }
-                ]},
-                { q: "Your community is facing a long, harsh winter. What is the most important preparation?", answers: [
-                    { text: "Taking immediate action: gathering firewood, insulating homes, and hunting for food stores.", motivation: "Security" },
-                    { text: "Reinforcing our core values and the 'why' of our community, to ensure our social fabric survives the hardship.", motivation: "Legacy" },
-                    { text: "Implementing a meticulous resource management plan: rationing food, scheduling work shifts, and monitoring supplies.", motivation: "Influence" }
-                ]},
-                { q: "How do you prefer to learn a new, complex skill?", answers: [
-                    { text: "By studying the fundamental theories and history behind it first.", motivation: "Discovery" },
-                    { text: "Through a disciplined regimen of practice, drills, and structured repetition.", motivation: "Ambition" },
-                    { text: "By jumping straight into a real-world project and learning by doing.", motivation: "Innovation" }
-                ]},
-                { q: "You must pass on your most valuable knowledge. What form does it take?", answers: [
-                    { text: "A structured curriculum with clear lessons, exercises, and assessments to manage a student's progress.", motivation: "Influence" },
-                    { text: "A hands-on apprenticeship where the student learns by actively working alongside me.", motivation: "Innovation" },
-                    { text: "A philosophical text that explains the core principles and the 'why' behind the knowledge, allowing students to find their own way.", motivation: "Legacy" }
-                ]},
-                { q: "A community has fallen into disarray due to internal conflict. Where do you begin to fix it?", answers: [
-                    { text: "Launch a high-visibility, practical project that gets everyone working together on a tangible goal to build momentum.", motivation: "Glory" },
-                    { text: "Bring everyone together to re-establish their founding charter and remind them of the core principles they all agreed to.", motivation: "Legacy" },
-                    { text: "Mediate the conflicts, establish new rules of conduct, and manage the emotional state of the community.", motivation: "Influence" }
-                ]},
-                { q: "Which of these represents true strength?", answers: [
-                    { text: "Unshakeable principles that you would never compromise.", motivation: "Purity" },
-                    { text: "Disciplined self-mastery and control over one's impulses.", motivation: "Absolution" },
-                    { text: "The proven ability to execute a plan and achieve results.", motivation: "Ambition" }
-                ]},
-                { q: "Someone insults your core beliefs in a public setting. How do you respond?", answers: [
-                    { text: "I de-escalate the situation, manage the emotional temperature of the room, and prevent further conflict.", motivation: "Influence" },
-                    { text: "With a direct and immediate action—a witty comeback, a sharp counter-argument, or a challenge.", motivation: "Glory" },
-                    { text: "I ignore the personal insult and instead defend the underlying principle that was attacked, explaining why it is important.", motivation: "Purity" }
-                ]},
-                { q: "You are preparing for a long and dangerous journey. What is the most critical preparation?", answers: [
-                    { text: "Getting a reliable map and taking the first step. The journey is the plan.", motivation: "Discovery" },
-                    { text: "Understanding the culture, history, and fundamental nature of the lands I will be passing through.", motivation: "Legacy" },
-                    { text: "Meticulous logistical planning: packing the right gear, managing supplies, and setting a sustainable pace.", motivation: "Security" }
-                ]},
-                { q: "Having mastered a rare and valuable skill, what brings you the most satisfaction?", answers: [
-                    { text: "The quiet fulfillment of perfecting my own craft and deepening my personal understanding.", motivation: "Faith" },
-                    { text: "Disseminating the knowledge to the world by teaching it to as many individuals as possible.", motivation: "Innovation" },
-                    { text: "Forming a new guild or institution with other experts to create something greater than the sum of our parts.", motivation: "Legacy" }
-                ]},
-                { q: "You receive an unexpected windfall of resources. What is your first instinct?", answers: [
-                    { text: "Donate it to an important cause or a specific person who I know is in desperate need.", motivation: "Influence" },
-                    { text: "Use it to fund a project that will benefit my entire community or team.", motivation: "Ambition" },
-                    { text: "Invest it in my own well-being, tools, and personal growth.", motivation: "Faith" }
-                ]},
-                { q: "'Success' is ultimately measured by...", answers: [
-                    { text: "The strength and prosperity of the group, team, or family I am a part of.", motivation: "Ambition" },
-                    { text: "The achievement of personal enlightenment and true self-mastery.", motivation: "Faith" },
-                    { text: "The tangible, positive impact I have made on the wider world or on another individual's life.", motivation: "Influence" }
-                ]},
-                { q: "You witness a gross injustice. How do you prefer to fight it?", answers: [
-                    { text: "By directly confronting the perpetrator or providing immediate aid to the individual who was wronged.", motivation: "Glory" },
-                    { text: "By organizing a protest group or social movement to challenge the system that allowed the injustice to occur.", motivation: "Ambition" },
-                    { text: "By refusing to participate in the unjust system myself and focusing on purifying my own actions to live as a better example.", motivation: "Purity" }
-                ]},
-                { q: "When you need guidance on a difficult problem, where do you turn?", answers: [
-                    { text: "Inward, to my own intuition and quiet contemplation.", motivation: "Faith" },
-                    { text: "Outward, to a one-on-one conversation with a single, trusted mentor or expert.", motivation: "Innovation" },
-                    { text: "To my inner circle, for a group brainstorming session where we can all share our perspectives.", motivation: "Influence" }
-                ]},
-                { q: "If you were to tell a grand story, what would it be about?", answers: [
-                    { text: "The biography of a singular, great individual who changed the world through their actions.", motivation: "Legacy" },
-                    { text: "The epic tale of a fellowship of heroes who achieved the impossible together.", motivation: "Ambition" },
-                    { text: "An introspective journey of one person's quest for self-discovery and inner peace.", motivation: "Discovery" }
-                ]},
-                { q: "Your ultimate loyalty lies with...", answers: [
-                    { text: "My own conscience and my unwavering personal principles.", motivation: "Faith" },
-                    { text: "A specific individual—a partner, a child, a leader—whom I have sworn to protect.", motivation: "Security" },
-                    { text: "My community, my 'crew,' my people—the collective group as a whole.", motivation: "Ambition" }
-                ]},
-                { q: "When a team project you are on fails, what is your first internal question?", answers: [
-                    { text: "What external force or individual sabotaged our efforts?", motivation: "Glory" },
-                    { text: "How did we fail in our communication and teamwork?", motivation: "Influence" },
-                    { text: "What was my personal mistake in this process?", motivation: "Absolution" }
-                ]},
-                { q: "What environment best recharges your energy?", answers: [
-                    { text: "A deep and meaningful one-on-one conversation.", motivation: "Influence" },
-                    { text: "A lively party or a collaborative team event.", motivation: "Ambition" },
-                    { text: "Quiet solitude for introspection and reflection.", motivation: "Faith" }
-                ]}
+                { section: "The Axis of Motivation (The Source)", q: "Your community's only water source is poisoned. What is your immediate, primary focus?", answers: [{ text: "The physical well-being of the people...", value: "Body" }, { text: "The systemic failure...", value: "Mind" }, { text: "The moral violation...", value: "Essence" }]},
+                { q: "You look back on a period of intense personal growth. What is the clearest sign of your progress?", answers: [{ text: "I have acquired new knowledge...", value: "Mind" }, { text: "I am more in tune with who I truly am...", value: "Essence" }, { text: "I am physically healthier...", value: "Body" }]},
+                { q: "What truly makes a house a 'home'?", answers: [{ text: "It is a place of authentic self-expression...", value: "Essence" }, { text: "It is a place of physical comfort...", value: "Body" }, { text: "It is an orderly and efficient space...", value: "Mind" }]},
+                { q: "You discover a trusted leader has been lying to the community. Which aspect of the betrayal cuts the deepest?", answers: [{ text: "The violation of a core principle...", value: "Essence" }, { text: "The emotional manipulation...", value: "Body" }, { text: "The logical breakdown...", value: "Mind" }]},
+                { q: "If you had to choose a metaphorical 'weapon' to solve your problems, what would it be?", answers: [{ text: "A perfectly balanced hammer...", value: "Body" }, { text: "A grand library...", value: "Mind" }, { text: "An inspiring symbol...", value: "Essence" }]},
+                { q: "What frustrates you the most in others?", answers: [{ text: "Willful ignorance and illogical thinking.", value: "Mind" }, { text: "Hypocrisy and inauthenticity.", value: "Essence" }, { text: "Physical carelessness...", value: "Body" }]},
+                { q: "Which experience brings you the most profound sense of joy?", answers: [{ text: "A moment of deep, purposeful connection...", value: "Essence" }, { text: "A thrilling physical experience...", value: "Body" }, { text: "The 'eureka' moment...", value: "Mind" }]},
+                { q: "When making a life-altering decision, what is your ultimate tie-breaker?", answers: [{ text: "My gut instinct...", value: "Body" }, { text: "The hard data...", value: "Mind" }, { text: "My unwavering moral compass...", value: "Essence" }]},
+                { q: "The story of your life should be, above all, a story of...", answers: [{ text: "Intellectual contribution...", value: "Mind" }, { text: "Unwavering character...", value: "Essence" }, { text: "Rich, visceral experiences...", value: "Body" }]},
+                { section: "The Axis of Context (The Application)", q: "An ancient, powerful technology is discovered. What is your first order of business?", answers: [{ text: "Understand its core principles...", value: "Foundation" }, { text: "Establish strict protocols...", value: "Control" }, { text: "Test its functionality...", value: "Execution" }]},
+                { q: "You are tasked with building a highly effective team. What is the most critical component?", answers: [{ text: "A clear and disciplined operational structure...", value: "Control" }, { text: "Recruiting the most skilled individuals...", value: "Execution" }, { text: "A shared, foundational vision...", value: "Foundation" }]},
+                { q: "Your community is facing a long, harsh winter. What is the most important preparation?", answers: [{ text: "Taking immediate action...", value: "Execution" }, { text: "Reinforcing our core values...", value: "Foundation" }, { text: "Implementing a meticulous resource management plan...", value: "Control" }]},
+                { q: "How do you prefer to learn a new, complex skill?", answers: [{ text: "By studying the fundamental theories...", value: "Foundation" }, { text: "Through a disciplined regimen of practice...", value: "Control" }, { text: "By jumping straight into a real-world project...", value: "Execution" }]},
+                { q: "You must pass on your most valuable knowledge. What form does it take?", answers: [{ text: "A structured curriculum...", value: "Control" }, { text: "A hands-on apprenticeship...", value: "Execution" }, { text: "A philosophical text...", value: "Foundation" }]},
+                { q: "A community has fallen into disarray due to internal conflict. Where do you begin to fix it?", answers: [{ text: "Launch a high-visibility, practical project...", value: "Execution" }, { text: "Bring everyone together to re-establish their founding charter...", value: "Foundation" }, { text: "Mediate the conflicts...", value: "Control" }]},
+                { q: "Which of these represents true strength?", answers: [{ text: "Unshakeable principles...", value: "Foundation" }, { text: "Disciplined self-mastery...", value: "Control" }, { text: "The proven ability to execute a plan...", value: "Execution" }]},
+                { q: "Someone insults your core beliefs in a public setting. How do you respond?", answers: [{ text: "I de-escalate the situation...", value: "Control" }, { text: "With a direct and immediate action...", value: "Execution" }, { text: "I ignore the personal insult...", value: "Foundation" }]},
+                { q: "You are preparing for a long and dangerous journey. What is the most critical preparation?", answers: [{ text: "Getting a reliable map and taking the first step...", value: "Execution" }, { text: "Understanding the culture, history...", value: "Foundation" }, { text: "Meticulous logistical planning...", value: "Control" }]},
+                { section: "The Axis of Perspective (The Scope)", q: "Having mastered a rare and valuable skill, what brings you the most satisfaction?", answers: [{ text: "The quiet fulfillment of perfecting my own craft...", value: "Internal" }, { text: "Disseminating the knowledge...", value: "External" }, { text: "Forming a new guild...", value: "Collaborative" }]},
+                { q: "You receive an unexpected windfall of resources. What is your first instinct?", answers: [{ text: "Donate it to an important cause...", value: "External" }, { text: "Use it to fund a project...", value: "Collaborative" }, { text: "Invest it in my own well-being...", value: "Internal" }]},
+                { q: "'Success' is ultimately measured by...", answers: [{ text: "The strength and prosperity of the group...", value: "Collaborative" }, { text: "The achievement of personal enlightenment...", value: "Internal" }, { text: "The tangible, positive impact...", value: "External" }]},
+                { q: "You witness a gross injustice. How do you prefer to fight it?", answers: [{ text: "By directly confronting the perpetrator...", value: "External" }, { text: "By organizing a protest group...", value: "Collaborative" }, { text: "By refusing to participate...", value: "Internal" }]},
+                { q: "When you need guidance on a difficult problem, where do you turn?", answers: [{ text: "Inward, to my own intuition...", value: "Internal" }, { text: "Outward, to a one-on-one conversation...", value: "External" }, { text: "To my inner circle...", value: "Collaborative" }]},
+                { q: "If you were to tell a grand story, what would it be about?", answers: [{ text: "The biography of a singular, great individual...", value: "External" }, { text: "The epic tale of a fellowship of heroes...", value: "Collaborative" }, { text: "An introspective journey...", value: "Internal" }]},
+                { q: "Your ultimate loyalty lies with...", answers: [{ text: "My own conscience...", value: "Internal" }, { text: "A specific individual...", value: "External" }, { text: "My community, my 'crew,' my people...", value: "Collaborative" }]},
+                { q: "When a team project you are on fails, what is your first internal question?", answers: [{ text: "What external force or individual sabotaged our efforts?", value: "External" }, { text: "How did we fail in our communication and teamwork?", value: "Collaborative" }, { text: "What was my personal mistake in this process?", value: "Internal" }]},
+                { q: "What environment best recharges your energy?", answers: [{ text: "A deep and meaningful one-on-one conversation.", value: "External" }, { text: "A lively party or a collaborative team event.", value: "Collaborative" }, { text: "Quiet solitude for introspection and reflection.", value: "Internal" }]}
             ];
-
+            
             const quizForm = document.getElementById('quiz-form');
             const resultsSection = document.getElementById('results-section');
             const resultsList = document.getElementById('results-list');
@@ -384,10 +280,15 @@
 
             function initializeQuiz() {
                 let quizHTML = "";
+                let currentSection = "";
                 QUESTIONS_DATA.forEach((data, index) => {
+                     if (data.section && data.section !== currentSection) {
+                        currentSection = data.section;
+                        quizHTML += `<h3>${currentSection}</h3>`;
+                    }
                     quizHTML += `<div class="question-block"><p>Question ${index + 1}/${QUESTIONS_DATA.length}: ${data.q}</p>`;
                     data.answers.forEach(answer => {
-                        quizHTML += `<label><input type="radio" name="q${index}" value="${answer.motivation}"> ${answer.text}</label>`;
+                        quizHTML += `<label><input type="radio" name="q${index}" value="${answer.value}"> ${answer.text}</label>`;
                     });
                     quizHTML += `</div>`;
                 });
@@ -397,35 +298,50 @@
             function calculateResults(e) {
                 e.preventDefault();
 
-                const scores = MOTIVATIONS.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+                const axisScores = { Body: 0, Mind: 0, Essence: 0, Foundation: 0, Control: 0, Execution: 0, Internal: 0, External: 0, Collaborative: 0 };
                 const formData = new FormData(quizForm);
                 let answeredQuestions = 0;
 
                 for (let i = 0; i < QUESTIONS_DATA.length; i++) {
-                    const motivation = formData.get(`q${i}`);
-                    if (motivation) {
+                    if (formData.has(`q${i}`)) {
                         answeredQuestions++;
-                        scores[motivation]++;
+                        const value = formData.get(`q${i}`);
+                        if(axisScores.hasOwnProperty(value)) {
+                            axisScores[value]++;
+                        }
                     }
                 }
                 
                 if (answeredQuestions < QUESTIONS_DATA.length) {
-                    alert("Please answer all questions before calculating your profile.");
+                    alert("Please answer all 27 questions before calculating your profile.");
                     return;
                 }
 
-                displayResults(scores);
+                displayResults(axisScores);
             }
 
-            function displayResults(scores) {
-                const sortedScores = Object.entries(scores)
-                    .map(([name, score]) => ({ name, score }))
-                    .sort((a, b) => b.score - a.score || MOTIVATIONS.indexOf(a.name) - MOTIVATIONS.indexOf(b.name)); // Stable sort
+            function displayResults(axisScores) {
+                // Calculate weighted motivation scores based on the SRD formula
+                const motivationScores = [
+                    { name: 'Ambition', score: axisScores.Body + axisScores.Control },
+                    { name: 'Freedom', score: axisScores.Body + axisScores.Execution },
+                    { name: 'Security', score: axisScores.Body + axisScores.Foundation },
+                    { name: 'Legacy', score: axisScores.Mind + axisScores.Control },
+                    { name: 'Innovation', score: axisScores.Mind + axisScores.Execution },
+                    { name: 'Purity', score: axisScores.Mind + axisScores.Foundation },
+                    { name: 'Glory', score: axisScores.Essence + axisScores.Control },
+                    { name: 'Influence', score: axisScores.Essence + axisScores.Execution },
+                    { name: 'Faith', score: axisScores.Essence + axisScores.Foundation }
+                ];
+                
+                // Sort the motivations by score, descending
+                motivationScores.sort((a, b) => b.score - a.score);
 
+                // Display the full ranked list
                 resultsList.innerHTML = "";
-                const maxScore = sortedScores[0].score;
+                const maxScore = motivationScores[0].score;
 
-                sortedScores.forEach(result => {
+                motivationScores.forEach(result => {
                     const percentage = maxScore > 0 ? (result.score / maxScore) * 100 : 0;
                     const li = document.createElement('li');
                     li.innerHTML = `
@@ -439,8 +355,8 @@
                 });
 
                 // Derive 5-Point Profile
-                const trinity = sortedScores.slice(0, 3);
-                const duality = sortedScores.slice(-2);
+                const trinity = motivationScores.slice(0, 3);
+                const duality = motivationScores.slice(-2).reverse(); // reverse to show lowest first
 
                 trinityList.innerHTML = trinity.map(m => `<li>${m.name}</li>`).join('');
                 dualityList.innerHTML = duality.map(m => `<li>${m.name}</li>`).join('');

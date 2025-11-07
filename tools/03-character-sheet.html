@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Digital Character Sheet</title>
+    <title>Psychromattica Digital Character Sheet</title>
     <style>
         /* GLOBAL STYLES & ART-DECO THEME */
         :root {
@@ -44,6 +44,7 @@
 
         h2, h3 {
             font-weight: normal;
+            font-family: 'Oswald', sans-serif;
         }
 
         h2 {
@@ -76,7 +77,7 @@
             font-size: 10pt;
             cursor: pointer;
             border-radius: 2px;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, color 0.2s;
         }
         
         button:hover {
@@ -105,8 +106,8 @@
 
         /* 1. GLOBAL CONTROLS & STRING INPUT */
         #blueprint-input {
-            background-color: var(--color-blue);
-            color: var(--color-black);
+            background-color: #1a1a1a;
+            color: var(--color-blue);
             font-family: 'Courier New', Courier, monospace;
             font-size: 10pt;
             min-height: 100px;
@@ -115,7 +116,8 @@
         
         /* 2. CHARACTER PROFILE */
         #character-name {
-            font-size: 1.5em;
+            font-size: 1.8em;
+            font-family: 'Oswald', sans-serif;
             color: var(--color-null);
             border: none;
             background: none;
@@ -133,6 +135,7 @@
             width: 30px;
             height: 30px;
             padding: 0;
+            font-size: 1.2em;
         }
         
         details > summary {
@@ -161,29 +164,17 @@
             background-color: #333;
             border-bottom: 3px solid var(--color-silver);
         }
-        .profile-item.goal {
-            border-color: var(--color-null);
-        }
-        .profile-item.conflict {
-            border-color: var(--color-red);
-        }
-        .profile-label {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            opacity: 0.8;
-            margin-bottom: 3px;
-        }
-        .profile-value {
-            font-size: 1.1em;
-            font-weight: bold;
-        }
+        .profile-item.goal { border-color: var(--color-null); }
+        .profile-item.conflict { border-color: var(--color-red); }
+        .profile-label { font-size: 0.7em; text-transform: uppercase; opacity: 0.8; margin-bottom: 3px; }
+        .profile-value { font-size: 1.1em; font-weight: bold; }
         
         /* Text Color Classes for Motivations */
         .text-color-0 .profile-value { color: var(--color-null); }
         .text-color-1 .profile-value { color: var(--color-silver); }
         .text-color-2 .profile-value { color: var(--color-yellow); }
         .text-color-3 .profile-value { color: var(--color-green); }
-        .text-color-4 .profile-value { color: var(--color-black); }
+        .text-color-4 .profile-value { color: var(--color-black); color: #888; } /* Black is hard to see, use grey */
         .text-color-5 .profile-value { color: var(--color-orange); }
         .text-color-6 .profile-value { color: var(--color-white); }
         .text-color-7 .profile-value { color: var(--color-red); }
@@ -300,7 +291,7 @@
         .tag-item[data-color="red"] { border-left-color: var(--color-red); }
         .tag-item[data-color="yellow"] { border-left-color: var(--color-yellow); }
         .tag-item[data-color="green"] { border-left-color: var(--color-green); }
-        .tag-item[data-color="black"] { border-left-color: var(--color-black); }
+        .tag-item[data-color="black"] { border-left-color: #666; } /* Black tag border */
         .tag-item[data-color="orange"] { border-left-color: var(--color-orange); }
         .tag-item[data-color="white"] { border-left-color: var(--color-white); }
         .tag-item[data-color="blue"] { border-left-color: var(--color-blue); }
@@ -308,19 +299,11 @@
         .tag-item[data-color="silver"] { border-left-color: var(--color-silver); }
         .tag-item[data-color="null"] { border-left-color: var(--color-null); }
         
-        .add-tag-form {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        .add-tag-form select {
-            flex-grow: 1;
-        }
-        .add-tag-form button {
-            padding: 8px;
-        }
+        .add-tag-form { display: flex; gap: 5px; margin-top: 5px; }
+        .add-tag-form select { flex-grow: 1; }
+        .add-tag-form button { padding: 8px; }
 
-        /* 4. PROGRESSION & KEYWORDS (DRY COMPONENT) */
+        /* 4. PROGRESSION & KEYWORDS */
         .passive-counter {
             text-align: right;
             font-size: 10pt;
@@ -334,41 +317,14 @@
             font-size: 10pt;
             border-left: 3px solid var(--color-silver);
         }
-        .keyword-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .keyword-name {
-            font-weight: bold;
-        }
-        .keyword-intent {
-            margin-top: 5px;
-        }
+        .keyword-header { display: flex; justify-content: space-between; align-items: center; }
+        .keyword-name { font-weight: bold; }
+        .keyword-intent { margin-top: 5px; }
         
-        #stat-progression-timeline ul {
-            list-style-type: none;
-            padding-left: 10px;
-            border-left: 1px solid var(--color-silver);
-        }
-        #stat-progression-timeline li {
-            font-size: 10pt;
-            padding: 5px;
-            position: relative;
-        }
-        #stat-progression-timeline li::before {
-            content: '';
-            position: absolute;
-            left: -14px;
-            top: 10px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--color-silver);
-        }
-        #stat-progression-timeline .flaw-entry {
-            color: var(--color-red);
-        }
+        #stat-progression-timeline ul { list-style-type: none; padding-left: 10px; border-left: 1px solid var(--color-silver); }
+        #stat-progression-timeline li { font-size: 10pt; padding: 5px; position: relative; }
+        #stat-progression-timeline li::before { content: ''; position: absolute; left: -14px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-silver); }
+        #stat-progression-timeline .flaw-entry { color: var(--color-red); }
         
         /* 5. INVENTORY & BEYOND */
         .item-card, .animation-card, .faction-card {
@@ -377,45 +333,16 @@
             margin-bottom: 8px;
             border-left: 3px solid var(--color-blue);
         }
-        .animation-card {
-             border-left-color: var(--color-yellow);
-        }
-        .faction-card {
-             border-left-color: var(--color-purple);
-        }
-        .faction-card ul {
-            font-size: 10pt;
-            list-style: none;
-            padding-left: 0;
-            margin-top: 10px;
-        }
+        .animation-card { border-left-color: var(--color-yellow); }
+        .faction-card { border-left-color: var(--color-purple); }
+        .faction-card ul { font-size: 10pt; list-style: none; padding-left: 0; margin-top: 10px; }
         .faction-card li { margin-bottom: 4px; }
         
-        .item-card h4, .animation-card h4, .faction-card h4 {
-            margin: 0;
-            padding: 0;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        .item-card .item-details, .animation-card .anim-details, .faction-card .faction-details {
-             font-size: 0.9em;
-             color: var(--color-silver);
-             margin-bottom: 10px;
-        }
-        .animation-card .anim-resistance {
-            text-align: center;
-            background-color: var(--color-black);
-            padding: 5px;
-            margin-top: 10px;
-        }
-        .faction-card .profile-matrix {
-            font-size: 0.9em;
-        }
-        hr.divider {
-            border: none;
-            border-top: 1px solid #444;
-            margin: 20px 0;
-        }
+        .item-card h4, .animation-card h4, .faction-card h4 { margin: 0; padding: 0; font-size: 1.1em; margin-bottom: 5px; }
+        .item-card .item-details, .animation-card .anim-details, .faction-card .faction-details { font-size: 0.9em; color: var(--color-silver); margin-bottom: 10px; }
+        .animation-card .anim-resistance { text-align: center; background-color: var(--color-black); padding: 5px; margin-top: 10px; }
+        .faction-card .profile-matrix { font-size: 0.9em; }
+        hr.divider { border: none; border-top: 1px solid #444; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -424,7 +351,7 @@
         <!-- 1. GLOBAL CONTROLS -->
         <div class="section">
             <h2>Blueprint String</h2>
-            <textarea id="blueprint-input" rows="4">C:36972-!03-!11.12.13-28.27.A+7075-41.42.W@I:L2-!38.58@A:!31.22.32/I:L1-!97@F:83456-L3[S0.S2.S8]-[K81.82]</textarea>
+            <textarea id="blueprint-input" rows="4">C:36928-!03-!11(1).83.93-41.42.W-61.62.T+4049@I:L2-!38.!58@A:!31.22.32/I:L1-!97@F:85126-L3[S0.S2.S8]-[K81.82]</textarea>
             <button id="load-button" style="width: 100%; margin-top: 10px;">Load from Blueprint</button>
         </div>
 
@@ -498,28 +425,23 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- DATA: CORE LOOKUP TABLES (from SRD) ---
-            const MOTIVATIONS = { '0': 'Discovery', '1': 'Absolution', '2': 'Ambition', '3': 'Security', '4': 'Legacy', '5': 'Innovation', '6': 'Purity', '7': 'Glory', '8': 'Influence', '9': 'Faith' };
+            const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
             const STAT_CODES = { 'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn', 'W': 'Wit', 'E': 'Expertise', 'T': 'Technique', 'P': 'Power', 'I': 'Influence', 'F': 'Force' };
             const CIVIL_SYSTEMS = { 'S0': 'Food', 'S1': 'Water', 'S2': 'Shelter', 'S3': 'Infrastructure', 'S4': 'Humanitarian', 'S5': 'Education', 'S6': 'Healthcare', 'S7': 'Government', 'S8': 'Commerce', 'S9': 'Military' };
             const STATUS_TAGS = ['Mark', 'Impair', 'Slow', 'Daze', 'Curse', 'Bind', 'Weaken', 'Blight', 'Silence', 'Nullify'];
             const BOOST_TAGS = ['Liberate', 'Augment', 'Haste', 'Ward', 'Bless', 'Charge', 'Cure', 'Regen', 'Enhance', 'Obscure'];
             const TAG_COLORS = {'Mark': 'null', 'Impair': 'silver', 'Slow': 'yellow', 'Daze': 'green', 'Curse': 'black', 'Bind': 'orange', 'Weaken': 'white', 'Blight': 'red', 'Silence': 'blue', 'Nullify': 'purple','Liberate': 'null', 'Augment': 'silver', 'Haste': 'yellow', 'Ward': 'green', 'Bless': 'black', 'Charge': 'orange', 'Cure': 'white', 'Regen': 'red', 'Enhance': 'blue', 'Obscure': 'purple'};
-            const KEYWORDS = { '00':{name:"Restricted",intent:"A fundamental limitation or flaw."},'01':{name:"Aura",intent:"A tangible field of energy."},'02':{name:"Specialist",intent:"Focused mastery over a domain."},'03':{name:"Alert",intent:"Preternatural awareness."},'04':{name:"Liberate",intent:"Freedom from restraint."},'05':{name:"Mark",intent:"Expose a fundamental weakness."},'06':{name:"Indirect",intent:"Bypass obstacles to strike."},'07':{name:"Adaptive",intent:"Change an effect's nature."},'08':{name:"Gamble",intent:"Reliance on pure chance."},'09':{name:"Edit",intent:"Fundamentally rewrite properties."},'10':{name:"Bane",intent:"A specific, acute vulnerability."},'11':{name:"Traveller",intent:"Innate unconventional movement."},'12':{name:"Martial",intent:"Proficiency in close-quarters combat."},'13':{name:"Attuned",intent:"A deep link to a target."},'14':{name:"Augment",intent:"Grant additional abilities."},'15':{name:"Impair",intent:"Drains a target's stamina."},'16':{name:"Reactive",intent:"Weave abilities into defensive maneuvers."},'17':{name:"Phasing",intent:"Become intangible to strike essence."},'18':{name:"Brutal",intent:"Overwhelmingly powerful critical blows."},'19':{name:"Translocate",intent:"Mastery of teleportation."},'20':{name:"Anxious",intent:"Difficulty with focus or precision."},'21':{name:"Acrobatic",intent:"Extraordinary grace and movement."},'22':{name:"Sentry",intent:"Rapidly assess a target's nature."},'23':{name:"Eidetic",intent:"A perfect, flawless memory."},'24':{name:"Haste",intent:"A surge of supernatural speed."},'25':{name:"Slow",intent:"Reduce a target's ability to act."},'26':{name:"Snap",intent:"An effect too fast to be reacted to."},'27':{name:"Condense",intent:"Applying greater force by concentration."},'28':{name:"Rapid",intent:"A flurry of multiple strikes."},'29':{name:"Reckless",intent:"Abandoning all defense for pure offense."},'30':{name:"Hesitant",intent:"Inability to react quickly."},'31':{name:"Sturdy",intent:"Unshakeable physical presence."},'32':{name:"Brawler",intent:"Expertise in grappling and maneuvers."},'33':{name:"Stubborn",intent:"Refusal to accept failure."},'34':{name:"Ward",intent:"Negate a single incoming threat."},'35':{name:"Daze",intent:"A disorienting blow."},'36':{name:"Sculpt",intent:"Alter the superficial shape or form."},'37':{name:"Defensive",intent:"Outlasting through superior fortitude."},'38':{name:"Impact",intent:"Immense kinetic force."},'39':{name:"Shift",intent:"Fundamentally alter one's own form."},'40':{name:"Feeble",intent:"Chronic physical weakness."},'41':{name:"Survivor",intent:"Incredible tenacity for life."},'42':{name:"Stoic",intent:"Unshakable mental focus."},'43':{name:"Ageless",intent:"Outside the normal flow of time."},'44':{name:"Bless",intent:"A boon of fortune."},'45':{name:"Curse",intent:"A withering hex of misfortune."},'46':{name:"Piercing",intent:"Unstoppable, penetrating force."},'47':{name:"Flux",intent:"Convert vitality or energy into power."},'48':{name:"Siphon",intent:"Forcibly transfer life force."},'49':{name:"Animate",intent:"Granting temporary life to the inanimate."},'50':{name:"Gremlins",intent:"Persistent streak of bad luck."},'51':{name:"Sensor",intent:"Possession of a supernatural sense."},'52':{name:"Improvisor",intent:"Talent for using components in novel ways."},'53':{name:"Crafty",intent:"Knack for creating permanent effects."},'54':{name:"Charge",intent:"Infusion of raw energy."},'55':{name:"Bind",intent:"Entraps or ensnares a target."},'56':{name:"Imbue",intent:"Temporarily investing an object with power."},'57':{name:"Material",intent:"Consume an object to fuel an effect."},'58':{name:"Leverage",intent:"Mastery of physics and positioning."},'59':{name:"Manifest",intent:"Create temporary, functional items."},'60':{name:"Vulnerable",intent:"A glaring weakness to precise strikes."},'61':{name:"Tolerant",intent:"Exceptional resilience to negative effects."},'62':{name:"Deadeye",intent:"Expert eye for weak points."},'63':{name:"Immunized",intent:"Innate defense against a specific ailment."},'64':{name:"Cure",intent:"A purifying power that cleanses afflictions."},'65':{name:"Weaken",intent:"Corrodes a target's defenses."},'66':{name:"Sticky",intent:"An effect that adheres and triggers later."},'67':{name:"Restore",intent:"A healing power that mends wounds."},'68':{name:"Exploit",intent:"Turning an enemy's weakness against them."},'69':{name:"Growth",intent:"Manipulate a target's age and biology."},'70':{name:"Limited",intent:"A permanent reduction in vital reserves."},'71':{name:"Resilient",intent:"A permanent increase in vital reserves."},'72':{name:"Font",intent:"Use any personal energy to fuel powers."},'73':{name:"Insulated",intent:"Immunity to environmental dangers."},'74':{name:"Regen",intent:"Rapid, continuous healing over time."},'75':{name:"Blight",intent:"A decaying curse that rots life force."},'76':{name:"Area",intent:"Blankets a wide area."},'77':{name:"Ranged",intent:"A projectile or thrown effect."},'78':{name:"Multiply",intent:"Strike multiple, discrete targets."},'79':{name:"Split",intent:"Divide oneself into multiple copies."},'80':{name:"Awkward",intent:"Social or mental clumsiness."},'81':{name:"Charismatic",intent:"Innate magnetism and personality."},'82':{name:"Leader",intent:"Natural command over allies."},'83':{name:"Insightful",intent:"Deep empathy and perception."},'84':{name:"Enhance",intent:"A boon of targeted inspiration."},'85':{name:"Silence",intent:"Severs connection to inner power."},'86':{name:"Splash",intent:"Effect splashes from the primary target."},'87':{name:"Lingering",intent:"An effect that persists or has lasting impact."},'88':{name:"Spread",intent:"Move an affliction from one target to another."},'89':{name:"Potent",intent:"Applies secondary effects even when resisted."},'90':{name:"Mundane",intent:"Innate disconnect from essence."},'91':{name:"Aware",intent:"Sense and identify supernatural powers."},'92':{name:"Stealthy",intent:"Talent for concealment."},'93':{name:"Trickster",intent:"Use of illusion and misdirection."},'94':{name:"Obscure",intent:"A boon of concealment."},'95':{name:"Nullify",intent:"Disrupts a target's innate abilities."},'96':{name:"Chain",intent:"Effect leaps from one target to the next."},'97':{name:"Natural",intent:"Ability is treated as part of one's body."},'98':{name:"Ambience",intent:"Influence the surrounding environment."},'99':{name:"Channel",intent:"Share innate powers with others."}};
+            const KEYWORDS = {'00':{name:"Restricted",intent:"A fundamental limitation or flaw."},'01':{name:"Aura",intent:"A tangible field of energy."},'02':{name:"Specialist",intent:"Focused mastery over a domain."},'03':{name:"Alert",intent:"Preternatural awareness."},'04':{name:"Liberate",intent:"Freedom from restraint."},'05':{name:"Mark",intent:"Expose a fundamental weakness."},'06':{name:"Indirect",intent:"Bypass obstacles to strike."},'07':{name:"Adaptive",intent:"Change an effect's nature."},'08':{name:"Gamble",intent:"Reliance on pure chance."},'09':{name:"Edit",intent:"Fundamentally rewrite properties."},'10':{name:"Bane",intent:"A specific, acute vulnerability."},'11':{name:"Traveler",intent:"Innate unconventional movement.",options:{'0':'Walk','1':'Teleport','2':'Fly','3':'Dig','4':'Permeation','5':'Jump','6':'Parkour','7':'Climb','8':'Swim','9':'Lightfoot'}},'12':{name:"Martial",intent:"Proficiency in close-quarters combat."},'13':{name:"Attuned",intent:"A deep link to a target."},'14':{name:"Augment",intent:"Grant additional abilities."},'15':{name:"Impair",intent:"Drains a target's stamina."},'16':{name:"Reactive",intent:"Weave abilities into defensive maneuvers."},'17':{name:"Phasing",intent:"Become intangible to strike essence."},'18':{name:"Brutal",intent:"Overwhelmingly powerful critical blows."},'19':{name:"Translocate",intent:"Mastery of teleportation."},'20':{name:"Anxious",intent:"Difficulty with focus or precision."},'21':{name:"Acrobatic",intent:"Extraordinary grace and movement."},'22':{name:"Sentry",intent:"Rapidly assess a target's nature."},'23':{name:"Eidetic",intent:"A perfect, flawless memory."},'24':{name:"Haste",intent:"A surge of supernatural speed."},'25':{name:"Slow",intent:"Reduce a target's ability to act."},'26':{name:"Snap",intent:"An effect too fast to be reacted to."},'27':{name:"Condense",intent:"Applying greater force by concentration."},'28':{name:"Rapid",intent:"A flurry of multiple strikes."},'29':{name:"Reckless",intent:"Abandoning all defense for pure offense."},'30':{name:"Hesitant",intent:"Inability to react quickly."},'31':{name:"Sturdy",intent:"Unshakeable physical presence."},'32':{name:"Brawler",intent:"Expertise in grappling and maneuvers."},'33':{name:"Stubborn",intent:"Refusal to accept failure."},'34':{name:"Ward",intent:"Negate a single incoming threat."},'35':{name:"Daze",intent:"A disorienting blow."},'36':{name:"Sculpt",intent:"Alter the superficial shape or form."},'37':{name:"Defensive",intent:"Outlasting through superior fortitude."},'38':{name:"Impact",intent:"Immense kinetic force."},'39':{name:"Shift",intent:"Fundamentally alter one's own form."},'40':{name:"Feeble",intent:"Chronic physical weakness."},'41':{name:"Survivor",intent:"Incredible tenacity for life."},'42':{name:"Stoic",intent:"Unshakable mental focus."},'43':{name:"Ageless",intent:"Outside the normal flow of time."},'44':{name:"Bless",intent:"A boon of fortune."},'45':{name:"Curse",intent:"A withering hex of misfortune."},'46':{name:"Piercing",intent:"Unstoppable, penetrating force."},'47':{name:"Flux",intent:"Convert vitality or energy into power."},'48':{name:"Siphon",intent:"Forcibly transfer life force."},'49':{name:"Animate",intent:"Granting temporary life to the inanimate."},'50':{name:"Gremlins",intent:"Persistent streak of bad luck."},'51':{name:"Sensor",intent:"Possession of a supernatural sense.",options:{'0':'Karma','1':'Keywords','2':'Echolocation','3':'Vibration','4':'Energy','5':'Materials','6':'Life','7':'Infrared','8':'Emotion','9':'The Weave'}},'52':{name:"Improvisor",intent:"Talent for using components in novel ways."},'53':{name:"Crafty",intent:"Knack for creating permanent effects."},'54':{name:"Charge",intent:"Infusion of raw energy."},'55':{name:"Bind",intent:"Entraps or ensnares a target."},'56':{name:"Imbue",intent:"Temporarily investing an object with power."},'57':{name:"Material",intent:"Consume an object to fuel an effect."},'58':{name:"Leverage",intent:"Mastery of physics and positioning."},'59':{name:"Manifest",intent:"Create temporary, functional items."},'60':{name:"Vulnerable",intent:"A glaring weakness to precise strikes."},'61':{name:"Tolerant",intent:"Exceptional resilience to negative effects."},'62':{name:"Deadeye",intent:"Expert eye for weak points."},'63':{name:"Immunized",intent:"Innate defense against a specific ailment."},'64':{name:"Cure",intent:"A purifying power that cleanses afflictions."},'65':{name:"Weaken",intent:"Corrodes a target's defenses."},'66':{name:"Sticky",intent:"An effect that adheres and triggers later."},'67':{name:"Restore",intent:"A healing power that mends wounds."},'68':{name:"Exploit",intent:"Turning an enemy's weakness against them."},'69':{name:"Growth",intent:"Manipulate a target's age and biology."},'70':{name:"Limited",intent:"A permanent reduction in vital reserves."},'71':{name:"Resilient",intent:"A permanent increase in vital reserves."},'72':{name:"Font",intent:"Use any personal energy to fuel powers."},'73':{name:"Insulated",intent:"Immunity to environmental dangers."},'74':{name:"Regen",intent:"Rapid, continuous healing over time."},'75':{name:"Blight",intent:"A decaying curse that rots life force."},'76':{name:"Area",intent:"Blankets a wide area."},'77':{name:"Ranged",intent:"A projectile or thrown effect."},'78':{name:"Multiply",intent:"Strike multiple, discrete targets."},'79':{name:"Split",intent:"Divide oneself into multiple copies."},'80':{name:"Awkward",intent:"Social or mental clumsiness."},'81':{name:"Charismatic",intent:"Innate magnetism and personality."},'82':{name:"Leader",intent:"Natural command over allies."},'83':{name:"Insightful",intent:"Deep empathy and perception."},'84':{name:"Enhance",intent:"A boon of targeted inspiration."},'85':{name:"Silence",intent:"Severs connection to inner power."},'86':{name:"Splash",intent:"Effect splashes from the primary target."},'87':{name:"Lingering",intent:"An effect that persists or has lasting impact."},'88':{name:"Spread",intent:"Move an affliction from one target to another."},'89':{name:"Potent",intent:"Applies secondary effects even when resisted."},'90':{name:"Mundane",intent:"Innate disconnect from essence."},'91':{name:"Aware",intent:"Sense and identify supernatural powers."},'92':{name:"Stealthy",intent:"Talent for concealment."},'93':{name:"Trickster",intent:"Use of illusion and misdirection."},'94':{name:"Obscure",intent:"A boon of concealment."},'95':{name:"Nullify",intent:"Disrupts a target's innate abilities."},'96':{name:"Chain",intent:"Effect leaps from one target to the next."},'97':{name:"Natural",intent:"Ability is treated as part of one's body."},'98':{name:"Ambience",intent:"Influence the surrounding environment."},'99':{name:"Channel",intent:"Share innate powers with others."}};
             const COLOR_NAMES = ['null', 'silver', 'yellow', 'green', 'black', 'orange', 'white', 'red', 'blue', 'purple'];
             
-            // --- CORE LOGIC ---
-            
+            // --- PARSING LOGIC ---
             function parseEcosystem(fullString) {
                 const ecosystem = { character: null, items: [], animations: [], factions: [] };
                 const rootAndAttachments = fullString.split('@');
                 const rootString = rootAndAttachments.shift();
                 
-                if (rootString.startsWith('C:')) {
-                    ecosystem.character = parseCharacter(rootString.substring(2));
-                } else {
-                    throw new Error("Blueprint string must start with a Character (C:).");
-                }
+                if (!rootString.startsWith('C:')) throw new Error("Blueprint string must start with a Character (C:).");
+                ecosystem.character = parseCharacter(rootString.substring(2));
 
                 rootAndAttachments.forEach(attachmentString => {
                     const parts = attachmentString.split('/');
@@ -529,36 +451,29 @@
                         ecosystem.items.push(parseItem(primaryAttachment.substring(2)));
                     } else if (primaryAttachment.startsWith('A:')) {
                         const animation = parseAnimation(primaryAttachment.substring(2));
-                         if (parts.length > 0 && parts[0].startsWith('I:')) {
+                        if (parts.length > 0 && parts[0].startsWith('I:')) {
                             animation.item = parseItem(parts[0].substring(2));
                         }
                         ecosystem.animations.push(animation);
                     } else if (primaryAttachment.startsWith('F:')) {
-                         ecosystem.factions.push(parseFaction(primaryAttachment.substring(2)));
+                        ecosystem.factions.push(parseFaction(primaryAttachment.substring(2)));
                     }
                 });
-                
                 return ecosystem;
             }
 
             function parseCharacter(charString) {
                 const character = {
-                    profile: '00000', flawPackage: null, keywords: [], progression: [], level: 0,
-                    stats: { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 },
+                    profile: '00000', flawPackage: null, keywords: [], progression: [],
+                    stats: Object.fromEntries(Object.keys(STAT_CODES).map(key => [key, 1])),
                 };
-
-                const initialParts = charString.split('-');
-                character.profile = initialParts.shift();
+                
+                const progressionParts = charString.split('-');
+                character.profile = progressionParts.shift();
                 
                 let totalKeywords = 0;
-                initialParts.forEach(part => {
-                    if (!part) return;
-                    let processedPart = part;
-                    const statMatch = processedPart.match(/[MABWETPIF]/);
-                    if (statMatch) processedPart = processedPart.replace(statMatch[0], '');
-                    const flawMatch = processedPart.match(/\+\d{4}/);
-                    if (flawMatch) processedPart = processedPart.replace(flawMatch[0], '');
-                    totalKeywords += (processedPart.match(/!?\d{2}/g) || []).length;
+                progressionParts.forEach(part => {
+                    totalKeywords += (part.match(/!?\d{2}(\(\d\))?/g) || []).length;
                 });
                 
                 character.level = (totalKeywords < 4) ? 0 : 1 + Math.floor((totalKeywords - 4) / 2);
@@ -568,116 +483,111 @@
                 }
 
                 let keywordCount = 0;
-                initialParts.forEach(part => {
+                progressionParts.forEach(part => {
                     if (!part) return;
                     
-                    let processedPart = part;
-                    let statMatch = processedPart.match(/([MABWETPIF])/);
-                    if (statMatch) processedPart = processedPart.replace(statMatch[1], '');
+                    let levelBefore = (keywordCount < 4) ? 0 : 1 + Math.floor((keywordCount - 4) / 2);
+                    
+                    let partToProcess = part;
 
-                    let flawMatch = processedPart.match(/\+(\d{4})/);
+                    // Extract Flaw
+                    const flawMatch = partToProcess.match(/\+(\d{4})/);
                     if (flawMatch && !character.flawPackage) {
                         character.flawPackage = { flaw: flawMatch[1].substring(0, 2), comp: flawMatch[1].substring(2, 4) };
-                        processedPart = processedPart.replace(flawMatch[0], '');
-                        character.progression.push(`<span class="flaw-entry">(Narrative Event): Gained Flaw (${KEYWORDS[character.flawPackage.flaw].name} /w ${KEYWORDS[character.flawPackage.comp].name})</span>`);
+                        partToProcess = partToProcess.replace(flawMatch[0], '');
+                        const flawName = KEYWORDS[character.flawPackage.flaw]?.name || 'Unknown';
+                        const compName = KEYWORDS[character.flawPackage.comp]?.name || 'Unknown';
+                        character.progression.push(`<span class="flaw-entry">(Narrative Event): Gained Flaw (${flawName} /w ${compName})</span>`);
                     }
 
-                    const kwsInPart = processedPart.match(/!?\d{2}/g) || [];
+                    // Extract Keywords
+                    const kwsInPart = partToProcess.match(/!?\d{2}(\(\d\))?/g) || [];
+                    kwsInPart.forEach(kwString => {
+                        const match = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
+                        character.keywords.push({ 
+                            code: match[2], 
+                            isPassive: match[1] === '!', 
+                            option: match[4] || null 
+                        });
+                    });
 
-                    if(kwsInPart.length > 0) {
-                         if (keywordCount === 0) {
-                            character.progression.push(`Level 0: Seed Keyword (${KEYWORDS[kwsInPart[0].replace('!','')].name})`);
-                        } else if (keywordCount >= 1 && character.progression.filter(p => p.includes("Awakening")).length === 0) {
-                             character.progression.push(`Level 1: Awakening (${kwsInPart.map(kw => KEYWORDS[kw.replace('!', '')].name).join(', ')})`);
-                        }
+                    // Add progression entries
+                     if(kwsInPart.length > 0) {
+                         if (keywordCount === 0) character.progression.push(`Level 0: Seed Keyword`);
+                         else if (keywordCount === 1) character.progression.push(`Level 1: Awakening`);
                     }
 
-                    let levelBefore = (keywordCount < 4) ? 0 : 1 + Math.floor((keywordCount - 4) / 2);
-                    kwsInPart.forEach(kw => character.keywords.push({ code: kw.replace('!', ''), isPassive: kw.startsWith('!') }));
                     keywordCount = character.keywords.length;
                     let levelAfter = (keywordCount < 4) ? 0 : 1 + Math.floor((keywordCount - 4) / 2);
 
-                    if (levelAfter > levelBefore) {
-                        if (levelAfter > 1) {
-                             character.progression.push(`Level ${levelAfter}: Learned ${kwsInPart.map(kw => KEYWORDS[kw.replace('!', '')].name).join(', ')}`);
-                        }
-                        if (statMatch) {
-                            const statKey = statMatch[1];
-                            const points = levelAfter < 6 ? 1 : 2;
-                            character.progression.push(`Level ${levelAfter}: +${points} Stat (${STAT_CODES[statKey]})`);
-                            if (character.stats[statKey] < 5) {
-                                character.stats[statKey] += points;
-                                if (character.stats[statKey] > 5) character.stats[statKey] = 5;
-                            }
+                    // Apply stat points
+                    if (levelAfter > levelBefore && levelAfter > 1) {
+                        const statPoints = partToProcess.match(/[MABWETPIF]/g) || [];
+                        statPoints.forEach(statKey => {
+                            if (character.stats[statKey] < 5) character.stats[statKey]++;
+                        });
+                        if (statPoints.length > 0) {
+                            character.progression.push(`Level ${levelAfter}: +${statPoints.length} Stat Point(s) (${statPoints.map(s => STAT_CODES[s]).join(', ')})`);
                         }
                     }
                 });
+                
+                // Sort progression for readability
+                character.progression.sort((a,b) => (a.match(/Level (\d+)/)?.[1] || 0) - (b.match(/Level (\d+)/)?.[1] || 0));
 
                 return character;
             }
             
             function parseAnimation(animString) {
-                const animation = { keywords: [], flawPackage: null };
-                let cleanString = animString;
-
-                const flawMatch = cleanString.match(/\+(\d{4})/);
-                if (flawMatch) {
-                    animation.flawPackage = { flaw: flawMatch[1].substring(0, 2), comp: flawMatch[1].substring(2, 4) };
-                    cleanString = cleanString.replace(flawMatch[0], '');
-                }
-
-                animation.keywords = cleanString.split('.')
-                                       .filter(code => code) 
-                                       .map(code => ({ 
-                                           code: code.replace('!', ''), 
-                                           isPassive: code.startsWith('!') 
-                                        }));
-
-                animation.level = animation.keywords.length > 0 ? animation.keywords.length - 1 : 0;
-                animation.stats = { M: 1, A: 1, B: 1, W: 1, E: 1, T: 1, P: 1, I: 1, F: 1 };
-                let points = animation.level;
-                const statKeys = ['B', 'T', 'W', 'A', 'E', 'M', 'P', 'I', 'F'];
+                // Simplified parsing for display
+                const anim = { keywords: [], flawPackage: null, level: 0, stats: {}, resistance: 0 };
+                const kws = animString.match(/!?\d{2}(\(\d\))?/g) || [];
+                anim.keywords = kws.map(kwString => {
+                    const match = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
+                    return { code: match[2], isPassive: match[1] === '!', option: match[4] || null };
+                });
+                anim.level = anim.keywords.length > 0 ? anim.keywords.length - 1 : 0;
+                
+                // Procedural stat assignment for display purposes
+                anim.stats = Object.fromEntries(Object.keys(STAT_CODES).map(k => [k, 1]));
+                let pointsToAssign = anim.level;
+                const statOrder = ['B', 'T', 'W', 'A', 'E', 'M', 'P', 'I', 'F'];
                 let i = 0;
-                while (points > 0) {
-                    if (animation.stats[statKeys[i % statKeys.length]] < 5) {
-                        animation.stats[statKeys[i % statKeys.length]]++;
-                        points--;
+                while (pointsToAssign > 0) {
+                    const key = statOrder[i % statOrder.length];
+                    if (anim.stats[key] < 5) {
+                        anim.stats[key]++;
+                        pointsToAssign--;
                     }
                     i++;
                 }
-                const statValues = Object.values(animation.stats).sort((a, b) => b - a);
-                animation.resistance = statValues.slice(0,3).reduce((sum, val) => sum + val, 0);
-                return animation;
+                const statValues = Object.values(anim.stats).sort((a, b) => b - a);
+                anim.resistance = statValues.slice(0, 3).reduce((sum, val) => sum + val, 0);
+
+                return anim;
             }
 
             function parseItem(itemString) {
-                const item = { keywords: [], flawPackage: null };
-                const parts = itemString.split('-');
-                item.level = parseInt(parts[0].replace('L', ''));
-                let keywordStr = parts[1] || '';
-                if (keywordStr.includes('+')) {
-                    const subParts = keywordStr.split('+');
-                    item.flawPackage = { flaw: subParts[1].substring(0, 2), comp: subParts[1].substring(2, 4) };
-                    keywordStr = subParts[0] + subParts[1].substring(4);
-                }
-                if(keywordStr)
-                    item.keywords = keywordStr.split('.')
-                                    .filter(code => code)
-                                    .map(code => ({ code: code.replace('!',''), isPassive: code.startsWith('!') }));
-                return item;
+                 const item = { keywords: [], level: 0 };
+                 const match = itemString.match(/L(\d+)-?(.*)/);
+                 if (match) {
+                     item.level = parseInt(match[1]);
+                     const kws = match[2].match(/!?\d{2}(\(\d\))?/g) || [];
+                     item.keywords = kws.map(kwString => {
+                        const kwMatch = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
+                        return { code: kwMatch[2], isPassive: kwMatch[1] === '!', option: kwMatch[4] || null };
+                     });
+                 }
+                 return item;
             }
             
             function parseFaction(factionString) {
-                const faction = {};
-                const parts = factionString.split('-');
-                faction.profile = parts[0];
-                const levelAndSystemsPart = parts[1];
-                faction.level = parseInt(levelAndSystemsPart.match(/L(\d+)/)[1]);
-                const systemsMatch = levelAndSystemsPart.match(/\[(.*?)\]/);
-                faction.systems = systemsMatch ? systemsMatch[1].split('.').map(sCode => CIVIL_SYSTEMS[sCode] || 'Unknown') : [];
-                const keywordsPart = parts[2];
-                const keywordsMatch = keywordsPart?.match(/\[K(.*?)\]/);
-                faction.keywords = keywordsMatch ? keywordsMatch[1].split('.').map(kCode => ({ code: kCode.replace('K','') })) : [];
+                const faction = { profile: '00000', level: 0, systems: [], keywords: []};
+                const parts = factionString.split(/\[|\]-\[|\]/);
+                faction.profile = parts[0].substring(0, 5);
+                faction.level = parseInt(parts[0].match(/L(\d+)/)?.[1] || '0');
+                faction.systems = parts[1] ? parts[1].split('.').map(sCode => CIVIL_SYSTEMS[sCode] || 'Unknown') : [];
+                faction.keywords = parts[2] ? parts[2].substring(1).split('.').map(kCode => ({ code: kCode })) : [];
                 return faction;
             }
 
@@ -686,14 +596,11 @@
                 clearSheet();
                 const { character, items, animations, factions } = ecosystem;
                 
-                // Profile
                 document.getElementById('character-level').textContent = character.level;
                 document.querySelector('#motivational-profile-details summary span').textContent = character.profile;
                 renderProfileMatrix(character.profile, 'profile-');
 
-                // Dashboard
                 const statGrid = document.getElementById('stat-grid');
-                statGrid.innerHTML = ''; // Clear previous
                 let resistanceSum = 0;
                 Object.entries(character.stats).forEach(([key, value]) => {
                      statGrid.innerHTML += `<div class="stat-item"><div class="stat-value">${value}</div><div class="stat-name">${STAT_CODES[key]}</div></div>`;
@@ -702,7 +609,6 @@
                 resistanceSum = statValues.slice(0,3).reduce((s,v)=>s+v,0);
                 statGrid.innerHTML += `<div class="stat-item resistance-item"><div class="stat-value">${resistanceSum}</div><div class="stat-name">Resistance</div></div>`;
 
-                // Progression
                 const keywordList = document.getElementById('keyword-list');
                 if(character.flawPackage) {
                     keywordList.appendChild(createKeywordCard({code: character.flawPackage.flaw}, false, true));
@@ -713,12 +619,8 @@
                 document.getElementById('item-passive-max').textContent = character.stats.E;
                 document.getElementById('innate-passive-current').textContent = character.keywords.filter(k=>k.isPassive).length;
                 
-                const timelineList = document.querySelector('#stat-progression-timeline ul');
-                character.progression.sort((a,b) => a.includes('+ Stat') - b.includes('+ Stat')); 
-                timelineList.innerHTML = character.progression.map(entry => `<li class="${entry.includes('Flaw') ? 'flaw-entry' : ''}">${entry}</li>`).join('');
+                document.querySelector('#stat-progression-timeline ul').innerHTML = character.progression.map(entry => `<li>${entry}</li>`).join('');
 
-
-                // Ecosystem
                 const itemList = document.getElementById('item-list');
                 let itemPassiveCount = 0;
                 items.forEach(item => {
@@ -730,7 +632,6 @@
                 document.getElementById('animation-list').innerHTML = animations.map((anim, i) => createAnimationCard(anim, i).outerHTML).join('');
                 document.getElementById('faction-list').innerHTML = factions.map(fac => createFactionCard(fac).outerHTML).join('');
                 
-                // Setup Interactivity (after DOM is built)
                 setupAllClocks(ecosystem);
             }
             
@@ -747,38 +648,32 @@
 
             function createKeywordCard(kw, isDisabled = false, isFlaw = false, isComp = false) {
                 const kwData = KEYWORDS[kw.code];
-                if (!kwData) {
-                    console.warn(`Keyword data not found for code: ${kw.code}`);
-                    return document.createElement('div');
-                }
+                if (!kwData) return document.createElement('div'); // Graceful failure
+                
                 const card = document.createElement('div');
                 card.className = 'keyword-card';
                 const colorIndex = kw.code.substring(0, 1);
                 card.style.borderLeftColor = `var(--color-${COLOR_NAMES[colorIndex]})`;
-                let name = kwData.name;
-                if(isFlaw) {
-                    name += ' (Flaw)';
-                    card.style.borderLeftColor = 'var(--color-red)';
-                }
-                if(isComp) {
-                    name += ' (Compensation)';
-                    card.style.borderLeftColor = 'var(--color-red)';
-                }
                 
-                const passiveCheck = `<label style="font-size:9pt; color: var(--color-silver);"><input type="checkbox" ${kw.isPassive ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}> Passive</label>`;
-                card.innerHTML = `<div class="keyword-header"><span class="keyword-name">${name}</span>${passiveCheck}</div><div class="keyword-intent">${kwData.intent}</div>`;
+                let name = kwData.name;
+                if(isFlaw) name += ' (Flaw)';
+                if(isComp) name += ' (Compensation)';
+                if(kw.option && kwData.options) name += ` (${kwData.options[kw.option]})`;
+                
+                card.innerHTML = `
+                    <div class="keyword-header">
+                        <span class="keyword-name">${name}</span>
+                        <label style="font-size:9pt; color: var(--color-silver);"><input type="checkbox" ${kw.isPassive ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}> Passive</label>
+                    </div>
+                    <div class="keyword-intent">${kwData.intent || 'No intent specified.'}</div>
+                `;
                 return card;
             }
 
             function createItemCard(item) {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                let keywordsHTML = '<div class="keyword-list">';
-                if(item.flawPackage) {
-                    keywordsHTML += createKeywordCard({code: item.flawPackage.flaw}, false, true).outerHTML;
-                    keywordsHTML += createKeywordCard({code: item.flawPackage.comp}, false, false, true).outerHTML;
-                }
-                keywordsHTML += item.keywords.map(kw => createKeywordCard(kw).outerHTML).join('') + '</div>';
+                let keywordsHTML = '<div class="keyword-list">' + item.keywords.map(kw => createKeywordCard(kw).outerHTML).join('') + '</div>';
                 
                 card.innerHTML = `<h4><input type="text" value="Item" style="width: auto;"></h4><div class="item-details">Level ${item.level}</div><hr class="divider" style="margin: 10px 0;"><h3>Keywords</h3>${keywordsHTML}`;
                 return card;
@@ -789,18 +684,8 @@
                 card.className = 'animation-card';
                 const uniqueId = `anim-${index}`;
                 
-                let statsHTML = `<div class="stat-grid" style="font-size: 9pt; gap: 5px;">`;
-                Object.entries(animation.stats).forEach(([key, val]) => {
-                    statsHTML += `<div class="stat-item" style="padding: 5px;"><div class="stat-value" style="font-size: 1.2em;">${val}</div><div class="stat-name" style="font-size: 0.7em;">${key}</div></div>`;
-                });
-                statsHTML += `</div>`;
-                
-                let keywordsHTML = '<div class="keyword-list">';
-                if(animation.flawPackage) {
-                    keywordsHTML += createKeywordCard({code: animation.flawPackage.flaw}, true, true).outerHTML;
-                    keywordsHTML += createKeywordCard({code: animation.flawPackage.comp}, true, false, true).outerHTML;
-                }
-                keywordsHTML += animation.keywords.map(kw => createKeywordCard(kw, true).outerHTML).join('') + '</div>';
+                let statsHTML = `<div class="stat-grid" style="font-size: 9pt; gap: 5px;">${Object.entries(animation.stats).map(([key, val]) => `<div class="stat-item" style="padding: 5px;"><div class="stat-value" style="font-size: 1.2em;">${val}</div><div class="stat-name" style="font-size: 0.7em;">${key}</div></div>`).join('')}</div>`;
+                let keywordsHTML = `<div class="keyword-list">${animation.keywords.map(kw => createKeywordCard(kw, true).outerHTML).join('')}</div>`;
 
                 card.innerHTML = `
                     <h4><input type="text" value="Companion ${index+1}" style="width: auto; padding: 2px;"></h4>
@@ -813,20 +698,16 @@
                         <div class="clock"><div class="clock-header"><span>EP</span><div class="max-input-wrapper"><span id="${uniqueId}-ep-value">0/10</span> Max: <input type="number" id="${uniqueId}-ep-max" value="10" min="1"></div></div><div class="clock-pips ep-pips" id="${uniqueId}-ep-pips"></div></div>
                     </div>
                     <div class="tags-section" style="margin-top: 15px;">
-                        <div class="tags-container"><h3>Status Tags</h3><div class="tag-list" id="${uniqueId}-status-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-status-tag-select"></select><button id="${uniqueId}-add-status-tag-btn">+</button></div></div>
-                        <div class="tags-container"><h3>Boost Tags</h3><div class="tag-list" id="${uniqueId}-boost-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-boost-tag-select"></select><button id="${uniqueId}-add-boost-tag-btn">+</button></div></div>
+                        <div><h3>Status Tags</h3><div class="tag-list" id="${uniqueId}-status-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-status-tag-select"></select><button>+</button></div></div>
+                        <div><h3>Boost Tags</h3><div class="tag-list" id="${uniqueId}-boost-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-boost-tag-select"></select><button>+</button></div></div>
                     </div>
-                    <hr class="divider">
-                    <h3>Keywords</h3>
-                    ${keywordsHTML}
+                    <hr class="divider"><h3>Keywords</h3>${keywordsHTML}
                     ${animation.item ? `<hr class="divider"><h3>Attached Item</h3><div id="anim-item-${uniqueId}"></div>` : ''}
                 `;
-                if(animation.item) {
-                     card.querySelector(`#anim-item-${uniqueId}`).appendChild(createItemCard(animation.item));
-                }
+                if(animation.item) card.querySelector(`#anim-item-${uniqueId}`).appendChild(createItemCard(animation.item));
                 return card;
             }
-
+            
             function createFactionCard(faction) {
                 const card = document.createElement('div');
                 card.className = 'faction-card';
@@ -835,47 +716,37 @@
                     <div class="faction-details">Level ${faction.level}</div>
                      <details open><summary>Profile: <span>${faction.profile}</span></summary>
                         <div class="profile-matrix" id="faction-${faction.profile}-matrix">
-                            <div class="profile-row ideals">
-                                <div id="faction-${faction.profile}-method" class="profile-item"><div class="profile-label">Method</div><div class="profile-value">...</div></div>
-                                <div id="faction-${faction.profile}-goal" class="profile-item goal"><div class="profile-label">Goal</div><div class="profile-value">...</div></div>
-                                <div id="faction-${faction.profile}-purpose" class="profile-item"><div class="profile-label">Purpose</div><div class="profile-value">...</div></div>
-                            </div>
-                            <div class="profile-row conflicts">
-                                <div id="faction-${faction.profile}-external" class="profile-item conflict"><div class="profile-label">External</div><div class="profile-value">...</div></div>
-                                <div id="faction-${faction.profile}-internal" class="profile-item conflict"><div class="profile-label">Internal</div><div class="profile-value">...</div></div>
-                            </div>
+                            <div class="profile-row ideals"><div id="faction-${faction.profile}-method" class="profile-item"><div class="profile-label">Method</div><div class="profile-value">...</div></div><div id="faction-${faction.profile}-goal" class="profile-item goal"><div class="profile-label">Goal</div><div class="profile-value">...</div></div><div id="faction-${faction.profile}-purpose" class="profile-item"><div class="profile-label">Purpose</div><div class="profile-value">...</div></div></div>
+                            <div class="profile-row conflicts"><div id="faction-${faction.profile}-external" class="profile-item conflict"><div class="profile-label">External</div><div class="profile-value">...</div></div><div id="faction-${faction.profile}-internal" class="profile-item conflict"><div class="profile-label">Internal</div><div class="profile-value">...</div></div></div>
                         </div>
                     </details>
                     <hr class="divider">
                     <h3>Civil Systems</h3><ul>${faction.systems.map(s => `<li>${s}</li>`).join('')}</ul>
                     <h3 style="margin-top:10px;">Keywords</h3><div class="keyword-list">${faction.keywords.map(kw => createKeywordCard(kw, true).outerHTML).join('')}</div>
                 `;
-                setTimeout(() => renderProfileMatrix(faction.profile, `faction-${faction.profile}-`), 0);
+                setTimeout(() => renderProfileMatrix(faction.profile, `faction-${faction.profile}-`), 0); // Defer rendering
                 return card;
             }
 
             function clearSheet(){
-                document.getElementById('keyword-list').innerHTML = '';
+                ['stat-grid', 'keyword-list', 'item-list', 'animation-list', 'faction-list'].forEach(id => document.getElementById(id).innerHTML = '');
                 document.querySelector('#stat-progression-timeline ul').innerHTML = '';
-                document.getElementById('item-list').innerHTML = '';
-                document.getElementById('animation-list').innerHTML = '';
-                document.getElementById('faction-list').innerHTML = '';
             }
 
-            // --- INTERACTIVITY ---
+            // --- INTERACTIVITY SETUP ---
             function setupClock(id) {
                 const maxInput = document.getElementById(`${id}-max`);
                 const pipsContainer = document.getElementById(`${id}-pips`);
                 const valueDisplay = document.getElementById(`${id}-value`);
+                let max = 10; let current = 10;
                 
                 const redrawPips = () => {
-                    let max = parseInt(maxInput.value) || 10;
-                    const currentActive = pipsContainer.querySelectorAll('.pip.active').length || max;
+                    max = parseInt(maxInput.value) || 10;
                     pipsContainer.innerHTML = '';
                     for (let i = 0; i < max; i++) {
                         const pip = document.createElement('div');
                         pip.className = 'pip';
-                        if (i < currentActive) pip.classList.add('active');
+                        if (i < current) pip.classList.add('active');
                         pip.dataset.index = i;
                         pipsContainer.appendChild(pip);
                     }
@@ -883,37 +754,35 @@
                 };
 
                 const updateClockValue = () => {
-                    let max = parseInt(maxInput.value) || 10;
-                    const current = pipsContainer.querySelectorAll('.pip.active').length;
+                    current = pipsContainer.querySelectorAll('.pip.active').length;
                     if(valueDisplay) valueDisplay.textContent = `${current}/${max}`;
                 };
 
-                pipsContainer.addEventListener('click', (e) => {
+                pipsContainer.addEventListener('click', e => {
                     if (e.target.classList.contains('pip')) {
                         const targetIndex = parseInt(e.target.dataset.index);
-                        const pips = pipsContainer.querySelectorAll('.pip');
+                        const pips = Array.from(pipsContainer.children);
                         const isCurrentlyActive = pips[targetIndex].classList.contains('active');
-                        const isLastActive = (targetIndex === pips.length - 1) || !pips[targetIndex + 1]?.classList.contains('active');
-
-                        if (isCurrentlyActive && isLastActive && Array.from(pips).filter(p=>p.classList.contains('active')).length === targetIndex + 1) {
-                            pips[targetIndex].classList.remove('active');
+                        const isLastActive = (targetIndex === current - 1);
+                        
+                        if(isCurrentlyActive && isLastActive){
+                            current = targetIndex;
                         } else {
-                            pips.forEach((pip, i) => pip.classList.toggle('active', i <= targetIndex));
+                            current = targetIndex + 1;
                         }
+                        pips.forEach((pip, i) => pip.classList.toggle('active', i < current));
                         updateClockValue();
                     }
                 });
-                
                 maxInput.addEventListener('change', redrawPips);
                 redrawPips();
             }
 
             function setupTagSystem(idPrefix) {
-                const types = ['status', 'boost'];
-                types.forEach(type => {
+                ['status', 'boost'].forEach(type => {
                     const tagOptions = type === 'status' ? STATUS_TAGS : BOOST_TAGS;
                     const select = document.getElementById(`${idPrefix}-${type}-tag-select`);
-                    const btn = document.getElementById(`${idPrefix}-add-${type}-tag-btn`);
+                    const btn = select.nextElementSibling;
                     const listContainer = document.getElementById(`${idPrefix}-${type}-tags-list`);
 
                     select.innerHTML = `<option value="">Select ${type}...</option>`;
@@ -921,10 +790,7 @@
 
                     btn.addEventListener('click', () => {
                         const tagName = select.value;
-                        if (!tagName || listContainer.querySelector(`[data-tag-name="${tagName}"]`)) {
-                            select.selectedIndex = 0;
-                            return;
-                        }
+                        if (!tagName || listContainer.querySelector(`[data-tag-name="${tagName}"]`)) return;
                         
                         const tagEl = document.createElement('div');
                         tagEl.className = 'tag-item';
@@ -948,13 +814,9 @@
             }
             
             function setupAllClocks(ecosystem) {
-                setupClock('hp');
-                setupClock('sp');
-                setupClock('ep');
-                ecosystem.animations.forEach((anim, i) => {
-                    setupClock(`anim-${i}-hp`);
-                    setupClock(`anim-${i}-sp`);
-                    setupClock(`anim-${i}-ep`);
+                setupClock('hp'); setupClock('sp'); setupClock('ep');
+                ecosystem.animations.forEach((a, i) => {
+                    setupClock(`anim-${i}-hp`); setupClock(`anim-${i}-sp`); setupClock(`anim-${i}-ep`);
                     setupTagSystem(`anim-${i}`);
                 });
             }
@@ -962,16 +824,12 @@
             // --- INITIALIZATION ---
             document.getElementById('load-button').addEventListener('click', () => {
                 const blueprint = document.getElementById('blueprint-input').value.trim();
-                if(!blueprint) {
-                    alert('Blueprint string is empty.');
-                    return;
-                }
+                if(!blueprint) return alert('Blueprint string is empty.');
                 try {
                     const ecosystem = parseEcosystem(blueprint);
                     renderCharacterSheet(ecosystem);
                 } catch(e) {
-                    alert('Failed to parse blueprint: ' + e.message);
-                    console.error(e);
+                    alert('Failed to parse blueprint: ' + e.message); console.error(e);
                 }
             });
             
@@ -979,7 +837,7 @@
             document.getElementById('karma-plus').addEventListener('click', () => karmaDisplay.textContent = parseInt(karmaDisplay.textContent) + 1);
             document.getElementById('karma-minus').addEventListener('click', () => karmaDisplay.textContent = Math.max(0, parseInt(karmaDisplay.textContent) - 1));
 
-            setupTagSystem(''); // For main character
+            setupTagSystem('');
             document.getElementById('load-button').click(); // Initial load
         });
     </script>
