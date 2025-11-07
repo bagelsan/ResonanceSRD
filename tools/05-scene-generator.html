@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychromattica Scene Generator</title>
     <style>
-        /* GLOBAL STYLES & ART-DECO THEME */
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
             --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
             --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
             --color-purple: #957fa3; --color-background: #222222;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: var(--color-background); color: var(--color-white);
-            font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px;
-        }
-
+        body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
         .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
         h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
         .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
-        
         button {
             background-color: var(--color-blue); color: var(--color-black); font-weight: bold;
             border: 1px solid var(--color-silver); padding: 12px 15px; font-family: Calibri, sans-serif;
@@ -32,29 +24,11 @@
             width: 100%; margin-top: 20px;
         }
         button:hover { background-color: var(--color-silver); }
-
         .button-small { padding: 4px 8px; font-size: 9pt; margin-top: 0; }
-        input[type="number"] {
-            background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white);
-            padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px;
-        }
+        input[type="number"] { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
         label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
-
-        /* --- LAYOUT FIXES START HERE --- */
-        #output-string {
-            font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a;
-            color: var(--color-yellow); min-height: 80px; resize: vertical; width: 100%;
-        }
-
-        #copy-button {
-            width: auto; /* No longer full width */
-            display: block; /* Allows margin auto to work */
-            margin-left: auto; /* Pushes the button to the right */
-            margin-right: 0;
-            margin-top: 10px; /* Creates space between textarea and button */
-        }
-        /* --- LAYOUT FIXES END HERE --- */
-        
+        #output-string { font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a; color: var(--color-yellow); min-height: 80px; resize: vertical; width: 100%; }
+        #copy-button { width: auto; display: block; margin-left: auto; margin-right: 0; margin-top: 10px; }
         #manifest-details {
             font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left;
             background-color: #1a1a1a; padding: 15px; border-radius: 3px; white-space: pre-wrap;
@@ -64,37 +38,26 @@
 </head>
 <body>
     <div class="container">
-        <!-- CONTROLS -->
         <div class="section">
             <h2>Scene Generator</h2>
             <div>
                 <label for="player-level-input">Average Player Level</label>
-                <input type="number" id="player-level-input" value="1" min="1" max="9">
+                <input type="number" id="player-level-input" value="1" min="0" max="9">
             </div>
             <button id="generate-button">Generate Scene</button>
         </div>
-
-        <!-- OUTPUT -->
         <div class="section output-section">
             <h2>Generated Blueprint</h2>
             <textarea id="output-string" readonly>Click 'Generate Scene' to begin...</textarea>
-            <!-- BUTTON MOVED TO HERE -->
             <button id="copy-button" class="button-small">Copy</button>
-            
             <h3>Manifest Details</h3>
             <pre id="manifest-details">Details will appear here...</pre>
         </div>
     </div>
-
     <script>
-        // The JavaScript logic does not need to change.
-        // It correctly finds the elements by their IDs regardless of their position.
         document.addEventListener('DOMContentLoaded', () => {
-
-            const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
             const STAT_CODES_ARRAY = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
             const KEYWORDS = {'00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:"Traveler"},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:"Sensor"},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
-
             const playerLevelInput = document.getElementById('player-level-input');
             const generateButton = document.getElementById('generate-button');
             const outputStringEl = document.getElementById('output-string');
@@ -114,19 +77,25 @@
                 return { level: finalLevel, modString: `L${mod >= 0 ? '+' : ''}${mod}` };
             }
 
-            function generateKeywords(count, flawSlot, existingKeywords = []) {
+            // Corrected to ensure only one flaw is generated per entity.
+            function generateKeywords(count, flawState, existingKeywords = []) {
                 let kws = [];
-                let hasFlaw = flawSlot.hasFlaw;
-                for(let i=0; i<count; i++){
+                for (let i = 0; i < count; i++) {
                     let kwRoll;
-                    do { kwRoll = rollD100String(); } while ((parseInt(kwRoll) % 10 === 0 && hasFlaw) || existingKeywords.includes(kwRoll) || kws.includes(kwRoll));
-                    
-                    if (parseInt(kwRoll) % 10 === 0 && !hasFlaw) {
-                        const compRoll = rollD100String();
-                        flawSlot.flawString = `+${kwRoll}${compRoll}`;
-                        hasFlaw = true;
-                        flawSlot.hasFlaw = true;
-                        do { kwRoll = rollD100String(); } while(parseInt(kwRoll) % 10 === 0 || existingKeywords.includes(kwRoll) || kws.includes(kwRoll));
+                    do {
+                        kwRoll = rollD100String();
+                    } while (existingKeywords.includes(kwRoll) || kws.includes(kwRoll));
+
+                    if (parseInt(kwRoll) % 10 === 0 && !flawState.hasFlaw) {
+                        let compRoll;
+                        do {
+                            compRoll = rollD100String();
+                        } while (parseInt(compRoll) % 10 === 0);
+                        
+                        flawState.flawString = `+${kwRoll}${compRoll}`;
+                        flawState.hasFlaw = true;
+                        i--; // This roll was used for a flaw, so we need to re-roll for the keyword.
+                        continue;
                     }
                     kws.push(kwRoll);
                 }
@@ -137,51 +106,73 @@
                 const profile = Array(5).fill(0).map(() => roll(10) - 1).join('');
                 let blueprint = `C:${profile}`;
                 
-                let flawSlot = { hasFlaw: false, flawString: ''};
+                let flawState = { hasFlaw: false, flawString: null, level: -1 };
                 let allKeywords = [];
 
-                allKeywords.push(...generateKeywords(1, flawSlot, allKeywords));
-                allKeywords.push(...generateKeywords(3, flawSlot, allKeywords));
+                // Determine at which level the flaw will be added, if any.
+                let flawLevelTrigger = roll(level + 2) - 1; // -1 allows for no flaw
+
+                // Seed
+                allKeywords.push(...generateKeywords(1, flawState, allKeywords));
+                if (flawLevelTrigger === 0) flawState.level = 0;
                 
-                for (let i = 2; i <= level; i++) {
-                    allKeywords.push(...generateKeywords(2, flawSlot, allKeywords));
+                // Awakening
+                if (level >= 1) {
+                    allKeywords.push(...generateKeywords(3, flawState, allKeywords));
+                    if (flawLevelTrigger === 1) flawState.level = 1;
                 }
 
-                let finalProgression = `-${allKeywords[0]}`;
-                if(flawSlot.hasFlaw && level === 0) finalProgression += flawSlot.flawString;
+                // Higher Levels
+                for (let i = 2; i <= level; i++) {
+                    allKeywords.push(...generateKeywords(2, flawState, allKeywords));
+                    if (flawLevelTrigger === i) flawState.level = i;
+                }
+
+                // Assemble the string
+                let progression = [];
+                progression.push(allKeywords[0]);
+                if (flawState.hasFlaw && flawState.level === 0) progression[0] += flawState.flawString;
                 
-                finalProgression += `-${allKeywords.slice(1,4).join('.')}`;
-                if(flawSlot.hasFlaw && level === 1) finalProgression += flawSlot.flawString;
+                if (level >= 1) {
+                    const awakeningKws = allKeywords.slice(1, 4).join('.');
+                    const trinityStats = Array(3).fill(0).map(() => STAT_CODES_ARRAY[roll(STAT_CODES_ARRAY.length) - 1]).join('');
+                    let awakeningBlock = `${awakeningKws}.${trinityStats}`;
+                    if(flawState.hasFlaw && flawState.level === 1) awakeningBlock += flawState.flawString;
+                    progression.push(awakeningBlock);
+                }
 
                 for (let i = 2; i <= level; i++) {
                     const stat = STAT_CODES_ARRAY[roll(STAT_CODES_ARRAY.length)-1];
-                    const kwIndex = 2 + i * 2 - 2;
-                    finalProgression += `-${allKeywords[kwIndex]}.${allKeywords[kwIndex+1]}.${stat}`;
-                    if(flawSlot.hasFlaw && level === i) finalProgression += flawSlot.flawString;
+                    const kwIndex = 2 + (i-1)*2 - 1;
+                    let levelBlock = `${allKeywords[kwIndex]}.${allKeywords[kwIndex+1]}.${stat}`;
+                    if(flawState.hasFlaw && flawState.level === i) levelBlock += flawState.flawString;
+                    progression.push(levelBlock);
                 }
                 
-                blueprint += finalProgression;
+                blueprint += `-${progression.join('-')}`;
                 return parseAndFormat(blueprint);
             }
             
             function generateAnimation(level) {
                  let blueprint = `A:`;
-                 let flawSlot = { hasFlaw: false, flawString: ''};
-                 let kws = generateKeywords(level + 1, flawSlot);
+                 let flawState = { hasFlaw: false, flawString: ''};
+                 let kws = generateKeywords(level + 1, flawState);
                  blueprint += kws.join('.');
-                 if(flawSlot.hasFlaw) blueprint += flawSlot.flawString;
+                 if(flawState.hasFlaw) blueprint += flawState.flawString;
                  return parseAndFormat(blueprint);
             }
             
             function generateItem() {
                 const itemLevel = roll(10) - 1;
                 let blueprint = `I:L${itemLevel}`;
-                const numKeywords = Math.min(itemLevel + 1, 5);
+                const numKeywords = Math.min(itemLevel, 5); // Level 0 has 1 KW, handled below
+                if (itemLevel === 0) numKeywords = 1;
+                
                 if (numKeywords > 0) {
-                    let flawSlot = { hasFlaw: false, flawString: ''};
-                    let kws = generateKeywords(numKeywords, flawSlot);
+                    let flawState = { hasFlaw: false, flawString: ''};
+                    let kws = generateKeywords(numKeywords, flawState);
                     blueprint += `-${kws.join('.')}`;
-                    if(flawSlot.hasFlaw) blueprint += flawSlot.flawString;
+                    if(flawState.hasFlaw) blueprint += flawState.flawString;
                 }
                 return parseAndFormat(blueprint);
             }
@@ -190,33 +181,18 @@
                 let details = "";
                 if (blueprint.startsWith('C:')) {
                     const charString = blueprint.substring(2);
-                    const parts = charString.split('-');
-                    const profile = parts.shift();
-                    const allKws = parts.flatMap(p => p.match(/!?\d{2}/g) || []);
-                    const level = (allKws.length < 4) ? 0 : 1 + Math.floor((allKws.length - 4) / 2);
+                    const allKwsMatch = charString.match(/!?\d{2}/g) || [];
+                    const level = (allKwsMatch.length < 4) ? 0 : 1 + Math.floor((allKwsMatch.length - 4) / 2);
                     const flawMatch = charString.match(/\+(\d{2})(\d{2})/);
-
                     details = `  - Full Random Character (Level ${level})\n`;
-                    details += `    Profile: ${profile}\n`;
                     if (flawMatch) details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
-                    details += `    Keywords: ${allKws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
-
                 } else if (blueprint.startsWith('A:')) {
-                    const animString = blueprint.substring(2);
-                    const kws = animString.match(/!?\d{2}/g) || [];
+                    const kws = blueprint.match(/!?\d{2}/g) || [];
                     const level = kws.length - 1;
-                    const flawMatch = animString.match(/\+(\d{2})(\d{2})/);
-
                     details = `  - Random Animation (Level ${level})\n`;
-                    if (flawMatch) details += `    Flaw: ${KEYWORDS[flawMatch[1]].name} / Comp: ${KEYWORDS[flawMatch[2]].name}\n`;
-                    details += `    Keywords: ${kws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
                 } else if (blueprint.startsWith('I:')) {
-                    const itemString = blueprint.substring(2);
-                    const level = parseInt(itemString.match(/L(\d+)/)[1]);
-                    const kws = (itemString.split('-')[1] || '').match(/!?\d{2}/g) || [];
-                    
+                    const level = parseInt(blueprint.match(/L(\d+)/)[1]);
                     details = `  - Random Item (Level ${level})\n`;
-                    if (kws.length > 0) details += `    Keywords: ${kws.map(kw => KEYWORDS[kw.replace('!','')].name).join(', ')}\n`;
                 }
                 return { blueprint, details };
             }
@@ -228,65 +204,59 @@
 
                 const complexity = Math.ceil(roll(10) / 2);
                 const theme = rollD100String();
-                const situations = [];
-                for (let i = 0; i < complexity; i++) {
+                const situations = Array(complexity).fill(0).map(() => {
                     const typeRoll = roll(10);
                     let typeCode;
                     if(typeRoll <= 2) typeCode = 1; else if(typeRoll <= 4) typeCode = 2;
                     else if(typeRoll <= 6) typeCode = 3; else if(typeRoll <= 8) typeCode = 4;
                     else if(typeRoll === 9) typeCode = 5; else typeCode = 0;
-                    
-                    const isRace = roll(10) <= 2;
-                    situations.push({ code: typeCode, isRace, typeName: ["Hybrid", "Conflict", "Obstacle", "Interaction", "Exploration", "Twist"][typeCode]});
-                }
+                    return { code: typeCode, isRace: roll(10) <= 2, typeName: ["Hybrid", "Conflict", "Obstacle", "Interaction", "Exploration", "Twist"][typeCode] };
+                });
                 
                 blueprintString = `(${complexity})[${theme}]-${situations.map(s => `${s.isRace ? '*' : ''}${s.code}`).join('|')}:`;
                 manifestDetails += `SCENE: ${complexity} Situations, Theme: ${KEYWORDS[theme]?.name || 'Unknown'}\n\n`;
 
-                const allManifests = [];
-                situations.forEach((sit, index) => {
+                const allManifests = situations.map((sit, index) => {
                     manifestDetails += `SITUATION ${index + 1} (${sit.typeName}${sit.isRace ? ', RACE' : ''}):\n`;
                     let numPackages = 0;
-                    if(sit.code === 1) numPackages = Math.floor(roll(10)/3) + 1; // Conflict
-                    else if ([0,2,3,4].includes(sit.code)) numPackages = Math.floor(roll(10)/3); // Others
-                    else if (sit.code === 5) numPackages = 1; // Twist
+                    if (sit.code === 1) numPackages = Math.floor(roll(10)/3) + 1;
+                    else if ([0,2,3,4].includes(sit.code)) numPackages = Math.floor(roll(10)/3);
+                    else if (sit.code === 5) numPackages = 1;
 
-                    const situationPackages = [];
-                    for(let i=0; i<numPackages; i++) {
+                    const situationPackages = Array(numPackages).fill(0).map(() => {
                         const packageRoll = roll(100);
                         let pkg = {};
-                        if(packageRoll <= 20) { // Challenge
+                        if(packageRoll <= 20) {
                             const challengeType = roll(10) <= 5 ? 'X' : 'Y';
-                            pkg.blueprint = `${challengeType}[L+0]`;
+                            pkg.blueprint = `[${challengeType}[L+0]]`;
                             pkg.details = `  - Challenge: ${challengeType === 'X' ? 'Barrier' : 'Puzzle'} (Player Level)\n`;
-                        } else if (packageRoll <= 50) { // Generic Animation
+                        } else if (packageRoll <= 50) {
                             const { level, modString } = getLevelMod(playerLevel);
                             const seed = rollD100String();
                             pkg.blueprint = `[Gen:A-${modString}-Seed${seed}]`;
                             pkg.details = `  - Generic Animation (Level ${level}), Seed: ${seed} (${KEYWORDS[seed].name})\n`;
-                        } else if (packageRoll <= 70) { // Generic Character
+                        } else if (packageRoll <= 70) {
                             const { level, modString } = getLevelMod(playerLevel);
                             const seed = rollD100String();
                             pkg.blueprint = `[Gen:C-${modString}-Seed${seed}]`;
                             pkg.details = `  - Generic Character (Level ${level}), Seed: ${seed} (${KEYWORDS[seed].name})\n`;
-                        } else if (packageRoll <= 85) { // Item
+                        } else if (packageRoll <= 85) {
                             const itemData = generateItem();
                             pkg.blueprint = `[${itemData.blueprint}]`;
                             pkg.details = itemData.details;
-                        } else { // Full Random Character (96-00)
+                        } else {
                             const { level } = getLevelMod(playerLevel);
                             const charData = generateFullCharacter(level);
-                            pkg.blueprint = `(${charData.blueprint})`; // Encapsulate full string
+                            pkg.blueprint = `[C:(${charData.blueprint.substring(2)})]`;
                             pkg.details = charData.details;
                         }
-                        situationPackages.push(pkg.blueprint);
                         manifestDetails += pkg.details;
-                    }
-                     allManifests.push(situationPackages.join(','));
+                        return pkg.blueprint;
+                    });
+                    return situationPackages.join(',');
                 });
                 
-                blueprintString += '[' + allManifests.join('],[') + ']';
-
+                blueprintString += `[${allManifests.join('],[')}]`;
                 outputStringEl.value = blueprintString;
                 manifestDetailsEl.textContent = manifestDetails;
             }
@@ -294,9 +264,10 @@
             generateButton.addEventListener('click', generateScene);
             copyButton.addEventListener('click', () => {
                 outputStringEl.select();
-                document.execCommand('copy');
-                copyButton.textContent = 'Copied!';
-                setTimeout(() => copyButton.textContent = 'Copy', 1500);
+                navigator.clipboard.writeText(outputStringEl.value).then(() => {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => copyButton.textContent = 'Copy', 1500);
+                });
             });
             
             generateScene();

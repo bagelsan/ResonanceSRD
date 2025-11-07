@@ -57,7 +57,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- SCENE CLOCKS -->
         <div class="section">
             <h2>Scene Clocks</h2>
             <div class="grid-2">
@@ -65,8 +64,6 @@
                 <div><div class="clock"><div class="clock-header"><span>Threat Clock</span><span><span id="threat-value">0/10</span> Max: <input type="number" id="threat-max" value="10" min="1"></span></div><div class="clock-pips threat-pips" id="threat-pips"></div></div></div>
             </div>
         </div>
-        
-        <!-- INITIATIVE TRACKER -->
         <div class="section" id="initiative-tracker">
             <h2>Initiative Tracker</h2>
             <div class="grid-3">
@@ -76,7 +73,7 @@
             </div>
             <div class="grid-3" style="margin-top: 15px;">
                 <button id="start-combat-button">Start Round</button>
-                <button id="draw-card-button" disabled>Draw Card</button>
+                <button id="draw-card-button" disabled>Draw Next Card</button>
                 <button id="pass-turn-button" disabled title="End current turn. Moves card to bottom of deck if actions remain, otherwise to discard.">Pass Turn</button>
             </div>
              <div class="manual-add-combatant">
@@ -88,16 +85,12 @@
                 <button id="seize-priority-button" class="button-small" disabled title="Select a card from the Deck or Discard, then click here to make it the current turn.">Seize Priority</button>
             </div>
         </div>
-
         <div class="grid-2">
-            <!-- BARRIERS -->
             <div class="section">
                 <h2>Barriers & Puzzles</h2>
                 <div id="barriers-container"></div>
                 <button id="add-barrier-button">Add Task</button>
             </div>
-
-            <!-- ENTITIES -->
             <div class="section">
                 <h2>Entities</h2>
                 <div id="entities-container"></div>
@@ -105,7 +98,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const STAT_NAMES = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
@@ -123,7 +115,6 @@
                     let max = parseInt(maxInput.value) || 0;
                     let current = pipsContainer.querySelectorAll('.pip.active').length;
                     if (pipsContainer.children.length === 0) current = max;
-                    
                     pipsContainer.innerHTML = '';
                     for (let i = 0; i < max; i++) {
                         const pip = document.createElement('div');
@@ -145,13 +136,11 @@
                         const targetIndex = parseInt(e.target.dataset.index);
                         const pips = Array.from(pipsContainer.children);
                         const currentActive = pips.filter(p => p.classList.contains('active')).length;
-                        let newActive = targetIndex + 1;
-                        if (currentActive === targetIndex + 1 && targetIndex === currentActive - 1) newActive = targetIndex;
+                        let newActive = (currentActive === targetIndex + 1 && targetIndex === currentActive - 1) ? targetIndex : targetIndex + 1;
                         pips.forEach((pip, i) => pip.classList.toggle('active', i < newActive));
                         updateClockValue();
                     }
                 });
-                
                 maxInput.addEventListener('change', redrawPips);
                 redrawPips();
             }
@@ -176,31 +165,31 @@
                     document.getElementById(`${pile}-count`).textContent = initiativeState[pile].length;
                 });
                 document.getElementById('current-turn-card').textContent = initiativeState.current || '';
-                
                 const hasDeck = initiativeState.deck.length > 0;
-                const inCombat = startCombatBtn.disabled;
-
-                drawCardBtn.disabled = !hasDeck || (!initiativeState.current && hasDeck && !inCombat);
+                const inCombat = !!initiativeState.current || hasDeck || initiativeState.discard.length > 0;
+                drawCardBtn.disabled = !hasDeck || !inCombat;
                 passTurnBtn.disabled = !initiativeState.current;
+                seizePriorityBtn.disabled = !initiativeState.current || !initiativeState.selected;
                 startCombatBtn.disabled = hasDeck;
-                startCombatBtn.textContent = (!hasDeck && (initiativeState.discard.length > 0 || initiativeState.current)) ? "Next Round" : "Start Round";
+                startCombatBtn.textContent = (!hasDeck && inCombat) ? "Next Round" : "Start Round";
             }
 
             startCombatBtn.addEventListener('click', () => {
                 const allNames = Array.from(combatants.keys());
-                initiativeState.deck = [...allNames, ...initiativeState.discard.filter(n => !combatants.has(n))];
-                if (initiativeState.current) initiativeState.deck.push(initiativeState.current);
+                initiativeState.deck = allNames.filter(name => !initiativeState.discard.includes(name));
+                if (initiativeState.current) initiativeState.discard.push(initiativeState.current);
+                initiativeState.deck.push(...initiativeState.discard);
                 initiativeState.discard = [];
                 initiativeState.current = null;
+                initiativeState.selected = null; // Clear selection on new round
                 shuffleArray(initiativeState.deck);
                 combatants.forEach(data => { if (data.isEntity) data.actions.current = data.actions.max; });
                 renderAllEntityActions();
-                drawCardBtn.disabled = false;
-                startCombatBtn.disabled = true;
                 renderInitiative();
             });
 
             drawCardBtn.addEventListener('click', () => {
+                if (initiativeState.deck.length === 0) return;
                 if (initiativeState.current) initiativeState.discard.push(initiativeState.current);
                 initiativeState.current = initiativeState.deck.shift();
                 renderInitiative();
@@ -209,7 +198,8 @@
             passTurnBtn.addEventListener('click', () => {
                 if (!initiativeState.current) return;
                 const combatant = combatants.get(initiativeState.current);
-                if (combatant && combatant.isEntity && combatant.actions.current > 0) {
+                const hasActionsRemaining = combatant && combatant.isEntity && combatant.actions.current > 0;
+                if (hasActionsRemaining && initiativeState.deck.length > 0) {
                     initiativeState.deck.push(initiativeState.current);
                 } else {
                     initiativeState.discard.push(initiativeState.current);
@@ -225,7 +215,6 @@
                 initiativeState.discard = initiativeState.discard.filter(c => c !== initiativeState.selected);
                 initiativeState.current = initiativeState.selected;
                 initiativeState.selected = null;
-                seizePriorityBtn.disabled = true;
                 renderInitiative();
             });
 
@@ -235,14 +224,14 @@
             function addCombatant(midRound = false) {
                  const nameInput = document.getElementById('manual-combatant-name');
                  const name = nameInput.value.trim();
-                 if(name && !combatants.has(name)) {
-                    combatants.set(name, { isEntity: false, actions: { max: 2, current: 2 } });
+                 if(name && !combatants.has(name) && !initiativeState.deck.includes(name) && !initiativeState.discard.includes(name)) {
                     if(midRound && initiativeState.deck.length > 0) {
                         initiativeState.deck.push(name);
                         shuffleArray(initiativeState.deck);
                     } else {
                         initiativeState.discard.push(name);
                     }
+                    if (!combatants.has(name)) combatants.set(name, { isEntity: false, actions: { max: 2, current: 2 } });
                     nameInput.value = '';
                     renderInitiative();
                  }
@@ -256,24 +245,11 @@
                 const entityName = `Entity ${entityCounter}`;
                 card.dataset.name = entityName;
                 card.id = idPrefix;
-
-                card.innerHTML = `
-                    <div class="card-header"><input type="text" value="${entityName}" class="entity-name-input"><button class="remove-button button-small">Remove</button></div>
-                    <div class="entity-info-grid">
-                        <div><div class="stat-input-grid">${STAT_NAMES.map(stat => `<div><label>${stat}</label><input type="number" class="stat-input" data-stat="${stat}" value="${stat === 'A' ? 2 : 1}"></div>`).join('')}</div><label>Resistance: <span class="resistance-value">3</span></label></div>
-                        <div><label>Action Pool</label><div class="action-pool"><button class="action-minus">-</button><span class="action-current">2</span> / <span class="action-max">2</span><button class="action-plus">+</button></div></div>
-                    </div>
-                    <hr style="margin: 10px 0;">
-                    <div class="clock"><div class="clock-header"><span>HP</span><span><span id="${idPrefix}-hp-value">0/10</span> Max: <input type="number" id="${idPrefix}-hp-max" value="10" min="1"></span></div><div class="clock-pips hp-pips" id="${idPrefix}-hp-pips"></div></div>
-                    <div class="clock"><div class="clock-header"><span>SP</span><span><span id="${idPrefix}-sp-value">0/10</span> Max: <input type="number" id="${idPrefix}-sp-max" value="10" min="1"></span></div><div class="clock-pips sp-pips" id="${idPrefix}-sp-pips"></div></div>
-                    <div class="clock"><div class="clock-header"><span>EP</span><span><span id="${idPrefix}-ep-value">0/10</span> Max: <input type="number" id="${idPrefix}-ep-max" value="10" min="1"></span></div><div class="clock-pips ep-pips" id="${idPrefix}-ep-pips"></div></div>
-                `;
-                entitiesContainer.appendChild(card);
-                
+                card.innerHTML = `<div class="card-header"><input type="text" value="${entityName}" class="entity-name-input"><button class="remove-button button-small">Remove</button></div><div class="entity-info-grid"><div><div class="stat-input-grid">${STAT_NAMES.map(stat => `<div><label>${stat}</label><input type="number" class="stat-input" data-stat="${stat}" value="${stat === 'A' ? 2 : 1}"></div>`).join('')}</div><label>Resistance: <span class="resistance-value">4</span></label></div><div><label>Action Pool</label><div class="action-pool"><button class="action-minus">-</button><span class="action-current">2</span> / <span class="action-max">2</span><button class="action-plus">+</button></div></div></div><hr style="margin: 10px 0;"><div class="clock"><div class="clock-header"><span>HP</span><span><span id="${idPrefix}-hp-value">0/10</span> Max: <input type="number" id="${idPrefix}-hp-max" value="10" min="1"></span></div><div class="clock-pips hp-pips" id="${idPrefix}-hp-pips"></div></div><div class="clock"><div class="clock-header"><span>SP</span><span><span id="${idPrefix}-sp-value">0/10</span> Max: <input type="number" id="${idPrefix}-sp-max" value="10" min="1"></span></div><div class="clock-pips sp-pips" id="${idPrefix}-sp-pips"></div></div><div class="clock"><div class="clock-header"><span>EP</span><span><span id="${idPrefix}-ep-value">0/10</span> Max: <input type="number" id="${idPrefix}-ep-max" value="10" min="1"></span></div><div class="clock-pips ep-pips" id="${idPrefix}-ep-pips"></div></div>`;
+                document.getElementById('entities-container').appendChild(card);
                 const stats = {};
                 card.querySelectorAll('.stat-input').forEach(input => stats[input.dataset.stat] = parseInt(input.value));
                 combatants.set(entityName, { isEntity: true, element: card, stats: stats, actions: { max: stats.A, current: stats.A } });
-
                 initiativeState.discard.push(entityName);
                 updateSituationClockMax();
                 renderInitiative();
@@ -284,17 +260,14 @@
                 barrierCounter++;
                 const card = document.createElement('div');
                 card.className = 'card barrier-card';
-                card.innerHTML = `
-                     <div class="card-header"><input type="text" value="Task ${barrierCounter}" placeholder="Barrier/Puzzle Name..."><button class="remove-button button-small">Remove</button></div>
-                    <div class="clock"><div class="clock-header"><span>Task Clock</span><span><span id="barrier-${barrierCounter}-value">0/6</span> Max: <input type="number" id="barrier-${barrierCounter}-max" value="6" min="1"></span></div><div class="clock-pips" id="barrier-${barrierCounter}-pips"></div></div>
-                `;
-                barriersContainer.appendChild(card);
+                card.innerHTML = `<div class="card-header"><input type="text" value="Task ${barrierCounter}" placeholder="Barrier/Puzzle Name..."><button class="remove-button button-small">Remove</button></div><div class="clock"><div class="clock-header"><span>Task Clock</span><span><span id="barrier-${barrierCounter}-value">0/6</span> Max: <input type="number" id="barrier-${barrierCounter}-max" value="6" min="1"></span></div><div class="clock-pips" id="barrier-${barrierCounter}-pips"></div></div>`;
+                document.getElementById('barriers-container').appendChild(card);
                 updateSituationClockMax();
                 setupClock(`barrier-${barrierCounter}`);
             }
             
             function updateSituationClockMax() {
-                const count = entitiesContainer.children.length + barriersContainer.children.length;
+                const count = document.getElementById('entities-container').children.length + document.getElementById('barriers-container').children.length;
                 const clockInput = document.getElementById('situation-max');
                 clockInput.value = count;
                 clockInput.dispatchEvent(new Event('change'));
@@ -303,6 +276,7 @@
             document.body.addEventListener('change', e => {
                 if(e.target.classList.contains('entity-name-input')) {
                     const card = e.target.closest('.card'); const oldName = card.dataset.name; const newName = e.target.value;
+                    if (combatants.has(newName)) { e.target.value = oldName; return alert("A combatant with that name already exists."); }
                     const data = combatants.get(oldName); combatants.delete(oldName); combatants.set(newName, data);
                     card.dataset.name = newName;
                     ['deck', 'discard'].forEach(p => initiativeState[p] = initiativeState[p].map(n => n === oldName ? newName : n));
@@ -336,7 +310,7 @@
                     card.remove(); updateSituationClockMax(); renderInitiative();
                 }
                  if (e.target.classList.contains('action-minus') || e.target.classList.contains('action-plus')) {
-                    const card = e.target.closest('.card'); const combatant = combatants.get(card.dataset.name);
+                    const card = e.target.closest('.card'); const name = card.dataset.name; const combatant = combatants.get(name);
                     if(combatant) {
                         if(e.target.classList.contains('action-minus')) combatant.actions.current = Math.max(0, combatant.actions.current - 1);
                         else combatant.actions.current = Math.min(combatant.actions.max, combatant.actions.current + 1);

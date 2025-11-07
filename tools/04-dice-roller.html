@@ -5,185 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychromattica Dice Roller</title>
     <style>
-        /* GLOBAL STYLES & ART-DECO THEME */
         :root {
-            --color-null: #dea193;
-            --color-silver: #a7a9ac;
-            --color-yellow: #f5d36c;
-            --color-green: #688d4c;
-            --color-black: #414042;
-            --color-orange: #f7855d;
-            --color-white: #e3e1da;
-            --color-red: #a95b5a;
-            --color-blue: #88bfe8;
-            --color-purple: #957fa3;
-            --color-background: #222222;
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--color-background);
-            color: var(--color-white);
-            font-family: Calibri, sans-serif;
-            font-size: 12pt;
-            padding: 10px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        h2, h3 {
-            font-weight: normal;
-            font-family: 'Oswald', sans-serif;
-            color: var(--color-null);
-        }
-
-        h3 {
-            color: var(--color-silver);
-            margin-top: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-
-        .section {
-            border: 1px solid var(--color-black);
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 3px;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
+        .container { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
+        h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; }
         button {
-            background-color: var(--color-blue);
-            color: var(--color-black);
-            font-weight: bold;
-            border: 1px solid var(--color-silver);
-            padding: 12px 15px;
-            font-family: Calibri, sans-serif;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: background-color 0.2s, opacity 0.2s;
-            width: 100%;
-            margin-top: 15px;
+            background-color: var(--color-blue); color: var(--color-black); font-weight: bold;
+            border: 1px solid var(--color-silver); padding: 12px 15px; font-family: Calibri, sans-serif;
+            font-size: 1.2em; cursor: pointer; border-radius: 2px;
+            transition: background-color 0.2s, opacity 0.2s; width: 100%; margin-top: 15px;
         }
-        
-        button:hover {
-            background-color: var(--color-silver);
-        }
-
-        button:disabled {
-            background-color: var(--color-black);
-            color: #666;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        
-        input[type="number"] {
-            background-color: #333;
-            border: 1px solid var(--color-silver);
-            color: var(--color-white);
-            padding: 8px;
-            font-family: Calibri, sans-serif;
-            width: 100%;
-            border-radius: 2px;
-            margin-top: 5px;
-        }
-        
-        label {
-            font-size: 10pt;
-            color: var(--color-silver);
-            display: block;
-            margin-top: 10px;
-        }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .advantage-group {
-            margin-top: 10px;
-        }
-        .advantage-group label {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 15px;
-            font-size: 11pt;
-        }
-        
-        .checkbox-group label {
-             display: inline-flex;
-             align-items: center;
-             gap: 8px;
-             font-size: 11pt;
-        }
-        .checkbox-group small {
-            display: block;
-            font-size: 9pt;
-            opacity: 0.7;
-            margin-top: 2px;
-        }
-
-        .output-section {
-            text-align: center;
-        }
-
-        #final-result-display {
-            font-size: 4em;
-            font-weight: bold;
-            color: var(--color-yellow);
-            line-height: 1;
-        }
-        #final-result-label {
-            font-size: 1em;
-            color: var(--color-silver);
-            margin-bottom: 10px;
-        }
-        
-        #critical-display {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--color-red);
-            margin-top: 10px;
-            min-height: 2em;
-        }
-
-        #roll-log {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 10pt;
-            text-align: left;
-            background-color: #1a1a1a;
-            padding: 10px;
-            border-radius: 3px;
-            white-space: pre-wrap;
-            min-height: 100px;
-            margin-top: 15px;
-        }
+        button:hover { background-color: var(--color-silver); }
+        button:disabled { background-color: var(--color-black); color: #666; cursor: not-allowed; opacity: 0.5; }
+        input[type="number"] { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
+        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .advantage-group { margin-top: 10px; }
+        .advantage-group label { display: inline-flex; align-items: center; margin-right: 15px; font-size: 11pt; }
+        .checkbox-group label { display: inline-flex; align-items: center; gap: 8px; font-size: 11pt; }
+        .checkbox-group small { display: block; font-size: 9pt; opacity: 0.7; margin-top: 2px; }
+        .output-section { text-align: center; }
+        #final-result-display { font-size: 4em; font-weight: bold; color: var(--color-yellow); line-height: 1; }
+        #final-result-label { font-size: 1em; color: var(--color-silver); margin-bottom: 10px; }
+        #critical-display { font-size: 1.5em; font-weight: bold; color: var(--color-red); margin-top: 10px; min-height: 2em; }
+        #roll-log { font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left; background-color: #1a1a1a; padding: 10px; border-radius: 3px; white-space: pre-wrap; min-height: 100px; margin-top: 15px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- OUTPUT -->
         <div class="section output-section">
             <div id="final-result-label">Effect Value / Effort Roll</div>
             <div id="final-result-display">0</div>
             <div id="critical-display"></div>
             <pre id="roll-log">Roll log will appear here...</pre>
         </div>
-
-        <!-- INPUTS -->
         <div class="section">
             <h2>Roll Modifiers</h2>
             <div class="input-grid">
@@ -196,24 +59,20 @@
                     <input type="number" id="stat-input" value="2" min="0">
                 </div>
             </div>
-
             <div class="advantage-group">
                 <label><input type="radio" name="advantage" value="normal" checked> Normal</label>
                 <label><input type="radio" name="advantage" value="advantage"> Advantage</label>
                 <label><input type="radio" name="advantage" value="disadvantage"> Disadvantage</label>
             </div>
-            
             <div class="checkbox-group" style="margin-top: 15px;">
                 <label>
-                    <input type="checkbox" id="add-stat-twice-checkbox"> Rapid / Reckless Effect
+                    <input type="checkbox" id="add-stat-twice-checkbox"> Apply Stat Twice (Rapid)
                 </label>
-                <small>(Adds chosen Stat a second time, replacing Level for extra hits)</small>
+                <small>(Adds chosen Stat a second time, replacing Level for extra hits as per Rapid keyword)</small>
             </div>
-
             <button id="roll-button">Roll!</button>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const levelInput = document.getElementById('level-input');
@@ -263,7 +122,7 @@
                     } else if (advantageStatus === 'disadvantage') {
                         finalDie = Math.min(d1, d2);
                         log += `  ↳ Disadvantage: took lower die (${finalDie})\n`;
-                        // Check for Miss condition (Rule 1.6)
+                        // Check for Miss condition (SRD Layer 1, 1.6)
                         if (finalDie === 1) {
                             isMiss = true;
                             log += `  ↳ MISS! A 1 was rolled with Disadvantage.\n`;
@@ -288,33 +147,38 @@
                     log += `Base EV = ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}\n`;
                     
                     if (addStatTwiceCheckbox.checked) {
-                        finalEV += stat;
-                        log += `Rapid/Reckless: Added Stat again: ${finalEV - stat} + ${stat} = ${finalEV}\n`;
+                        // Per SRD Rapid (2.8), stat is added *instead* of Level for extra hits, but here we just add it again for simplicity.
+                        finalEV = standardRoll + stat + stat;
+                        log += `Rapid Effect: Recalculated as SR + Stat + Stat = ${finalEV}\n`;
                     }
 
                     if (isCritical) {
                         criticalText = "CRITICAL HIT!";
                     }
+                    // SRD Layer 1, 1.7
                     if (standardRoll >= 31) {
                         criticalText = "SUPER CRITICAL!";
                     }
                 }
 
                 // --- Display Results with Animation ---
-                const scrambleDuration = 1500;
+                const scrambleDuration = 1000;
                 const scrambleInterval = 50;
+                const startTime = Date.now();
 
-                const scrambleEffect = setInterval(() => {
+                const scrambleEffect = () => {
+                    const elapsed = Date.now() - startTime;
+                    if (elapsed >= scrambleDuration) {
+                        finalResultDisplay.textContent = finalEV;
+                        rollLog.textContent = log;
+                        criticalDisplay.textContent = criticalText;
+                        rollButton.disabled = false;
+                        return;
+                    }
                     finalResultDisplay.textContent = Math.floor(Math.random() * 100);
-                }, scrambleInterval);
-
-                setTimeout(() => {
-                    clearInterval(scrambleEffect);
-                    finalResultDisplay.textContent = finalEV;
-                    rollLog.textContent = log;
-                    criticalDisplay.textContent = criticalText;
-                    rollButton.disabled = false;
-                }, scrambleDuration);
+                    requestAnimationFrame(scrambleEffect);
+                };
+                requestAnimationFrame(scrambleEffect);
             }
 
             rollButton.addEventListener('click', performRoll);

@@ -5,223 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>5-Point Motivational Profile Generator</title>
     <style>
-        /* GLOBAL STYLES & ART-DECO THEME */
         :root {
-            --color-null: #dea193;
-            --color-silver: #a7a9ac;
-            --color-yellow: #f5d36c;
-            --color-green: #688d4c;
-            --color-black: #414042;
-            --color-orange: #f7855d;
-            --color-white: #e3e1da;
-            --color-red: #a95b5a;
-            --color-blue: #88bfe8;
-            --color-purple: #957fa3;
-            --color-background: #222222;
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background-color: var(--color-background);
-            color: var(--color-white);
-            font-family: Calibri, sans-serif;
-            font-size: 12pt;
-            padding: 10px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        h1, h2, h3 {
-            font-weight: normal;
-            font-family: 'Oswald', sans-serif; /* Assumes Oswald is loaded, but will fallback */
-            color: var(--color-null);
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        h3 {
-            color: var(--color-silver);
-            margin-top: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-
-        .section {
-            border: 1px solid var(--color-black);
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 3px;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
+        .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        h1, h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
+        h1 { text-align: center; margin-bottom: 10px; }
+        h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
         button {
-            background-color: var(--color-blue);
-            color: var(--color-black);
-            font-weight: bold;
-            border: 1px solid var(--color-silver);
-            padding: 12px 15px;
-            font-family: Calibri, sans-serif;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: background-color 0.2s;
-            width: 100%;
-            margin-top: 20px;
+            background-color: var(--color-blue); color: var(--color-black); font-weight: bold;
+            border: 1px solid var(--color-silver); padding: 12px 15px; font-family: Calibri, sans-serif;
+            font-size: 1.2em; cursor: pointer; border-radius: 2px;
+            transition: background-color 0.2s; width: 100%; margin-top: 20px;
         }
-        
-        button:hover {
-            background-color: var(--color-silver);
-        }
-
-        .question-block {
-            margin-top: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #333;
-        }
-        .question-block p {
-            font-weight: bold;
-            color: var(--color-silver);
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .question-block label {
-            display: block;
-            background-color: #333;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            line-height: 1.5;
-        }
-        .question-block label:hover {
-            background-color: #444;
-        }
-        .question-block input[type="radio"] {
-            margin-right: 10px;
-            vertical-align: top;
-            margin-top: 4px;
-        }
-
-        #results-section {
-            display: none;
-        }
-        .results-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 15px;
-        }
-        .results-list li {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .result-name {
-            width: 120px;
-            font-weight: bold;
-        }
-        .result-bar-container {
-            flex-grow: 1;
-            background-color: #1a1a1a;
-            border-radius: 3px;
-        }
-        .result-bar {
-            height: 20px;
-            background-color: var(--color-yellow);
-            border-radius: 3px;
-            transition: width 0.5s ease-out;
-        }
-        .result-score {
-            width: 30px;
-            font-weight: bold;
-            text-align: right;
-        }
-
-        .profile-summary {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-        }
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .profile-card {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 2px;
-        }
-        .profile-card h4 {
-            margin: 0 0 10px 0;
-            padding-bottom: 5px;
-        }
-        .profile-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        .profile-card li {
-            font-size: 1.1em;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .trinity-card h4 {
-            color: var(--color-green);
-            border-bottom: 1px solid var(--color-green);
-        }
-        .duality-card h4 {
-            color: var(--color-red);
-            border-bottom: 1px solid var(--color-red);
-        }
-        .instructions {
-            font-size: 11pt;
-            color: var(--color-silver);
-            line-height: 1.5;
-        }
-        
+        button:hover { background-color: var(--color-silver); }
+        .question-block { margin-top: 25px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+        .question-block p { font-weight: bold; color: var(--color-silver); margin-bottom: 10px; line-height: 1.4; }
+        .question-block label { display: block; background-color: #333; padding: 10px; margin: 5px 0; border-radius: 2px; cursor: pointer; transition: background-color 0.2s; line-height: 1.5; }
+        .question-block label:hover { background-color: #444; }
+        .question-block input[type="radio"] { margin-right: 10px; vertical-align: top; margin-top: 4px; }
+        #results-section { display: none; }
+        .results-list { list-style: none; padding: 0; margin-top: 15px; }
+        .results-list li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .result-name { width: 120px; font-weight: bold; }
+        .result-bar-container { flex-grow: 1; background-color: #1a1a1a; border-radius: 3px; }
+        .result-bar { height: 20px; background-color: var(--color-yellow); border-radius: 3px; transition: width 0.5s ease-out; }
+        .result-score { width: 30px; font-weight: bold; text-align: right; }
+        .profile-summary { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .profile-card { background-color: #333; padding: 15px; border-radius: 2px; }
+        .profile-card h4 { margin: 0 0 10px 0; padding-bottom: 5px; }
+        .profile-card ul { list-style: none; padding: 0; }
+        .profile-card li { font-size: 1.1em; margin-bottom: 5px; }
+        .trinity-card h4 { color: var(--color-green); border-bottom: 1px solid var(--color-green); }
+        .duality-card h4 { color: var(--color-red); border-bottom: 1px solid var(--color-red); }
+        .instructions { font-size: 11pt; color: var(--color-silver); line-height: 1.5; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="section">
             <h1>5-Point Motivational Profile Generator</h1>
             <p class="instructions">
-                This assessment uses the 27 questions from the Psychromattic Assessment (Appendix C) to generate a 5-Point Motivational Profile. Your answers will be weighted to determine your core drives. Your top three motivations form your **Trinity of Ideals**, while your bottom two form your **Duality of Conflict**.
+                This assessment uses the 27 questions from the Psychromattic Assessment (Appendix C) to generate a 5-Point Motivational Profile. Your answers will be weighted to determine your core drives. Your top three motivations form your **Trinity of Ideals**, while your conflicts are determined by the ideological opposites of your core goal, as defined by the **Wheel of Change** in Appendix D.
             </p>
         </div>
-
         <div class="section">
             <form id="quiz-form">
-                <!-- Questions will be injected here by JavaScript -->
                 <button type="submit">Generate My 5-Point Profile</button>
             </form>
         </div>
-
         <div class="section" id="results-section">
             <h2>Your Profile Results</h2>
             <h3>Weighted Motivation Ranking</h3>
             <p class="instructions">This is your complete motivational stack, ranked from most to least dominant. The scores are calculated by combining your answers from the Motivation and Context axes.</p>
             <ul class="results-list" id="results-list"></ul>
-            
             <div class="profile-summary">
                 <h3>Your 5-Point Profile</h3>
                 <div class="profile-grid">
@@ -237,11 +82,8 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // The 27 Questions from Appendix C
             const QUESTIONS_DATA = [
                 { section: "The Axis of Motivation (The Source)", q: "Your community's only water source is poisoned. What is your immediate, primary focus?", answers: [{ text: "The physical well-being of the people...", value: "Body" }, { text: "The systemic failure...", value: "Mind" }, { text: "The moral violation...", value: "Essence" }]},
                 { q: "You look back on a period of intense personal growth. What is the clearest sign of your progress?", answers: [{ text: "I have acquired new knowledge...", value: "Mind" }, { text: "I am more in tune with who I truly am...", value: "Essence" }, { text: "I am physically healthier...", value: "Body" }]},
@@ -277,6 +119,7 @@
             const resultsList = document.getElementById('results-list');
             const trinityList = document.getElementById('trinity-list');
             const dualityList = document.getElementById('duality-list');
+            const WHEEL_OF_CHANGE = ['Green', 'White', 'Orange', 'Blue', 'Silver', 'Red', 'Black', 'Purple', 'Yellow'];
 
             function initializeQuiz() {
                 let quizHTML = "";
@@ -292,17 +135,17 @@
                     });
                     quizHTML += `</div>`;
                 });
-                quizForm.insertAdjacentHTML('afterbegin', quizHTML);
+                const submitButton = quizForm.querySelector('button');
+                submitButton.insertAdjacentHTML('beforebegin', quizHTML);
             }
 
             function calculateResults(e) {
                 e.preventDefault();
-
-                const axisScores = { Body: 0, Mind: 0, Essence: 0, Foundation: 0, Control: 0, Execution: 0, Internal: 0, External: 0, Collaborative: 0 };
+                const axisScores = { Body: 0, Mind: 0, Essence: 0, Foundation: 0, Control: 0, Execution: 0 };
                 const formData = new FormData(quizForm);
                 let answeredQuestions = 0;
-
-                for (let i = 0; i < QUESTIONS_DATA.length; i++) {
+                // Only first 18 questions matter for motivation scores
+                for (let i = 0; i < 18; i++) {
                     if (formData.has(`q${i}`)) {
                         answeredQuestions++;
                         const value = formData.get(`q${i}`);
@@ -312,7 +155,7 @@
                     }
                 }
                 
-                if (answeredQuestions < QUESTIONS_DATA.length) {
+                if (answeredQuestions < 18) {
                     alert("Please answer all 27 questions before calculating your profile.");
                     return;
                 }
@@ -321,51 +164,62 @@
             }
 
             function displayResults(axisScores) {
-                // Calculate weighted motivation scores based on the SRD formula
                 const motivationScores = [
-                    { name: 'Ambition', score: axisScores.Body + axisScores.Control },
-                    { name: 'Freedom', score: axisScores.Body + axisScores.Execution },
-                    { name: 'Security', score: axisScores.Body + axisScores.Foundation },
-                    { name: 'Legacy', score: axisScores.Mind + axisScores.Control },
-                    { name: 'Innovation', score: axisScores.Mind + axisScores.Execution },
-                    { name: 'Purity', score: axisScores.Mind + axisScores.Foundation },
-                    { name: 'Glory', score: axisScores.Essence + axisScores.Control },
-                    { name: 'Influence', score: axisScores.Essence + axisScores.Execution },
-                    { name: 'Faith', score: axisScores.Essence + axisScores.Foundation }
+                    { name: 'Ambition', color: 'Silver', score: axisScores.Body + axisScores.Control },
+                    { name: 'Freedom', color: 'Yellow', score: axisScores.Body + axisScores.Execution },
+                    { name: 'Security', color: 'Green', score: axisScores.Body + axisScores.Foundation },
+                    { name: 'Legacy', color: 'Black', score: axisScores.Mind + axisScores.Control },
+                    { name: 'Innovation', color: 'Orange', score: axisScores.Mind + axisScores.Execution },
+                    { name: 'Purity', color: 'White', score: axisScores.Mind + axisScores.Foundation },
+                    { name: 'Glory', color: 'Red', score: axisScores.Essence + axisScores.Control },
+                    { name: 'Influence', color: 'Blue', score: axisScores.Essence + axisScores.Execution },
+                    { name: 'Faith', color: 'Purple', score: axisScores.Essence + axisScores.Foundation }
                 ];
                 
-                // Sort the motivations by score, descending
                 motivationScores.sort((a, b) => b.score - a.score);
-
-                // Display the full ranked list
                 resultsList.innerHTML = "";
                 const maxScore = motivationScores[0].score;
-
                 motivationScores.forEach(result => {
                     const percentage = maxScore > 0 ? (result.score / maxScore) * 100 : 0;
                     const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span class="result-name">${result.name}</span>
-                        <div class="result-bar-container">
-                            <div class="result-bar" style="width: ${percentage}%;"></div>
-                        </div>
-                        <span class="result-score">${result.score}</span>
-                    `;
+                    li.innerHTML = `<span class="result-name">${result.name}</span><div class="result-bar-container"><div class="result-bar" style="width: ${percentage}%;"></div></div><span class="result-score">${result.score}</span>`;
                     resultsList.appendChild(li);
                 });
-
-                // Derive 5-Point Profile
+                
+                // --- SRD Compliant 5-Point Profile Derivation ---
                 const trinity = motivationScores.slice(0, 3);
-                const duality = motivationScores.slice(-2).reverse(); // reverse to show lowest first
+                
+                // Find conflicts based on the Goal (top score)
+                const goal = trinity[0];
+                const goalIndex = WHEEL_OF_CHANGE.indexOf(goal.color);
+                
+                // External conflict is directly opposite
+                const externalConflictIndex = (goalIndex + Math.floor(WHEEL_OF_CHANGE.length / 2)) % WHEEL_OF_CHANGE.length;
+                const externalConflictColor = WHEEL_OF_CHANGE[externalConflictIndex];
+                
+                // Internal conflict is one step away from the external conflict on the wheel
+                // As per Appendix D, this is the neighbor of the external conflict.
+                const internalConflictIndex = (externalConflictIndex + 1) % WHEEL_OF_CHANGE.length;
+                const internalConflictColor = WHEEL_OF_CHANGE[internalConflictIndex];
+                
+                // Find the full motivation objects for the conflict colors
+                const externalConflict = motivationScores.find(m => m.color === externalConflictColor);
+                const internalConflict = motivationScores.find(m => m.color === internalConflictColor);
 
-                trinityList.innerHTML = trinity.map(m => `<li>${m.name}</li>`).join('');
-                dualityList.innerHTML = duality.map(m => `<li>${m.name}</li>`).join('');
+                trinityList.innerHTML = `
+                    <li><strong>Goal:</strong> ${trinity[0].name} (${trinity[0].color})</li>
+                    <li><strong>Method:</strong> ${trinity[1].name} (${trinity[1].color})</li>
+                    <li><strong>Purpose:</strong> ${trinity[2].name} (${trinity[2].color})</li>
+                `;
+                dualityList.innerHTML = `
+                    <li><strong>External:</strong> ${externalConflict.name} (${externalConflict.color})</li>
+                    <li><strong>Internal:</strong> ${internalConflict.name} (${internalConflict.color})</li>
+                `;
                 
                 resultsSection.style.display = 'block';
                 resultsSection.scrollIntoView();
             }
 
-            // --- INITIALIZATION ---
             initializeQuiz();
             quizForm.addEventListener('submit', calculateResults);
         });

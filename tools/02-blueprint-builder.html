@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychromattica Blueprint Builder</title>
     <style>
-        /* GLOBAL STYLES & ART-DECO THEME */
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
             --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
@@ -13,49 +12,25 @@
             --color-purple: #957fa3; --color-background: #222222;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: var(--color-background);
-            color: var(--color-white);
-            font-family: Calibri, sans-serif;
-            font-size: 12pt;
-            padding: 10px;
-        }
+        body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
         .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         h2, h3, h4 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
         h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
         h4 { color: var(--color-yellow); }
         .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; }
-        
-        button {
-            background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver);
-            padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer;
-            border-radius: 2px; transition: background-color 0.2s, color 0.2s;
-        }
+        button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: background-color 0.2s, color 0.2s; }
         button:hover { background-color: var(--color-silver); color: var(--color-black); }
-
         .button-small { padding: 4px 8px; font-size: 9pt; }
         .remove-button { background-color: var(--color-red); }
-        
-        input[type="text"], input[type="number"], textarea, select {
-            background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white);
-            padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px;
-        }
-        select {
-            -webkit-appearance: none; -moz-appearance: none; appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat; background-position-x: 100%; background-position-y: 5px;
-        }
+        input[type="text"], input[type="number"], textarea, select { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 100%; background-position-y: 5px; }
         select[multiple] { background-image: none; height: 100px; }
         label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
-
-        #output-string {
-            font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a;
-            color: var(--color-yellow); min-height: 80px; resize: vertical;
-        }
+        #output-string { font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a; color: var(--color-yellow); min-height: 80px; resize: vertical; }
         .grid-5, .grid-3, .grid-2 { display: grid; gap: 10px; margin-top: 5px; }
         .grid-5 { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
         .grid-3 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-        .grid-2 { grid-template-columns: 2fr 1fr; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
         .hidden { display: none; }
         .card { background-color: #333; border-left: 3px solid var(--color-blue); padding: 15px; margin-top: 10px; position: relative; }
         .card .remove-button { position: absolute; top: 10px; right: 10px; }
@@ -65,18 +40,16 @@
         hr { border: none; border-top: 1px solid #444; margin: 15px 0; }
         .keyword-option-container { display: flex; gap: 5px; }
         .keyword-option-container > * { flex: 1; }
+        .inline-checkbox { display: inline-flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
     <div class="container" id="builder-container">
-        <!-- OUTPUT SECTION -->
         <div class="section output-section">
             <h2>Generated Blueprint String</h2>
             <textarea id="output-string" readonly></textarea>
             <button id="copy-button" class="button-small" style="margin-top: 10px; float: right;">Copy</button>
         </div>
-
-        <!-- CHARACTER BUILDER -->
         <div class="section">
             <h2>Character Builder</h2>
             <div id="character-builder">
@@ -92,15 +65,21 @@
                 <div><label for="seed-keyword">Seed Keyword</label><select class="keyword-select" id="seed-keyword"></select></div>
                 <div id="awakening-card" class="card">
                     <h4>Level 1: Awakening</h4>
+                    <label class="inline-checkbox"><input type="checkbox" id="focused-awakening-filter"> Use Focused Awakening Filter</label>
                     <div class="grid-3" id="awakening-keywords">
-                        <div><label>Keyword 1</label><select class="keyword-select"></select></div>
-                        <div><label>Keyword 2</label><select class="keyword-select"></select></div>
-                        <div><label>Keyword 3</label><select class="keyword-select"></select></div>
+                        <div><label>Keyword 1</label><select class="keyword-select awakening-kw"></select></div>
+                        <div><label>Keyword 2</label><select class="keyword-select awakening-kw"></select></div>
+                        <div><label>Keyword 3</label><select class="keyword-select awakening-kw"></select></div>
                     </div>
                     <hr>
-                    <label style="display: inline-flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" class="add-flaw-checkbox" data-level="1"> Add Flaw Here
-                    </label>
+                    <h4>Trinity Stat Bonus (+3 Stat Points)</h4>
+                    <div class="grid-3" id="trinity-stats-container">
+                        <div><label id="trinity-goal-label">Goal Stat</label><select class="stat-select" id="trinity-goal-stat"></select></div>
+                        <div><label id="trinity-method-label">Method Stat</label><select class="stat-select" id="trinity-method-stat"></select></div>
+                        <div><label id="trinity-purpose-label">Purpose Stat</label><select class="stat-select" id="trinity-purpose-stat"></select></div>
+                    </div>
+                    <hr>
+                    <label class="inline-checkbox"><input type="checkbox" class="add-flaw-checkbox" data-level="1"> Add Flaw Here</label>
                     <div class="flaw-selectors-container hidden"><div class="grid-2">
                         <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
                         <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
@@ -110,8 +89,6 @@
                 <button id="add-level-button" style="margin-top: 15px;">Add Level</button>
             </div>
         </div>
-
-        <!-- ATTACHMENTS BUILDER -->
         <div class="section">
             <h2>Attachments</h2>
             <div id="attachments-container"></div>
@@ -125,12 +102,13 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
             const STAT_CODES = { 'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn', 'W': 'Wit', 'E': 'Expertise', 'T': 'Technique', 'P': 'Power', 'I': 'Influence', 'F': 'Force' };
             const CIVIL_SYSTEMS = { 'S0': 'Food', 'S1': 'Water', 'S2': 'Shelter', 'S3': 'Infrastructure', 'S4': 'Humanitarian', 'S5': 'Education', 'S6': 'Healthcare', 'S7': 'Government', 'S8': 'Commerce', 'S9': 'Military' };
+            const MOTIVATION_COLORS = {'1':'Silver', '2':'Yellow', '3':'Green', '4':'Black', '5':'Orange', '6':'White', '7':'Red', '8':'Blue', '9':'Purple', '0':'Null'};
+            const COLOR_TO_STAT_ASSOC = { 'Silver': ['M', 'I'], 'Yellow': ['A', 'W'], 'Green': ['B', 'A'], 'Black': ['W', 'P'], 'Orange': ['E', 'T'], 'White': ['T', 'B'], 'Red': ['P', 'F'], 'Blue': ['I', 'E'], 'Purple': ['F', 'M'], 'Null': Object.keys(STAT_CODES) };
             const KEYWORDS = {'00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:'Traveler',options:{'0':'Walk','1':'Teleport','2':'Fly','3':'Dig','4':'Permeation','5':'Jump','6':'Parkour','7':'Climb','8':'Swim','9':'Lightfoot'}},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:'Sensor',options:{'0':'Karma','1':'Keywords','2':'Echolocation','3':'Vibration','4':'Energy','5':'Materials','6':'Life','7':'Infrared','8':'Emotion','9':'The Weave'}},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
 
             const container = document.getElementById('builder-container');
@@ -138,12 +116,9 @@
 
             function createDropdown(options, placeholder = '', filterFn = () => true) {
                 const select = document.createElement('select');
-                if(placeholder) select.innerHTML = `<option value="">${placeholder}</option>`;
+                if (placeholder) select.innerHTML = `<option value="">${placeholder}</option>`;
                 Object.entries(options).filter(filterFn).forEach(([value, name]) => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = name;
-                    select.appendChild(option);
+                    select.add(new Option(name, value));
                 });
                 return select;
             }
@@ -176,7 +151,7 @@
                         <div><label>Stat Point (Pick 1)</label><div class="stat-selectors"></div></div>
                     </div>
                     <hr>
-                    <label style="display: inline-flex; align-items: center; gap: 10px;"><input type="checkbox" class="add-flaw-checkbox" data-level="${currentLevel}"> Add Flaw Here</label>
+                    <label class="inline-checkbox"><input type="checkbox" class="add-flaw-checkbox" data-level="${currentLevel}"> Add Flaw Here</label>
                     <div class="flaw-selectors-container hidden"><div class="grid-2">
                         <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
                         <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
@@ -218,14 +193,13 @@
                         <div><label>Civil Systems</label><select class="faction-systems" multiple></select></div>
                         <div><label>Keywords</label><div class="keyword-slots"></div><button class="button-small add-faction-keyword">Add Keyword</button></div>
                     `;
-                    card.querySelectorAll('#faction-profile-selectors').forEach(container => {
-                         ['Goal','Method','Purpose','External','Internal'].forEach(name => {
-                            const div = document.createElement('div');
-                            div.innerHTML = `<label>${name}</label>`;
-                            div.appendChild(createDropdown(MOTIVATIONS));
-                            container.appendChild(div);
-                         });
-                    });
+                    const profileContainer = card.querySelector('#faction-profile-selectors');
+                     ['Goal','Method','Purpose','External','Internal'].forEach(name => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<label>${name}</label>`;
+                        div.appendChild(createDropdown(MOTIVATIONS, 'Select...'));
+                        profileContainer.appendChild(div);
+                     });
                     const systemSelect = card.querySelector('.faction-systems');
                     Object.entries(CIVIL_SYSTEMS).forEach(([val, name]) => systemSelect.add(new Option(name, val)));
                 }
@@ -235,6 +209,7 @@
             }
 
             function getKeywordString(selectElement) {
+                if (!selectElement || !selectElement.value) return '';
                 let str = selectElement.value;
                 const wrapper = selectElement.parentElement;
                 const optionSelect = wrapper.querySelector('.keyword-option-select');
@@ -245,67 +220,119 @@
             }
 
             function generateBlueprintString() {
-                let parts = [];
-                const profile = Array.from(document.getElementById('profile-selectors').querySelectorAll('select')).map(s => s.value || '0').join('');
-                
-                let progressionSegments = new Map();
+                const progressionSegments = new Map();
                 const addSegment = (level, part) => {
+                    if (!part) return;
                     if (!progressionSegments.has(level)) progressionSegments.set(level, []);
-                    if (part) progressionSegments.get(level).push(part);
+                    progressionSegments.get(level).push(part);
                 };
 
-                const seedKw = document.getElementById('seed-keyword');
-                if (seedKw.value) addSegment(0, getKeywordString(seedKw));
+                const profile = Array.from(document.getElementById('profile-selectors').querySelectorAll('select')).map(s => s.value || '0').join('');
+                addSegment(0, getKeywordString(document.getElementById('seed-keyword')));
 
-                const awakeningKws = Array.from(document.getElementById('awakening-keywords').querySelectorAll('select')).filter(s => s.value);
-                if (awakeningKws.length > 0) addSegment(1, awakeningKws.map(getKeywordString).join('.'));
+                // Level 1: Awakening KWs + Trinity Stats
+                const awakeningKws = Array.from(document.getElementById('awakening-keywords').querySelectorAll('select')).map(getKeywordString).filter(Boolean);
+                if (awakeningKws.length > 0) addSegment(1, awakeningKws.join('.'));
+                
+                const trinityStats = Array.from(document.getElementById('trinity-stats-container').querySelectorAll('select')).map(s => s.value).filter(Boolean);
+                if (trinityStats.length > 0) addSegment(1, trinityStats.join(''));
 
-                Array.from(document.getElementById('level-up-container').children).forEach(card => {
+                // Higher Levels
+                document.querySelectorAll('.level-up-card').forEach(card => {
                     const level = parseInt(card.dataset.level);
-                    const kws = Array.from(card.querySelectorAll('.keyword-selectors select')).filter(s => s.value);
-                    const stats = Array.from(card.querySelectorAll('.stat-selectors select')).map(s => s.value).filter(Boolean);
-                    if (kws.length > 0) addSegment(level, kws.map(getKeywordString).join('.'));
-                    if (stats.length > 0) addSegment(level, stats.join(''));
+                    const kws = Array.from(card.querySelectorAll('.keyword-selectors select')).map(getKeywordString).filter(Boolean);
+                    const stat = Array.from(card.querySelectorAll('.stat-selectors select')).map(s => s.value).filter(Boolean)[0];
+                    if (kws.length > 0) addSegment(level, kws.join('.'));
+                    if (stat) addSegment(level, stat);
                 });
                 
+                // Flaw Package
                 const checkedFlawBox = document.querySelector('.add-flaw-checkbox:checked');
                 if (checkedFlawBox) {
                     const level = parseInt(checkedFlawBox.dataset.level);
                     const container = checkedFlawBox.closest('.card, #awakening-card');
                     const flaw = container.querySelector('.flaw-keyword-select').value;
                     const comp = container.querySelector('.comp-keyword-select').value;
-                    if(flaw && comp) addSegment(level, `+${flaw}${comp}`);
+                    if (flaw && comp) addSegment(level, `+${flaw}${comp}`);
                 }
 
+                // Assemble Character String
                 let str = `C:${profile}`;
-                const sortedLevels = Array.from(progressionSegments.keys()).sort((a,b)=>a-b);
+                const sortedLevels = Array.from(progressionSegments.keys()).sort((a, b) => a - b);
                 sortedLevels.forEach(level => {
-                    const segmentContent = progressionSegments.get(level).join('.');
-                    if (segmentContent) str += `-${segmentContent}`;
+                    const parts = progressionSegments.get(level);
+                    if (parts && parts.length > 0) {
+                        str += `-${parts.join('.')}`;
+                    }
                 });
-
-                Array.from(document.getElementById('attachments-container').children).forEach(card => {
+                
+                // Assemble Attachments
+                document.querySelectorAll('#attachments-container > .card').forEach(card => {
                     const type = card.dataset.type;
+                    let attachmentStr = '';
                     if (type === 'item') {
                         const level = card.querySelector('.item-level-select').value;
-                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).filter(s => s.value);
-                        if(level){
-                             str += `@I:L${level}`;
-                             if(kws.length > 0) str += `-${kws.map(getKeywordString).join('.')}`;
-                        }
+                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
+                        if(level) attachmentStr = `@I:L${level}` + (kws.length > 0 ? `-${kws.join('.')}` : '');
                     } else if (type === 'animation') {
-                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).filter(s => s.value);
-                         if(kws.length > 0) str += `@A:${kws.map(getKeywordString).join('.')}`;
+                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
+                         if(kws.length > 0) attachmentStr = `@A:${kws.join('.')}`;
                     } else if (type === 'faction') {
                         const facProfile = Array.from(card.querySelectorAll('#faction-profile-selectors select')).map(s => s.value || '0').join('');
                         const facLevel = card.querySelector('.faction-level').value || '0';
                         const systems = Array.from(card.querySelector('.faction-systems').selectedOptions).map(opt => opt.value);
-                        const facKws = Array.from(card.querySelectorAll('.keyword-slots select')).filter(s => s.value);
-                        str += `@F:${facProfile}-L${facLevel}[${systems.join('.')}]-[K${facKws.map(getKeywordString).join('.')}]`;
+                        const facKws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
+                        attachmentStr = `@F:${facProfile}-L${facLevel}[${systems.join('.')}]` + (facKws.length > 0 ? `-[K${facKws.join('.')}]` : '-[]');
                     }
+                    str += attachmentStr;
                 });
                 
                 outputStringEl.value = str;
+            }
+
+            function updateTrinityStatDropdowns() {
+                const goalColor = MOTIVATION_COLORS[document.getElementById('goal').value];
+                const methodColor = MOTIVATION_COLORS[document.getElementById('method').value];
+                const purposeColor = MOTIVATION_COLORS[document.getElementById('purpose').value];
+                
+                const populate = (selectId, labelId, color) => {
+                    const select = document.getElementById(selectId);
+                    const label = document.getElementById(labelId);
+                    select.innerHTML = '';
+                    if(color && COLOR_TO_STAT_ASSOC[color]) {
+                        label.textContent = `${color} Stat`;
+                        COLOR_TO_STAT_ASSOC[color].forEach(statCode => {
+                             select.add(new Option(STAT_CODES[statCode], statCode));
+                        });
+                    } else {
+                        label.textContent = `Stat`;
+                    }
+                };
+                
+                populate('trinity-goal-stat', 'trinity-goal-label', goalColor);
+                populate('trinity-method-stat', 'trinity-method-label', methodColor);
+                populate('trinity-purpose-stat', 'trinity-purpose-label', purposeColor);
+            }
+            
+            function updateAwakeningKeywordFilters() {
+                const useFilter = document.getElementById('focused-awakening-filter').checked;
+                const trinityColors = [
+                    document.getElementById('goal').value,
+                    document.getElementById('method').value,
+                    document.getElementById('purpose').value
+                ];
+                
+                document.querySelectorAll('.awakening-kw').forEach(select => {
+                    const currentValue = select.value;
+                    const parent = select.parentElement;
+                    parent.innerHTML = ''; // Clear and rebuild
+                    parent.appendChild(createKeywordDropdown('Select Keyword...', ([code]) => {
+                        if (!useFilter) return true;
+                        const kwColor = code.charAt(0);
+                        return trinityColors.includes(kwColor);
+                    }));
+                    parent.querySelector('select').value = currentValue; // Restore selection if possible
+                });
             }
 
             container.addEventListener('click', e => {
@@ -316,11 +343,8 @@
                 if(e.target.classList.contains('add-anim-keyword') || e.target.classList.contains('add-faction-keyword')) {
                     const keywordSlots = e.target.previousElementSibling;
                     const slot = document.createElement('div');
-                    const labelNum = keywordSlots.children.length;
-                    slot.innerHTML = `<label>Keyword ${labelNum+1}</label>`;
                     slot.appendChild(createKeywordDropdown('Keyword...'));
                     keywordSlots.appendChild(slot);
-                    generateBlueprintString();
                 }
             });
 
@@ -337,34 +361,37 @@
                     }
                 }
                 if(e.target.classList.contains('add-flaw-checkbox')) {
-                    const checkbox = e.target;
-                    const container = checkbox.closest('.card, #awakening-card');
-                    container.querySelector('.flaw-selectors-container').classList.toggle('hidden', !checkbox.checked);
                     document.querySelectorAll('.add-flaw-checkbox').forEach(box => {
-                        if (box !== checkbox) box.disabled = checkbox.checked;
+                        if (box !== e.target) box.checked = false;
+                        const container = box.closest('.card, #awakening-card');
+                        container.querySelector('.flaw-selectors-container').classList.toggle('hidden', !box.checked);
                     });
                 }
                 if (e.target.classList.contains('keyword-select')) {
                     const select = e.target;
                     const wrapper = select.parentElement;
-                    if (wrapper.querySelector('.keyword-option-select')) {
-                        wrapper.querySelector('.keyword-option-select').remove();
-                        wrapper.classList.remove('keyword-option-container');
-                    }
+                    const existingOption = wrapper.querySelector('.keyword-option-select');
+                    if(existingOption) existingOption.remove();
+                    
                     const kwData = KEYWORDS[select.value];
                     if (kwData && kwData.options) {
                         wrapper.classList.add('keyword-option-container');
                         const optionSelect = createDropdown(kwData.options, 'Select Option...');
                         optionSelect.classList.add('keyword-option-select');
                         wrapper.appendChild(optionSelect);
+                    } else {
+                        wrapper.classList.remove('keyword-option-container');
                     }
+                }
+                if (e.target.id.startsWith('goal') || e.target.id.startsWith('method') || e.target.id.startsWith('purpose') || e.target.id === 'focused-awakening-filter') {
+                    updateTrinityStatDropdowns();
+                    updateAwakeningKeywordFilters();
                 }
                 generateBlueprintString();
             });
 
             document.getElementById('add-level-button').addEventListener('click', addLevelUpSection);
             document.getElementById('add-attachment-button').addEventListener('click', () => addAttachment(document.getElementById('add-attachment-type').value));
-            
             document.getElementById('copy-button').addEventListener('click', () => {
                 navigator.clipboard.writeText(outputStringEl.value).then(() => {
                     const btn = document.getElementById('copy-button');
@@ -378,17 +405,16 @@
                     Object.entries(MOTIVATIONS).forEach(([val, name]) => sel.add(new Option(name, val)));
                 });
                 
-                document.querySelectorAll('.keyword-select').forEach(sel => {
-                     sel.parentElement.innerHTML = '';
-                     sel.parentElement.appendChild(createKeywordDropdown('Select Keyword...'));
-                });
-                
+                document.getElementById('seed-keyword').parentElement.replaceChild(createKeywordDropdown('Select Seed Keyword...'), document.getElementById('seed-keyword'));
                 document.querySelectorAll('#awakening-keywords > div').forEach(div => {
                     div.innerHTML = '<label>Keyword</label>';
                     div.appendChild(createKeywordDropdown('Select Keyword...'));
+                    div.querySelector('select').classList.add('awakening-kw');
                 });
                 
                 populateFlawDropdowns(document.getElementById('awakening-card'));
+                updateTrinityStatDropdowns();
+                updateAwakeningKeywordFilters();
                 generateBlueprintString();
             }
 
