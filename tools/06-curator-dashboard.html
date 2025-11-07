@@ -111,10 +111,9 @@
             const STAT_NAMES = ['M', 'A', 'B', 'W', 'E', 'T', 'P', 'I', 'F'];
             let entityCounter = 0;
             let barrierCounter = 0;
-            let combatants = new Map();
+            const combatants = new Map();
             const initiativeState = { deck: [], discard: [], current: null, selected: null };
 
-            // --- GENERIC CLOCK LOGIC ---
             function setupClock(prefix) {
                 const maxInput = document.getElementById(`${prefix}-max`);
                 const pipsContainer = document.getElementById(`${prefix}-pips`);
@@ -123,7 +122,7 @@
                 function redrawPips() {
                     let max = parseInt(maxInput.value) || 0;
                     let current = pipsContainer.querySelectorAll('.pip.active').length;
-                    if (pipsContainer.children.length === 0) current = max; // Initialize full
+                    if (pipsContainer.children.length === 0) current = max;
                     
                     pipsContainer.innerHTML = '';
                     for (let i = 0; i < max; i++) {
@@ -147,7 +146,7 @@
                         const pips = Array.from(pipsContainer.children);
                         const currentActive = pips.filter(p => p.classList.contains('active')).length;
                         let newActive = targetIndex + 1;
-                        if (currentActive === targetIndex + 1) newActive = targetIndex;
+                        if (currentActive === targetIndex + 1 && targetIndex === currentActive - 1) newActive = targetIndex;
                         pips.forEach((pip, i) => pip.classList.toggle('active', i < newActive));
                         updateClockValue();
                     }
@@ -156,8 +155,7 @@
                 maxInput.addEventListener('change', redrawPips);
                 redrawPips();
             }
-
-            // --- INITIATIVE LOGIC ---
+            
             const startCombatBtn = document.getElementById('start-combat-button');
             const drawCardBtn = document.getElementById('draw-card-button');
             const passTurnBtn = document.getElementById('pass-turn-button');
@@ -179,15 +177,19 @@
                 });
                 document.getElementById('current-turn-card').textContent = initiativeState.current || '';
                 
-                drawCardBtn.disabled = initiativeState.deck.length === 0 || !initiativeState.current && initiativeState.deck.length > 0 && startCombatBtn.disabled === false;
+                const hasDeck = initiativeState.deck.length > 0;
+                const inCombat = startCombatBtn.disabled;
+
+                drawCardBtn.disabled = !hasDeck || (!initiativeState.current && hasDeck && !inCombat);
                 passTurnBtn.disabled = !initiativeState.current;
-                startCombatBtn.disabled = initiativeState.deck.length > 0;
-                startCombatBtn.textContent = (initiativeState.deck.length === 0 && (initiativeState.discard.length > 0 || initiativeState.current)) ? "Next Round" : "Start Combat";
+                startCombatBtn.disabled = hasDeck;
+                startCombatBtn.textContent = (!hasDeck && (initiativeState.discard.length > 0 || initiativeState.current)) ? "Next Round" : "Start Round";
             }
-            
+
             startCombatBtn.addEventListener('click', () => {
                 const allNames = Array.from(combatants.keys());
                 initiativeState.deck = [...allNames, ...initiativeState.discard.filter(n => !combatants.has(n))];
+                if (initiativeState.current) initiativeState.deck.push(initiativeState.current);
                 initiativeState.discard = [];
                 initiativeState.current = null;
                 shuffleArray(initiativeState.deck);
@@ -208,7 +210,7 @@
                 if (!initiativeState.current) return;
                 const combatant = combatants.get(initiativeState.current);
                 if (combatant && combatant.isEntity && combatant.actions.current > 0) {
-                    initiativeState.deck.push(initiativeState.current); // To bottom of deck
+                    initiativeState.deck.push(initiativeState.current);
                 } else {
                     initiativeState.discard.push(initiativeState.current);
                 }
@@ -246,7 +248,6 @@
                  }
             }
 
-            // --- ENTITY & BARRIER MANAGEMENT ---
             function addEntity() {
                 entityCounter++;
                 const card = document.createElement('div');
@@ -276,7 +277,6 @@
                 initiativeState.discard.push(entityName);
                 updateSituationClockMax();
                 renderInitiative();
-
                 ['hp', 'sp', 'ep'].forEach(c => setupClock(`${idPrefix}-${c}`));
             }
 
@@ -284,14 +284,13 @@
                 barrierCounter++;
                 const card = document.createElement('div');
                 card.className = 'card barrier-card';
-                const idPrefix = `barrier-${barrierCounter}`;
                 card.innerHTML = `
                      <div class="card-header"><input type="text" value="Task ${barrierCounter}" placeholder="Barrier/Puzzle Name..."><button class="remove-button button-small">Remove</button></div>
-                    <div class="clock"><div class="clock-header"><span>Task Clock</span><span><span id="${idPrefix}-value">0/6</span> Max: <input type="number" id="${idPrefix}-max" value="6" min="1"></span></div><div class="clock-pips" id="${idPrefix}-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>Task Clock</span><span><span id="barrier-${barrierCounter}-value">0/6</span> Max: <input type="number" id="barrier-${barrierCounter}-max" value="6" min="1"></span></div><div class="clock-pips" id="barrier-${barrierCounter}-pips"></div></div>
                 `;
                 barriersContainer.appendChild(card);
                 updateSituationClockMax();
-                setupClock(idPrefix);
+                setupClock(`barrier-${barrierCounter}`);
             }
             
             function updateSituationClockMax() {
@@ -301,7 +300,6 @@
                 clockInput.dispatchEvent(new Event('change'));
             }
 
-            // --- EVENT DELEGATION & HELPERS ---
             document.body.addEventListener('change', e => {
                 if(e.target.classList.contains('entity-name-input')) {
                     const card = e.target.closest('.card'); const oldName = card.dataset.name; const newName = e.target.value;
@@ -342,7 +340,7 @@
                     if(combatant) {
                         if(e.target.classList.contains('action-minus')) combatant.actions.current = Math.max(0, combatant.actions.current - 1);
                         else combatant.actions.current = Math.min(combatant.actions.max, combatant.actions.current + 1);
-                        renderEntityActions(card.dataset.name);
+                        renderEntityActions(name);
                     }
                  }
             });
@@ -356,7 +354,6 @@
             }
             function shuffleArray(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } }
 
-            // --- INITIALIZATION ---
             setupClock('situation'); setupClock('threat');
             document.getElementById('add-entity-button').addEventListener('click', addEntity);
             document.getElementById('add-barrier-button').addEventListener('click', addBarrier);
