@@ -35,3 +35,10 @@ blockquote p {
 .md-tabs__link {
   font-family: "Oswald", sans-serif;
   color: #000000; /* Change to your desired color */
+
+ body {
+        background-image: url('/assets/background.png'); /* Adjust path as needed */
+        background-repeat: no-repeat;
+        background-size: cover; /* Or other values like 'contain', 'auto' */
+        background-attachment: fixed; /* Optional: fixes the background image during scrolling */
+    }
