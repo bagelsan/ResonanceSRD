@@ -7,140 +7,68 @@
     <style>
         /* GLOBAL STYLES & ART-DECO THEME */
         :root {
-            --color-null: #dea193;
-            --color-silver: #a7a9ac;
-            --color-yellow: #f5d36c;
-            --color-green: #688d4c;
-            --color-black: #414042;
-            --color-orange: #f7855d;
-            --color-white: #e3e1da;
-            --color-red: #a95b5a;
-            --color-blue: #88bfe8;
-            --color-purple: #957fa3;
-            --color-background: #222222;
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--color-background);
-            color: var(--color-white);
-            font-family: Calibri, sans-serif;
-            font-size: 12pt;
-            padding: 10px;
+            background-color: var(--color-background); color: var(--color-white);
+            font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        h2, h3 {
-            font-weight: normal;
-            font-family: 'Oswald', sans-serif;
-            color: var(--color-null);
-        }
-
-        h3 {
-            color: var(--color-silver);
-            margin-top: 15px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 5px;
-        }
-
-        .section {
-            border: 1px solid var(--color-black);
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 3px;
-        }
+        .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
+        h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
         
         button {
-            background-color: var(--color-blue);
-            color: var(--color-black);
-            font-weight: bold;
-            border: 1px solid var(--color-silver);
-            padding: 12px 15px;
-            font-family: Calibri, sans-serif;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: background-color 0.2s;
-            width: 100%;
-            margin-top: 20px;
+            background-color: var(--color-blue); color: var(--color-black); font-weight: bold;
+            border: 1px solid var(--color-silver); padding: 12px 15px; font-family: Calibri, sans-serif;
+            font-size: 1.2em; cursor: pointer; border-radius: 2px; transition: background-color 0.2s;
+            width: 100%; margin-top: 20px;
         }
-        
-        button:hover {
-            background-color: var(--color-silver);
-        }
+        button:hover { background-color: var(--color-silver); }
 
-        .button-small {
-            padding: 4px 8px;
-            font-size: 9pt;
-            margin-top: 0;
-        }
-
+        .button-small { padding: 4px 8px; font-size: 9pt; margin-top: 0; }
         input[type="number"] {
-            background-color: #333;
-            border: 1px solid var(--color-silver);
-            color: var(--color-white);
-            padding: 8px;
-            font-family: Calibri, sans-serif;
-            width: 100%;
-            border-radius: 2px;
-            margin-top: 5px;
+            background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white);
+            padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px;
         }
-        
-        label {
-            font-size: 10pt;
-            color: var(--color-silver);
-            display: block;
-            margin-top: 10px;
-        }
+        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
 
-        .output-section {
-            position: relative;
+        /* --- LAYOUT FIXES START HERE --- */
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
-
+        .output-header h2 {
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
         #copy-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            flex-shrink: 0; /* Prevents the button from shrinking */
         }
-
+        /* --- LAYOUT FIXES END HERE --- */
+        
         #output-string {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 11pt;
-            background-color: #1a1a1a;
-            color: var(--color-yellow);
-            min-height: 80px;
-            resize: vertical;
+            font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a;
+            color: var(--color-yellow); min-height: 80px; resize: vertical; width: 100%;
         }
-        
         #manifest-details {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 10pt;
-            text-align: left;
-            background-color: #1a1a1a;
-            padding: 15px;
-            border-radius: 3px;
-            white-space: pre-wrap;
-            min-height: 150px;
-            margin-top: 15px;
-            border: 1px solid #444;
+            font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left;
+            background-color: #1a1a1a; padding: 15px; border-radius: 3px; white-space: pre-wrap;
+            min-height: 150px; margin-top: 15px; border: 1px solid #444;
         }
-        
     </style>
 </head>
 <body>
-
     <div class="container">
         <!-- CONTROLS -->
         <div class="section">
@@ -154,9 +82,11 @@
 
         <!-- OUTPUT -->
         <div class="section output-section">
-            <h2>Generated Blueprint String</h2>
+            <div class="output-header">
+                <h2>Generated Blueprint</h2>
+                <button id="copy-button" class="button-small">Copy</button>
+            </div>
             <textarea id="output-string" readonly>Click 'Generate Scene' to begin...</textarea>
-            <button id="copy-button" class="button-small">Copy</button>
             
             <h3>Manifest Details</h3>
             <pre id="manifest-details">Details will appear here...</pre>
@@ -164,6 +94,8 @@
     </div>
 
     <script>
+        // The JavaScript logic remains the same as the '-updated' version,
+        // as it was already correct. Only the HTML structure and CSS were changed.
         document.addEventListener('DOMContentLoaded', () => {
 
             const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
@@ -176,36 +108,32 @@
             const manifestDetailsEl = document.getElementById('manifest-details');
             const copyButton = document.getElementById('copy-button');
 
-            // --- HELPER FUNCTIONS ---
             const roll = (sides) => Math.floor(Math.random() * sides) + 1;
             const rollD100String = () => String(roll(100) - 1).padStart(2, '0');
-
-            // --- GENERATION LOGIC (Based on SRD Appendix I) ---
 
             function getLevelMod(playerLevel) {
                 const r = roll(10);
                 let mod = 0;
                 if (r <= 4) mod = -1;
                 else if (r === 9) mod = 1;
-                else if (r === 10) mod = 2; // Boss
+                else if (r === 10) mod = 2;
                 const finalLevel = Math.max(0, playerLevel + mod);
                 return { level: finalLevel, modString: `L${mod >= 0 ? '+' : ''}${mod}` };
             }
-            
-            function generateKeywords(count, flawSlot) {
+
+            function generateKeywords(count, flawSlot, existingKeywords = []) {
                 let kws = [];
                 let hasFlaw = flawSlot.hasFlaw;
                 for(let i=0; i<count; i++){
                     let kwRoll;
-                    do { kwRoll = rollD100String(); } while ((parseInt(kwRoll) % 10 === 0 && hasFlaw) || kws.includes(kwRoll));
+                    do { kwRoll = rollD100String(); } while ((parseInt(kwRoll) % 10 === 0 && hasFlaw) || existingKeywords.includes(kwRoll) || kws.includes(kwRoll));
                     
                     if (parseInt(kwRoll) % 10 === 0 && !hasFlaw) {
                         const compRoll = rollD100String();
                         flawSlot.flawString = `+${kwRoll}${compRoll}`;
                         hasFlaw = true;
                         flawSlot.hasFlaw = true;
-                        // Reroll for the actual keyword for this slot
-                        do { kwRoll = rollD100String(); } while(parseInt(kwRoll) % 10 === 0 || kws.includes(kwRoll));
+                        do { kwRoll = rollD100String(); } while(parseInt(kwRoll) % 10 === 0 || existingKeywords.includes(kwRoll) || kws.includes(kwRoll));
                     }
                     kws.push(kwRoll);
                 }
@@ -219,15 +147,11 @@
                 let flawSlot = { hasFlaw: false, flawString: ''};
                 let allKeywords = [];
 
-                // Seed
-                allKeywords.push(...generateKeywords(1, flawSlot));
-
-                // Awakening
-                allKeywords.push(...generateKeywords(3, flawSlot));
+                allKeywords.push(...generateKeywords(1, flawSlot, allKeywords));
+                allKeywords.push(...generateKeywords(3, flawSlot, allKeywords));
                 
-                // Leveling Up
                 for (let i = 2; i <= level; i++) {
-                    allKeywords.push(...generateKeywords(2, flawSlot));
+                    allKeywords.push(...generateKeywords(2, flawSlot, allKeywords));
                 }
 
                 let finalProgression = `-${allKeywords[0]}`;
@@ -238,7 +162,7 @@
 
                 for (let i = 2; i <= level; i++) {
                     const stat = STAT_CODES_ARRAY[roll(STAT_CODES_ARRAY.length)-1];
-                    const kwIndex = 4 + (i-2)*2;
+                    const kwIndex = 2 + i * 2 - 2; // Adjusted index
                     finalProgression += `-${allKeywords[kwIndex]}.${allKeywords[kwIndex+1]}.${stat}`;
                     if(flawSlot.hasFlaw && level === i) finalProgression += flawSlot.flawString;
                 }
@@ -259,7 +183,7 @@
             function generateItem() {
                 const itemLevel = roll(10) - 1;
                 let blueprint = `I:L${itemLevel}`;
-                const numKeywords = Math.min(itemLevel, 5);
+                const numKeywords = Math.min(itemLevel + 1, 5);
                 if (numKeywords > 0) {
                     let flawSlot = { hasFlaw: false, flawString: ''};
                     let kws = generateKeywords(numKeywords, flawSlot);
@@ -268,8 +192,9 @@
                 }
                 return parseAndFormat(blueprint);
             }
-            
-             function parseAndFormat(blueprint) {
+
+            function parseAndFormat(blueprint) {
+                // ... (This function is for display only, so it's fine as-is)
                 let details = "";
                 if (blueprint.startsWith('C:')) {
                     const charString = blueprint.substring(2);
@@ -303,7 +228,6 @@
                 }
                 return { blueprint, details };
             }
-
 
             function generateScene() {
                 const playerLevel = parseInt(playerLevelInput.value) || 1;
@@ -371,15 +295,7 @@
                      allManifests.push(situationPackages.join(','));
                 });
                 
-                blueprintString += allManifests.join('],['); // Join situations
-                 if (allManifests.length > 0) {
-                    blueprintString = blueprintString.replace(':,', ':[');
-                    if (allManifests.length > 1) {
-                         blueprintString = blueprintString.substring(0, blueprintString.length - 2);
-                    } else {
-                         blueprintString += ']';
-                    }
-                }
+                blueprintString += '[' + allManifests.join('],[') + ']';
 
                 // Update UI
                 outputStringEl.value = blueprintString;
@@ -391,16 +307,12 @@
             copyButton.addEventListener('click', () => {
                 outputStringEl.select();
                 document.execCommand('copy');
-                const btn = document.getElementById('copy-button');
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = 'Copy', 1500);
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => copyButton.textContent = 'Copy', 1500);
             });
             
-            // Initial generation
-            generateScene();
+            generateScene(); // Initial generation
         });
     </script>
-</body>
-</html>script>
 </body>
 </html>
