@@ -1824,9 +1824,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#110-complete-keyword-codex-v101" class="md-nav__link">
+  <a href="#110-complete-keyword-codex-v104" class="md-nav__link">
     <span class="md-ellipsis">
-      11.0 COMPLETE KEYWORD CODEX (v10.1)
+      11.0 COMPLETE KEYWORD CODEX (v10.4)
     </span>
   </a>
   
@@ -2201,9 +2201,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#110-complete-keyword-codex-v101" class="md-nav__link">
+  <a href="#110-complete-keyword-codex-v104" class="md-nav__link">
     <span class="md-ellipsis">
-      11.0 COMPLETE KEYWORD CODEX (v10.1)
+      11.0 COMPLETE KEYWORD CODEX (v10.4)
     </span>
   </a>
   
@@ -2227,7 +2227,7 @@
 
 <h1 id="resonance-matrix-dice">Resonance: Matrix Dice</h1>
 <h3 id="10-objective">1.0 OBJECTIVE</h3>
-<p>The last player with Health Points (HP) remaining is the winner. The game is played until all other players have had their <strong>HP Clock</strong> reduced from 10 to 0.</p>
+<p>The last player with Health Points (HP) remaining is the winner. The game is played until all other players have had their <strong>HP</strong> reduced from 10 to 0.</p>
 <h3 id="20-game-formats">2.0 GAME FORMATS</h3>
 <ul>
 <li><strong>Duel:</strong> A two-player, head-to-head match.</li>
@@ -2243,7 +2243,7 @@
 <h3 id="40-setup">4.0 SETUP</h3>
 <ol>
 <li>Each player takes an Agent Board.</li>
-<li>Set starting values: <strong>HP Clock = 10</strong>, <strong>Focus = 1</strong>, <strong>Karma = 0</strong>.</li>
+<li>Set starting values: <strong>HP = 10</strong>, <strong>Focus = 1</strong>, <strong>Karma = 0</strong>.</li>
 <li><strong>Archetype Declaration:</strong> Each player chooses a <strong>Primary Color</strong> and two <strong>Secondary Colors</strong> to form their 3-Color Archetype.</li>
 <li>Determine the first player. Play proceeds clockwise.</li>
 </ol>
@@ -2262,6 +2262,7 @@
 </ul>
 </li>
 <li>An activation targeting <strong>yourself</strong> is automatically successful.</li>
+<li>Losing resources to pay the cost of a <code>Respond</code> action does not count as a successful outcome for the attacker.</li>
 </ul>
 </li>
 </ul>
@@ -2269,7 +2270,7 @@
 <p class="admonition-title">Damage vs. Life Loss</p>
 <ul>
 <li><strong>Damage:</strong> The reduction of HP that occurs from an activation's resolution. Effects that trigger "when you take damage" only apply to this. Damage can often be <code>Resisted</code>.</li>
-<li><strong>Life Loss:</strong> The reduction of HP from paying costs (e.g., from a keyword effect) or from non-activation effects. This is not considered "damage" and cannot be <code>Resisted</code>.</li>
+<li><strong>Life Loss:</strong> The reduction of HP from paying costs or from non-activation effects. This is not considered "damage" and cannot be <code>Resisted</code>.</li>
 </ul>
 </div>
 <h3 id="60-the-core-loop-turn-structure">6.0 THE CORE LOOP: TURN STRUCTURE</h3>
@@ -2300,7 +2301,7 @@
 <li><strong>Resist:</strong> Spend any Keyword Token to prevent 1 damage. You may also spend 2 Karma to prevent 1 damage.</li>
 <li><strong>Avoid:</strong> To <code>Avoid</code>, you must spend Keyword Tokens from your Matrix to exactly match the <strong>color</strong> of each token the active player <strong>spent</strong> for their activation. If the cost is paid, the entire instance of the activation is negated.<ul>
 <li>Your Focus does not limit the number of tokens you can spend to pay an <code>Avoid</code> cost.</li>
-<li>Tokens that were "carried" by a <code>.0 Flaw</code> effect are not considered 'spent' and do not need to be matched.</li>
+<li>"Spent" tokens are those that count toward the attacker's Focus limit. Tokens included via a <code>.0 Flaw</code> or <code>.3 Quirk</code> effect are not considered 'spent' and do not need to be matched.</li>
 </ul>
 </li>
 </ul>
@@ -2327,7 +2328,7 @@
 <h4 id="82-tags-boosts-statuses">8.2 Tags (Boosts &amp; Statuses)</h4>
 <ul>
 <li><strong>Boosts</strong> (self-targeted via <code>.4</code> keywords) are always successfully applied.</li>
-<li><strong>Statuses</strong> (opponent-targeted via <code>.5</code> keywords) are only applied if the activation is <strong>successful</strong>.</li>
+<li><strong>Statuses</strong> (opponent-targeted via <code>.5</code> keywords) are conditional on a <strong>successful activation</strong>.</li>
 <li>Multiple instances of the same tag on a player stack and resolve independently.</li>
 </ul>
 <h4 id="83-entity-rules">8.3 Entity Rules</h4>
@@ -2378,7 +2379,7 @@
 <ul>
 <li><strong>.0 Flaw:</strong> Suffer a drawback to use another token's effect without spending it.</li>
 <li><strong>.1 Gift:</strong> Utility effects. Can be spent during the <code>Ready</code> phase for 1 Karma instead of their normal effect.</li>
-<li><strong>.2 Talent:</strong> Permanent upgrades. <code>Resonance Lock-In</code> cost is reduced to 2 identical tokens.</li>
+<li><strong>.2 Talent:</strong> Permanent upgrades. A <code>Resonance Lock-In</code> for a Talent costs <strong>2 identical tokens</strong> (instead of the usual 3).</li>
 <li><strong>.3 Quirk:</strong> Free "rider" effects that can be added to an activation without costing Focus (limit 1 Quirk per activation).</li>
 <li><strong>.4 Boost:</strong> Applies a beneficial, guaranteed Boost Tag to yourself.</li>
 <li><strong>.5 Status:</strong> Applies a detrimental Status Tag to an opponent, but only on a <strong>successful activation</strong>.</li>
@@ -2388,7 +2389,7 @@
 <li><strong>.9 Unique:</strong> Game-altering "ultimate" abilities.</li>
 </ul>
 <hr />
-<h3 id="110-complete-keyword-codex-v101"><strong>11.0 COMPLETE KEYWORD CODEX (v10.1)</strong></h3>
+<h3 id="110-complete-keyword-codex-v104"><strong>11.0 COMPLETE KEYWORD CODEX (v10.4)</strong></h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:10"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><input id="__tabbed_1_7" name="__tabbed_1" type="radio" /><input id="__tabbed_1_8" name="__tabbed_1" type="radio" /><input id="__tabbed_1_9" name="__tabbed_1" type="radio" /><input id="__tabbed_1_10" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Null [0]</label><label for="__tabbed_1_2">Silver [1]</label><label for="__tabbed_1_3">Yellow [2]</label><label for="__tabbed_1_4">Green [3]</label><label for="__tabbed_1_5">Black [4]</label><label for="__tabbed_1_6">Orange [5]</label><label for="__tabbed_1_7">White [6]</label><label for="__tabbed_1_8">Red [7]</label><label for="__tabbed_1_9">Blue [8]</label><label for="__tabbed_1_10">Purple [9]</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -2548,7 +2549,7 @@
 </ul>
 </li>
 <li><strong>[2.8] Rapid (.Drive):</strong><ul>
-<li><em>Active:</em> This activation's damage is dealt as a sequence of 1-damage instances. Only the first successful instance can apply tags.</li>
+<li><em>Active:</em> This activation's damage is dealt as a sequence of 1-damage instances. Only the first successful instance can apply tags. <em>(Note: Each instance of 1 damage in the sequence can be <code>Resisted</code> independently.)</em></li>
 <li><em>Passive:</em> Damage from your Basic Activations and Karma Surges is dealt as a sequence of 1-damage instances.</li>
 </ul>
 </li>
@@ -2797,7 +2798,7 @@
 </li>
 <li><strong>[7.2] Font (.Talent):</strong><ul>
 <li><em>Active:</em> For this activation, you may pay Karma costs with HP, or HP costs with Karma.</li>
-<li><em>Passive:</em> Once per turn during your <code>Ready</code> phase, you may suffer 1 Life Loss to roll an additional d10 for free.</li>
+<li><em>Passive:</em> Once per turn during your <code>Ready</code> phase, you may suffer 1 Life Loss to roll an additional <strong>Primary Color</strong> d10 for free.</li>
 </ul>
 </li>
 <li><strong>[7.3] Insulated (.Quirk):</strong><ul>
@@ -2924,7 +2925,7 @@
 </ul>
 </li>
 <li><strong>[9.5] Nullify (.Status):</strong><ul>
-<li><em>Active:</em> If this activation is successful, you may choose one of the target's active Passive Effects and permanently remove it.</li>
+<li><em>Active:</em> If successful, you may choose one of the target's active Passive Effects. That Passive is removed, and the Keyword Tokens the target spent to perform that <code>Resonance Lock-In</code> are returned to their Matrix.</li>
 <li><em>Passive:</em> Any Status you apply can be a <code>Nullify</code> effect instead.</li>
 </ul>
 </li>
@@ -2944,7 +2945,7 @@
 </ul>
 </li>
 <li><strong>[9.9] Channel (.Unique):</strong><ul>
-<li><em>Active:</em> If successful, you may spend 3 additional tokens. If you do, choose one of the target's active Passives and permanently gain a copy of it.</li>
+<li><em>Active:</em> If successful, you may spend 3 additional tokens. If you do, choose one of the target's active Passives. Generate copies of the tokens the target spent to perform that <code>Resonance Lock-In</code> and place them on your Matrix. The target's Passive is unaffected.</li>
 <li><em>Passive:</em> When you perform a <code>Resonance Lock-In</code> or use <code>Shift</code>, you may generate a Primary Color token for free.</li>
 </ul>
 </li>
