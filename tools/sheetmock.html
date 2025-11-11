@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychromattica Character-Only Sheet</title>
+    <style>
+        /* --- Universal Styles & Print Optimization --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Roboto+Condensed:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 10pt;
+            background-color: #FFF;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            width: 8.5in;
+            height: 11in;
+            padding: 0.5in;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr; /* Left column slightly wider */
+            grid-template-rows: auto auto 1fr;
+            gap: 20px;
+            grid-template-areas:
+                "header header"
+                "identity keywords"
+                "core-stats keywords"
+                "dynamic keywords";
+        }
+
+        h1, h2, h3 {
+            font-family: 'Roboto Condensed', sans-serif;
+            text-transform: uppercase;
+            margin: 0 0 5px 0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        
+        h1 { font-size: 24pt; text-align: center; border: none; padding-bottom: 10px; }
+        h2 { font-size: 14pt; }
+        h3 { font-size: 11pt; border-bottom-width: 1px; }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-line {
+            border-bottom: 1px solid #999;
+            flex-grow: 1;
+            margin-left: 8px;
+        }
+        
+        .labeled-field {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 8px;
+            font-size: 9pt;
+        }
+        .labeled-field strong {
+            white-space: nowrap;
+        }
+
+        /* --- Header Section --- */
+        .header {
+            grid-area: header;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* --- NEW: Identity Section --- */
+        .identity { grid-area: identity; }
+        
+        /* --- Core Stats & Values --- */
+        .core-stats { grid-area: core-stats; }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .stat-box { border: 1px solid #999; text-align: center; }
+        .stat-box .stat-label { background-color: #eee; font-weight: bold; padding: 3px; font-size: 8pt; }
+        .stat-box .stat-value { font-size: 18pt; padding: 5px; min-height: 25px; }
+
+        .resource-clocks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .clock-box { text-align: center; }
+        .clock-value { border: 2px solid #333; height: 50px; width: 100%; margin-top: 5px; }
+        .derived-values { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* --- Keywords & Abilities (EXPANDED) --- */
+        .keywords { 
+            grid-area: keywords; 
+            grid-row: 2 / 5; /* Span all three rows */
+        }
+        .keywords-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            overflow: auto; /* For screen view */
+        }
+        .keywords-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px; /* Reduced for density */
+        }
+        .passive-slot {
+            width: 15px; height: 15px;
+            border: 1px solid #999;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .flaw-section {
+            margin-top: 15px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px dashed #ccc;
+        }
+        
+        /* --- Dynamic Tracking --- */
+        .dynamic-tracking { grid-area: dynamic; }
+        .tag-pools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-grow: 1; }
+        .tag-pool { height: 100%; }
+        .tag-pool ul {
+            list-style: none; padding: 0; margin: 0;
+            height: calc(100% - 30px);
+            border: 1px solid #eee; padding: 5px;
+        }
+        .karma-tracker { margin-bottom: 15px; text-align: center; }
+        .karma-value { font-size: 24pt; border: 2px solid #333; padding: 5px; margin-top: 5px; }
+        
+        .conditions-list {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 10px;
+        }
+        .condition-item { display: flex; align-items: center; font-size: 9pt; }
+        .condition-box {
+            width: 10px; height: 10px;
+            border: 1px solid #999;
+            margin-right: 6px;
+        }
+
+
+        /* --- Print Specific Adjustments --- */
+        @media print {
+            body {
+                background-color: #fff;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .page-container {
+                width: 100%; height: 100%; padding: 0;
+                gap: 15px;
+            }
+            .section { border: 1px solid #aaa; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        
+        <!-- ==================== HEADER ==================== -->
+        <header style="grid-area: header;">
+            <h1>Psychromattica</h1>
+            <div class="header">
+                <div class="header-field"><div class="labeled-field"><strong>Character:</strong><span class="input-line"></span></div></div>
+                <div class="header-field"><div class="labeled-field"><strong>Player:</strong><span class="input-line"></span></div></div>
+                <div class="header-field"><div class="labeled-field"><strong>Level:</strong><span class="input-line"></span></div></div>
+            </div>
+        </header>
+
+        <!-- ==================== IDENTITY ==================== -->
+        <section class="section identity">
+            <h2>Identity</h2>
+            <h3>5-Psychroma Profile</h3>
+            <div class="labeled-field"><strong>Goal:</strong><span class="input-line"></span></div>
+            <div class="labeled-field"><strong>Method:</strong><span class="input-line"></span></div>
+            <div class="labeled-field"><strong>Purpose:</strong><span class="input-line"></span></div>
+            <div class="labeled-field" style="margin-top:10px;"><strong>External Conflict:</strong><span class="input-line"></span></div>
+            <div class="labeled-field"><strong>Internal Conflict:</strong><span class="input-line"></span></div>
+        </section>
+
+        <!-- ==================== CORE STATS & VALUES ==================== -->
+        <section class="section core-stats">
+            <h2>Core Stats & Values</h2>
+            <div class="stat-grid">
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Movement (M)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Alacrity (A)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Brawn (B)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Wit (W)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Expertise (E)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Technique (T)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Power (P)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Influence (I)</div></div>
+                <div class="stat-box"><div class="stat-value"></div><div class="stat-label">Force (F)</div></div>
+            </div>
+
+            <div class="resource-clocks">
+                <div class="clock-box"><strong>HP</strong><div class="clock-value"></div></div>
+                <div class="clock-box"><strong>SP</strong><div class="clock-value"></div></div>
+                <div class="clock-box"><strong>EP</strong><div class="clock-value"></div></div>
+            </div>
+
+            <h3 style="margin-top: 15px;">Derived Values</h3>
+            <div class="derived-values">
+                <div class="labeled-field"><strong>Resistance:</strong><span class="input-line"></span></div>
+                <div class="labeled-field"><strong>Innate Slots:</strong><span class="input-line"></span></div>
+                <div class="labeled-field"><strong>Gear Slots:</strong><span class="input-line"></span></div>
+            </div>
+        </section>
+
+        <!-- ==================== DYNAMIC TRACKING ==================== -->
+        <section class="section dynamic-tracking">
+            <h2>Dynamic Tracking</h2>
+            <div class="karma-tracker">
+                <h3>Karma</h3><div class="karma-value"></div>
+            </div>
+            <div class="tag-pools">
+                <div class="tag-pool"><h3>Status Tags</h3><ul></ul></div>
+                <div class="tag-pool"><h3>Boost Tags</h3><ul></ul></div>
+            </div>
+            <h3 style="margin-top: 15px;">Conditions</h3>
+            <div class="conditions-list">
+                <div class="condition-item"><span class="condition-box"></span>Prone</div>
+                <div class="condition-item"><span class="condition-box"></span>Hidden</div>
+                <div class="condition-item"><span class="condition-box"></span>Cover</div>
+                <div class="condition-item"><span class="condition-box"></span>Exhausted</div>
+                <div class="condition-item"><span class="condition-box"></span>High Ground</div>
+                <div class="condition-item"><span class="condition-box"></span>Injured</div>
+                <div class="condition-item"><span class="condition-box"></span>Submerged</div>
+                <div class="condition-item"><span class="condition-box"></span>Unconscious</div>
+                <div class="condition-item"><span class="condition-box"></span>Riding</div>
+                <div class="condition-item"><span class="condition-box"></span>Silenced</div>
+                <div class="condition-item"><span class="condition-box"></span>Mounted</div>
+                <div class="condition-item"><span class="condition-box"></span>Exposed</div>
+            </div>
+        </section>
+
+        <!-- ==================== KEYWORDS & ABILITIES (EXPANDED) ==================== -->
+        <section class="section keywords">
+            <h2>Keywords & Abilities</h2>
+            <p style="font-size: 8pt; margin: -5px 0 10px 0; font-style: italic;">Mark slotted passive abilities.</p>
+            <ul class="keywords-list">
+                <!-- A Level 9 Character has 20 keywords. This provides 22 slots. -->
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+                <li><div class="passive-slot"></div><div class="input-line"></div></li>
+            </ul>
+
+            <div class="flaw-section">
+                <h3>Flaw Package</h3>
+                <div class="labeled-field"><strong>Flaw:</strong><span class="input-line"></span></div>
+                <div class="labeled-field"><strong>Compensation:</strong><span class="input-line"></span></div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
