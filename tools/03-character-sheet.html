@@ -195,11 +195,15 @@
 
                 let learnedKeywordsCount = 0;
                 progressionParts.forEach(part => {
+                    // FIX: Extract and Handle Flaw FIRST so digits don't confuse keyword regex
                     const flawMatch = part.match(/\+(\d{2})(\d{2})/);
                     if (flawMatch) {
                         character.flawPackage = { flaw: flawMatch[1], comp: flawMatch[2] };
                         character.progression.push(`<span class="flaw-entry">(Narrative Event): Gained Flaw (${KEYWORDS[flawMatch[1]]?.name} /w ${KEYWORDS[flawMatch[2]]?.name})</span>`);
+                        // Remove the flaw string from the part so it is not counted as keywords
+                        part = part.replace(flawMatch[0], '');
                     }
+
                     const kwsInPart = part.match(/!?\d{2}(\(\d\))?/g) || [];
                     kwsInPart.forEach(kwString => {
                         const kwMatch = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
