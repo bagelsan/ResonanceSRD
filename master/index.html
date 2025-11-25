@@ -6071,6 +6071,57 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#the-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      THE METRICS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="THE METRICS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-1-the-player-power-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 1: THE PLAYER POWER CURVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-2-difficulty-target-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 2: DIFFICULTY &amp; TARGET NUMBERS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-3-combat-scaling-player-vs-animation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 3: COMBAT SCALING (Player vs. Animation)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-the-rule-of-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      QUICK REFERENCE: THE "RULE OF 10"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -10564,6 +10615,57 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#the-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      THE METRICS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="THE METRICS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-1-the-player-power-curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 1: THE PLAYER POWER CURVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-2-difficulty-target-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 2: DIFFICULTY &amp; TARGET NUMBERS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-3-combat-scaling-player-vs-animation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TABLE 3: COMBAT SCALING (Player vs. Animation)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-the-rule-of-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      QUICK REFERENCE: THE "RULE OF 10"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -10954,6 +11056,7 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li>
 <p>If the EV does not exceed the target's Resistance, the Action has no effect unless a keyword states otherwise.</p>
 </li>
+<li>A <strong>Basic Activation</strong> is an activate action that uses no keywords.</li>
 </ul>
 </li>
 <li>
@@ -10963,6 +11066,10 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li><strong>Targeting an Entity:</strong> A successful Called Shot against an Entity is a Critical Hit, granting the choice of its bonus effects. If this attack reduces the target's HP Clock to 0, they are killed instantly, bypassing the normal Unconscious state (unless a passive keyword or other effect prevents this).</li>
 </ul>
 </li>
+<li>
+<p><strong>Rush:</strong> You may make a free movement action in addition to an Activate Action. Any rolls made related to this action are made with Disadvantage.</p>
+</li>
+<li><strong>Double Tap:</strong> You may make two Basic Activations for the cost of one action. Both Activate actions are made with Disadvantage.</li>
 </ul>
 <p><strong>(4.4) Move Actions (Single Action)</strong></p>
 <ul>
@@ -11622,6 +11729,7 @@ A character can achieve a breakthrough in the heat of battle through a Stress Ro
 * <strong>(3.3.1)</strong> Innate Passive Slots: These are for keywords on the entity.
     * A character has a number of Innate Passive Slots equal to their Force stat .
     * During Downtime, a player may swap which of their known keywords are active in their Innate Passive Slots.
+    * Status Keywords in a Passive Slot grant their active affect to the entity's basic activations.
 * <strong>(3.3.2)</strong> Gear Passive Slots: These are for keywords on equipped items.
     * A character can benefit from a number of passive keywords from their equipped gear equal to their Expertise.
     * As a single action, a character may swap which passive keywords from their equipped gear are active in their Gear Passive Slots.</p>
@@ -12329,7 +12437,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <ul>
 <li><strong>Intent:</strong> The ability to move with extraordinary grace, blending movement and action into one.</li>
 <li><strong>Passive:</strong> You may ignore any hindering environmental effects that would affect movement or positioning.</li>
-<li><strong>Active:</strong> You can apply this keyword to any action to make a Move action as part of the effect.</li>
+<li><strong>Active:</strong> You can apply this keyword to make an activation ignore the penalty of being part of a Rush Action.</li>
 <li><strong>Equipment:</strong> The wielder may make a Move action as part of an action that utilizes this gear.</li>
 </ul>
 <hr />
@@ -16066,6 +16174,174 @@ Describe one piece of gear and choose any <strong>one</strong> keyword for it fr
 <li><strong>71-85:</strong> Item (Loot/Gear)</li>
 <li><strong>86-00:</strong> Rare/Boss (Full Character with +1 Level)</li>
 </ul>
+<hr />
+<h2 id="the-metrics">THE METRICS</h2>
+<p><em>Reference Tables for Difficulty &amp; Scaling</em></p>
+<p>These tables provide a snapshot of the mathematical reality of the Psychromattica system. Use them to gauge the difficulty of a Scene or to improvise Target Numbers on the fly.</p>
+<hr />
+<h3 id="table-1-the-player-power-curve"><strong>TABLE 1: THE PLAYER POWER CURVE</strong></h3>
+<p><em>This table displays the raw mathematical output of a Player Character at key tiers, assuming they are prioritizing their primary stats.</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Agent Rank</strong></th>
+<th style="text-align: center;"><strong>Optimized Stat</strong></th>
+<th style="text-align: center;"><strong>Total Modifier</strong><br><small>(Lvl + Stat)</small></th>
+<th style="text-align: center;"><strong>Average Result</strong><br><small>(Mod + 5.5)</small></th>
+<th style="text-align: center;"><strong>Max Result</strong><br><small>(Mod + 10)</small></th>
+<th style="text-align: center;"><strong>Resistance</strong><br><small>(Passive Def)</small></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Level 0</strong> (Seed)</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><strong>+1</strong></td>
+<td style="text-align: center;"><strong>6.5</strong></td>
+<td style="text-align: center;"><strong>11</strong></td>
+<td style="text-align: center;"><strong>3</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Level 1</strong> (Awakened)</td>
+<td style="text-align: center;">3-4</td>
+<td style="text-align: center;"><strong>+5</strong></td>
+<td style="text-align: center;"><strong>10.5</strong></td>
+<td style="text-align: center;"><strong>15</strong></td>
+<td style="text-align: center;"><strong>9</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Level 3</strong> (Seasoned)</td>
+<td style="text-align: center;">4-5</td>
+<td style="text-align: center;"><strong>+8</strong></td>
+<td style="text-align: center;"><strong>13.5</strong></td>
+<td style="text-align: center;"><strong>18</strong></td>
+<td style="text-align: center;"><strong>11</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Level 5</strong> (Veteran)</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><strong>+10</strong></td>
+<td style="text-align: center;"><strong>15.5</strong></td>
+<td style="text-align: center;"><strong>20</strong></td>
+<td style="text-align: center;"><strong>13</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Level 9</strong> (Legend)</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><strong>+14</strong></td>
+<td style="text-align: center;"><strong>19.5</strong></td>
+<td style="text-align: center;"><strong>24</strong></td>
+<td style="text-align: center;"><strong>15</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Curator's Note:</strong> Note the massive jump between Lvl 0 and Lvl 1. A TN that is "Hard" for a Seed is "Trivial" for an Awakened Agent.</p>
+</blockquote>
+<hr />
+<h3 id="table-2-difficulty-target-numbers"><strong>TABLE 2: DIFFICULTY &amp; TARGET NUMBERS</strong></h3>
+<p><em>Use this to set the Target Number (TN) for Barriers and Puzzles based on how likely you want the players to succeed.</em></p>
+<p><strong>HOW TO READ:</strong>
+*   <strong>Auto:</strong> Success is mathematically guaranteed (unless a fumble occurs).
+*   <strong>Reliable:</strong> Success ~80-90% of the time.
+*   <strong>Coin-Flip:</strong> 50/50 Chance. High tension.
+*   <strong>Risky:</strong> Failure ~70% of the time. Requires Keywords/Karma to pass.
+*   <strong>Impossible:</strong> Cannot succeed on a standard roll without criticals or heavy assistance.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Challenge</strong></th>
+<th style="text-align: left;"><strong>TN</strong></th>
+<th style="text-align: left;"><strong>Level 0</strong></th>
+<th style="text-align: left;"><strong>Level 1</strong></th>
+<th style="text-align: left;"><strong>Level 5</strong></th>
+<th style="text-align: left;"><strong>Level 9</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Trivial</strong></td>
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;">Reliable</td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Easy</strong></td>
+<td style="text-align: left;"><strong>6</strong></td>
+<td style="text-align: left;">Coin-Flip</td>
+<td style="text-align: left;">Reliable</td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Average</strong></td>
+<td style="text-align: left;"><strong>9</strong></td>
+<td style="text-align: left;">Risky</td>
+<td style="text-align: left;">Coin-Flip</td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Difficult</strong></td>
+<td style="text-align: left;"><strong>12</strong></td>
+<td style="text-align: left;">Impossible</td>
+<td style="text-align: left;">Risky</td>
+<td style="text-align: left;">Reliable</td>
+<td style="text-align: left;"><strong>Auto</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Challenging</strong></td>
+<td style="text-align: left;"><strong>15</strong></td>
+<td style="text-align: left;">---</td>
+<td style="text-align: left;">Impossible</td>
+<td style="text-align: left;">Coin-Flip</td>
+<td style="text-align: left;">Reliable</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Heroic</strong></td>
+<td style="text-align: left;"><strong>18</strong></td>
+<td style="text-align: left;">---</td>
+<td style="text-align: left;">---</td>
+<td style="text-align: left;">Risky</td>
+<td style="text-align: left;">Coin-Flip</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mythic</strong></td>
+<td style="text-align: left;"><strong>21+</strong></td>
+<td style="text-align: left;">---</td>
+<td style="text-align: left;">---</td>
+<td style="text-align: left;">Impossible</td>
+<td style="text-align: left;">Risky</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="table-3-combat-scaling-player-vs-animation"><strong>TABLE 3: COMBAT SCALING (Player vs. Animation)</strong></h3>
+<p><em>Use this to balance encounters. It compares the Attacker's average roll against the Defender's Resistance.</em></p>
+<p><strong>VS. MINIONS (Animations Level 0-2)</strong>
+*   <strong>Lvl 1 Player Attacking:</strong> <strong>AUTO-HIT.</strong> (Players feel powerful).
+*   <strong>Minion Attacking Player:</strong> <strong>RISKY.</strong> (Minions need numbers/flanking to hit).</p>
+<p><strong>VS. ELITES (Animations Level 3-6)</strong>
+*   <strong>Lvl 3 Player Attacking:</strong> <strong>RELIABLE.</strong> (~80% Hit Rate).
+*   <strong>Elite Attacking Player:</strong> <strong>RELIABLE.</strong> (Enemies start hitting consistently).
+*   <em>Tactic:</em> Players must start using SP (Dodge/Parry) to survive. Passive Resistance is no longer enough.</p>
+<p><strong>VS. BOSSES (Animations Level 7-9)</strong>
+*   <strong>Lvl 9 Player Attacking:</strong> <strong>RELIABLE.</strong> (~90% Hit Rate).
+*   <strong>Boss Attacking Player:</strong> <strong>AUTO-HIT.</strong> (~95% Hit Rate).
+*   <em>Tactic:</em> High-level combat is "Rocket Tag." Attacks almost never miss. Survival depends entirely on Keywords, HP Clocks, and Active Mitigation.</p>
+<hr />
+<h3 id="quick-reference-the-rule-of-10"><strong>QUICK REFERENCE: THE "RULE OF 10"</strong></h3>
+<p><em>If you need to generate a Barrier TN on the fly without looking at a chart.</em></p>
+<p><strong>The Barrier Formula:</strong>
+Area Level + 10 = Barrier TN</p>
+<ul>
+<li><strong>Level 1 Area :</strong> TN 11. (Standard difficulty for starting heroes).</li>
+<li><strong>Level 5 Area :</strong> TN 15. (Standard difficulty for mid-game heroes).</li>
+<li><strong>Level 9 Area :</strong> TN 19. (Standard difficulty for legends).</li>
+</ul>
+<p><em>This formula ensures the "Win Rate" stays at roughly </em><em>50%</em><em> for a character of the equivalent level.</em></p>
 <blockquote>
 <p>Thanks for Reading !!</p>
 </blockquote>
