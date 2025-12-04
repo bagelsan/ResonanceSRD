@@ -11092,7 +11092,8 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li>
 <p><strong>Rush:</strong> You may make a free movement action in addition to an Activate Action. The Activate action is made with Disadvantage.</p>
 </li>
-<li><strong>Double-tap:</strong> You may make two Basic Activations for the cost of one action. Both Activate actions are made with Disadvantage.</li>
+<li><strong>Blitz:</strong> You may make two Basic Activations for the cost of one action. Both Activate actions are made with Disadvantage.</li>
+<li><strong>Slam:</strong> You may make a Basic Activation and add the Chosen stat an additional time, This Activation is made with Disadvantage.</li>
 </ul>
 <p><strong>(4.4) Move Actions (Single Action)</strong></p>
 <ul>
@@ -11113,8 +11114,8 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li><strong>Combined Strike:</strong> When making an Activate action, for an additional 1 SP, you may add the Level and one keyword from a second equipped item to your effect. This added keyword does not alter the EP cost of the action.</li>
 <li><strong>Feint:</strong> Make an opposed EV roll to make the target Exposed.</li>
 </ul>
-<p><strong>(4.6) Focus &amp; Assess Actions (Consumes all actions for your turn, costs 1 SP)</strong></p>
-<p>When you choose to take a Focus or Assess action, it is the only action you can take during your current turn. You immediately expend any remaining actions you have in your pool for this turn, and your turn ends.</p>
+<p><strong>(4.6) Setup &amp; Assess Actions (Consumes all actions for your turn, costs 1 SP)</strong></p>
+<p>When you choose to take a Setup or Assess action, it is the only action you can take during your current turn. You immediately expend any remaining actions you have in your pool for this turn, and your turn ends.</p>
 <ul>
 <li>
 <p><strong>Recharge:</strong> As a full turn action that costs 1 SP, you may choose one of the following effects:</p>
@@ -11150,7 +11151,7 @@ This is a Focus action (gaining Advantage, learning a Clue) or a Teamwork action
 <li><strong>Combo (1 SP, Ally Reaction):</strong> Add a stat of your choice and one of your known keywords to an ally’s effect.</li>
 <li><strong>Flank (1 SP, Ally Reaction):</strong> If an ally attacks an enemy adjacent to you, grant that enemy Disadvantage on their next action.</li>
 </ul>
-<p><strong>(4.9) Setup &amp; Command Actions (Single Action)</strong></p>
+<p><strong>(4.9)  Misc. Actions (Single Action)</strong></p>
 <ul>
 <li><strong>Reload:</strong> Required by the <code>Material</code> keyword; consumes an item.</li>
 <li><strong>Assist:</strong> Designate one target. All allies gain Advantage on their next action against that target.</li>
@@ -11574,7 +11575,7 @@ All Entities, Characters and Animations, have three Core Values (Clocks): Health
 <li><strong>At 0:</strong> The actor becomes Exhausted and suffers disadvantage on all rolls.</li>
 <li><strong>Recovery:</strong><ul>
 <li>During Situations: Certain effects may restore SP.</li>
-<li>The Recharge Focus Action restores SP equal to your Brawn stat.</li>
+<li>The Recharge Setup Action restores SP equal to your Brawn stat.</li>
 <li>At Initiative: At the start of a Situation, when initiative is rolled, each actor regains SP equal to their Brawn stat. This recovery can exceed their maximum, creating temporary SP.</li>
 <li>During Downtime: SP is fully restored at no Karma cost.</li>
 </ul>
@@ -12286,7 +12287,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <hr />
 <p><strong>0.2 Specialist (Talent)</strong></p>
 <ul>
-<li><strong>Intent:</strong> A deep, focused mastery over a particular domain of one's own capabilities.</li>
+<li><strong>Intent:</strong> A deep, natural or trained mastery over a particular domain of one's own capabilities.</li>
 <li><strong>Passive:</strong> Choose one Stat Grid category (Body, Mind, or Essence). You have Advantage on all non-combat Effort Rolls that use a stat from your chosen category.</li>
 <li><strong>Active:</strong> Once per Situation, you may gain Advantage on a reaction or action that uses a stat of your chosen category.</li>
 <li><strong>Equipment:</strong> The wielder gains Advantage on Effort Rolls made using this item.</li>
@@ -12432,7 +12433,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <hr />
 <p><strong>1.8 Brutal (Drive)</strong></p>
 <ul>
-<li><strong>Intent:</strong> A fighting style focused on overwhelming, devastatingly powerful critical blows.</li>
+<li><strong>Intent:</strong> A fighting style comprised of overwhelming, devastatingly powerful critical blows.</li>
 <li><strong>Passive:</strong> Critical effects from this character may choose 2 different bonus effects instead of 1.</li>
 <li><strong>Active:</strong> Effects with this keyword are a critical hit on a SR result of greater than 6.</li>
 <li><strong>Equipment:</strong> Effects from this gear are a critical hit on a SR result of greater than 6.</li>
@@ -12450,7 +12451,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <hr />
 <p><strong>2.0 Anxious (Flaw)</strong></p>
 <ul>
-<li><strong>Intent:</strong> A nervous disposition that makes it difficult to focus or aim with precision.</li>
+<li><strong>Intent:</strong> A nervous disposition that makes it difficult to concentrate or aim with precision.</li>
 <li><strong>Passive:</strong> Your Setup actions cost double.</li>
 <li><strong>Active:</strong> When you take this Flaw, choose a Compensation Keyword. You may use the Active effect of that keyword as if you knew it.</li>
 <li><strong>Equipment:</strong> Effects from this gear cannot be used to make a called shot.</li>
@@ -12459,7 +12460,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <p><strong>2.1 Acrobatic (Gift)</strong></p>
 <ul>
 <li><strong>Intent:</strong> The ability to move with extraordinary grace, blending movement and action into one.</li>
-<li><strong>Passive:</strong> You may ignore any hindering environmental effects that would affect movement or positioning.</li>
+<li><strong>Passive:</strong> You may ignore any hindering environmental effects that would affect movement or positioning. You can spend 1 SP to replicate any form of travel during a move action.</li>
 <li><strong>Active:</strong> You can apply this keyword to make an activation ignore the penalty of being part of a Rush Action.</li>
 <li><strong>Equipment:</strong> The wielder may make a Move action as part of an action that utilizes this gear.</li>
 </ul>
@@ -12508,7 +12509,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <p><strong>2.7 Focus  (Modifier)</strong></p>
 <ul>
 <li><strong>Intent:</strong> The principle of applying greater force by concentrated effort or material.</li>
-<li><strong>Passive:</strong> Wen making a <strong>Blitz</strong> action, you do not gain disadvantage.</li>
+<li><strong>Passive:</strong> You may add your chosen stat an additional time to a Basic Activation for 1SP</li>
 <li><strong>Active:</strong> You may apply another stat of your choice to the EV calculation, this can duplicate the initial chosen stat.</li>
 <li><strong>Equipment:</strong> If the wielder uses this item for the effect, they may apply another stat of their choice to the EV calculation of its effects.</li>
 </ul>
@@ -12516,7 +12517,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <p><strong>2.8 Rapid (Drive)</strong></p>
 <ul>
 <li><strong>Intent:</strong> A flurry of multiple, successive strikes or triggers.</li>
-<li><strong>Passive:</strong> You can spend 1 SP to replicate any form of travel during a move action.</li>
+<li><strong>Passive:</strong>  You do not receive disadvantage when making a Blitz or Slam action.</li>
 <li><strong>Active:</strong> This effect strikes or triggers a number of additional times equal to your Technique (TEC). You do not add your Level to the EV of these hits; instead, you apply the chosen stat a second time to the EV calculation.</li>
 <li><strong>Equipment:</strong> When used, this item's effect strikes or triggers a number of additional times equal to the wielder's Expertise (EXP). These extra hits do not add the item's Level to the EV; instead, the wielder may apply their Expertise a second time to the EV calculation.</li>
 </ul>
@@ -12632,10 +12633,10 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <hr />
 <h3 id="42-stoic-talent">4.2 Stoic (Talent)</h3>
 <ul>
-<li><strong>Intent:</strong> An unshakable mental focus and economy of action.</li>
-<li><strong>Passive:</strong> You may make a focus action as a single action instead of taking a full turn.</li>
+<li><strong>Intent:</strong> An unshakable mental acuity and economy of action.</li>
+<li><strong>Passive:</strong> You may make a Setup Action as a single action instead of taking a full turn.</li>
 <li><strong>Active:</strong> When this keyword is applied to an effect the EV roll can not have Disadvantage or Advantage applied.</li>
-<li><strong>Equipment:</strong> This gear may be used to perform a designated Focus action as a single action.</li>
+<li><strong>Equipment:</strong> This gear may be used to perform a designated Setup Action as a single action.</li>
 </ul>
 <hr />
 <h3 id="43-ageless-quirk">4.3 Ageless (Quirk)</h3>
@@ -12847,8 +12848,8 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <ul>
 <li><strong>Intent:</strong> An effect that adheres to a target, delivering a payload after a delay.</li>
 <li><strong>Passive:</strong> You can cling to and climb on any solid surface. You can also permanently connect two objects for 1 SP.</li>
-<li><strong>Active:</strong> This effect leaves a persistent object on the target, which triggers again at the end of each of the target’s turns. It can be removed with a Focus action.</li>
-<li><strong>Equipment:</strong> This item leaves an object on a target that triggers at the end of their turn; it can be removed with a Focus action.</li>
+<li><strong>Active:</strong> This effect leaves a persistent object on the target, which triggers again at the end of each of the target’s turns. It can be removed with a Setup Action.</li>
+<li><strong>Equipment:</strong> This item leaves an object on a target that triggers at the end of their turn; it can be removed with a Setup Action.</li>
 </ul>
 <hr />
 <h3 id="67-restore-modifier">6.7 Restore (Modifier)</h3>
@@ -13260,7 +13261,7 @@ Later, the party finds a Level 2 Med-Kit. The Curator says it has two keywords: 
 <li><strong>Primary Stat:</strong> Alacrity</li>
 <li><strong>Secondary Stat:</strong> Wit</li>
 </ul>
-<p>Yellow is the color of freedom and movement. Those that embody the color of yellow are never still, always in motion and always free. Despite this carefree nature they strive to remain grounded and in the present as this permits them to be mentally acute and fantastic information gatherers. They are the perfect candidates for any group of warriors as their sharp skills and senses combined with their focus on speed makes them invaluable and formidable.</p>
+<p>Yellow is the color of freedom and movement. Those that embody the color of yellow are never still, always in motion and always free. Despite this carefree nature they strive to remain grounded and in the present as this permits them to be mentally acute and fantastic information gatherers. They are the perfect candidates for any group of warriors as their sharp skills and senses combined with their emphasis on speed makes them invaluable and formidable.</p>
 <hr />
 <h3 id="yellow-entities">Yellow Entities</h3>
 <hr />
