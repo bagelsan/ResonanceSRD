@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device.width, initial-scale=1.0">
     <title>Psychromattica Dice Roller</title>
+    <!-- LINK TO SHARED ENGINE & DATA -->
+    <script src="PsychromatticaEngine.js"></script>
     <style>
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
@@ -13,10 +15,10 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
-        .container { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
         h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; }
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 20px; border-radius: 3px; }
         button {
             background-color: var(--color-blue); color: var(--color-black); font-weight: bold;
             border: 1px solid var(--color-silver); padding: 12px 15px; font-family: Calibri, sans-serif;
@@ -25,162 +27,223 @@
         }
         button:hover { background-color: var(--color-silver); }
         button:disabled { background-color: var(--color-black); color: #666; cursor: not-allowed; opacity: 0.5; }
-        input[type="number"] { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
-        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
+        input[type="number"] { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; text-align: center; font-size: 1.1em;}
+        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; font-weight: bold; text-transform: uppercase;}
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .advantage-group { margin-top: 10px; }
-        .advantage-group label { display: inline-flex; align-items: center; margin-right: 15px; font-size: 11pt; }
-        .checkbox-group label { display: inline-flex; align-items: center; gap: 8px; font-size: 11pt; }
-        .checkbox-group small { display: block; font-size: 9pt; opacity: 0.7; margin-top: 2px; }
-        .output-section { text-align: center; }
-        #final-result-display { font-size: 4em; font-weight: bold; color: var(--color-yellow); line-height: 1; }
-        #final-result-label { font-size: 1em; color: var(--color-silver); margin-bottom: 10px; }
-        #critical-display { font-size: 1.5em; font-weight: bold; color: var(--color-red); margin-top: 10px; min-height: 2em; }
-        #roll-log { font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left; background-color: #1a1a1a; padding: 10px; border-radius: 3px; white-space: pre-wrap; min-height: 100px; margin-top: 15px; }
+        .advantage-group { display: flex; justify-content: space-between; margin-top: 15px; background: #1a1a1a; padding: 10px; border-radius: 3px; border: 1px solid #444; }
+        .advantage-group label { margin: 0; cursor: pointer; font-size: 11pt; color: var(--color-white); display: flex; align-items: center; gap: 5px; text-transform: none;}
+        .checkbox-group { margin-top: 15px; background: #333; padding: 15px; border-left: 3px solid var(--color-orange); border-radius: 2px; }
+        .checkbox-group label { display: inline-flex; align-items: center; gap: 8px; font-size: 11pt; margin-top: 0; color: var(--color-white); cursor: pointer;}
+        .checkbox-group small { display: block; font-size: 9pt; color: var(--color-silver); margin-top: 5px; line-height: 1.4; }
+        .stress-panel { display: none; margin-top: 15px; border-top: 1px dashed #555; padding-top: 15px; animation: fadeIn 0.3s ease; }
+        .stress-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .output-section { text-align: center; position: relative; }
+        #final-result-display { font-size: 5em; font-weight: bold; color: var(--color-yellow); line-height: 1; margin: 10px 0; text-shadow: 0 0 10px rgba(245, 211, 108, 0.2); }
+        #final-result-label { font-size: 1.2em; color: var(--color-silver); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;}
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 1.1em; margin-top: 10px; display: none; }
+        .status-badge.crit { display: inline-block; background-color: var(--color-green); color: var(--color-black); }
+        .status-badge.super-crit { display: inline-block; background-color: var(--color-yellow); color: var(--color-black); box-shadow: 0 0 15px var(--color-yellow); }
+        .status-badge.miss { display: inline-block; background-color: var(--color-red); color: var(--color-black); }
+        #super-crit-options { display: none; background: #1a1a1a; border: 1px solid var(--color-yellow); padding: 15px; margin-top: 15px; border-radius: 3px; text-align: left; }
+        #super-crit-options h4 { color: var(--color-yellow); margin-bottom: 10px; text-transform: uppercase;}
+        #super-crit-options ul { padding-left: 20px; font-size: 10.5pt; color: var(--color-white); }
+        #super-crit-options li { margin-bottom: 5px; }
+        #stress-result-display { display: none; margin-top: 15px; padding: 15px; font-weight: bold; font-size: 1.1em; border-radius: 3px; }
+        #stress-result-display.success { display: block; background-color: rgba(104, 141, 76, 0.2); border: 1px solid var(--color-green); color: var(--color-green); }
+        #stress-result-display.fail { display: block; background-color: rgba(169, 91, 90, 0.2); border: 1px solid var(--color-red); color: var(--color-red); }
+        #roll-log { font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left; background-color: #1a1a1a; padding: 15px; border-radius: 3px; white-space: pre-wrap; min-height: 120px; margin-top: 20px; border: 1px solid #333; color: #ccc;}
+        .log-highlight { color: var(--color-white); font-weight: bold; }
+        .log-math { color: var(--color-silver); }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="section output-section">
-            <div id="final-result-label">Effect Value / Effort Roll</div>
-            <div id="final-result-display">0</div>
-            <div id="critical-display"></div>
-            <pre id="roll-log">Roll log will appear here...</pre>
+            <div id="final-result-label">Effect Value</div>
+            <div id="final-result-display">--</div>
+            <div id="status-display" class="status-badge"></div>
+            <div id="super-crit-options">
+                <h4>Super Critical Achieved!</h4>
+                <p style="font-size: 10pt; margin-bottom: 10px; color: var(--color-silver);">Choose one context reward in addition to standard critical effects:</p>
+                <ul>
+                    <li><strong>Heroics (Combat):</strong> Instantly remove 1 point from the Situation Clock.</li>
+                    <li><strong>Machina (Exploration):</strong> Take narrative control of the scene's outcome.</li>
+                    <li><strong>Anomaly (Stress):</strong> Gain a unique narrative Boon (Curator's discretion).</li>
+                </ul>
+            </div>
+            <div id="stress-result-display"></div>
+            <pre id="roll-log">Awaiting input...</pre>
         </div>
+
         <div class="section">
-            <h2>Roll Modifiers</h2>
+            <h2>Roll Parameters</h2>
             <div class="input-grid">
                 <div>
                     <label for="level-input">Level</label>
                     <input type="number" id="level-input" value="1" min="0">
                 </div>
                 <div>
-                    <label for="stat-input">Stat</label>
+                    <label for="stat-input">Chosen Stat</label>
                     <input type="number" id="stat-input" value="2" min="0">
                 </div>
             </div>
             <div class="advantage-group">
+                <label><input type="radio" name="advantage" value="disadvantage"> Disadvantage</label>
                 <label><input type="radio" name="advantage" value="normal" checked> Normal</label>
                 <label><input type="radio" name="advantage" value="advantage"> Advantage</label>
-                <label><input type="radio" name="advantage" value="disadvantage"> Disadvantage</label>
             </div>
-            <div class="checkbox-group" style="margin-top: 15px;">
-                <label>
-                    <input type="checkbox" id="add-stat-twice-checkbox"> Apply Stat Twice (Rapid)
-                </label>
-                <small>(Adds chosen Stat a second time, replacing Level for extra hits as per Rapid keyword)</small>
+            <div class="checkbox-group" style="border-left-color: var(--color-yellow);">
+                <label><input type="checkbox" id="add-stat-twice-checkbox"> Apply Stat Twice (e.g. Rapid/Focus)</label>
+                <small>Adds chosen stat a second time to the EV calculation instead of Level.</small>
             </div>
-            <button id="roll-button">Roll!</button>
+            <div class="checkbox-group" style="border-left-color: var(--color-purple);">
+                <label><input type="checkbox" id="stress-roll-checkbox"> Attempting a Stress Roll</label>
+                <small>Attempt to learn a new Keyword mid-action (Layer 5, 2.5).</small>
+                <div class="stress-panel" id="stress-panel">
+                    <div>
+                        <label for="wit-input">Wit Stat</label>
+                        <input type="number" id="wit-input" value="2" min="0">
+                    </div>
+                    <div>
+                        <label for="keywords-input">Total Known Keywords</label>
+                        <input type="number" id="keywords-input" value="4" min="1">
+                    </div>
+                </div>
+            </div>
+            <button id="roll-button">Roll Dice</button>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const levelInput = document.getElementById('level-input');
             const statInput = document.getElementById('stat-input');
             const addStatTwiceCheckbox = document.getElementById('add-stat-twice-checkbox');
+            const stressCheckbox = document.getElementById('stress-roll-checkbox');
+            const stressPanel = document.getElementById('stress-panel');
+            const witInput = document.getElementById('wit-input');
+            const keywordsInput = document.getElementById('keywords-input');
             const rollButton = document.getElementById('roll-button');
             const finalResultDisplay = document.getElementById('final-result-display');
-            const criticalDisplay = document.getElementById('critical-display');
+            const statusDisplay = document.getElementById('status-display');
+            const superCritOptions = document.getElementById('super-crit-options');
+            const stressResultDisplay = document.getElementById('stress-result-display');
             const rollLog = document.getElementById('roll-log');
+
+            stressCheckbox.addEventListener('change', (e) => {
+                stressPanel.classList.toggle('active', e.target.checked);
+            });
 
             function performRoll() {
                 rollButton.disabled = true;
-                criticalDisplay.textContent = "";
-                rollLog.textContent = "Rolling...";
+                statusDisplay.className = 'status-badge';
+                statusDisplay.style.display = 'none';
+                superCritOptions.style.display = 'none';
+                stressResultDisplay.className = '';
+                stressResultDisplay.style.display = 'none';
+                rollLog.innerHTML = "Rolling...\n";
 
-                let log = "";
                 const level = parseInt(levelInput.value) || 0;
                 const stat = parseInt(statInput.value) || 0;
                 const advantageStatus = document.querySelector('input[name="advantage"]:checked').value;
-                
+                const applyStatTwice = addStatTwiceCheckbox.checked;
+                const isStressRoll = stressCheckbox.checked;
+                const wit = parseInt(witInput.value) || 0;
+                const totalKeywords = parseInt(keywordsInput.value) || 0;
+
+                let logHtml = "";
                 let standardRoll = 0;
                 let runningTotal = 0;
                 let isCritical = false;
                 let isMiss = false;
 
-                // --- SR Calculation Loop ---
                 while (true) {
                     const d1 = Math.floor(Math.random() * 10) + 1;
                     const d2 = Math.floor(Math.random() * 10) + 1;
-                    log += `> Rolled: ${d1} (Main) and ${d2} (Lucky)\n`;
+                    logHtml += `<span class="log-math">> Rolled:[${d1}] (Main) and [${d2}] (Crit)</span>\n`;
 
                     if (d1 === d2) {
                         isCritical = true;
                         const doubleValue = d1 + d2;
                         runningTotal += doubleValue;
-                        log += `  ↳ Doubles! Adding ${doubleValue}. Current total: ${runningTotal}. Re-rolling...\n`;
-                        continue; // Re-roll
+                        logHtml += `<span class="log-highlight">  ↳ Doubles! Adding ${doubleValue}. Total: ${runningTotal}. Re-rolling...</span>\n`;
+                        continue;
                     } 
-                    
-                    // --- Final Roll Logic ---
-                    log += `  ↳ Final Roll.\n`;
                     let finalDie = d1;
-                    
                     if (advantageStatus === 'advantage') {
                         finalDie = Math.max(d1, d2);
-                        log += `  ↳ Advantage: took higher die (${finalDie})\n`;
+                        logHtml += `<span class="log-math">  ↳ Advantage: keeping higher die [${finalDie}]</span>\n`;
                     } else if (advantageStatus === 'disadvantage') {
                         finalDie = Math.min(d1, d2);
-                        log += `  ↳ Disadvantage: took lower die (${finalDie})\n`;
-                        // Check for Miss condition (SRD Layer 1, 1.6)
+                        logHtml += `<span class="log-math">  ↳ Disadvantage: keeping lower die [${finalDie}]</span>\n`;
                         if (finalDie === 1) {
                             isMiss = true;
-                            log += `  ↳ MISS! A 1 was rolled with Disadvantage.\n`;
+                            logHtml += `<span style="color:var(--color-red); font-weight:bold;">  ↳ CATASTROPHIC MISS! (Rolled a 1 with Disadvantage)</span>\n`;
                         }
                     }
-                    
                     standardRoll = runningTotal + finalDie;
-                    log += `\nStandard Roll (SR) = ${runningTotal} (doubles) + ${finalDie} (final die) = ${standardRoll}\n`;
+                    logHtml += `\n<span class="log-highlight">Standard Roll (SR) = ${standardRoll}</span>\n`;
                     break;
                 }
 
-                // --- Final Value Calculation ---
                 let finalEV = 0;
-                let criticalText = "";
-
                 if (isMiss) {
                     finalEV = 0;
-                    criticalText = "MISS!";
-                    log += `\nFinal EV/ER is 0 due to a Miss.\n`;
+                    statusDisplay.textContent = "MISS!";
+                    statusDisplay.classList.add('miss');
+                    statusDisplay.style.display = 'inline-block';
+                    logHtml += `<span class="log-math">Final EV aborted. Result is 0 progress and narrative complication.</span>\n`;
                 } else {
-                    finalEV = standardRoll + level + stat;
-                    log += `Base EV = ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}\n`;
+                    // CALL SHARED ENGINE
+                    finalEV = PsychroEngine.Math.calculateEV(standardRoll, level, stat, applyStatTwice);
                     
-                    if (addStatTwiceCheckbox.checked) {
-                        // Per SRD Rapid (2.8), stat is added *instead* of Level for extra hits, but here we just add it again for simplicity.
-                        finalEV = standardRoll + stat + stat;
-                        log += `Rapid Effect: Recalculated as SR + Stat + Stat = ${finalEV}\n`;
+                    if (applyStatTwice) {
+                        logHtml += `<span class="log-math">EV Calculation: ${standardRoll} (SR) + ${stat} (Stat) + ${stat} (Stat) = ${finalEV}</span>\n`;
+                    } else {
+                        logHtml += `<span class="log-math">EV Calculation: ${standardRoll} (SR) + ${level} (Level) + ${stat} (Stat) = ${finalEV}</span>\n`;
                     }
 
-                    if (isCritical) {
-                        criticalText = "CRITICAL HIT!";
-                    }
-                    // SRD Layer 1, 1.7
                     if (standardRoll >= 31) {
-                        criticalText = "SUPER CRITICAL!";
+                        statusDisplay.textContent = "SUPER CRITICAL!";
+                        statusDisplay.classList.add('super-crit');
+                        statusDisplay.style.display = 'inline-block';
+                        superCritOptions.style.display = 'block';
+                    } else if (isCritical) {
+                        statusDisplay.textContent = "CRITICAL HIT!";
+                        statusDisplay.classList.add('crit');
+                        statusDisplay.style.display = 'inline-block';
+                    }
+
+                    if (isStressRoll) {
+                        // CALL SHARED ENGINE
+                        const stressSuccess = PsychroEngine.Math.checkStressRoll(standardRoll, wit, totalKeywords);
+                        logHtml += `\n<span class="log-highlight">Stress Check: ${standardRoll} (SR) + ${wit} (Wit) = ${standardRoll + wit}</span> (Target: >${totalKeywords})\n`;
+                        if (stressSuccess) {
+                            stressResultDisplay.textContent = `STRESS ROLL SUCCESS! (${standardRoll + wit} > ${totalKeywords}) - You learn the new Keyword!`;
+                            stressResultDisplay.className = 'success';
+                        } else {
+                            stressResultDisplay.textContent = `STRESS ROLL FAILED. (${standardRoll + wit} ≤ ${totalKeywords}) - The Keyword eludes you.`;
+                            stressResultDisplay.className = 'fail';
+                        }
                     }
                 }
 
-                // --- Display Results with Animation ---
-                const scrambleDuration = 1000;
-                const scrambleInterval = 50;
+                const scrambleDuration = 800;
                 const startTime = Date.now();
-
                 const scrambleEffect = () => {
                     const elapsed = Date.now() - startTime;
                     if (elapsed >= scrambleDuration) {
                         finalResultDisplay.textContent = finalEV;
-                        rollLog.textContent = log;
-                        criticalDisplay.textContent = criticalText;
+                        rollLog.innerHTML = logHtml;
                         rollButton.disabled = false;
                         return;
                     }
-                    finalResultDisplay.textContent = Math.floor(Math.random() * 100);
+                    finalResultDisplay.textContent = Math.floor(Math.random() * 99);
                     requestAnimationFrame(scrambleEffect);
                 };
                 requestAnimationFrame(scrambleEffect);
             }
-
             rollButton.addEventListener('click', performRoll);
         });
     </script>

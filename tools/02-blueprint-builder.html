@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychromattica Blueprint Builder</title>
+    <!-- LINK TO SHARED ENGINE & DATA -->
+    <script src="PsychromatticaEngine.js"></script>
     <style>
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
@@ -16,385 +18,228 @@
         .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         h2, h3, h4 { font-weight: normal; font-family: 'Oswald', sans-serif; color: var(--color-null); }
         h3 { color: var(--color-silver); margin-top: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        h4 { color: var(--color-yellow); }
+        h4 { color: var(--color-yellow); margin-bottom: 5px;}
+        
         .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; }
-        button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: background-color 0.2s, color 0.2s; }
+        button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: 0.2s; }
         button:hover { background-color: var(--color-silver); color: var(--color-black); }
         .button-small { padding: 4px 8px; font-size: 9pt; }
-        .button-load { background-color: var(--color-green); color: var(--color-black); font-weight: bold; }
-        .remove-button { background-color: var(--color-red); }
-        input[type="text"], input[type="number"], textarea, select { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
+        .remove-button { background-color: var(--color-red); border-color: var(--color-red); color: white;}
+        
+        input[type="text"], input[type="number"], select { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; margin-top: 5px; }
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 100%; background-position-y: 5px; }
-        select[multiple] { background-image: none; height: 100px; }
-        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; }
-        .output-controls { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
-        #output-string { font-family: 'Courier New', Courier, monospace; font-size: 11pt; background-color: #1a1a1a; color: var(--color-yellow); min-height: 80px; resize: vertical; }
-        .grid-5, .grid-3, .grid-2 { display: grid; gap: 10px; margin-top: 5px; }
-        .grid-5 { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
-        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-        .grid-2 { grid-template-columns: 1fr 1fr; }
-        .hidden { display: none; }
-        .card { background-color: #333; border-left: 3px solid var(--color-blue); padding: 15px; margin-top: 10px; position: relative; }
-        .card .remove-button { position: absolute; top: 10px; right: 10px; }
+        label { font-size: 10pt; color: var(--color-silver); display: block; margin-top: 10px; font-weight: bold;}
+        
+        #output-string { font-family: 'Courier New', Courier, monospace; font-size: 12pt; background-color: #1a1a1a; color: var(--color-yellow); padding: 10px; width: 100%; min-height: 60px; border: 1px solid #444; border-radius: 2px; resize: vertical;}
+        
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        @media (max-width: 600px) { .grid-5, .grid-3 { grid-template-columns: 1fr; } }
+        
+        .card { background-color: #333; border-left: 4px solid var(--color-blue); padding: 15px; margin-top: 15px; position: relative; }
         .level-up-card { border-left-color: var(--color-green); }
-        .animation-card { border-left-color: var(--color-yellow); }
-        .faction-card { border-left-color: var(--color-purple); }
-        hr { border: none; border-top: 1px solid #444; margin: 15px 0; }
-        .keyword-option-container { display: flex; gap: 5px; }
-        .keyword-option-container > * { flex: 1; }
-        .inline-checkbox { display: inline-flex; align-items: center; gap: 10px; font-size: 10pt; }
+        .flaw-card { border-left-color: var(--color-red); background-color: #2b1d1d;}
+        hr { border: none; border-top: 1px dashed #555; margin: 15px 0; }
+        
+        .inline-checkbox { display: inline-flex; align-items: center; gap: 10px; font-size: 10pt; cursor: pointer; color: var(--color-white);}
+        
+        #live-validation { background: #111; padding: 10px; border-radius: 3px; border: 1px solid var(--color-silver); margin-bottom: 15px; display: flex; justify-content: space-around; align-items: center; text-transform: uppercase; font-size: 11pt;}
+        #live-validation span { color: var(--color-yellow); font-weight: bold; font-size: 1.2em;}
     </style>
 </head>
 <body>
-    <div class="container" id="builder-container">
-        <div class="section output-section">
-            <h2>Generated Blueprint String</h2>
+    <div class="container">
+        <div class="section">
+            <h2>Blueprint Compiler</h2>
+            <div id="live-validation">
+                <div>Level: <span id="val-lvl">0</span></div>
+                <div>Resistance: <span id="val-res">3</span></div>
+                <div>Keywords: <span id="val-kws">0</span></div>
+            </div>
             <textarea id="output-string" readonly></textarea>
-            <div class="output-controls">
-                <button id="copy-button" class="button-small">Copy</button>
-                <button id="load-to-sheet-button" class="button-small button-load">Load to Sheet</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="copy-button">Copy</button>
+                <button id="send-sheet-button" style="background-color: var(--color-purple); color: white;">Load to Character Sheet</button>
             </div>
         </div>
-        <div class="section">
-            <h2>Character Builder</h2>
-            <div id="character-builder">
-                <h3>Motivational Profile</h3>
-                <div class="grid-5" id="profile-selectors">
-                    <div><label for="goal">Goal</label><select id="goal"></select></div>
-                    <div><label for="method">Method</label><select id="method"></select></div>
-                    <div><label for="purpose">Purpose</label><select id="purpose"></select></div>
-                    <div><label for="external">External Conflict</label><select id="external"></select></div>
-                    <div><label for="internal">Internal Conflict</label><select id="internal"></select></div>
-                </div>
-                <h3>Progression</h3>
-                <div><label for="seed-keyword">Seed Keyword</label><select class="keyword-select" id="seed-keyword"></select></div>
-                <div id="awakening-card" class="card">
-                    <h4>Level 1: Awakening</h4>
-                    <label class="inline-checkbox"><input type="checkbox" id="focused-awakening-filter"> Use Focused Awakening Filter</label>
-                    <div class="grid-3" id="awakening-keywords">
-                        <div><label>Keyword 1</label><select class="keyword-select awakening-kw"></select></div>
-                        <div><label>Keyword 2</label><select class="keyword-select awakening-kw"></select></div>
-                        <div><label>Keyword 3</label><select class="keyword-select awakening-kw"></select></div>
-                    </div>
-                    <hr>
-                    <h4>Trinity Stat Bonus (+3 Stat Points)</h4>
-                    <div class="grid-3" id="trinity-stats-container">
-                        <div><label id="trinity-goal-label">Goal Stat</label><select class="stat-select" id="trinity-goal-stat"></select></div>
-                        <div><label id="trinity-method-label">Method Stat</label><select class="stat-select" id="trinity-method-stat"></select></div>
-                        <div><label id="trinity-purpose-label">Purpose Stat</label><select class="stat-select" id="trinity-purpose-stat"></select></div>
-                    </div>
-                    <hr>
-                    <label class="inline-checkbox"><input type="checkbox" class="add-flaw-checkbox" data-level="1"> Add Flaw Here</label>
-                    <div class="flaw-selectors-container hidden"><div class="grid-2">
-                        <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
-                        <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
-                    </div></div>
-                </div>
-                <div id="level-up-container"></div>
-                <button id="add-level-button" style="margin-top: 15px;">Add Level</button>
+
+        <div class="section" id="character-builder">
+            <h2>Character Architecture</h2>
+            <h3>1. The Profile</h3>
+            <div class="grid-5" id="profile-selectors">
+                <div><label>Goal</label><select id="goal"></select></div>
+                <div><label>Method</label><select id="method"></select></div>
+                <div><label>Purpose</label><select id="purpose"></select></div>
+                <div><label>External</label><select id="external"></select></div>
+                <div><label>Internal</label><select id="internal"></select></div>
             </div>
-        </div>
-        <div class="section">
-            <h2>Attachments</h2>
-            <div id="attachments-container"></div>
-            <div class="grid-3" style="margin-top: 15px; align-items: flex-end;">
-                <div style="grid-column: 1 / 3;"><label for="add-attachment-type">Attachment Type</label><select id="add-attachment-type">
-                    <option value="item">Item</option>
-                    <option value="animation">Animation</option>
-                    <option value="faction">Faction</option>
-                </select></div>
-                <button id="add-attachment-button">Add Attachment</button>
+            <h3>2. The Origin (Level 0)</h3>
+            <div class="grid-2" style="align-items: end;">
+                <div><label>Seed Keyword</label><select class="keyword-select" id="seed-keyword"></select></div>
+                <div><label class="inline-checkbox"><input type="checkbox" id="seed-passive"> Set as Passive (!)</label></div>
+            </div>
+            <h3>3. The Awakening (Level 1)</h3>
+            <div class="card">
+                <div class="grid-3" id="awakening-keywords">
+                    <div><label>Keyword 1</label><select class="keyword-select"></select></div>
+                    <div><label>Keyword 2</label><select class="keyword-select"></select></div>
+                    <div><label>Keyword 3</label><select class="keyword-select"></select></div>
+                </div>
+                <hr>
+                <h4>Trinity Stat Bonus</h4>
+                <div class="grid-3" id="trinity-stats-container">
+                    <div><label>Bonus 1</label><select class="stat-select"></select></div>
+                    <div><label>Bonus 2</label><select class="stat-select"></select></div>
+                    <div><label>Bonus 3</label><select class="stat-select"></select></div>
+                </div>
+            </div>
+            <h3>4. Progression & Flaws</h3>
+            <div id="level-up-container"></div>
+            <div class="grid-2">
+                <button id="add-level-button">Add Level (+2 KWs, +1 Stat)</button>
+                <button id="add-flaw-button" style="background: var(--color-red); color: white; border-color: var(--color-red);">Add Flaw Package</button>
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
-            const STAT_CODES = { 'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn', 'W': 'Wit', 'E': 'Expertise', 'T': 'Technique', 'P': 'Power', 'I': 'Influence', 'F': 'Force' };
-            const CIVIL_SYSTEMS = { 'S0': 'Food', 'S1': 'Water', 'S2': 'Shelter', 'S3': 'Infrastructure', 'S4': 'Humanitarian', 'S5': 'Education', 'S6': 'Healthcare', 'S7': 'Government', 'S8': 'Commerce', 'S9': 'Military' };
-            const MOTIVATION_COLORS = {'1':'Silver', '2':'Yellow', '3':'Green', '4':'Black', '5':'Orange', '6':'White', '7':'Red', '8':'Blue', '9':'Purple', '0':'Null'};
-            const COLOR_TO_STAT_ASSOC = { 'Silver': ['M', 'I'], 'Yellow': ['A', 'W'], 'Green': ['B', 'A'], 'Black': ['W', 'P'], 'Orange': ['E', 'T'], 'White': ['T', 'B'], 'Red': ['P', 'F'], 'Blue': ['I', 'E'], 'Purple': ['F', 'M'], 'Null': Object.keys(STAT_CODES) };
-            const KEYWORDS = {'00':{name:"Restricted"},'01':{name:"Aura"},'02':{name:"Specialist"},'03':{name:"Alert"},'04':{name:"Liberate"},'05':{name:"Mark"},'06':{name:"Indirect"},'07':{name:"Adaptive"},'08':{name:"Gamble"},'09':{name:"Edit"},'10':{name:"Bane"},'11':{name:'Traveler',options:{'0':'Walk','1':'Teleport','2':'Fly','3':'Dig','4':'Permeation','5':'Jump','6':'Parkour','7':'Climb','8':'Swim','9':'Lightfoot'}},'12':{name:"Martial"},'13':{name:"Attuned"},'14':{name:"Augment"},'15':{name:"Impair"},'16':{name:"Reactive"},'17':{name:"Phasing"},'18':{name:"Brutal"},'19':{name:"Translocate"},'20':{name:"Anxious"},'21':{name:"Acrobatic"},'22':{name:"Sentry"},'23':{name:"Eidetic"},'24':{name:"Haste"},'25':{name:"Slow"},'26':{name:"Snap"},'27':{name:"Condense"},'28':{name:"Rapid"},'29':{name:"Reckless"},'30':{name:"Hesitant"},'31':{name:"Sturdy"},'32':{name:"Brawler"},'33':{name:"Stubborn"},'34':{name:"Ward"},'35':{name:"Daze"},'36':{name:"Sculpt"},'37':{name:"Defensive"},'38':{name:"Impact"},'39':{name:"Shift"},'40':{name:"Feeble"},'41':{name:"Survivor"},'42':{name:"Stoic"},'43':{name:"Ageless"},'44':{name:"Bless"},'45':{name:"Curse"},'46':{name:"Piercing"},'47':{name:"Flux"},'48':{name:"Siphon"},'49':{name:"Animate"},'50':{name:"Gremlins"},'51':{name:'Sensor',options:{'0':'Karma','1':'Keywords','2':'Echolocation','3':'Vibration','4':'Energy','5':'Materials','6':'Life','7':'Infrared','8':'Emotion','9':'The Weave'}},'52':{name:"Improvisor"},'53':{name:"Crafty"},'54':{name:"Charge"},'55':{name:"Bind"},'56':{name:"Imbue"},'57':{name:"Material"},'58':{name:"Leverage"},'59':{name:"Manifest"},'60':{name:"Vulnerable"},'61':{name:"Tolerant"},'62':{name:"Deadeye"},'63':{name:"Immunized"},'64':{name:"Cure"},'65':{name:"Weaken"},'66':{name:"Sticky"},'67':{name:"Restore"},'68':{name:"Exploit"},'69':{name:"Growth"},'70':{name:"Limited"},'71':{name:"Resilient"},'72':{name:"Font"},'73':{name:"Insulated"},'74':{name:"Regen"},'75':{name:"Blight"},'76':{name:"Area"},'77':{name:"Ranged"},'78':{name:"Multiply"},'79':{name:"Split"},'80':{name:"Awkward"},'81':{name:"Charismatic"},'82':{name:"Leader"},'83':{name:"Insightful"},'84':{name:"Enhance"},'85':{name:"Silence"},'86':{name:"Splash"},'87':{name:"Lingering"},'88':{name:"Spread"},'89':{name:"Potent"},'90':{name:"Mundane"},'91':{name:"Aware"},'92':{name:"Stealthy"},'93':{name:"Trickster"},'94':{name:"Obscure"},'95':{name:"Nullify"},'96':{name:"Chain"},'97':{name:"Natural"},'98':{name:"Ambience"},'99':{name:"Channel"}};
-            const container = document.getElementById('builder-container');
-            const outputStringEl = document.getElementById('output-string');
+            const STORAGE_KEY = 'psychro_builder_draft';
+            let hasFlaw = false;
 
-            function createDropdown(options, placeholder = '', filterFn = () => true) {
-                const select = document.createElement('select');
-                if (placeholder) select.innerHTML = `<option value="">${placeholder}</option>`;
-                Object.entries(options).filter(filterFn).forEach(([value, name]) => select.add(new Option(name, value)));
-                return select;
+            function createOptions(dict, filterFn = () => true) {
+                return Object.entries(dict)
+                    .filter(filterFn)
+                    .map(([val, data]) => {
+                        const name = typeof data === 'object' ? data.name : data;
+                        return `<option value="${val}">${val}: ${name}</option>`;
+                    }).join('');
             }
 
-            function createKeywordDropdown(placeholder, filterFn) {
-                const options = Object.fromEntries(Object.entries(KEYWORDS).map(([code, data]) => [code, `${code}: ${data.name}`]));
-                const select = createDropdown(options, placeholder, filterFn);
-                select.classList.add('keyword-select');
-                return select;
+            function initSelects() {
+                const profileHtml = '<option value="0">Select...</option>' + createOptions(PsychroEngine.Data.MOTIVATIONS);
+                document.querySelectorAll('#profile-selectors select').forEach(sel => sel.innerHTML = profileHtml);
+                const kwHtml = '<option value="">Keyword...</option>' + createOptions(PsychroEngine.Data.KEYWORDS);
+                document.querySelectorAll('.keyword-select').forEach(sel => sel.innerHTML = kwHtml);
+                const statHtml = '<option value="">Stat...</option>' + createOptions(PsychroEngine.Data.STAT_NAMES);
+                document.querySelectorAll('.stat-select').forEach(sel => sel.innerHTML = statHtml);
             }
 
-            function populateFlawDropdowns(parent) {
-                parent.querySelector('.flaw-keyword-select').innerHTML = createKeywordDropdown('Select Flaw...', ([code]) => code.endsWith('0')).innerHTML;
-                parent.querySelector('.comp-keyword-select').innerHTML = createKeywordDropdown('Select Compensation...', ([code]) => !code.endsWith('0')).innerHTML;
-            }
-            
-            function relabelLevels() {
-                document.querySelectorAll('.level-up-card').forEach((card, index) => {
-                    const newLevel = 2 + index;
-                    card.dataset.level = newLevel;
-                    card.querySelector('h4').textContent = `Level ${newLevel}`;
-                    card.querySelector('.add-flaw-checkbox').dataset.level = newLevel;
-                });
-            }
-
-            function addLevelUpSection() {
-                const levelUpContainer = document.getElementById('level-up-container');
-                const currentLevel = 2 + levelUpContainer.children.length;
-                if (currentLevel > 9) return alert("Maximum level (9) reached.");
-                
+            document.getElementById('add-level-button').addEventListener('click', () => {
+                const container = document.getElementById('level-up-container');
+                const lvl = 2 + container.querySelectorAll('.level-up-card').length;
+                if (lvl > 9) return;
                 const card = document.createElement('div');
                 card.className = 'card level-up-card';
-                card.dataset.level = currentLevel;
                 card.innerHTML = `
-                    <h4>Level ${currentLevel}</h4>
-                    <button class="remove-button button-small">Remove</button>
-                    <div class="grid-2">
-                        <div><label>Keywords (Pick 2)</label><div class="keyword-selectors"></div></div>
-                        <div><label>Stat Point (Pick 1)</label><div class="stat-selectors"></div></div>
+                    <div style="display:flex; justify-content:space-between;"><h4>Level ${lvl}</h4><button class="remove-button button-small rm-lvl">X</button></div>
+                    <div class="grid-3">
+                        <div><label>Keyword 1</label><select class="keyword-select prog-kw"></select></div>
+                        <div><label>Keyword 2</label><select class="keyword-select prog-kw"></select></div>
+                        <div><label>Stat Point</label><select class="stat-select prog-stat"></select></div>
                     </div>
-                    <hr>
-                    <label class="inline-checkbox"><input type="checkbox" class="add-flaw-checkbox" data-level="${currentLevel}"> Add Flaw Here</label>
-                    <div class="flaw-selectors-container hidden"><div class="grid-2">
-                        <div><label>Flaw</label><select class="flaw-keyword-select"></select></div>
-                        <div><label>Compensation</label><select class="comp-keyword-select"></select></div>
-                    </div></div>`;
-                const keywordContainer = card.querySelector('.keyword-selectors');
-                keywordContainer.appendChild(createKeywordDropdown('Keyword 1...'));
-                keywordContainer.appendChild(createKeywordDropdown('Keyword 2...'));
-                card.querySelector('.stat-selectors').appendChild(createDropdown(STAT_CODES, 'Stat...'));
-                populateFlawDropdowns(card);
-                levelUpContainer.appendChild(card);
-                generateBlueprintString();
-            }
+                `;
+                card.querySelectorAll('.keyword-select').forEach(s => s.innerHTML = '<option value="">Keyword...</option>' + createOptions(PsychroEngine.Data.KEYWORDS));
+                card.querySelector('.stat-select').innerHTML = '<option value="">Stat...</option>' + createOptions(PsychroEngine.Data.STAT_NAMES);
+                container.appendChild(card);
+                compileBlueprint();
+            });
 
-            function addAttachment(type) {
-                const attachmentsContainer = document.getElementById('attachments-container');
+            document.getElementById('add-flaw-button').addEventListener('click', () => {
+                if (hasFlaw) return alert("Characters can only have one Flaw Package.");
+                const container = document.getElementById('level-up-container');
                 const card = document.createElement('div');
-                card.className = `card ${type}-card`;
-                card.dataset.type = type;
-                if (type === 'item') {
-                    card.innerHTML = `<h4>Item Attachment</h4><button class="remove-button button-small">Remove</button><label>Item Level</label>`;
-                    const levelSelect = createDropdown({0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9}, 'Lvl...');
-                    levelSelect.classList.add('item-level-select');
-                    card.appendChild(levelSelect);
-                    card.innerHTML += `<label>Keywords</label><div class="keyword-slots"></div>`;
-                } else if (type === 'animation') {
-                     card.innerHTML = `<h4>Animation Attachment</h4><button class="remove-button button-small">Remove</button><div class="keyword-slots"></div><button class="button-small add-anim-keyword">Add Keyword</button>`;
-                     const seedSlot = document.createElement('div');
-                     seedSlot.innerHTML = `<label>Seed Keyword</label>`;
-                     seedSlot.appendChild(createKeywordDropdown('Seed...'));
-                     card.querySelector('.keyword-slots').appendChild(seedSlot);
-                } else if (type === 'faction') {
-                    card.innerHTML = `<h4>Faction Attachment</h4><button class="remove-button button-small">Remove</button><div class="grid-5" id="faction-profile-selectors"></div><div><label>Faction Level</label><input type="number" class="faction-level" min="0" max="10" value="0"></div><div><label>Civil Systems</label><select class="faction-systems" multiple></select></div><div><label>Keywords</label><div class="keyword-slots"></div><button class="button-small add-faction-keyword">Add Keyword</button></div>`;
-                    const profileContainer = card.querySelector('#faction-profile-selectors');
-                    ['Goal','Method','Purpose','External','Internal'].forEach(name => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<label>${name}</label>`;
-                        div.appendChild(createDropdown(MOTIVATIONS, 'Select...'));
-                        profileContainer.appendChild(div);
-                    });
-                    const systemSelect = card.querySelector('.faction-systems');
-                    Object.entries(CIVIL_SYSTEMS).forEach(([val, name]) => systemSelect.add(new Option(name, val)));
+                card.className = 'card flaw-card';
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between;"><h4>Narrative Flaw Package</h4><button class="remove-button button-small rm-flaw">X</button></div>
+                    <div class="grid-2">
+                        <div><label>Flaw (Ends in 0)</label><select class="flaw-select"><option value="">Flaw...</option>${createOptions(PsychroEngine.Data.KEYWORDS, ([k]) => k.endsWith('0'))}</select></div>
+                        <div><label>Compensation</label><select class="comp-select"><option value="">Comp...</option>${createOptions(PsychroEngine.Data.KEYWORDS, ([k]) => !k.endsWith('0'))}</select></div>
+                    </div>
+                `;
+                container.appendChild(card);
+                hasFlaw = true;
+                document.getElementById('add-flaw-button').disabled = true;
+                compileBlueprint();
+            });
+
+            document.getElementById('level-up-container').addEventListener('click', e => {
+                if(e.target.classList.contains('rm-lvl')) { e.target.closest('.card').remove(); compileBlueprint(); }
+                if(e.target.classList.contains('rm-flaw')) { e.target.closest('.card').remove(); hasFlaw = false; document.getElementById('add-flaw-button').disabled = false; compileBlueprint(); }
+            });
+
+            document.getElementById('character-builder').addEventListener('change', compileBlueprint);
+
+            function compileBlueprint() {
+                let bp = "C:";
+                const profile = Array.from(document.querySelectorAll('#profile-selectors select')).map(s => s.value).join('');
+                bp += profile;
+                const seedKw = document.getElementById('seed-keyword').value;
+                const seedPass = document.getElementById('seed-passive').checked ? '!' : '';
+                if(seedKw) bp += `-${seedPass}${seedKw}`;
+                const awkKws = Array.from(document.querySelectorAll('#awakening-keywords select')).map(s => s.value).filter(Boolean);
+                const awkStats = Array.from(document.querySelectorAll('#trinity-stats-container select')).map(s => s.value).filter(Boolean);
+                if (awkKws.length > 0 || awkStats.length > 0) {
+                    bp += `-${awkKws.join('.')}`;
+                    if(awkStats.length > 0) bp += `.${awkStats.join('')}`;
                 }
-                attachmentsContainer.appendChild(card);
-                generateBlueprintString();
-            }
-
-            function getKeywordString(selectElement) {
-                if (!selectElement || !selectElement.value) return '';
-                let str = selectElement.value;
-                const wrapper = selectElement.parentElement;
-                const optionSelect = wrapper.querySelector('.keyword-option-select');
-                if (optionSelect && optionSelect.value) str += `(${optionSelect.value})`;
-                return str;
-            }
-
-            function generateBlueprintString() {
-                const progressionSegments = new Map();
-                const addSegment = (level, part) => {
-                    if (!part) return;
-                    if (!progressionSegments.has(level)) progressionSegments.set(level, []);
-                    progressionSegments.get(level).push(part);
-                };
-                const profile = Array.from(document.getElementById('profile-selectors').querySelectorAll('select')).map(s => s.value || '0').join('');
-                addSegment(0, getKeywordString(document.getElementById('seed-keyword')));
-
-                const awakeningKws = Array.from(document.getElementById('awakening-keywords').querySelectorAll('select')).map(getKeywordString).filter(Boolean);
-                if (awakeningKws.length > 0) addSegment(1, awakeningKws.join('.'));
-                const trinityStats = Array.from(document.getElementById('trinity-stats-container').querySelectorAll('select')).map(s => s.value).filter(Boolean);
-                if (trinityStats.length > 0) addSegment(1, trinityStats.join(''));
-
-                document.querySelectorAll('.level-up-card').forEach(card => {
-                    const level = parseInt(card.dataset.level);
-                    const kws = Array.from(card.querySelectorAll('.keyword-selectors select')).map(getKeywordString).filter(Boolean);
-                    const stat = Array.from(card.querySelectorAll('.stat-selectors select')).map(s => s.value).filter(Boolean)[0];
-                    if (kws.length > 0) addSegment(level, kws.join('.'));
-                    if (stat) addSegment(level, stat);
-                });
-                
-                const checkedFlawBox = document.querySelector('.add-flaw-checkbox:checked');
-                if (checkedFlawBox) {
-                    const level = parseInt(checkedFlawBox.dataset.level);
-                    const container = checkedFlawBox.closest('.card, #awakening-card');
-                    const flaw = container.querySelector('.flaw-keyword-select').value;
-                    const comp = container.querySelector('.comp-keyword-select').value;
-                    if (flaw && comp) addSegment(level, `+${flaw}${comp}`);
-                }
-
-                let str = `C:${profile}`;
-                const sortedLevels = Array.from(progressionSegments.keys()).sort((a, b) => a - b);
-                sortedLevels.forEach(level => {
-                    const parts = progressionSegments.get(level).filter(p => p.length > 0);
-                    if (parts && parts.length > 0) str += `-${parts.join('.')}`;
-                });
-                
-                document.querySelectorAll('#attachments-container > .card').forEach(card => {
-                    const type = card.dataset.type;
-                    let attachmentStr = '';
-                    if (type === 'item') {
-                        const level = card.querySelector('.item-level-select').value;
-                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
-                        if(level) attachmentStr = `@I:L${level}` + (kws.length > 0 ? `-${kws.join('.')}` : '');
-                    } else if (type === 'animation') {
-                        const kws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
-                         if(kws.length > 0) attachmentStr = `@A:${kws.join('.')}`;
-                    } else if (type === 'faction') {
-                        const facProfile = Array.from(card.querySelectorAll('#faction-profile-selectors select')).map(s => s.value || '0').join('');
-                        const facLevel = card.querySelector('.faction-level').value || '0';
-                        const systems = Array.from(card.querySelector('.faction-systems').selectedOptions).map(opt => opt.value);
-                        const facKws = Array.from(card.querySelectorAll('.keyword-slots select')).map(getKeywordString).filter(Boolean);
-                        attachmentStr = `@F:${facProfile}-L${facLevel}[${systems.join('.')}]` + (facKws.length > 0 ? `-[K${facKws.join('.')}]` : '-[]');
-                    }
-                    str += attachmentStr;
-                });
-                outputStringEl.value = str;
-            }
-
-            function updateTrinityStatDropdowns() {
-                const goalColor = MOTIVATION_COLORS[document.getElementById('goal').value];
-                const methodColor = MOTIVATION_COLORS[document.getElementById('method').value];
-                const purposeColor = MOTIVATION_COLORS[document.getElementById('purpose').value];
-                const populate = (selectId, labelId, color) => {
-                    const select = document.getElementById(selectId);
-                    const label = document.getElementById(labelId);
-                    select.innerHTML = '<option value="">...</option>';
-                    if(color && COLOR_TO_STAT_ASSOC[color]) {
-                        label.textContent = `${color} Stat`;
-                        COLOR_TO_STAT_ASSOC[color].forEach(statCode => select.add(new Option(STAT_CODES[statCode], statCode)));
-                    } else { label.textContent = `Stat`; }
-                };
-                populate('trinity-goal-stat', 'trinity-goal-label', goalColor);
-                populate('trinity-method-stat', 'trinity-method-label', methodColor);
-                populate('trinity-purpose-stat', 'trinity-purpose-label', purposeColor);
-            }
-            
-            function updateAwakeningKeywordFilters() {
-                const useFilter = document.getElementById('focused-awakening-filter').checked;
-                const trinityColors = [ document.getElementById('goal').value, document.getElementById('method').value, document.getElementById('purpose').value ];
-                document.querySelectorAll('.awakening-kw').forEach(select => {
-                    const currentValue = select.value;
-                    const parent = select.parentElement;
-                    const newSelect = createKeywordDropdown('Select Keyword...', ([code]) => !useFilter || trinityColors.includes(code.charAt(0)));
-                    newSelect.classList.add('awakening-kw');
-                    parent.replaceChild(newSelect, select);
-                    if (newSelect.querySelector(`option[value="${currentValue}"]`)) {
-                        newSelect.value = currentValue;
+                const levelCards = document.getElementById('level-up-container').children;
+                Array.from(levelCards).forEach(card => {
+                    if (card.classList.contains('level-up-card')) {
+                        const kws = Array.from(card.querySelectorAll('.prog-kw')).map(s => s.value).filter(Boolean);
+                        const stat = card.querySelector('.prog-stat').value;
+                        if(kws.length > 0 || stat) {
+                            bp += `-${kws.join('.')}`;
+                            if (stat) bp += `.${stat}`;
+                        }
+                    } else if (card.classList.contains('flaw-card')) {
+                        const flaw = card.querySelector('.flaw-select').value;
+                        const comp = card.querySelector('.comp-select').value;
+                        if(flaw && comp) bp += `+${flaw}${comp}`;
                     }
                 });
+
+                document.getElementById('output-string').value = bp;
+                
+                // PERSISTENCE: Save current string
+                localStorage.setItem(STORAGE_KEY, bp);
+                
+                const ast = PsychroEngine.Parse.entity(bp);
+                if (ast) {
+                    document.getElementById('val-lvl').textContent = ast.level;
+                    document.getElementById('val-res').textContent = ast.resistance;
+                    document.getElementById('val-kws').textContent = ast.keywords.length;
+                }
             }
 
-            container.addEventListener('click', e => {
-                if(e.target.classList.contains('remove-button')) {
-                    e.target.closest('.card').remove();
-                    relabelLevels();
-                    generateBlueprintString();
-                }
-                if(e.target.classList.contains('add-anim-keyword') || e.target.classList.contains('add-faction-keyword')) {
-                    const keywordSlots = e.target.previousElementSibling;
-                    const slot = document.createElement('div');
-                    slot.appendChild(createKeywordDropdown('Keyword...'));
-                    keywordSlots.appendChild(slot);
+            window.addEventListener('message', (event) => {
+                if(event.data.type === 'ROUTE_PROFILE') {
+                    const codes = event.data.payload.split('');
+                    if(codes.length === 5) {
+                        const selects = document.querySelectorAll('#profile-selectors select');
+                        selects.forEach((sel, i) => sel.value = codes[i]);
+                        compileBlueprint();
+                    }
                 }
             });
 
-            container.addEventListener('change', e => {
-                if(e.target.classList.contains('item-level-select')) {
-                    const level = parseInt(e.target.value);
-                    const slotsContainer = e.target.closest('.card').querySelector('.keyword-slots');
-                    slotsContainer.innerHTML = '';
-                    const maxKeywords = (level >= 0) ? Math.min(level + 1, 5) : 0;
-                    for(let i=0; i<maxKeywords; i++) {
-                        const wrapper = document.createElement('div');
-                        wrapper.appendChild(createKeywordDropdown(`Keyword ${i+1}...`));
-                        slotsContainer.appendChild(wrapper);
-                    }
-                }
-                if(e.target.classList.contains('add-flaw-checkbox')) {
-                    document.querySelectorAll('.add-flaw-checkbox').forEach(box => {
-                        if (box !== e.target) box.checked = false;
-                        const container = box.closest('.card, #awakening-card');
-                        container.querySelector('.flaw-selectors-container').classList.toggle('hidden', !box.checked);
-                    });
-                }
-                if (e.target.classList.contains('keyword-select')) {
-                    const select = e.target;
-                    const wrapper = select.parentElement;
-                    const existingOption = wrapper.querySelector('.keyword-option-select');
-                    if(existingOption) existingOption.remove();
-                    const kwData = KEYWORDS[select.value];
-                    if (kwData && kwData.options) {
-                        wrapper.classList.add('keyword-option-container');
-                        const optionSelect = createDropdown(kwData.options, 'Select Option...');
-                        optionSelect.classList.add('keyword-option-select');
-                        wrapper.appendChild(optionSelect);
-                    } else { wrapper.classList.remove('keyword-option-container'); }
-                }
-                if (e.target.closest('#profile-selectors') || e.target.id === 'focused-awakening-filter') {
-                    updateTrinityStatDropdowns();
-                    updateAwakeningKeywordFilters();
-                }
-                generateBlueprintString();
-            });
-
-            document.getElementById('add-level-button').addEventListener('click', addLevelUpSection);
-            document.getElementById('add-attachment-button').addEventListener('click', () => addAttachment(document.getElementById('add-attachment-type').value));
             document.getElementById('copy-button').addEventListener('click', () => {
-                navigator.clipboard.writeText(outputStringEl.value).then(() => {
-                    const btn = document.getElementById('copy-button');
-                    btn.textContent = 'Copied!';
-                    setTimeout(() => btn.textContent = 'Copy', 1500);
-                });
+                const out = document.getElementById('output-string');
+                out.select(); navigator.clipboard.writeText(out.value);
             });
-            document.getElementById('load-to-sheet-button').addEventListener('click', () => {
-                const blueprint = outputStringEl.value;
-                if(blueprint) window.parent.postMessage({ type: 'LOAD_BLUEPRINT', payload: blueprint }, '*');
+            document.getElementById('send-sheet-button').addEventListener('click', () => {
+                const bp = document.getElementById('output-string').value;
+                if(bp) window.parent.postMessage({ type: 'LOAD_BLUEPRINT', payload: bp }, '*');
             });
 
-            function init() {
-                document.querySelectorAll('#profile-selectors select').forEach(sel => Object.entries(MOTIVATIONS).forEach(([val, name]) => sel.add(new Option(name, val))));
-                document.getElementById('seed-keyword').parentElement.replaceChild(createKeywordDropdown('Select Seed Keyword...'), document.getElementById('seed-keyword'));
-                document.querySelectorAll('#awakening-keywords > div').forEach(div => {
-                    div.innerHTML = '<label>Keyword</label>';
-                    const newSelect = createKeywordDropdown('Select Keyword...');
-                    newSelect.classList.add('awakening-kw');
-                    div.appendChild(newSelect);
-                });
-                populateFlawDropdowns(document.getElementById('awakening-card'));
-                updateTrinityStatDropdowns();
-                updateAwakeningKeywordFilters();
-                generateBlueprintString();
+            initSelects();
+            
+            // LOAD PERSISTED DRAFT
+            const savedDraft = localStorage.getItem(STORAGE_KEY);
+            if (savedDraft) {
+                document.getElementById('output-string').value = savedDraft;
             }
-
-            init();
         });
     </script>
 </body>

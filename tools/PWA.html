@@ -3,54 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Psychromattica Toolkit</title>
-    <!-- This link will be dynamically populated with the inline manifest -->
-    <link rel="manifest">
+    <title>Psychromattica OS</title>
+    
+    <!-- PWA MANIFEST -->
+    <link rel="manifest" id="manifest-link">
     <meta name="theme-color" content="#222222">
+
     <style>
         :root {
-            --color-yellow: #f5d36c; --color-silver: #a7a9ac; --color-black: #414042;
+            --color-yellow: #f5d36c; 
+            --color-silver: #a7a9ac; 
+            --color-black: #414042;
             --color-background: #222222;
         }
         * { box-sizing: border-box; }
         html, body {
-            height: 100%; margin: 0; padding: 0; font-family: Calibri, sans-serif;
-            background-color: var(--color-background); overflow: hidden;
+            height: 100%; margin: 0; padding: 0; 
+            background-color: var(--color-background); 
+            overflow: hidden;
+            font-family: Calibri, sans-serif;
         }
-        .app-container { display: flex; flex-direction: column; height: 100%; }
-        .content-area { flex-grow: 1; position: relative; }
+        .app-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+        }
+        .content-area { 
+            flex-grow: 1; 
+            position: relative; 
+        }
+        /* The tool frames */
         .tool-frame {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border: none; visibility: hidden; background-color: var(--color-background);
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            border: none; 
+            visibility: hidden; 
+            background-color: var(--color-background);
         }
-        .tool-frame.active { visibility: visible; }
+        .tool-frame.active { 
+            visibility: visible; 
+        }
+
+        /* Bottom Navigation Bar */
         .bottom-nav {
-            display: flex; background-color: #1a1a1a; border-top: 1px solid var(--color-black);
+            display: flex; 
+            background-color: #1a1a1a; 
+            border-top: 1px solid var(--color-black);
             flex-shrink: 0;
+            overflow-x: auto; /* Allow swiping if too many buttons for mobile */
         }
         .nav-button {
-            flex-grow: 1; padding: 10px 5px; background: none; border: none;
-            color: var(--color-silver); font-size: 8pt;
-            cursor: pointer; border-top: 3px solid transparent;
-            -webkit-tap-highlight-color: transparent;
+            flex: 1 1 auto; 
+            padding: 12px 5px; 
+            background: none; 
+            border: none;
+            color: var(--color-silver); 
+            font-size: 8.5pt; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            cursor: pointer; 
+            border-top: 3px solid transparent;
+            transition: all 0.2s;
+            min-width: 85px;
         }
         .nav-button.active {
-            color: var(--color-yellow); border-top-color: var(--color-yellow);
+            color: var(--color-yellow); 
+            border-top-color: var(--color-yellow);
             background-color: var(--color-black);
         }
+        /* Hide scrollbar for nav */
+        .bottom-nav::-webkit-scrollbar { display: none; }
+        .bottom-nav { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
 
-    <!--
-        PWA DEPENDENCY NOTE:
-        For the "Add to Home Screen" functionality to work, you must have an 'icons' folder
-        in the same directory as this PWA.html file. That folder must contain:
-        - icon-192x192.png
-        - icon-512x512.png
-    -->
-
     <div class="app-container">
+        <!-- MAIN VIEWPORT -->
         <main class="content-area">
             <iframe src="01-profile-quiz.html" class="tool-frame active" data-tool="quiz" id="frame-quiz"></iframe>
             <iframe src="02-blueprint-builder.html" class="tool-frame" data-tool="builder" id="frame-builder"></iframe>
@@ -58,88 +88,101 @@
             <iframe src="04-dice-roller.html" class="tool-frame" data-tool="roller" id="frame-roller"></iframe>
             <iframe src="05-scene-generator.html" class="tool-frame" data-tool="generator" id="frame-generator"></iframe>
             <iframe src="06-curator-dashboard.html" class="tool-frame" data-tool="dashboard" id="frame-dashboard"></iframe>
-            <iframe src="07-companion.html" class="tool-frame" data-tool="companion" id="frame-companion"></iframe>
+            <iframe src="07-companion.html" class="tool-frame" data/tool="companion" id="frame-companion"></iframe>
         </main>
-        <nav class="bottom-nav">
+
+        <!-- NAVIGATION -->
+        <nav class="bottom-nav" id="main-nav">
             <button class="nav-button active" data-tool="quiz">Quiz</button>
             <button class="nav-button" data-tool="builder">Builder</button>
-            <button class="nav-button" data-tool="sheet">Sheet</button>
+            <button class="nav-button" data much="sheet">Sheet</button>
             <button class="nav-button" data-tool="roller">Roller</button>
-            <button class="nav-button" data-tool="generator">Generator</button>
-            <button class="nav-button" data-tool="dashboard">Dashboard</button>
-            <button class="nav-button" data-tool="companion">Companion</button>
+            <button class="nav-button" data-tool="generator">Gen</button>
+            <button class="nav-button" data-tool="dashboard">Dash</button>
+            <button class="nav-button" data-tool="companion">Comp</button>
         </nav>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- PWA SETUP (INLINE MANIFEST & SERVICE WORKER) ---
+            // 1. MANIFEST GENERATION (For Mobile "Add to Home Screen" Support)
             const manifestJSON = {
-                "name": "Psychromattica Toolkit", "short_name": "Psychro-Kit", "start_url": "PWA.html",
-                "display": "standalone", "background_color": "#222222", "theme_color": "#222222",
-                "description": "A complete digital toolkit for the Psychromattica TTRPG.",
+                "name": "Psychromattica OS", 
+                "short_name": "Psychro", 
+                "start_url": "PWA.html",
+                "display": "standalone", 
+                "background_color": "#222222", 
+                "theme_color": "#222222",
                 "icons": [
                     { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
                     { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
                 ]
             };
-            const serviceWorkerCode = `
-                const CACHE_NAME = 'psychromattica-toolkit-v3';
-                const URLS_TO_CACHE = [
-                    './', 'PWA.html', '01-profile-quiz.html', '02-blueprint-builder.html', '03-character-sheet.html',
-                    '04-dice-roller.html', '05-scene-generator.html', '06-curator-dashboard.html', '07-companion.html',
-                    'icons/icon-192x192.png', 'icons/icon-512x512.png'
-                ];
-                self.addEventListener('install', event => {
-                    event.waitUntil(caches.open(CACHE_NAME).then(cache => {
-                        console.log('Service Worker: Caching app shell.');
-                        return cache.addAll(URLS_TO_CACHE);
-                    }));
-                });
-                self.addEventListener('fetch', event => {
-                    event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
-                });
-            `;
             const manifestString = JSON.stringify(manifestJSON);
             const manifestUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestString)));
-            document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
-            if ('serviceWorker' in navigator) {
-                try {
-                    const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl).then(reg => console.log('ServiceWorker registered.', reg.scope)).catch(err => console.error('ServiceWorker registration failed:', err));
-                } catch (e) { console.error('Service Worker registration failed.', e); }
-            }
+            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
 
-            // --- NAVIGATION & INTER-TOOL COMMUNICATION ---
+            // 2. NAVIGATION LOGIC
             const navButtons = document.querySelectorAll('.nav-button');
             const toolFrames = document.querySelectorAll('.tool-frame');
             
             function setActiveTool(toolName) {
-                navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tool === toolName));
-                toolFrames.forEach(frame => frame.classList.toggle('active', frame.dataset.tool === toolName));
+                // Update Buttons
+                navButtons.forEach(btn => {
+                    if (btn.dataset.tool === toolName) {
+                        btn.classList.add('active');
+                        // Smooth scroll to the active button in the nav bar
+                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                // Update Frames
+                toolFrames.forEach(frame => {
+                    frame.classList.toggle('active', frame.dataset.tool === toolName);
+                });
             }
 
             navButtons.forEach(button => {
                 button.addEventListener('click', () => setActiveTool(button.dataset.tool));
             });
 
-            // Listen for messages from child iframes
+            // 3. THE MESSAGE BUS (The Orchestrator)
+            // This listens for "postMessage" calls from any of the child iframes.
             window.addEventListener('message', (event) => {
                 const { type, payload } = event.data;
+                console.log(`[PWA-BUS] Received: ${type}`, payload);
+
+                // ROUTE: Quiz (01) -> Builder (02)
+                if (type === 'ROUTE_PROFILE') {
+                    const target = document.getElementById('frame-builder');
+                    if (target) {
+                        target.contentWindow.postMessage({ type: 'LOAD_PROFILE', payload: payload }, '*');
+                        setActiveTool('builder');
+                    }
+                }
+                
+                // ROUTE: Builder (02) -> Character Sheet (03)
                 if (type === 'LOAD_BLUEPRINT') {
-                    const sheetFrame = document.getElementById('frame-sheet');
-                    if (sheetFrame) {
-                        // Forward the message to the character sheet iframe
-                        sheetFrame.contentWindow.postMessage({ type: 'LOAD_BLUEPRINT', payload: payload }, '*');
-                        // Switch to the character sheet tab
+                    const target = document.getElementById('frame-sheet');
+                    if (target) {
+                        target.contentWindow.postMessage({ type: 'LOAD_BLUEPRINT', payload: payload }, '*');
                         setActiveTool('sheet');
+                    }
+                }
+
+                // ROUTE: Generator (05) -> Curator Dashboard (06)
+                if (type === 'LOAD_SCENE') {
+                    const target = document.getElementById('frame-dashboard');
+                    if (target) {
+                        target.contentWindow.postMessage({ type: 'LOAD_SCENE', payload: payload }, '*');
+                        setActiveTool('dashboard');
                     }
                 }
             });
         });
     </script>
-
 </body>
 </html>

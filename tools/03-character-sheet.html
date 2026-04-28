@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Psychromattica Digital Character Sheet</title>
+    <!-- LINK TO SHARED ENGINE & DATA -->
+    <script src="PsychromatticaEngine.js"></script>
     <style>
         :root {
             --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
@@ -13,87 +15,103 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: var(--color-background); color: var(--color-white); font-family: Calibri, sans-serif; font-size: 12pt; padding: 10px; }
-        .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         h2, h3 { font-weight: normal; font-family: 'Oswald', sans-serif; }
-        h2 { font-size: 1.2em; color: var(--color-null); border-bottom: 1px solid var(--color-silver); padding-bottom: 5px; margin-bottom: 10px; }
-        h3 { font-size: 1em; color: var(--color-silver); margin-bottom: 5px; }
+        h2 { font-size: 1.3em; color: var(--color-null); border-bottom: 1px solid var(--color-silver); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        h3 { font-size: 1.1em; color: var(--color-silver); margin-bottom: 5px; }
         .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; }
         button { background-color: var(--color-black); color: var(--color-white); border: 1px solid var(--color-silver); padding: 8px 12px; font-family: Calibri, sans-serif; font-size: 10pt; cursor: pointer; border-radius: 2px; transition: background-color 0.2s, color 0.2s; }
         button:hover { background-color: var(--color-silver); color: var(--color-black); }
         input[type="text"], input[type="number"], textarea, select { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; font-family: Calibri, sans-serif; width: 100%; border-radius: 2px; }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 100%; background-position-y: 5px; }
-        #blueprint-input { background-color: #1a1a1a; color: var(--color-blue); font-family: 'Courier New', Courier, monospace; font-size: 10pt; min-height: 100px; resize: vertical; }
-        #character-name { font-size: 1.8em; font-family: 'Oswald', sans-serif; color: var(--color-null); border: none; background: none; padding: 0; text-align: center; margin-bottom: 10px; }
-        .karma-control { display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .karma-control button { width: 30px; height: 30px; padding: 0; font-size: 1.2em; }
-        details > summary { cursor: pointer; color: var(--color-silver); font-weight: bold; }
-        .profile-matrix { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        #blueprint-input { background-color: #1a1a1a; color: var(--color-blue); font-family: 'Courier New', Courier, monospace; font-size: 10pt; min-height: 80px; resize: vertical; margin-bottom: 10px;}
+        #character-name { font-size: 2em; font-family: 'Oswald', sans-serif; color: var(--color-null); border: none; background: none; padding: 0; text-align: center; margin-bottom: 5px; font-weight: bold;}
+        .karma-control { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .karma-control button { width: 35px; height: 35px; padding: 0; font-size: 1.5em; border-radius: 50%; font-weight: bold;}
+        .profile-matrix { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .profile-row { display: flex; justify-content: center; gap: 8px; }
         .profile-item { flex: 1; padding: 8px; border-radius: 2px; text-align: center; background-color: #333; border-bottom: 3px solid var(--color-silver); }
         .profile-item.goal { border-color: var(--color-null); }
         .profile-item.conflict { border-color: var(--color-red); }
         .profile-label { font-size: 0.7em; text-transform: uppercase; opacity: 0.8; margin-bottom: 3px; }
         .profile-value { font-size: 1.1em; font-weight: bold; }
-        .text-color-0 .profile-value { color: var(--color-null); } .text-color-1 .profile-value { color: var(--color-silver); } .text-color-2 .profile-value { color: var(--color-yellow); }
-        .text-color-3 .profile-value { color: var(--color-green); } .text-color-4 .profile-value { color: #888; } .text-color-5 .profile-value { color: var(--color-orange); }
-        .text-color-6 .profile-value { color: var(--color-white); } .text-color-7 .profile-value { color: var(--color-red); } .text-color-8 .profile-value { color: var(--color-blue); }
-        .text-color-9 .profile-value { color: var(--color-purple); }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-        .stat-item { background-color: var(--color-black); padding: 10px; border-radius: 2px; }
-        .stat-item .stat-value { font-size: 1.8em; color: var(--color-null); }
-        .stat-item .stat-name { font-size: 0.8em; color: var(--color-silver); }
-        .resistance-item { grid-column: 1 / -1; background-color: var(--color-black); }
-        .clock { margin-bottom: 10px; }
-        .clock-header { display: flex; justify-content: space-between; align-items: center; font-size: 10pt; margin-bottom: 5px; }
-        .clock-header .max-input-wrapper { display: flex; align-items: center; gap: 5px; }
-        .clock-header input[type="number"] { width: 50px; padding: 2px 5px; text-align: center; }
-        .clock-pips { display: flex; gap: 3px; height: 20px; flex-wrap: wrap; }
-        .pip { flex-grow: 1; min-width: 5px; border: 1px solid var(--color-silver); cursor: pointer; border-radius: 1px; transition: background-color 0.1s; }
-        .hp-pips .pip.active { background-color: var(--color-green); } .sp-pips .pip.active { background-color: var(--color-orange); } .ep-pips .pip.active { background-color: var(--color-purple); }
+        .text-color-0 .profile-value { color: var(--color-null); } .text-color-1 .profile-value { color: var(--color-silver); } 
+        .text-color-2 .profile-value { color: var(--color-yellow); } .text-color-3 .profile-value { color: var(--color-green); } 
+        .text-color-4 .profile-value { color: #888; } .text-color-5 .profile-value { color: var(--color-orange); }
+        .text-color-6 .profile-value { color: var(--color-white); } .text-color-7 .profile-value { color: var(--color-red); } 
+        .text-color-8 .profile-value { color: var(--color-blue); } .text-color-9 .profile-value { color: var(--color-purple); }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; margin-bottom: 20px;}
+        .stat-item { background-color: var(--color-black); padding: 15px 5px; border-radius: 3px; border: 1px solid #333;}
+        .stat-item .stat-value { font-size: 2em; color: var(--color-null); font-weight: bold; line-height: 1;}
+        .stat-item .stat-name { font-size: 0.8em; color: var(--color-silver); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
+        .resistance-item { grid-column: 1 / -1; background-color: #1a1a1a; border-color: var(--color-silver); }
+        .resistance-item .stat-value { color: var(--color-white); }
+        .clock { margin-bottom: 15px; }
+        .clock-header { display: flex; justify-content: space-between; align-items: center; font-size: 10pt; margin-bottom: 5px; font-weight: bold;}
+        .clock-pips { display: flex; gap: 4px; height: 25px; flex-wrap: wrap; }
+        .pip { flex-grow: 1; min-width: 10px; border: 1px solid var(--color-silver); cursor: pointer; border-radius: 2px; transition: background-color 0.1s; background-color: #111;}
+        .hp-pips .pip.active { background-color: var(--color-green); box-shadow: 0 0 5px var(--color-green);} 
+        .sp-pips .pip.active { background-color: var(--color-orange); box-shadow: 0 0 5px var(--color-orange);} 
+        .ep-pips .pip.active { background-color: var(--color-purple); box-shadow: 0 0 5px var(--color-purple);}
         .tags-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .tag-list { min-height: 40px; background-color: #333; padding: 5px; border-radius: 2px; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; }
-        .tag-item { background-color: var(--color-black); padding: 3px 8px; border-radius: 10px; font-size: 9pt; display: flex; align-items: center; gap: 8px; border-left: 3px solid var(--color-silver); }
-        .tag-quantity-controls { display: flex; align-items: center; gap: 4px; background-color: #333; padding: 2px 4px; border-radius: 8px; }
-        .tag-quantity-controls button { background: none; border: none; color: var(--color-silver); cursor: pointer; font-weight: bold; padding: 0 4px; }
+        .tags-container { background: #222; padding: 10px; border-radius: 3px; border: 1px solid #333;}
+        .tag-header { display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; border-bottom: 1px solid #444; padding-bottom: 5px;}
+        .tag-count { font-weight: bold; }
+        .tag-count.full { color: var(--color-red); }
+        .tag-list { min-height: 50px; display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+        .tag-item { background-color: var(--color-black); padding: 5px 10px; border-radius: 3px; font-size: 10pt; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--color-silver); }
         .tag-item[data-color="red"] { border-left-color: var(--color-red); } .tag-item[data-color="yellow"] { border-left-color: var(--color-yellow); }
         .tag-item[data-color="green"] { border-left-color: var(--color-green); } .tag-item[data-color="black"] { border-left-color: #666; }
         .tag-item[data-color="orange"] { border-left-color: var(--color-orange); } .tag-item[data-color="white"] { border-left-color: var(--color-white); }
         .tag-item[data-color="blue"] { border-left-color: var(--color-blue); } .tag-item[data-color="purple"] { border-left-color: var(--color-purple); }
-        .tag-item[data-color="silver"] { border-left-color: var(--color-silver); } .tag-item[data-color="null"] { border-left-color: var(--color-null); }
-        .add-tag-form { display: flex; gap: 5px; margin-top: 5px; }
-        .add-tag-form select { flex-grow: 1; } .add-tag-form button { padding: 8px; }
-        .passive-counter { text-align: right; font-size: 10pt; color: var(--color-silver); margin-bottom: 10px; }
-        .keyword-card { background-color: #333; padding: 10px; margin-bottom: 8px; font-size: 10pt; border-left: 3px solid var(--color-silver); }
+        .tag-item[data-color="null"] { border-left-color: var(--color-null); }
+        .tag-controls { display: flex; gap: 5px; align-items: center; }
+        .tag-controls button { padding: 2px 8px; font-size: 12pt; background: #333; border: none; font-weight: bold;}
+        .tag-controls button:hover { background: #555; color: white;}
+        .add-tag-form { display: flex; gap: 5px; }
+        .add-tag-form select { flex-grow: 1; padding: 5px; font-size: 9pt;} 
+        .add-tag-form button { padding: 5px 10px; }
+        .keyword-card { background-color: #333; padding: 12px; margin-bottom: 8px; font-size: 10pt; border-left: 4px solid var(--color-silver); border-radius: 2px;}
         .keyword-header { display: flex; justify-content: space-between; align-items: center; }
-        .keyword-name { font-weight: bold; } .keyword-intent { margin-top: 5px; }
-        #stat-progression-timeline ul { list-style-type: none; padding-left: 10px; border-left: 1px solid var(--color-silver); }
-        #stat-progression-timeline li { font-size: 10pt; padding: 5px; position: relative; }
-        #stat-progression-timeline li::before { content: ''; position: absolute; left: -14px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-silver); }
-        #stat-progression-timeline .flaw-entry { color: var(--color-red); }
-        .item-card, .animation-card, .faction-card { background-color: #333; padding: 15px; margin-bottom: 8px; border-left: 3px solid var(--color-blue); }
-        .animation-card { border-left-color: var(--color-yellow); } .faction-card { border-left-color: var(--color-purple); }
-        .faction-card ul { font-size: 10pt; list-style: none; padding-left: 0; margin-top: 10px; } .faction-card li { margin-bottom: 4px; }
-        .item-card h4, .animation-card h4, .faction-card h4 { margin: 0; padding: 0; font-size: 1.1em; margin-bottom: 5px; }
-        .item-card .item-details, .animation-card .anim-details, .faction-card .faction-details { font-size: 0.9em; color: var(--color-silver); margin-bottom: 10px; }
-        .animation-card .anim-resistance { text-align: center; background-color: var(--color-black); padding: 5px; margin-top: 10px; }
-        .faction-card .profile-matrix { font-size: 0.9em; }
+        .keyword-name { font-weight: bold; font-size: 1.1em;} 
+        .passive-badge { background: var(--color-black); padding: 2px 6px; border-radius: 10px; font-size: 0.8em; border: 1px solid var(--color-silver); color: var(--color-silver);}
+        .passive-badge.active { background: var(--color-silver); color: var(--color-black); border-color: var(--color-silver); font-weight: bold;}
+        body.is-nullified .passive-badge.active { background: var(--color-red); color: white; text-decoration: line-through; opacity: 0.6; border-color: var(--color-red); }
+        body.is-nullified .keyword-card { opacity: 0.8; }
+        .nullify-warning { display: none; background: var(--color-red); color: white; text-align: center; padding: 5px; font-weight: bold; font-size: 0.9em; margin-bottom: 10px; border-radius: 2px;}
+        body.is-nullified .nullify-warning { display: block; }
+        .item-card, .animation-card, .faction-card { background-color: #333; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--color-blue); border-radius: 2px;}
+        .animation-card { border-left-color: var(--color-yellow); } 
+        .faction-card { border-left-color: var(--color-purple); }
+        .item-card h4, .animation-card h4, .faction-card h4 { margin: 0; padding: 0; font-size: 1.2em; margin-bottom: 5px; color: var(--color-white);}
+        .sub-details { font-size: 0.9em; color: var(--color-silver); margin-bottom: 10px; font-style: italic;}
         hr.divider { border: none; border-top: 1px solid #444; margin: 20px 0; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="section">
-            <h2>Blueprint String</h2>
-            <textarea id="blueprint-input" rows="4">C:36928-!03-!11(1).83.93.MIF-41.42.W-61.62.T+4049@I:L2-!38.!58@A:!31.22.32/I:L1-!97@F:85126-L3[S0.S2.S8]-[K81.82]</textarea>
-            <button id="load-button" style="width: 100%; margin-top: 10px;">Load from Blueprint</button>
+            <h2>System Link</h2>
+            <textarea id="blueprint-input" placeholder="Paste generated Scene Blueprint here..."></textarea>
+            <button id="load-button" style="width: 100%;">Initialize Identity</button>
         </div>
+
         <div class="section" id="character-profile">
-            <input type="text" id="character-name" value="Character Name" placeholder="Character Name">
-            <div class="karma-control"><span>Karma</span><button id="karma-minus">-</button><span id="karma-display">0</span><button id="karma-plus">+</button></div>
-            <hr class="divider">
-            <p style="text-align: center; margin-bottom: 12px;">Level: <span id="character-level">0</span></p>
-            <details id="motivational-profile-details" open><summary>Motivational Profile: <span id="profile-code">#####</span></summary>
+            <div class="nullify-warning">WARNING: NULLIFY STATUS ACTIVE. ALL PASSIVES DISABLED.</div>
+            <input type="text" id="character-name" value="Subject_01" placeholder="Character Name">
+            <div class="karma-control">
+                <button onclick="updateKarma(-1)">-</button>
+                <div style="text-align: center; line-height: 1;">
+                    <span style="font-size: 0.8em; color: var(--color-silver); text-transform: uppercase;">Karma</span><br>
+                    <span id="karma-display" style="font-size: 1.5em; font-weight: bold; color: var(--color-white);">0</span>
+                </div>
+                <button onclick="updateKarma(1)">+</button>
+            </div>
+            <p style="text-align: center; margin-bottom: 15px; color: var(--color-silver); text-transform: uppercase; letter-spacing: 2px;">Entity Level: <span id="character-level" style="color: var(--color-white); font-weight: bold; font-size: 1.2em;">0</span></p>
+            <details id="motivational-profile-details">
+                <summary>Motivational Profile: <span id="profile-code" style="color: var(--color-white);">#####</span></summary>
                 <div class="profile-matrix">
                     <div class="profile-row ideals">
                         <div id="profile-method" class="profile-item"><div class="profile-label">Method</div><div class="profile-value">...</div></div>
@@ -107,400 +125,326 @@
                 </div>
             </details>
         </div>
-        <div class="section" id="dashboard">
-            <h2>Dashboard</h2>
-            <div class="dashboard-grid">
+
+        <div class="section dashboard-grid">
+            <div>
+                <h3>Diagnostics</h3>
                 <div class="stat-grid" id="stat-grid"></div>
+                <hr class="divider">
+                <h3>Vitals</h3>
                 <div class="clocks">
-                    <div class="clock"><div class="clock-header"><span>HP</span><div class="max-input-wrapper"><span id="hp-value">0/10</span> Max: <input type="number" id="hp-max" value="10" min="1"></div></div><div class="clock-pips hp-pips" id="hp-pips"></div></div>
-                    <div class="clock"><div class="clock-header"><span>SP</span><div class="max-input-wrapper"><span id="sp-value">0/10</span> Max: <input type="number" id="sp-max" value="10" min="1"></div></div><div class="clock-pips sp-pips" id="sp-pips"></div></div>
-                    <div class="clock"><div class="clock-header"><span>EP</span><div class="max-input-wrapper"><span id="ep-value">0/10</span> Max: <input type="number" id="ep-max" value="10" min="1"></div></div><div class="clock-pips ep-pips" id="ep-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>HP</span><span><span id="hp-value">10/10</span> Max: <input type="number" id="hp-max" value="10" min="1"></span></div><div class="clock-pips hp-pips" id="hp-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>SP</span><span><span id="sp-value">10/10</span> Max: <input type="number" id="sp-max" value="10" min="1"></span></div><div class="clock-pips sp-pips" id="sp-pips"></div></div>
+                    <div class="clock"><div class="clock-header"><span>EP</span><span><span id="ep-value">10/10</span> Max: <input type="number" id="ep-max" value="10" min="1"></span></div><div class="clock-pips ep-pips" id="ep-pips"></div></div>
                 </div>
-                 <div class="tags-section">
-                    <div class="tags-container"><h3>Status Tags</h3><div class="tag-list" id="status-tags-list"></div><div class="add-tag-form"><select id="status-tag-select"></select><button id="add-status-tag-btn">+</button></div></div>
-                    <div class="tags-container"><h3>Boost Tags</h3><div class="tag-list" id="boost-tags-list"></div><div class="add-tag-form"><select id="boost-tag-select"></select><button id="add-boost-tag-btn">+</button></div></div>
+            </div>
+
+            <div>
+                <h3>Active Tags</h3>
+                <div class="tags-container" style="margin-bottom: 15px;">
+                    <div class="tag-header">
+                        <span style="color: var(--color-yellow);">BOOST POOL</span>
+                        <span class="tag-count" id="boost-count">0 / 5</span>
+                    </div>
+                    <div class="tag-list" id="boost-tags-list"></div>
+                    <div class="add-tag-form">
+                        <select id="boost-tag-select"></select>
+                        <button onclick="addTag('boost')">Add</button>
+                    </div>
+                </div>
+
+                <div class="tags-container">
+                    <div class="tag-header">
+                        <span style="color: var(--color-red);">STATUS POOL</span>
+                        <span class="tag-count" id="status-count">0 / 5</span>
+                    </div>
+                    <div class="tag-list" id="status-tags-list"></div>
+                    <div class="add-tag-form">
+                        <select id="status-tag-select"></select>
+                        <button onclick="addTag('status')">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="section" id="progression">
-            <h2>Progression</h2>
-            <div id="character-keywords"><h3>Keywords</h3><div class="passive-counter">Innate Passives: <span id="innate-passive-current">0</span> / <span id="innate-passive-max">0</span></div><div id="keyword-list"></div></div>
+
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+                <h2>Capabilities</h2>
+                <div style="font-size: 0.9em; color: var(--color-silver);">
+                    Passives Slotted: <span id="passive-counter" style="color: var(--color-white); font-weight: bold;">0 / 0</span>
+                </div>
+            </div>
+            <div id="keyword-list"></div>
             <hr class="divider">
-            <div id="stat-progression-timeline"><h3>Progression Timeline</h3><ul></ul></div>
+            <h2>Inventory</h2>
+            <div id="item-list"></div>
         </div>
-        <div class="section" id="inventory">
-             <h2>Inventory</h2>
-             <div class="passive-counter">Item Passives: <span id="item-passive-current">0</span> / <span id="item-passive-max">0</span></div>
-             <div id="item-list"></div>
-        </div>
-        <div class="section" id="companions">
-             <h2>Companions</h2>
-             <div id="animation-list"></div>
-        </div>
-        <div class="section" id="connections">
-             <h2>Connections</h2>
-             <div id="faction-list"></div>
+
+        <div class="section">
+            <h2>Ecosystem Links</h2>
+            <div id="attachments-list"></div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const MOTIVATIONS = {'0':'Discovery','1':'Ambition','2':'Freedom','3':'Security','4':'Legacy','5':'Innovation','6':'Purity','7':'Glory','8':'Influence','9':'Faith'};
-            const STAT_CODES = { 'M': 'Movement', 'A': 'Alacrity', 'B': 'Brawn', 'W': 'Wit', 'E': 'Expertise', 'T': 'Technique', 'P': 'Power', 'I': 'Influence', 'F': 'Force' };
-            const CIVIL_SYSTEMS = { 'S0': 'Food', 'S1': 'Water', 'S2': 'Shelter', 'S3': 'Infrastructure', 'S4': 'Humanitarian', 'S5': 'Education', 'S6': 'Healthcare', 'S7': 'Government', 'S8': 'Commerce', 'S9': 'Military' };
-            const STATUS_TAGS = ['Mark', 'Impair', 'Slow', 'Daze', 'Curse', 'Bind', 'Weaken', 'Blight', 'Silence', 'Nullify'];
-            const BOOST_TAGS = ['Liberate', 'Augment', 'Haste', 'Ward', 'Bless', 'Charge', 'Cure', 'Regen', 'Enhance', 'Obscure'];
-            const TAG_COLORS = {'Mark': 'null', 'Impair': 'silver', 'Slow': 'yellow', 'Daze': 'green', 'Curse': 'black', 'Bind': 'orange', 'Weaken': 'white', 'Blight': 'red', 'Silence': 'blue', 'Nullify': 'purple','Liberate': 'null', 'Augment': 'silver', 'Haste': 'yellow', 'Ward': 'green', 'Bless': 'black', 'Charge': 'orange', 'Cure': 'white', 'Regen': 'red', 'Enhance': 'blue', 'Obscure': 'purple'};
-            const KEYWORDS = {'00':{name:"Restricted",intent:"A fundamental limitation or flaw."},'01':{name:"Aura",intent:"A tangible field of energy."},'02':{name:"Specialist",intent:"Focused mastery over a domain."},'03':{name:"Alert",intent:"Preternatural awareness."},'04':{name:"Liberate",intent:"Freedom from restraint."},'05':{name:"Mark",intent:"Expose a fundamental weakness."},'06':{name:"Indirect",intent:"Bypass obstacles to strike."},'07':{name:"Adaptive",intent:"Change an effect's nature."},'08':{name:"Gamble",intent:"Reliance on pure chance."},'09':{name:"Edit",intent:"Fundamentally rewrite properties."},'10':{name:"Bane",intent:"A specific, acute vulnerability."},'11':{name:"Traveler",intent:"Innate unconventional movement.",options:{'0':'Walk','1':'Teleport','2':'Fly','3':'Dig','4':'Permeation','5':'Jump','6':'Parkour','7':'Climb','8':'Swim','9':'Lightfoot'}},'12':{name:"Martial",intent:"Proficiency in close-quarters combat."},'13':{name:"Attuned",intent:"A deep link to a target."},'14':{name:"Augment",intent:"Grant additional abilities."},'15':{name:"Impair",intent:"Drains a target's stamina."},'16':{name:"Reactive",intent:"Weave abilities into defensive maneuvers."},'17':{name:"Phasing",intent:"Become intangible to strike essence."},'18':{name:"Brutal",intent:"Overwhelmingly powerful critical blows."},'19':{name:"Translocate",intent:"Mastery of teleportation."},'20':{name:"Anxious",intent:"Difficulty with focus or precision."},'21':{name:"Acrobatic",intent:"Extraordinary grace and movement."},'22':{name:"Sentry",intent:"Rapidly assess a target's nature."},'23':{name:"Eidetic",intent:"A perfect, flawless memory."},'24':{name:"Haste",intent:"A surge of supernatural speed."},'25':{name:"Slow",intent:"Reduce a target's ability to act."},'26':{name:"Snap",intent:"An effect too fast to be reacted to."},'27':{name:"Condense",intent:"Applying greater force by concentration."},'28':{name:"Rapid",intent:"A flurry of multiple strikes."},'29':{name:"Reckless",intent:"Abandoning all defense for pure offense."},'30':{name:"Hesitant",intent:"Inability to react quickly."},'31':{name:"Sturdy",intent:"Unshakeable physical presence."},'32':{name:"Brawler",intent:"Expertise in grappling and maneuvers."},'33':{name:"Stubborn",intent:"Refusal to accept failure."},'34':{name:"Ward",intent:"Negate a single incoming threat."},'35':{name:"Daze",intent:"A disorienting blow."},'36':{name:"Sculpt",intent:"Alter the superficial shape or form."},'37':{name:"Defensive",intent:"Outlasting through superior fortitude."},'38':{name:"Impact",intent:"Immense kinetic force."},'39':{name:"Shift",intent:"Fundamentally alter one's own form."},'40':{name:"Feeble",intent:"Chronic physical weakness."},'41':{name:"Survivor",intent:"Incredible tenacity for life."},'42':{name:"Stoic",intent:"Unshakable mental focus."},'43':{name:"Ageless",intent:"Outside the normal flow of time."},'44':{name:"Bless",intent:"A boon of fortune."},'45':{name:"Curse",intent:"A withering hex of misfortune."},'46':{name:"Piercing",intent:"Unstoppable, penetrating force."},'47':{name:"Flux",intent:"Convert vitality or energy into power."},'48':{name:"Siphon",intent:"Forcibly transfer life force."},'49':{name:"Animate",intent:"Granting temporary life to the inanimate."},'50':{name:"Gremlins",intent:"Persistent streak of bad luck."},'51':{name:"Sensor",intent:"Possession of a supernatural sense.",options:{'0':'Karma','1':'Keywords','2':'Echolocation','3':'Vibration','4':'Energy','5':'Materials','6':'Life','7':'Infrared','8':'Emotion','9':'The Weave'}},'52':{name:"Improvisor",intent:"Talent for using components in novel ways."},'53':{name:"Crafty",intent:"Knack for creating permanent effects."},'54':{name:"Charge",intent:"Infusion of raw energy."},'55':{name:"Bind",intent:"Entraps or ensnares a target."},'56':{name:"Imbue",intent:"Temporarily investing an object with power."},'57':{name:"Material",intent:"Consume an object to fuel an effect."},'58':{name:"Leverage",intent:"Mastery of physics and positioning."},'59':{name:"Manifest",intent:"Create temporary, functional items."},'60':{name:"Vulnerable",intent:"A glaring weakness to precise strikes."},'61':{name:"Tolerant",intent:"Exceptional resilience to negative effects."},'62':{name:"Deadeye",intent:"Expert eye for weak points."},'63':{name:"Immunized",intent:"Innate defense against a specific ailment."},'64':{name:"Cure",intent:"A purifying power that cleanses afflictions."},'65':{name:"Weaken",intent:"Corrodes a target's defenses."},'66':{name:"Sticky",intent:"An effect that adheres and triggers later."},'67':{name:"Restore",intent:"A healing power that mends wounds."},'68':{name:"Exploit",intent:"Turning an enemy's weakness against them."},'69':{name:"Growth",intent:"Manipulate a target's age and biology."},'70':{name:"Limited",intent:"A permanent reduction in vital reserves."},'71':{name:"Resilient",intent:"A permanent increase in vital reserves."},'72':{name:"Font",intent:"Use any personal energy to fuel powers."},'73':{name:"Insulated",intent:"Immunity to environmental dangers."},'74':{name:"Regen",intent:"Rapid, continuous healing over time."},'75':{name:"Blight",intent:"A decaying curse that rots life force."},'76':{name:"Area",intent:"Blankets a wide area."},'77':{name:"Ranged",intent:"A projectile or thrown effect."},'78':{name:"Multiply",intent:"Strike multiple, discrete targets."},'79':{name:"Split",intent:"Divide oneself into multiple copies."},'80':{name:"Awkward",intent:"Social or mental clumsiness."},'81':{name:"Charismatic",intent:"Innate magnetism and personality."},'82':{name:"Leader",intent:"Natural command over allies."},'83':{name:"Insightful",intent:"Deep empathy and perception."},'84':{name:"Enhance",intent:"A boon of targeted inspiration."},'85':{name:"Silence",intent:"Severs connection to inner power."},'86':{name:"Splash",intent:"Effect splashes from the primary target."},'87':{name:"Lingering",intent:"An effect that persists or has lasting impact."},'88':{name:"Spread",intent:"Move an affliction from one target to another."},'89':{name:"Potent",intent:"Applies secondary effects even when resisted."},'90':{name:"Mundane",intent:"Innate disconnect from essence."},'91':{name:"Aware",intent:"Sense and identify supernatural powers."},'92':{name:"Stealthy",intent:"Talent for concealment."},'93':{name:"Trickster",intent:"Use of illusion and misdirection."},'94':{name:"Obscure",intent:"A boon of concealment."},'95':{name:"Nullify",intent:"Disrupts a target's innate abilities."},'96':{name:"Chain",intent:"Effect leaps from one target to the next."},'97':{name:"Natural",intent:"Ability is treated as part of one's body."},'98':{name:"Ambience",intent:"Influence the surrounding environment."},'99':{name:"Channel",intent:"Share innate powers with others."}};
-            const COLOR_NAMES = ['null', 'silver', 'yellow', 'green', 'black', 'orange', 'white', 'red', 'blue', 'purple'];
-            
-            function parseEcosystem(fullString) {
-                const ecosystem = { character: null, items: [], animations: [], factions: [] };
-                const [rootString, ...attachmentStrings] = fullString.split('@');
-                if (!rootString || !rootString.startsWith('C:')) throw new Error("Blueprint string must start with a Character (C:).");
-                ecosystem.character = parseCharacter(rootString.substring(2));
-                attachmentStrings.forEach(attachmentString => {
-                    const parts = attachmentString.split('/');
-                    const primaryAttachment = parts.shift();
-                    if (primaryAttachment.startsWith('I:')) {
-                        ecosystem.items.push(parseItem(primaryAttachment.substring(2)));
-                    } else if (primaryAttachment.startsWith('A:')) {
-                        const animation = parseAnimation(primaryAttachment.substring(2));
-                        if (parts.length > 0 && parts[0].startsWith('I:')) {
-                            animation.item = parseItem(parts[0].substring(2));
-                        }
-                        ecosystem.animations.push(animation);
-                    } else if (primaryAttachment.startsWith('F:')) {
-                        ecosystem.factions.push(parseFaction(primaryAttachment.substring(2)));
-                    }
-                });
-                return ecosystem;
+<script>
+        // --- DATA LINKING ---
+        // We map the local constants to the shared Engine Data for backward compatibility in the functions
+        const MOTIVATIONS = PsychroEngine.Data.MOTIVATIONS;
+        const STAT_NAMES = PsychroEngine.Data.STAT_NAMES;
+        const STAT_ORDER = PsychroEngine.Data.STAT_KEYS;
+        const COLOR_NAMES = PsychroEngine.Data.COLORS;
+        const KEYWORDS = PsychroEngine.Data.KEYWORDS;
+        const TAGS = PsychroEngine.Data.TAGS;
+        const TAG_COLORS = PsychroEngine.Data.TAG_COLORS;
+
+        // --- PERSISTENCE CONFIG ---
+        const CHAR_STORAGE_KEY = 'psychro_active_character';
+
+        // --- STATE MANAGEMENT ---
+        let appState = {
+            karma: 0,
+            tags: { boost: [], status:[] },
+            maxTags: 5
+        };
+
+        // --- UI UPDATERS ---
+        function updateKarma(delta) {
+            appState.karma = Math.max(0, appState.karma + delta);
+            document.getElementById('karma-display').textContent = appState.karma;
+        }
+
+        function initTagSelects() {
+            ['boost', 'status'].forEach(type => {
+                const select = document.getElementById(`${type}-tag-select`);
+                TAGS[type].forEach(tag => select.add(new Option(tag, tag)));
+            });
+        }
+
+        function addTag(type) {
+            const select = document.getElementById(`${type}-tag-select`);
+            const tag = select.value;
+            if (!tag) return;
+
+            if (appState.tags[type].length >= appState.maxTags) {
+                const removed = appState.tags[type].shift();
+                alert(`Tag Limit Reached (Max 5). Removed oldest ${type} tag: ${removed}.`);
             }
+            
+            appState.tags[type].push(tag);
+            renderTags();
+        }
 
-            function parseCharacter(charString) {
-                const character = {
-                    profile: '00000', flawPackage: null, keywords: [], progression: [],
-                    stats: Object.fromEntries(Object.keys(STAT_CODES).map(key => [key, 1])),
-                    level: 0
-                };
-                const profileMatch = charString.match(/^(\d{5})/);
-                if (!profileMatch) throw new Error("Invalid character string: Missing profile.");
-                character.profile = profileMatch[1];
+        function removeTag(type, index) {
+            appState.tags[type].splice(index, 1);
+            renderTags();
+        }
 
-                const progressionRegex = /-(\+?\d{4}|(?:!?\d{2}(?:\(\d\))?\.?)*[MABWETPIF]*)/g;
-                let match;
-                const progressionParts = [];
-                while ((match = progressionRegex.exec(charString)) !== null) {
-                    progressionParts.push(match[1]);
-                }
-
-                let learnedKeywordsCount = 0;
-                progressionParts.forEach(part => {
-                    // FIX: Extract and Handle Flaw FIRST so digits don't confuse keyword regex
-                    const flawMatch = part.match(/\+(\d{2})(\d{2})/);
-                    if (flawMatch) {
-                        character.flawPackage = { flaw: flawMatch[1], comp: flawMatch[2] };
-                        character.progression.push(`<span class="flaw-entry">(Narrative Event): Gained Flaw (${KEYWORDS[flawMatch[1]]?.name} /w ${KEYWORDS[flawMatch[2]]?.name})</span>`);
-                        // Remove the flaw string from the part so it is not counted as keywords
-                        part = part.replace(flawMatch[0], '');
-                    }
-
-                    const kwsInPart = part.match(/!?\d{2}(\(\d\))?/g) || [];
-                    kwsInPart.forEach(kwString => {
-                        const kwMatch = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
-                        character.keywords.push({ code: kwMatch[2], isPassive: kwMatch[1] === '!', option: kwMatch[4] || null });
-                    });
-                });
+        function renderTags() {
+            ['boost', 'status'].forEach(type => {
+                const list = document.getElementById(`${type}-tags-list`);
+                const countDisplay = document.getElementById(`${type}-count`);
                 
-                learnedKeywordsCount = character.keywords.length;
-                character.level = (learnedKeywordsCount < 1) ? 0 : 1 + Math.floor((learnedKeywordsCount - 4) / 2);
-                if (learnedKeywordsCount > 0 && learnedKeywordsCount < 4) character.level = 0; // Edge case for level 0 with seed.
-                if (learnedKeywordsCount >= 4) character.level = 1 + Math.floor((learnedKeywordsCount - 4) / 2);
+                list.innerHTML = '';
+                const currentCount = appState.tags[type].length;
+                countDisplay.textContent = `${currentCount} / ${appState.maxTags}`;
+                countDisplay.className = currentCount >= appState.maxTags ? 'tag-count full' : 'tag-count';
 
+                const tagCounts = {};
+                appState.tags[type].forEach(t => tagCounts[t] = (tagCounts[t] || 0) + 1);
 
-                // SRD-Compliant Stat Calculation
-                character.stats = Object.fromEntries(Object.keys(STAT_CODES).map(key => [key, (character.level > 0 ? 2 : 1)]));
-                
-                if (character.level > 0) {
-                    const awakeningBlock = (progressionParts[0] || '') + (progressionParts[1] || '');
-                    const trinityStats = awakeningBlock.match(/[MABWETPIF]/g) || [];
-                    trinityStats.forEach(stat => { if(character.stats[stat] < 5) character.stats[stat]++; });
-                    character.progression.push("Level 0: Seed Keyword");
-                    character.progression.push(`Level 1: Awakening & Trinity Bonus (${trinityStats.join(', ')})`);
-                } else if (learnedKeywordsCount > 0) {
-                    character.progression.push("Level 0: Seed Keyword");
-                }
-                 for(let i = 2; i <= character.level; i++) {
-                    const levelIndex = 1 + (i - 1);
-                    if(progressionParts[levelIndex]){
-                        const statPoint = (progressionParts[levelIndex].match(/[MABWETPIF]/g) || [])[0];
-                        if(statPoint && character.stats[statPoint] < 5) character.stats[statPoint]++;
-                        character.progression.push(`Level ${i}: +1 Stat Point (${STAT_CODES[statPoint] || 'N/A'})`);
-                    }
-                }
-                
-                character.progression.sort((a,b) => (a.match(/Level (\d+)/)?.[1] || (a.includes('Flaw') ? 99 : -1)) - (b.match(/Level (\d+)/)?.[1] || (b.includes('Flaw') ? 99 : -1)));
-                return character;
-            }
-            
-            function parseAnimation(animString) {
-                const anim = { keywords: [], flawPackage: null, level: 0, stats: {}, resistance: 0 };
-                const kws = animString.match(/!?\d{2}(\(\d\))?/g) || [];
-                anim.keywords = kws.map(kwString => {
-                    const match = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
-                    return { code: match[2], isPassive: match[1] === '!', option: match[4] || null };
-                });
-                anim.level = anim.keywords.length > 0 ? anim.keywords.length - 1 : 0;
-                anim.stats = Object.fromEntries(Object.keys(STAT_CODES).map(k => [k, 1]));
-                let pointsToAssign = anim.level;
-                const statOrder = ['B', 'T', 'W', 'A', 'E', 'M', 'P', 'I', 'F'];
-                let i = 0;
-                while (pointsToAssign > 0) {
-                    const key = statOrder[i % statOrder.length];
-                    if (anim.stats[key] < 5) { anim.stats[key]++; pointsToAssign--; }
-                    i++;
-                }
-                const statValues = Object.values(anim.stats).sort((a, b) => b - a);
-                anim.resistance = statValues.slice(0, 3).reduce((sum, val) => sum + val, 0);
-                return anim;
-            }
+                Object.keys(tagCounts).forEach(tagName => {
+                    const el = document.createElement('div');
+                    el.className = 'tag-item';
+                    el.dataset.color = TAG_COLORS[tagName];
+                    
+                    const lastIndex = appState.tags[type].lastIndexOf(tagName);
 
-            function parseItem(itemString) {
-                 const item = { keywords: [], level: 0 };
-                 const match = itemString.match(/L(\d+)-?(.*)/);
-                 if (match) {
-                     item.level = parseInt(match[1]);
-                     const kws = match[2].match(/!?\d{2}(\(\d\))?/g) || [];
-                     item.keywords = kws.map(kwString => {
-                        const kwMatch = kwString.match(/(!?)(\d{2})(\((\d)\))?/);
-                        return { code: kwMatch[2], isPassive: kwMatch[1] === '!', option: kwMatch[4] || null };
-                     });
-                 }
-                 return item;
-            }
-            
-            function parseFaction(factionString) {
-                const faction = { profile: '00000', level: 0, systems: [], keywords: []};
-                const parts = factionString.split(/\[|\]-\[K|\]/);
-                faction.profile = parts[0].substring(0, 5);
-                faction.level = parseInt(parts[0].match(/L(\d+)/)?.[1] || '0');
-                faction.systems = parts[1] ? parts[1].split('.').map(sCode => CIVIL_SYSTEMS[sCode] || 'Unknown') : [];
-                faction.keywords = parts[2] ? parts[2].split('.').map(kCode => ({ code: kCode.replace('!','') })) : [];
-                return faction;
-            }
-
-            function renderCharacterSheet(ecosystem) {
-                clearSheet();
-                const { character, items, animations, factions } = ecosystem;
-                document.getElementById('character-level').textContent = character.level;
-                document.querySelector('#motivational-profile-details summary span').textContent = character.profile;
-                renderProfileMatrix(character.profile, 'profile-');
-
-                const statGrid = document.getElementById('stat-grid');
-                Object.entries(character.stats).forEach(([key, value]) => {
-                     statGrid.innerHTML += `<div class="stat-item"><div class="stat-value">${value}</div><div class="stat-name">${STAT_CODES[key]}</div></div>`;
-                });
-                const statValues = Object.values(character.stats).sort((a,b)=>b-a);
-                const resistanceSum = statValues.slice(0,3).reduce((s,v)=>s+v,0);
-                statGrid.innerHTML += `<div class="stat-item resistance-item"><div class="stat-value">${resistanceSum}</div><div class="stat-name">Resistance</div></div>`;
-
-                const keywordList = document.getElementById('keyword-list');
-                if(character.flawPackage) {
-                    keywordList.appendChild(createKeywordCard({code: character.flawPackage.flaw}, false, true));
-                    keywordList.appendChild(createKeywordCard({code: character.flawPackage.comp}, false, false, true));
-                }
-                character.keywords.forEach(kw => keywordList.appendChild(createKeywordCard(kw)));
-                document.getElementById('innate-passive-max').textContent = character.stats.F;
-                document.getElementById('item-passive-max').textContent = character.stats.E;
-                document.getElementById('innate-passive-current').textContent = character.keywords.filter(k=>k.isPassive).length;
-                document.querySelector('#stat-progression-timeline ul').innerHTML = character.progression.map(entry => `<li>${entry}</li>`).join('');
-
-                const itemList = document.getElementById('item-list');
-                let itemPassiveCount = 0;
-                items.forEach(item => {
-                    itemPassiveCount += item.keywords.filter(k => k.isPassive).length;
-                    itemList.appendChild(createItemCard(item));
-                });
-                document.getElementById('item-passive-current').textContent = itemPassiveCount;
-                document.getElementById('animation-list').innerHTML = animations.map((anim, i) => createAnimationCard(anim, i).outerHTML).join('');
-                document.getElementById('faction-list').innerHTML = factions.map(fac => createFactionCard(fac).outerHTML).join('');
-                setupAllClocks(ecosystem);
-            }
-            
-            function renderProfileMatrix(code, prefix) {
-                const [goal, method, purpose, external, internal] = code.split('');
-                const ids = ['goal', 'method', 'purpose', 'external', 'internal'];
-                const codes = [goal, method, purpose, external, internal];
-                codes.forEach((c, i) => {
-                    const el = document.getElementById(prefix + ids[i]);
-                    if(!el) return;
-                    el.className = `profile-item ${ids[i] === 'goal' ? 'goal' : ''} ${ids[i].includes('ernal') ? 'conflict' : ''} text-color-${c}`;
-                    el.querySelector('.profile-value').textContent = MOTIVATIONS[c];
-                });
-            }
-
-            function createKeywordCard(kw, isDisabled = false, isFlaw = false, isComp = false) {
-                const kwData = KEYWORDS[kw.code];
-                if (!kwData) return document.createElement('div');
-                const card = document.createElement('div');
-                card.className = 'keyword-card';
-                const colorIndex = kw.code.substring(0, 1);
-                card.style.borderLeftColor = `var(--color-${COLOR_NAMES[colorIndex]})`;
-                let name = kwData.name;
-                if(isFlaw) name = `<span style="color:var(--color-red)">${name} (Flaw)</span>`;
-                if(isComp) name = `<span style="color:var(--color-green)">${name} (Compensation)</span>`;
-                if(kw.option && kwData.options) name += ` (${kwData.options[kw.option]})`;
-                card.innerHTML = `<div class="keyword-header"><span class="keyword-name">${name}</span><label style="font-size:9pt; color: var(--color-silver);"><input type="checkbox" ${kw.isPassive ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}> Passive</label></div><div class="keyword-intent">${kwData.intent || 'No intent specified.'}</div>`;
-                return card;
-            }
-
-            function createItemCard(item) {
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                let keywordsHTML = '<div class="keyword-list">' + item.keywords.map(kw => createKeywordCard(kw).outerHTML).join('') + '</div>';
-                card.innerHTML = `<h4><input type="text" value="Item" style="width: auto;"></h4><div class="item-details">Level ${item.level}</div><hr class="divider" style="margin: 10px 0;"><h3>Keywords</h3>${keywordsHTML}`;
-                return card;
-            }
-
-            function createAnimationCard(animation, index) {
-                const card = document.createElement('div');
-                card.className = 'animation-card';
-                const uniqueId = `anim-${index}`;
-                let statsHTML = `<div class="stat-grid" style="font-size: 9pt; gap: 5px;">${Object.entries(animation.stats).map(([key, val]) => `<div class="stat-item" style="padding: 5px;"><div class="stat-value" style="font-size: 1.2em;">${val}</div><div class="stat-name" style="font-size: 0.7em;">${key}</div></div>`).join('')}</div>`;
-                let keywordsHTML = `<div class="keyword-list">${animation.keywords.map(kw => createKeywordCard(kw, true).outerHTML).join('')}</div>`;
-                card.innerHTML = `<h4><input type="text" value="Companion ${index+1}" style="width: auto; padding: 2px;"></h4><div class="anim-details">Level ${animation.level}</div>${statsHTML}<div class="anim-resistance">Resistance: ${animation.resistance}</div>
-                    <div class="clocks" style="margin-top: 15px;">
-                        <div class="clock"><div class="clock-header"><span>HP</span><div class="max-input-wrapper"><span id="${uniqueId}-hp-value">0/10</span> Max: <input type="number" id="${uniqueId}-hp-max" value="10" min="1"></div></div><div class="clock-pips hp-pips" id="${uniqueId}-hp-pips"></div></div>
-                        <div class="clock"><div class="clock-header"><span>SP</span><div class="max-input-wrapper"><span id="${uniqueId}-sp-value">0/10</span> Max: <input type="number" id="${uniqueId}-sp-max" value="10" min="1"></div></div><div class="clock-pips sp-pips" id="${uniqueId}-sp-pips"></div></div>
-                        <div class="clock"><div class="clock-header"><span>EP</span><div class="max-input-wrapper"><span id="${uniqueId}-ep-value">0/10</span> Max: <input type="number" id="${uniqueId}-ep-max" value="10" min="1"></div></div><div class="clock-pips ep-pips" id="${uniqueId}-ep-pips"></div></div>
-                    </div>
-                    <div class="tags-section" style="margin-top: 15px;">
-                        <div><h3>Status Tags</h3><div class="tag-list" id="${uniqueId}-status-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-status-tag-select"></select><button>+</button></div></div>
-                        <div><h3>Boost Tags</h3><div class="tag-list" id="${uniqueId}-boost-tags-list"></div><div class="add-tag-form"><select id="${uniqueId}-boost-tag-select"></select><button>+</button></div></div>
-                    </div>
-                    <hr class="divider"><h3>Keywords</h3>${keywordsHTML}
-                    ${animation.item ? `<hr class="divider"><h3>Attached Item</h3><div id="anim-item-${uniqueId}"></div>` : ''}
-                `;
-                if(animation.item) setTimeout(() => card.querySelector(`#anim-item-${uniqueId}`).appendChild(createItemCard(animation.item)), 0);
-                return card;
-            }
-            
-            function createFactionCard(faction) {
-                const card = document.createElement('div');
-                card.className = 'faction-card';
-                const uniqueId = `faction-${faction.profile}-${Math.random()}`;
-                card.innerHTML = `<h4><input type="text" value="Faction" style="width: auto;"></h4><div class="faction-details">Level ${faction.level}</div>
-                     <details open><summary>Profile: <span>${faction.profile}</span></summary>
-                        <div class="profile-matrix" id="${uniqueId}-matrix">
-                            <div class="profile-row ideals"><div id="${uniqueId}-method" class="profile-item"><div class="profile-label">Method</div><div class="profile-value">...</div></div><div id="${uniqueId}-goal" class="profile-item goal"><div class="profile-label">Goal</div><div class="profile-value">...</div></div><div id="${uniqueId}-purpose" class="profile-item"><div class="profile-label">Purpose</div><div class="profile-value">...</div></div></div>
-                            <div class="profile-row conflicts"><div id="${uniqueId}-external" class="profile-item conflict"><div class="profile-label">External</div><div class="profile-value">...</div></div><div id="${uniqueId}-internal" class="profile-item conflict"><div class="profile-label">Internal</div><div class="profile-value">...</div></div></div>
+                    el.innerHTML = `
+                        <span>${tagName}</span>
+                        <div class="tag-controls">
+                            <button onclick="removeTag('${type}', ${lastIndex})">-</button>
+                            <span style="font-weight:bold; min-width: 15px; text-align:center;">${tagCounts[tagName]}</span>
                         </div>
-                    </details>
-                    <hr class="divider"><h3>Civil Systems</h3><ul>${faction.systems.map(s => `<li>${s}</li>`).join('')}</ul>
-                    <h3 style="margin-top:10px;">Keywords</h3><div class="keyword-list">${faction.keywords.map(kw => createKeywordCard(kw, true).outerHTML).join('')}</div>`;
-                setTimeout(() => renderProfileMatrix(faction.profile, `${uniqueId}-`), 0);
-                return card;
-            }
-
-            function clearSheet(){
-                ['stat-grid', 'keyword-list', 'item-list', 'animation-list', 'faction-list'].forEach(id => document.getElementById(id).innerHTML = '');
-                document.querySelector('#stat-progression-timeline ul').innerHTML = '';
-            }
-
-            function setupClock(id) {
-                const maxInput = document.getElementById(`${id}-max`);
-                const pipsContainer = document.getElementById(`${id}-pips`);
-                const valueDisplay = document.getElementById(`${id}-value`);
-                let max = 10; let current = 0;
-                const redrawPips = () => {
-                    max = parseInt(maxInput.value) || 10;
-                    current = Math.min(current, max);
-                    pipsContainer.innerHTML = '';
-                    for (let i = 0; i < max; i++) {
-                        const pip = document.createElement('div');
-                        pip.className = 'pip';
-                        if (i < current) pip.classList.add('active');
-                        pip.dataset.index = i;
-                        pipsContainer.appendChild(pip);
-                    }
-                    updateClockValue();
-                };
-                const updateClockValue = () => {
-                    current = pipsContainer.querySelectorAll('.pip.active').length;
-                    if(valueDisplay) valueDisplay.textContent = `${current}/${max}`;
-                };
-                pipsContainer.addEventListener('click', e => {
-                    if (e.target.classList.contains('pip')) {
-                        const targetIndex = parseInt(e.target.dataset.index);
-                        const isCurrentlyActive = e.target.classList.contains('active');
-                        current = (isCurrentlyActive && targetIndex === current - 1) ? targetIndex : targetIndex + 1;
-                        Array.from(pipsContainer.children).forEach((pip, i) => pip.classList.toggle('active', i < current));
-                        updateClockValue();
-                    }
+                    `;
+                    list.appendChild(el);
                 });
-                maxInput.addEventListener('change', redrawPips);
-                redrawPips();
+            });
+
+            if (appState.tags.status.includes('Nullify')) {
+                document.body.classList.add('is-nullified');
+            } else {
+                document.body.classList.remove('is-nullified');
+            }
+        }
+
+        function renderCharacterSheet(rootEntity) {
+            if (!rootEntity || rootEntity.type !== 'CHARACTER') return alert("Invalid Blueprint: Root is not a Character.");
+
+            // 1. Profile & Level
+            document.getElementById('character-level').textContent = rootEntity.level;
+            document.getElementById('profile-code').textContent = rootEntity.profile;
+            
+            const [g, m, p, e, i] = rootEntity.profile.split('');
+            const applyProfile = (id, code) => {
+                const el = document.getElementById(`profile-${id}`);
+                el.className = `profile-item ${id==='goal'?'goal':''} ${id.includes('ernal')?'conflict':''} text-color-${code}`;
+                el.querySelector('.profile-value').textContent = MOTIVATIONS[code];
+            };
+            applyProfile('goal', g); applyProfile('method', m); applyProfile('purpose', p); 
+            applyProfile('external', e); applyProfile('internal', i);
+
+            // 2. Stats
+            const statGrid = document.getElementById('stat-grid');
+            statGrid.innerHTML = '';
+            STAT_ORDER.forEach(key => {
+                statGrid.innerHTML += `<div class="stat-item"><div class="stat-value">${rootEntity.stats[key]}</div><div class="stat-name">${STAT_NAMES[key]}</div></div>`;
+            });
+            statGrid.innerHTML += `<div class="stat-item resistance-item"><div class="stat-value">${rootEntity.resistance}</div><div class="stat-name">Resistance</div></div>`;
+
+            // 3. Keywords & Passives Limit
+            const kwList = document.getElementById('keyword-list');
+            kwList.innerHTML = '';
+            
+            let innatePassives = 0;
+            let gearPassives = 0;
+
+            if (rootEntity.flawPackage) {
+                kwList.innerHTML += createKeywordCard(rootEntity.flawPackage.flaw, true, "FLAW", "var(--color-red)");
+                kwList.innerHTML += createKeywordCard(rootEntity.flawPackage.comp, false, "COMPENSATION", "var(--color-green)");
             }
 
-            function setupTagSystem(idPrefix) {
-                ['status', 'boost'].forEach(type => {
-                    const tagOptions = type === 'status' ? STATUS_TAGS : BOOST_TAGS;
-                    const select = document.getElementById(`${idPrefix}-${type}-tag-select`);
-                    if(!select) return;
-                    const btn = select.nextElementSibling;
-                    const listContainer = document.getElementById(`${idPrefix}-${type}-tags-list`);
+            rootEntity.keywords.forEach(kw => {
+                if (kw.isPassive) innatePassives++;
+                kwList.innerHTML += createKeywordCard(kw.code, kw.isPassive, kw.option);
+            });
 
-                    select.innerHTML = `<option value="">Select ${type}...</option>`;
-                    tagOptions.forEach(tag => select.add(new Option(tag, tag)));
+            // 4. Attachments (Inventory, Companions, Factions)
+            const attachList = document.getElementById('attachments-list');
+            const itemList = document.getElementById('item-list');
+            attachList.innerHTML = ''; itemList.innerHTML = '';
 
-                    btn.addEventListener('click', () => {
-                        const tagName = select.value;
-                        if (!tagName || listContainer.querySelector(`[data-tag-name="${tagName}"]`)) return;
-                        const tagEl = document.createElement('div');
-                        tagEl.className = 'tag-item';
-                        tagEl.dataset.tagName = tagName;
-                        tagEl.dataset.color = TAG_COLORS[tagName];
-                        tagEl.innerHTML = `<span class="tag-name">${tagName}</span><div class="tag-quantity-controls"><button>-</button><span>1</span><button>+</button></div>`;
-                        listContainer.appendChild(tagEl);
-                        const qtySpan = tagEl.querySelector('span:last-of-type');
-                        tagEl.querySelector('button:last-of-type').addEventListener('click', () => { let qty = parseInt(qtySpan.textContent); if (qty < 5) qtySpan.textContent = qty + 1; });
-                        tagEl.querySelector('button:first-of-type').addEventListener('click', () => { let qty = parseInt(qtySpan.textContent); if (qty > 1) qtySpan.textContent = qty - 1; else tagEl.remove(); });
-                        select.selectedIndex = 0;
-                    });
-                });
-            }
-            
-            function setupAllClocks(ecosystem) {
-                setupClock('hp'); setupClock('sp'); setupClock('ep');
-                ecosystem.animations.forEach((a, i) => {
-                    setupClock(`anim-${i}-hp`); setupClock(`anim-${i}-sp`); setupClock(`anim-${i}-ep`);
-                    setupTagSystem(`anim-${i}`);
-                });
-            }
-            
-            function loadBlueprint(blueprint) {
-                document.getElementById('blueprint-input').value = blueprint;
-                try {
-                    const ecosystem = parseEcosystem(blueprint);
-                    renderCharacterSheet(ecosystem);
-                } catch(e) {
-                    alert('Failed to parse blueprint: ' + e.message);
-                    console.error(e);
-                }
-            }
-            
-            document.getElementById('load-button').addEventListener('click', () => loadBlueprint(document.getElementById('blueprint-input').value.trim()));
-            window.addEventListener('message', (event) => {
-                if(event.data.type === 'LOAD_BLUEPRINT') {
-                    loadBlueprint(event.data.payload);
+            rootEntity.attachments.forEach(att => {
+                if (att.type === 'ITEM') {
+                    att.keywords.forEach(k => { if(k.isPassive) gearPassives++; });
+                    itemList.innerHTML += renderItemHTML(att);
+                } else if (att.type === 'ANIMATION') {
+                    attachList.innerHTML += renderAnimationHTML(att);
+                } else if (att.type === 'FACTION') {
+                    attachList.innerHTML += renderFactionHTML(att);
                 }
             });
-            
-            const karmaDisplay = document.getElementById('karma-display');
-            document.getElementById('karma-plus').addEventListener('click', () => karmaDisplay.textContent = parseInt(karmaDisplay.textContent) + 1);
-            document.getElementById('karma-minus').addEventListener('click', () => karmaDisplay.textContent = Math.max(0, parseInt(karmaDisplay.textContent) - 1));
 
-            setupTagSystem('');
-            document.getElementById('load-button').click(); // Initial load
+            document.getElementById('passive-counter').innerHTML = `
+                Innate: <span style="color: ${innatePassives > rootEntity.stats.F ? 'var(--color-red)' : 'var(--color-green)'}">${innatePassives}/${rootEntity.stats.F}</span> | 
+                Gear: <span style="color: ${gearPassives > rootEntity.stats.E ? 'var(--color-red)' : 'var(--color-green)'}">${gearPassives}/${rootEntity.stats.E}</span>
+            `;
+
+            setupClock('hp'); setupClock('sp'); setupClock('ep');
+        }
+
+        function createKeywordCard(code, isPassive, optionCode = null, badgeLabel = null, badgeColor = null) {
+            const data = KEYWORDS[code];
+            if (!data) return '';
+            const colorName = COLOR_NAMES[code.charAt(0)];
+            let name = data.name;
+            if (optionCode && data.options) name += ` (${data.options[optionCode]})`;
+            
+            let badgeHtml = isPassive ? `<span class="passive-badge active">PASSIVE</span>` : `<span class="passive-badge">ACTIVE</span>`;
+            if (badgeLabel) badgeHtml = `<span class="passive-badge active" style="background:${badgeColor}; border-color:${badgeColor}; color:var(--color-black);">${badgeLabel}</span>`;
+
+            return `
+                <div class="keyword-card" style="border-left-color: var(--color-${colorName})">
+                    <div class="keyword-header">
+                        <span class="keyword-name">${name} <span style="font-size: 0.8em; color: #666;">(${code})</span></span>
+                        ${badgeHtml}
+                    </div>
+                    <div style="margin-top: 5px; color: var(--color-silver);">${data.intent || ''}</div>
+                </div>
+            `;
+        }
+
+        function renderItemHTML(item) {
+            let kws = item.keywords.map(k => createKeywordCard(k.code, k.isPassive, k.option)).join('');
+            return `<div class="item-card"><h4>Equipment</h4><div class="sub-details">Level ${item.level}</div>${kws}</div>`;
+        }
+
+        function renderAnimationHTML(anim) {
+            let kws = anim.keywords.map(k => createKeywordCard(k.code, true, k.option)).join('');
+            let nestedItems = '';
+            anim.attachments.forEach(att => {
+                if(att.type === 'ITEM') nestedItems += renderItemHTML(att);
+            });
+            return `<div class="animation-card"><h4>Animation</h4><div class="sub-details">Level ${anim.level}</div>${kws}${nestedItems}</div>`;
+        }
+
+        function renderFactionHTML(fac) {
+            return `<div class="faction-card"><h4>Faction</h4><div class="sub-details">Level ${fac.level}</div><div style="font-size: 10pt;">Systems: ${fac.systems.join(', ')}</div></div>`;
+        }
+
+        function setupClock(prefix, overrideMax = null, isFullDefault = true) {
+            const maxInput = document.getElementById(`${prefix}-max`);
+            const pipsContainer = document.getElementById(`${prefix}-pips`);
+            const valueDisplay = document.getElementById(`${prefix}-value`);
+            if (overrideMax !== null && maxInput) maxInput.value = overrideMax;
+            function redrawPips() {
+                let max = parseInt(maxInput.value) || 0;
+                let current = pipsContainer.querySelectorAll('.pip.active').length;
+                if (pipsContainer.children.length === 0 && isFullDefault) current = max;
+                pipsContainer.innerHTML = '';
+                for (let i = 0; i < max; i++) {
+                    const pip = document.createElement('div');
+                    pip.className = i < current ? 'pip active' : 'pip';
+                    pip.dataset.index = i;
+                    pipsContainer.appendChild(pip);
+                }
+                updateClockValue();
+            }
+            function updateClockValue() {
+                let max = parseInt(maxInput.value) || 0;
+                const current = pipsContainer.querySelectorAll('.pip.active').length;
+                if(valueDisplay) valueDisplay.textContent = `${current}/${max}`;
+            }
+            pipsContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('pip')) {
+                    const targetIndex = parseInt(e.target.dataset.index);
+                    const pips = Array.from(pipsContainer.children);
+                    const currentActive = pips.filter(p => p.classList.contains('active')).length;
+                    let newActive = (currentActive === targetIndex + 1 && targetIndex === currentActive - 1) ? targetIndex : targetIndex + 1;
+                    pips.forEach((pip, i) => pip.classList.toggle('active', i < newActive));
+                    updateClockValue();
+                }
+            });
+            maxInput.addEventListener('change', redrawPips);
+            redrawPips();
+        }
+
+        document.getElementById('load-button').addEventListener('click', () => {
+            const rawString = document.getElementById('blueprint-input').value.trim();
+            if (!rawString) return;
+            
+            // PERSISTENCE: Save loaded character
+            localStorage.setItem(CHAR_STORAGE_KEY, rawString);
+            
+            const rootEntity = PsychroEngine.Parse.ecosystem(rawString);
+            renderCharacterSheet(rootEntity);
+        });
+
+        // PWA Message Listener
+        window.addEventListener('message', (event) => {
+            if(event.data.type === 'LOAD_BLUEPRINT') {
+                document.getElementById('blueprint-input').value = event.data.payload;
+                document.getElementById('load-button').click();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTagSelects();
+            
+            // PERSISTENCE: Auto-load saved character
+            const savedChar = localStorage.getItem(CHAR_STORAGE_KEY);
+            if (savedChar) {
+                document.getElementById('blueprint-input').value = savedChar;
+                document.getElementById('load-button').click();
+            }
         });
     </script>
 </body>
