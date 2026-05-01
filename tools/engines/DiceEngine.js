@@ -49,180 +49,83 @@ export const DiceEngine = {
     // 1. THE TURN CYCLE LOGIC
     // =======================================================================
 
-    phases: {
-        /**
-         * READY PHASE: Upkeep, Field reset, and Karma generation.
-         */
+   phases: {
         executeReady(payload, state, result) {
             const expertise = state.diceState.expertise || 1;
             
-            // 1. Generate Resonance Field (Reset every turn to Expertise)
-            result.mutations.resonanceField = expertise;
-            
-            // 2. Gain Resources (Karma = Expertise)
+            // 1. Reset Field & Gain Karma
+            result.mutations.diceState = { ...state.diceState, resonanceField: expertise };
             result.mutations.karmaDelta = expertise;
             
-            result.logs.push(`Ready Phase: Resonance Field reset to ${expertise}. Gained ${expertise} Karma.`);
+            // 2. Free Generation (Roll 1d10 for Primary Color)
+            const primaryColor = state.diceState.affinityColors[0];
+            const category = Math.floor(Math.random() * 10); // 0-9
+            
+            const newTokens =[...(state.diceState.tokens || [])];
+            newTokens.push({ id: Date.now().toString(), color: primaryColor, category: category });
+            result.mutations.diceState.tokens = newTokens;
+
+            result.logs.push(`Ready Phase: Field reset to ${expertise}. Gained ${expertise} Karma. Free Token Generated: [${primaryColor}.${category}].`);
             result.success = true;
             return result;
         },
 
-        /**
-         * GENERATE TOKEN: Free vs. Paid generation handling.
-         */
         executeGenerate(payload, state, result) {
-            const { isFree, colorId, categoryId, isAffinityColor } = payload;
-
-            if (!isFree) {
-                // Cost is 1 Karma for Affinity colors, 2 for Non-Affinity
-                const cost = isAffinityColor ? 1 : 2;
-                if (state.resources.karma < cost) {
-                    result.logs.push("Failed: Insufficient Karma to generate token.");
-                    return result;
-                }
-                result.mutations.karmaDelta = -cost;
-                result.logs.push(`Paid ${cost} Karma for generation.`);
+            const { isAffinityColor, colorId } = payload;
+            const cost = isAffinityColor ? 1 : 2;
+            
+            if (state.resources.karma < cost) {
+                result.logs.push(`Failed: Need ${cost} Karma for generation.`);
+                return result;
             }
+            
+            result.mutations.karmaDelta = -cost;
+            const category = Math.floor(Math.random() * 10); // 0-9
+            
+            const newTokens = [...(state.diceState.tokens || [])];
+            newTokens.push({ id: Date.now().toString() + Math.random(), color: colorId, category: category });
+            result.mutations.diceState = { ...state.diceState, tokens: newTokens };
 
-            // Tell state to add this token to the matrix
-            result.mutations.newToken = { color: colorId, category: categoryId };
-            result.logs.push(`Generated Token: [${colorId}.${categoryId}]`);
+            result.logs.push(`Paid Generation: Spent ${cost} Karma. Token [${colorId}.${category}] added to Matrix.`);
             result.success = true;
             return result;
         },
 
-        /**
-         * ACTIVATE PHASE: Token expenditure and Combo detection.
-         */
         executeActivate(payload, state, result) {
-            const { tokensSpent, isKarmaSurge, actorState } = payload; 
+            const { tokenIds } = payload;
             const expertise = state.diceState.expertise || 1;
-
-            // 1. Validate Expertise Ceiling (Limit on tokens per activation)
-            if (tokensSpent.length > expertise && !payload.isComboOverride) {
-                result.logs.push(`Failed: Cannot spend more tokens (${tokensSpent.length}) than Expertise (${expertise}).`);
+            
+            if (tokenIds.length > expertise && !payload.isComboOverride) {
+                result.logs.push(`Failed: Cannot spend more tokens (${tokenIds.length}) than Expertise (${expertise}).`);
                 return result;
             }
-
-            let baseDamage = tokensSpent.length === 0 ? 1 : 0; // Basic Activations deal 1 damage
             
-            // 2. Karma Surge Check (Spend 2 Karma for +1 damage)
-            if (isKarmaSurge) {
-                if (state.resources.karma < 2) {
-                    result.logs.push("Failed: Need 2 Karma for a Surge.");
-                    return result;
-                }
-                result.mutations.karmaDelta = -2;
-                baseDamage += 1;
-            }
+            // Remove spent tokens from Matrix
+            const currentTokens = state.diceState.tokens ||[];
+            const remainingTokens = currentTokens.filter(t => !tokenIds.includes(t.id));
+            result.mutations.diceState = { ...state.diceState, tokens: remainingTokens };
 
-            // 3. COMBO DETECTION ALGORITHM
-            let comboType = null;
-            let isCritical = false;
-            let karmaReward = 0;
-
-            // Count occurrences of each color
-            const colorCounts = {};
-            tokensSpent.forEach(t => {
-                colorCounts[t.color] = (colorCounts[t.color] || 0) + 1;
-            });
-            const colorsUsed = Object.keys(colorCounts);
-
-            // A. Critical Activation (5 of same color)
-            if (colorsUsed.length === 1 && colorCounts[colorsUsed[0]] === 5) {
-                comboType = 'CRITICAL_ACTIVATION';
-                isCritical = true;
-                baseDamage = expertise; // Effect replacement rule: deal damage equal to Expertise
-                karmaReward = 3;
-                result.mutations.targetKarmaLoss = expertise;
-            }
-            // B. Chroma Burst (3+ of same color)
-            else if (colorsUsed.length === 1 && colorCounts[colorsUsed[0]] >= 3) {
-                comboType = 'CHROMA_BURST';
-                karmaReward = 1;
-            }
-            // C. Resonance Cascade (Exactly 3 tokens, 3 different affinity colors)
-            else if (tokensSpent.length === 3 && colorsUsed.length === 3) {
-                // Affinity check is handled by the Controller/Middleware
-                comboType = 'RESONANCE_CASCADE';
-                karmaReward = 2;
-            }
-
-            result.mutations.activation = {
-                damage: baseDamage,
-                combo: comboType,
-                karmaReward: karmaReward,
-                isCritical: isCritical
-            };
-
-            result.logs.push(`Activation declared with ${tokensSpent.length} tokens. Combo: ${comboType || 'None'}`);
+            let damage = tokenIds.length === 0 ? 1 : 0; // Basic Activation deals 1 dmg
+            result.logs.push(`Activation Fired! Spent ${tokenIds.length} tokens. Base Damage: ${damage}.`);
             result.success = true;
             return result;
         },
 
-        /**
-         * RESPOND PHASE: Reaction logic for defender.
-         */
         executeRespond(payload, state, result) {
-            const { respondType, tokensSpentByDefender, incomingTokens } = payload;
-
-            if (respondType === 'RESIST') {
-                // Spend 1 token (or 2 Karma) to prevent 1 damage.
-                result.mutations.damageReduction = 1;
-                result.logs.push("Resist Declared: Damage reduced by 1.");
-                result.success = true;
-
-            } else if (respondType === 'AVOID') {
-                // To avoid, defender tokens must exactly match the colors of the incoming tokens
-                const incomingColors = incomingTokens.map(t => t.color).sort().join(',');
-                const defenderColors = tokensSpentByDefender.map(t => t.color).sort().join(',');
-
-                if (incomingColors === defenderColors) {
-                    result.mutations.avoided = true;
-                    result.logs.push("Avoid Declared: Cost matched! Activation negated.");
-                    result.success = true;
-                } else {
-                    result.logs.push("Avoid Failed: Spent tokens did not match incoming token colors.");
-                }
-            }
-            return result;
-        },
-
-        /**
-         * RESOLVE PHASE: Applying damage to Fields, HP, and granting Stress Karma.
-         */
-        executeResolve(payload, state, result) {
-            const { incomingDamage, avoided, isAttacker } = payload;
-
-            if (avoided) {
-                result.logs.push("Activation was avoided. No damage applied.");
+            // EXPERTISE BREAK (Custom Respond Action)
+            const { tokenIds } = payload;
+            if (tokenIds.length !== 5) {
+                result.logs.push("Failed: Expertise Break requires exactly 5 tokens.");
                 return result;
             }
-
-            if (!isAttacker) {
-                let currentField = state.diceState.resonanceField || 0;
-                let currentHp = state.resources.hp;
-                let remainingDmg = incomingDamage;
-
-                // 1. Damage hits Resonance Field first
-                if (currentField >= remainingDmg) {
-                    result.mutations.fieldDelta = -remainingDmg;
-                    remainingDmg = 0;
-                    result.logs.push(`Resonance Field absorbed all ${incomingDamage} damage.`);
-                } else {
-                    result.mutations.fieldDelta = -currentField;
-                    remainingDmg -= currentField;
-                    
-                    // 2. Remaining damage hits HP
-                    result.mutations.hpDelta = -remainingDmg;
-                    
-                    // 3. Stress Karma (Gain 1 Karma per HP lost)
-                    result.mutations.karmaDelta = remainingDmg; 
-                    
-                    result.logs.push(`Field absorbed ${currentField}. HP took ${remainingDmg} damage. Gained ${remainingDmg} Stress Karma.`);
-                }
-            }
             
+            const remainingTokens = state.diceState.tokens.filter(t => !tokenIds.includes(t.id));
+            result.mutations.diceState = { 
+                ...state.diceState, 
+                tokens: remainingTokens,
+                expertise: state.diceState.expertise + 1 
+            };
+            result.logs.push(`EXPERTISE BREAK! Max Expertise permanently increased to ${state.diceState.expertise + 1}.`);
             result.success = true;
             return result;
         }

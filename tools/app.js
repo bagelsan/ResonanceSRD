@@ -1399,6 +1399,95 @@ PsychroEvents.subscribe('PROFILE_GENERATED', (profileString) => {
         document.getElementById('ui-btn-compile').click();
     });
 
+// =======================================================================
+    // 3.11 THE DICE MATRIX LOGIC (UI Tool)
+    // =======================================================================
+    const uiDiceGrid = document.getElementById('ui-dice-grid');
+    const uiDiceLog = document.getElementById('ui-dice-log');
+    let selectedDiceTokens =[];
+
+    // Render the Dice Matrix State
+    function updateDiceView(state) {
+        if (state.currentMode !== 'DICE' || !state.diceState) return;
+
+        // 1. Update Vitals
+        document.getElementById('ui-dice-exp').textContent = state.diceState.expertise;
+        document.getElementById('ui-dice-field').textContent = state.diceState.resonanceField;
+        document.getElementById('ui-dice-karma').textContent = state.resources.karma;
+
+        // 2. Render Affinity Colors
+        const affContainer = document.getElementById('ui-dice-affinities');
+        affContainer.innerHTML = '';
+        state.diceState.affinityColors.forEach((colorCode, index) => {
+            const colorName = COLORS[colorCode] ? COLORS[colorCode].name : 'Unknown';
+            const hex = `var(--color-${colorName.toLowerCase()})`;
+            affContainer.innerHTML += `<div style="padding: 5px 15px; background: #333; border-bottom: 3px solid ${hex}; font-weight: bold; border-radius: 2px;">${index===0?'Primary':'Sec'}: ${colorName}</div>`;
+        });
+
+        // 3. Render Tokens
+        uiDiceGrid.innerHTML = '';
+        const tokens = state.diceState.tokens ||[];
+        
+        if (tokens.length === 0) {
+            uiDiceGrid.innerHTML = `<span style="color:#666; font-style:italic;">Matrix is empty. Run Ready Phase.</span>`;
+        }
+
+        tokens.forEach(token => {
+            const colorName = COLORS[token.color] ? COLORS[token.color].name : 'Unknown';
+            const kwData = KEYWORDS[`${token.color}.${token.category}`];
+            const kwName = kwData ? kwData.name : 'Unknown';
+            
+            const isSelected = selectedDiceTokens.includes(token.id) ? 'box-shadow: 0 0 10px white; border-color: white;' : 'border-color: #444;';
+            
+            const tokenEl = document.createElement('div');
+            tokenEl.style = `width: 80px; height: 80px; background: #222; border: 2px solid; ${isSelected} border-top: 4px solid var(--color-${colorName.toLowerCase()}); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s;`;
+            tokenEl.innerHTML = `
+                <strong style="font-size: 1.1em; color: var(--color-white);">${token.color}.${token.category}</strong>
+                <span style="font-size: 0.7em; color: var(--color-silver); text-align: center; margin-top: 5px;">${kwName}</span>
+            `;
+            
+            // Toggle selection logic
+            tokenEl.onclick = () => {
+                if (selectedDiceTokens.includes(token.id)) {
+                    selectedDiceTokens = selectedDiceTokens.filter(id => id !== token.id);
+                } else {
+                    selectedDiceTokens.push(token.id);
+                }
+                updateDiceView(PsychroState.getState()); // Re-render to show selection
+            };
+            
+            uiDiceGrid.appendChild(tokenEl);
+        });
+    }
+
+    // Hook into the central MODE_CHANGED and ACTION_RESOLVED events
+    PsychroEvents.subscribe('MODE_CHANGED', (state) => updateDiceView(state));
+    PsychroEvents.subscribe('ACTION_RESOLVED', (result) => {
+        if (PsychroState.getState().currentMode === 'DICE') {
+            uiDiceLog.innerHTML = result.logs.join('<br>'); // Print logs to local dice console
+            selectedDiceTokens =[]; // Clear selections after action
+            updateDiceView(PsychroState.getState());
+        }
+    });
+
+    // Button Listeners
+    document.getElementById('ui-btn-dice-ready').addEventListener('click', () => {
+        GameController.processAction('READY_PHASE', {});
+    });
+
+    document.getElementById('ui-btn-dice-gen').addEventListener('click', () => {
+        const primaryColor = PsychroState.getState().diceState.affinityColors[0];
+        GameController.processAction('GENERATE_TOKEN', { isFree: false, isAffinityColor: true, colorId: primaryColor });
+    });
+
+    document.getElementById('ui-btn-dice-activate').addEventListener('click', () => {
+        GameController.processAction('ACTIVATE', { tokenIds: selectedDiceTokens });
+    });
+
+    document.getElementById('ui-btn-dice-break').addEventListener('click', () => {
+        GameController.processAction('RESPOND', { tokenIds: selectedDiceTokens }); // Using Respond router for Expertise Break
+    });
+
     // =======================================================================
     // 6. BOOT THE SYSTEM
     // =======================================================================

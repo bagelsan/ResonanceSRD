@@ -130,7 +130,7 @@ case 'TTRPG':
                 }
                 break;
 
-            case 'DICE':
+case 'DICE':
                 // MICRO SCALE: Affinity Matrix.
                 if (entity.character) {
                     const expertise = entity.character.stats.E || 1;
@@ -138,7 +138,8 @@ case 'TTRPG':
                     overrideData.diceState = {
                         expertise: expertise,
                         resonanceField: expertise, 
-                        affinityColors:[profile.goal, profile.method, profile.purpose]
+                        affinityColors:[profile.goal, profile.method, profile.purpose],
+                        tokens:[] // <-- ADDED: The array to hold the generated dice tokens!
                     };
                 }
                 break;

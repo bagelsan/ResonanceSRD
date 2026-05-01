@@ -470,6 +470,46 @@
                     </div>
                 </div>
             </div>
+
+<!-- DICE MATRIX VIEW -->
+            <div id="view-dice" class="tool-view">
+                <div class="sheet-header">
+                    <h2>Matrix Dice Engine</h2>
+                    <div class="sheet-meta">
+                        <div class="stat-box"><span>EXPERTISE</span><strong id="ui-dice-exp">1</strong></div>
+                        <div class="stat-box" style="border-color: var(--color-blue)"><span>FIELD</span><strong id="ui-dice-field">0</strong></div>
+                        <div class="stat-box" style="border-color: var(--color-null)"><span>KARMA</span><strong id="ui-dice-karma">0</strong></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="margin-top:0;">Affinity Colors</h3>
+                    <div id="ui-dice-affinities" style="display: flex; gap: 10px; margin-bottom: 15px;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="ui-btn-dice-ready" class="action-btn" style="background: var(--color-green);">1. Ready Phase (Upkeep)</button>
+                        <button id="ui-btn-dice-gen" class="action-btn">Paid Generation (-1 Karma)</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>The Matrix</h3>
+                    <p style="font-size: 9pt; color: var(--color-silver);">Click tokens to select them for your next activation.</p>
+                    <div id="ui-dice-grid" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 150px; background: #1a1a1a; border: 1px solid #444; padding: 15px; border-radius: 3px; margin-top: 10px;">
+                        <!-- Tokens populated by JS -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Activation Console</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <button id="ui-btn-dice-activate" class="action-btn" style="background: var(--color-red);">Execute Activation</button>
+                        <button id="ui-btn-dice-break" class="action-btn" style="background: var(--color-purple);">Expertise Break (-5 Tokens)</button>
+                    </div>
+                    <div id="ui-dice-log" class="code-display" style="margin-top: 15px; min-height: 60px;">Awaiting Phase 1...</div>
+                </div>
+            </div>
+
 <!-- COMPANION VIEW -->
             <div id="view-companion" class="tool-view">
                 <div class="section" style="padding: 0; background: transparent; border: none;">
@@ -573,6 +613,7 @@
             <button class="nav-button" data-target="view-roller">Roller</button>
             <button class="nav-button" data-target="view-generator">Gen</button>
             <button class="nav-button" data-target="view-dashboard">Dash</button>
+            <button class="nav-button" data-target="view-dice">Matrix</button>
             <button class="nav-button" data-target="view-companion">Comp</button>
             <button class="nav-button" data-target="view-system">System</button>
         </nav>
