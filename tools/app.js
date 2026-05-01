@@ -4,7 +4,7 @@
  * DESCRIPTION: Connects the DOM (index.html) to the GameController.
  */
 
-import { GameController } from './core/GameController.js';
+import { GameController } from './core/PsychroController.js';
 import { PsychroEvents } from './core/PsychroEvents.js';
 import { PsychroState } from './core/PsychroState.js';
 import { KEYWORDS, COLORS, parseBuildString } from './core/PsychroEngine.js'
@@ -1180,21 +1180,6 @@ function renderPips(containerId, current, max) {
             appendToConsole(`Initiating Startup Override: ${targetMode}`);
             GameController.switchMode(targetMode);
         });
-    });
-
-    // Action Simulator Button
-    document.getElementById('ui-btn-test-action').addEventListener('click', () => {
-        appendToConsole("Sending Action payload to Engine: [KARMA: REST]");
-        
-        // We construct the payload exactly as dictated by our API Contract!
-        const payload = {
-            actionType: 'REST',
-            context: 'SITUATION',
-            cost: 1,
-            actor: PsychroState.getState().parsedEntity.character
-        };
-
-        GameController.processAction('KARMA', payload);
     });
 
     // =======================================================================
