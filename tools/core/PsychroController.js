@@ -85,13 +85,25 @@ export const GameController = {
         // THE FILTER PROTOCOLS (Scale Transitions)
         // ---------------------------------------------------------
         switch (targetMode) {
-            case 'TTRPG':
-                // CORE SCALE: Root mechanics. Read C.
+case 'TTRPG':
+                // CORE SCALE: Root mechanics. 
+                let vitalsMax = 10;
+                
+                // Check if the parsed entity has vital modifiers (7.0 Limited or 7.1 Resilient)
+                if (entity.character) {
+                    const allKws = [...entity.character.learnedKeywords, ...entity.character.passiveKeywords];
+                    // Also check the flaw penalty if they have one!
+                    if (entity.character.flaw) allKws.push(entity.character.flaw.penalty);
+                    
+                    if (allKws.some(kw => kw.code === '7.0')) vitalsMax = 5;
+                    if (allKws.some(kw => kw.code === '7.1')) vitalsMax = 15;
+                }
+
                 overrideData.resources = {
                     ...state.resources,
-                    maxHp: 10,
-                    maxSp: 10,
-                    maxEp: 10
+                    maxHp: vitalsMax,
+                    maxSp: vitalsMax,
+                    maxEp: vitalsMax
                 };
                 break;
 

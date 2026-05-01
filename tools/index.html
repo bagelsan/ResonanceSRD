@@ -208,6 +208,12 @@
                         </label>
                     </div>
 
+<h3 style="font-size: 10pt; color: var(--color-red); margin-top: 10px;">Optional: The Flaw Package</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+                        <select id="sel-flaw" class="kw-select"><option value="">No Flaw Penalty...</option></select>
+                        <select id="sel-comp" class="kw-select"><option value="">Compensation Ability...</option></select>
+                    </div>
+
                     <!-- 3. Awakening Keywords -->
                     <h3 style="font-size: 10pt; color: var(--color-silver);">3. The Awakening (Level 1)</h3>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px;" id="ui-awk-selects">
@@ -500,13 +506,19 @@
                             </div>
                             <div class="rule-box" style="border-color: var(--color-red);">
                                 <h3 style="color: var(--color-red);">Conditions</h3>
-                                <ul>
-                                    <li><strong>Cover:</strong> Attacks against you suffer Disadvantage.</li>
-                                    <li><strong>Hidden:</strong> Cannot be targeted. Next attack gains Advantage.</li>
+                  <ul>
+                                    <li><strong>Mounted/Riding:</strong> Rider dictates all actions; mount is silenced.</li>
                                     <li><strong>Prone:</strong> Disadvantage on all actions. Move action to stand.</li>
+                                    <li><strong>Crouching:</strong> Advantage to concealment. Movement is halved.</li>
+                                    <li><strong>Cover:</strong> Attacks against you suffer Disadvantage. Advantage to Hide.</li>
+                                    <li><strong>High Ground:</strong> (+10 ft) Advantage on ranged effects.</li>
+                                    <li><strong>Submerged:</strong> Disadvantage on actions; movement halved; grants cover.</li>
+                                    <li><strong>Hidden:</strong> Cannot be targeted. Advantage on next attack.</li>
                                     <li><strong>Exhausted (0 SP):</strong> Disadvantage on all rolls.</li>
                                     <li><strong>Silenced (0 EP):</strong> Cannot use Innate Active Keywords.</li>
+                                    <li><strong>Injured:</strong> Max HP, SP, and EP reduced by 5 until next Downtime.</li>
                                     <li><strong>Unconscious (0 HP):</strong> Cannot act. Next damage is Fatal.</li>
+                                    <li><strong>Exposed:</strong> Attacks against you gain Advantage.</li>
                                 </ul>
                             </div>
                             <div class="rule-box" style="border-color: var(--color-orange);">

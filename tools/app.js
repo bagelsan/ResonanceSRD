@@ -68,6 +68,36 @@ function renderPips(containerId, current, max) {
         }
     }
 
+function bindSheetPips() {
+        ['hp', 'sp', 'ep'].forEach(resource => {
+            const container = document.getElementById(`ui-pips-${resource}`);
+            if (!container) return;
+            
+            // Remove old listeners to prevent duplicates
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            
+            newContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('pip')) {
+                    const pips = Array.from(newContainer.children);
+                    const targetIndex = pips.indexOf(e.target);
+                    const currentActive = pips.filter(p => p.classList.contains('active')).length;
+                    
+                    // Logic to toggle on/off exactly where clicked
+                    let newValue = (currentActive === targetIndex + 1 && targetIndex === currentActive - 1) ? targetIndex : targetIndex + 1;
+                    
+                    // Update Central State and save to LocalStorage!
+                    const state = PsychroState.getState();
+                    state.resources[resource] = newValue;
+                    PsychroState.update({ resources: state.resources });
+                    
+                    // Re-render visually
+                    updateCharacterSheet(PsychroState.getState());
+                }
+            });
+        });
+    }
+
     function updateCharacterSheet(state) {
         if (!state || !state.parsedEntity) return;
 
@@ -165,7 +195,7 @@ function renderPips(containerId, current, max) {
             uiSheetFlaws.innerHTML = `<div style="color:#666; font-style:italic; padding: 5px;">No Flaw Package selected.</div>`;
         }
 
-       // 7. Render Page 2 (Animations / Items)
+// 7. Render Page 2 (Animations / Items)
         uiSheetAttachments.innerHTML = '';
         if (state.parsedEntity.animations && state.parsedEntity.animations.length > 0) {
             uiSheetAttachments.innerHTML += `<h3 style="margin-top: 15px;">Animations</h3>`;
@@ -178,6 +208,8 @@ function renderPips(containerId, current, max) {
                 `;
             });
         }
+        
+        bindSheetPips();
     }
 
     // =======================================================================
@@ -266,6 +298,7 @@ const QUESTIONS_DATA =[
             // Find Dominant Traits (Axis Math)
             const domMot = Object.keys(scores.motivation).reduce((a, b) => scores.motivation[a] > scores.motivation[b] ? a : b);
             const domCon = Object.keys(scores.context).reduce((a, b) => scores.context[a] > scores.context[b] ? a : b);
+            const domPersp = Object.keys(scores.perspective).reduce((a, b) => scores.perspective[a] > scores.perspective[b] ? a : b);
 
             // Step 3: Derive Primary Psychroma (Goal)
             let primaryGoal = '0';
@@ -283,8 +316,8 @@ const QUESTIONS_DATA =[
                 else if (domCon === 'Foundation') primaryGoal = '9';// Purple
             }
 
-            // Step 4: Map to Archetypal Profiles (Goal, Method, Purpose, Ext Conflict, Int Conflict)
-            const archetypes = {
+            // Step 4: Map to the 9 Default 5-Point Profiles
+            const profileStrings = {
                 '1': '18736', // The Achiever
                 '2': '29381', // The Liberator
                 '3': '32674', // The Guardian
@@ -295,9 +328,52 @@ const QUESTIONS_DATA =[
                 '8': '85123', // The Diplomat
                 '9': '94257'  // The Seeker
             };
+            generatedProfileString = profileStrings[primaryGoal] || '00000';
 
-            generatedProfileString = archetypes[primaryGoal] || '00000';
+            // Step 5: Map to the 27 Archetypes of Action
+            const archetypes27 = {
+                // BODY
+                'Body_Foundation_Internal': 'The Athlete',
+                'Body_Foundation_External': 'The Harvester',
+                'Body_Foundation_Collaborative': 'The Builder',
+                'Body_Control_Internal': 'The Martialist',
+                'Body_Control_External': 'The Guardian',
+                'Body_Control_Collaborative': 'The Sentinel',
+                'Body_Execution_Internal': 'The Daredevil',
+                'Body_Execution_External': 'The Striker',
+                'Body_Execution_Collaborative': 'The Vanguard',
+                // MIND
+                'Mind_Foundation_Internal': 'The Student',
+                'Mind_Foundation_External': 'The Researcher',
+                'Mind_Foundation_Collaborative': 'The Architect',
+                'Mind_Control_Internal': 'The Logician',
+                'Mind_Control_External': 'The Analyst',
+                'Mind_Control_Collaborative': 'The Strategist',
+                'Mind_Execution_Internal': 'The Solver',
+                'Mind_Execution_External': 'The Operator',
+                'Mind_Execution_Collaborative': 'The Tactician',
+                // ESSENCE
+                'Essence_Foundation_Internal': 'The Ascetic',
+                'Essence_Foundation_External': 'The Seeker',
+                'Essence_Foundation_Collaborative': 'The Believer',
+                'Essence_Control_Internal': 'The Stoic',
+                'Essence_Control_External': 'The Judge',
+                'Essence_Control_Collaborative': 'The Paragon',
+                'Essence_Execution_Internal': 'The Zealot',
+                'Essence_Execution_External': 'The Crusader',
+                'Essence_Execution_Collaborative': 'The Exemplar'
+            };
+
+            const archetypeKey = `${domMot}_${domCon}_${domPersp}`;
+            const archetypeResult = archetypes27[archetypeKey] || 'The Unknown';
+
+            // Update UI
             uiQuizFinalCode.textContent = generatedProfileString;
+            
+            // Inject the true Archetype title above the code
+            const resultsHeader = uiQuizResults.querySelector('h3');
+            resultsHeader.innerHTML = `Assessment Complete<br><span style="color:var(--color-yellow); font-size:1.2em;">${archetypeResult}</span><br><span style="font-size:0.6em; color:var(--color-silver);">(${domMot} / ${domCon} / ${domPersp})</span>`;
+
             uiQuizResults.style.display = 'block';
             uiQuizResults.scrollIntoView({ behavior: 'smooth' });
         });
@@ -357,6 +433,14 @@ const QUESTIONS_DATA =[
         if (seed) seed = seed.replace('.', ''); // Convert 1.2 to 12
         const isPassive = document.getElementById('chk-seed-passive').checked ? '!' : '';
 
+   // Grab Flaw Package
+        let flaw = document.getElementById('sel-flaw').value;
+        let comp = document.getElementById('sel-comp').value;
+        let flawString = "";
+        if (flaw && comp) {
+            flawString = `+${flaw.replace('.', '')}${comp.replace('.', '')}`;
+        }
+
         // Grab Awakening Keywords
         const awkSelects = document.querySelectorAll('.sel-awk');
         let awkArr =[];
@@ -364,8 +448,9 @@ const QUESTIONS_DATA =[
             if (sel.value) awkArr.push(sel.value.replace('.', ''));
         });
 
-        // Stitch it together
-        let buildString = `[C:${profileString}`;
+// Stitch it together
+        let buildString = `[C:${profileString}${flawString}`;
+        
         if (seed) {
             buildString += `-${isPassive}${seed}`;
             if (awkArr.length > 0) {
@@ -1133,32 +1218,71 @@ const QUESTIONS_DATA =[
 
     // Populate Action Catalog
     if (uiCompActions) {
-        const ACTIONS_DATA = {
-            "Effect & Move Actions":[
-                { name: "Activate", cost: "1 Action", desc: "The primary action to cause an effect (Attack/Ability). Roll EV vs Resistance. Apply Keywords for 1 EP each." },
-                { name: "Called Shot", cost: "1 Action", desc: "Activate with Disadvantage. Targets items to reduce Durability, or auto-crits an entity." },
+      const ACTIONS_DATA = {
+            "Effect Actions (1 Action)":[
+                { name: "Activate", cost: "1 Action", desc: "Roll EV vs Resistance. Apply Keywords for 1 EP each (reduced by Power stat)." },
+                { name: "Called Shot", cost: "1 Action", desc: "Activate with Disadvantage. Targets items to reduce Durability, or auto-crits an Entity." },
+                { name: "Rush", cost: "1 Action", desc: "Make a free Move Action + an Activate Action. The Activate is made with Disadvantage." },
+                { name: "Blitz", cost: "1 Action", desc: "Make TWO Basic Activations (no Active Keywords). Both are made with Disadvantage." },
+                { name: "Slam", cost: "1 Action", desc: "Make a Basic Activation with Disadvantage, but add your Chosen Stat to the EV an additional time." }
+            ],
+            "Move Actions (1 Action)":[
                 { name: "Move", cost: "1 Action", desc: "Travel up to a number of range bands equal to your Range stat." },
-                { name: "Hide", cost: "1 Action", desc: "Effort Roll (SR + Level + Stat). Result is the TN for enemies to find you." }
+                { name: "Mount/Dismount", cost: "1 Action", desc: "Interact with a valid target to gain or end the Riding condition." },
+                { name: "Hide", cost: "1 Action", desc: "Effort Roll (SR + Level + Stat). The result becomes the TN for enemies to find you." }
             ],
-            "Maneuver Actions (Requires 1 SP)":[
-                { name: "Shove", cost: "1 Action + 1 SP", desc: "EV vs Res. Push target or knock Prone." },
-                { name: "Disarm", cost: "1 Action + 1 SP", desc: "Opposed EV. Force target to drop item." },
-                { name: "Restrain", cost: "1 Action + 1 SP", desc: "EV vs Res. Apply Bind Tag." },
-                { name: "Lock On", cost: "1 Action + 1 SP", desc: "Gain Advantage on target; they gain Advantage on you." },
-                { name: "Combined Strike", cost: "1 Action + 1 SP", desc: "When Activating, add Level & 1 Keyword from a second equipped item." }
+            "Maneuver Actions (1 Action + 1 SP)":[
+                { name: "Shove", cost: "1 Action + 1 SP", desc: "EV vs Res. Push target or knock them Prone." },
+                { name: "Disarm", cost: "1 Action + 1 SP", desc: "Opposed EV. Force target to drop an item." },
+                { name: "Restrain", cost: "1 Action + 1 SP", desc: "EV vs Res. Apply the Bind Tag to target." },
+                { name: "Lunge", cost: "1 Action + 1 SP", desc: "Make a melee strike that can target an enemy at Close range instead of Touch." },
+                { name: "Lock On", cost: "1 Action + 1 SP", desc: "Gain Advantage on target; target gains Advantage on you." },
+                { name: "Taunt", cost: "1 Action + 1 SP", desc: "Opposed EV. Force target to use Lock On against you." },
+                { name: "Improvise", cost: "1 Action + 1 SP", desc: "Use environment/item to apply a Status Tag without dealing Value Loss." },
+                { name: "Combined Strike", cost: "1 Action + 1 SP", desc: "When Activating, add Level & 1 Keyword from a second equipped item." },
+                { name: "Feint", cost: "1 Action + 1 SP", desc: "Opposed EV. Make the target Exposed." }
             ],
-            "Setup Actions (Consumes Full Turn)":[
-                { name: "Recharge", cost: "Full Turn + 1 SP", desc: "Restore SP equal to Brawn, or EP equal to Wit." },
+            "Setup & Assess (Consumes Full Turn + 1 SP)":[
+                { name: "Recharge", cost: "Full Turn + 1 SP", desc: "Restore SP equal to Brawn, OR EP equal to Wit." },
                 { name: "Recover", cost: "Full Turn + 1 SP", desc: "Remove Status Tags equal to Brawn, Wit, or Influence." },
+                { name: "Ready", cost: "Full Turn + 1 SP", desc: "Add your Wit stat to your Resistance until the start of your next turn." },
                 { name: "Advantage", cost: "Full Turn + 1 SP", desc: "Gain Advantage on the first SR you make on your next turn." },
-                { name: "Assess/Clue", cost: "Full Turn + 1 SP", desc: "Learn facts about a target equal to your Technique." }
+                { name: "Reveal", cost: "Full Turn + 1 SP", desc: "Effort Roll vs a Hidden target's Hide TN to locate them." },
+                { name: "Clue", cost: "Full Turn + 1 SP", desc: "Learn facts about a target equal to your Technique." }
             ],
-            "Reactions (Triggered off-turn)":[
+            "Effort & Team Actions (1 Action)":[
+                { name: "Effort Roll", cost: "1 Action", desc: "SR + Level + Stat vs Target Number (TN). Depletes Barrier/Puzzle Clocks." },
+                { name: "Teamwork", cost: "1 Action", desc: "Grant a stat of your choice as a bonus to an ally's next Effort Roll." },
+                { name: "Sabotage", cost: "1 Action", desc: "Target suffers Disadvantage on their next Effort Roll." }
+            ],
+            "Reactions (Triggered Off-Turn)":[
                 { name: "Avoid (Dodge)", cost: "Reaction + 1 SP", desc: "Opposed EV. If higher, negate incoming attack." },
                 { name: "Resist (Block)", cost: "Reaction + 1 SP", desc: "Add your Level to Resistance against one hit." },
                 { name: "Parry", cost: "Reaction + 3 SP", desc: "Opposed EV. If higher, negate attack AND seize priority (take your turn now)." },
-                { name: "Clash", cost: "Reaction + 2 SP", desc: "Intercept attack. Loser takes combined value loss." },
-                { name: "Guard", cost: "Reaction + 1 SP", desc: "Intercept attack meant for adjacent ally." }
+                { name: "Clash", cost: "Reaction + 2 SP", desc: "Intercept attack with your own. Loser takes combined Value Loss." },
+                { name: "Reflect", cost: "Reaction + 1 SP", desc: "After successful Avoid/Resist, redirect original effect back at attacker." },
+                { name: "Counter", cost: "Reaction + 1 SP", desc: "After successful Avoid/Resist, make an immediate Basic Activate action." },
+                { name: "Guard", cost: "Reaction + 1 SP", desc: "Intercept attack meant for adjacent ally. You become the target." },
+                { name: "Combo", cost: "Reaction + 1 SP", desc: "Add a stat and one known Keyword to an ally's effect." },
+                { name: "Flank", cost: "Reaction + 1 SP", desc: "If ally attacks enemy adjacent to you, enemy has Disadv. on their reaction." }
+            ],
+            "Misc. Actions (1 Action)":[
+                { name: "Reload", cost: "1 Action", desc: "Consume an item/ammo to trigger the Material Keyword." },
+                { name: "Assist", cost: "1 Action", desc: "Designate a target. All allies gain Advantage on their next action against it." },
+                { name: "Pass", cost: "1 Action", desc: "End turn. If actions remain, move to bottom of initiative. If 0 remain, discard." },
+                { name: "Command", cost: "1 Action", desc: "Direct a Companion, Animation, or Mount to act in place of your action." }
+            ],
+            "Downtime Actions (Meta & Progression)":[
+                { name: "Rest", cost: "0/1 Karma", desc: "Restore all Values to Max (0 Karma). OR spend 1 Karma in-situation for 1 HP." },
+                { name: "Restore", cost: "1 Karma", desc: "Remove the Injured Condition (Downtime). OR purge Status Tags (Situation)." },
+                { name: "Recharge", cost: "1 Karma", desc: "Upgrade gear to your level (Downtime). OR restore EP via Wit (Situation)." },
+                { name: "Learn", cost: "1 Karma", desc: "Gain Surprise for next situation (Downtime). OR gain Advantage on next roll (Situation)." },
+                { name: "Grow", cost: "Lvl ÷ 2 Karma", desc: "Add a new Innate Keyword (Downtime). OR add a Keyword to an Activate (1 Karma, Situation)." },
+                { name: "Create", cost: "1 Karma", desc: "Grant Faction a Keyword (Downtime). OR manifest temporary item equal to level (Situation)." },
+                { name: "Inspire", cost: "1 Karma", desc: "Grant Faction a Civil System (Downtime). OR grant Boost Tags equal to Wit (Situation)." },
+                { name: "Mentor", cost: "1 Karma", desc: "Bond with an Animation (Downtime). OR allow Animation free Keyword use (Situation)." },
+                { name: "Amplify", cost: "1 Karma", desc: "Create permanent Trap/Effect (Downtime). OR force next roll to be a Critical (Situation)." },
+                { name: "Crafting", cost: "Time/SP", desc: "Craft item/effect up to your Level. Reduces max SP by 1 until next Downtime." }
             ]
         };
 
@@ -1186,13 +1310,17 @@ const QUESTIONS_DATA =[
                 
                 // Search by name, code, or color name
                 if (data.name.toLowerCase().includes(lowerFilter) || code.includes(filter) || colorName.toLowerCase().includes(lowerFilter)) {
-                    uiCompKwList.innerHTML += `
+       uiCompKwList.innerHTML += `
                         <li class="comp-kw-card" style="border-left-color: var(--color-${colorName.toLowerCase()})">
                             <div class="comp-kw-header">
                                 <span class="comp-kw-name">${data.name} <span style="font-size: 0.8em; color: #888;">[${data.type}]</span></span>
                                 <span class="comp-kw-code">${code} (${colorName})</span>
                             </div>
-                            <div class="comp-kw-effect">${data.effect}</div>
+                            <div class="comp-kw-effect" style="font-size: 0.9em; line-height: 1.4; margin-top: 8px;">
+                                <div style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #444;"><strong style="color: var(--color-silver);">Passive:</strong> ${data.passive || data.effect}</div>
+                                <div style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #444;"><strong style="color: var(--color-yellow);">Active:</strong> ${data.active || ''}</div>
+                                <div><strong style="color: var(--color-null);">Equipment:</strong> ${data.equipment || ''}</div>
+                            </div>
                         </li>
                     `;
                 }
