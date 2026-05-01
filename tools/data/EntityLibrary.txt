@@ -1,0 +1,64 @@
+{
+  "description": "Psychromattica Master Entity Library - Pre-defined Build Strings",
+  "version": "1.0",
+  
+  "characters": {
+    "Vagabond_Lvl1": "[C:00000-0.1-0.2.0.3.0.4]",
+    "Merchant_Lvl1": "[C:11100-1.1-1.2.1.3.1.4]",
+    "Warrior_Lvl1": "[C:22200-2.1-2.2.2.3.2.4]",
+    "Laborer_Lvl1": "[C:33300-3.1-3.2.3.3.3.4]",
+    "Noble_Lvl1": "[C:44400-4.1-4.2.4.3.4.4]",
+    "Engineer_Lvl1": "[C:55500-5.1-5.2.5.3.5.4]",
+    "Apothecary_Lvl1": "[C:66600-6.1-6.2.6.3.6.4]",
+    "Artisan_Lvl1": "[C:77700-7.1-7.2.7.3.7.4]",
+    "Mentor_Lvl1": "[C:88800-8.1-8.2.8.3.8.4]",
+    "Acolyte_Lvl1": "[C:99900-9.1-9.2.9.3.9.4]",
+    "Security_Captain_Lvl2": "[C:32100-3.1-3.2.3.4.6.5.8.1]",
+    "Sovereign_Leader_Default": "[C:88800-8.2-8.1.8.3.8.9]"
+  },
+
+  "animations": {
+    "Infosphere_Lvl1": "[A:L1-0.1.0.2]",
+    "Chameleon_Lvl1": "[A:L1-1.1.1.2]",
+    "Roadrunner_Lvl1": "[A:L1-2.1.2.2]",
+    "Golem_Lvl1": "[A:L1-3.1.3.2]",
+    "Skelebones_Lvl1": "[A:L1-4.1.4.2]",
+    "Glitchy_Drone_Lvl1": "[A:L1-5.0.5.4.5.5]",
+    "Hedge_Ent_Lvl1": "[A:L1-6.1.6.2]",
+    "Elemental_Mote_Lvl1": "[A:L1-7.1.7.2]",
+    "Otter_Lvl1": "[A:L1-8.1.8.2]",
+    "House_Cat_Lvl1": "[A:L1-9.1.9.2]",
+    "Clockwork_Sentry_Lvl2": "[A:L2-2.2.7.7.0.5]",
+    "Sentry_Turret_Lvl3": "[A:L3-2.2.7.7.0.5.6.6]",
+    "Minion_Generic_Lvl0": "[A:L0-0.1]"
+  },
+
+  "items": {
+    "Tracker_Gun_Lvl1": "[I:L1-0.5.0.6]",
+    "Probability_Lens_Lvl1": "[I:L1-0.7.0.8]",
+    "Mirror_Sword_Lvl1": "[I:L1-1.5.1.6]",
+    "Silver_Ring_Lvl1": "[I:L1-1.7.1.8]",
+    "Arc_Bow_Lvl1": "[I:L1-2.5.2.6]",
+    "Friction_Accelerator_Lvl1": "[I:L1-2.7.2.8]",
+    "Reliable_Shovel_Lvl1": "[I:L1-3.5.3.6]",
+    "Punch_Shield_Lvl1": "[I:L1-3.7.3.8]",
+    "Tainted_Pin_Lvl1": "[I:L1-4.5.4.6]",
+    "Spirit_Jar_Lvl1": "[I:L1-4.7.4.8]",
+    "Grappler_Lvl1": "[I:L1-5.5.5.6]",
+    "Toolbelt_Lvl1": "[I:L1-5.7.5.8]",
+    "Hypo_Gun_Lvl1": "[I:L1-6.5.6.6]",
+    "Stim_Patch_Lvl1": "[I:L1-6.7.6.8]",
+    "Fire_Wand_Lvl1": "[I:L1-7.5.7.6]",
+    "Five_Handed_Gauntlet_Lvl1": "[I:L1-7.7.7.8]",
+    "Copper_Pipes_Lvl1": "[I:L1-8.5.8.6]",
+    "Megaphone_Lvl1": "[I:L1-8.7.8.8]",
+    "Anchor_Crystal_Lvl1": "[I:L1-9.5.9.6]",
+    "Storm_Cloak_Lvl1": "[I:L1-9.7.9.8]"
+  },
+
+  "factions": {
+    "Rivertown_Coalition_L3": "[F:35928-L3[S0.S2.S3]-[K3.1.5.3.8.2]]",
+    "Default_Small_Cell_L1": "[F:00000-L1[S0]-[K0.1]]",
+    "Major_City_State_L6": "[F:88800-L6[S0.S1.S2.S3.S4.S5.S6.S7.S8.S9]-[K8.1.8.2.8.3]]"
+  }
+}
