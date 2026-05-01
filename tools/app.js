@@ -7,7 +7,7 @@
 import { GameController } from './core/GameController.js';
 import { PsychroEvents } from './core/PsychroEvents.js';
 import { PsychroState } from './core/PsychroState.js';
-import { KEYWORDS, COLORS } from './core/PsychroEngine.js';
+import { KEYWORDS, COLORS, parseBuildString } from './core/PsychroEngine.js'
 import { TTRPGEngine } from './engines/TTRPGEngine.js'
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -165,7 +165,7 @@ function renderPips(containerId, current, max) {
             uiSheetFlaws.innerHTML = `<div style="color:#666; font-style:italic; padding: 5px;">No Flaw Package selected.</div>`;
         }
 
-        // 7. Render Page 2 (Animations / Items)
+       // 7. Render Page 2 (Animations / Items)
         uiSheetAttachments.innerHTML = '';
         if (state.parsedEntity.animations && state.parsedEntity.animations.length > 0) {
             uiSheetAttachments.innerHTML += `<h3 style="margin-top: 15px;">Animations</h3>`;
@@ -180,16 +180,9 @@ function renderPips(containerId, current, max) {
         }
     }
 
-        const res = state.resources;
-        uiSheetHp.textContent = `${res.hp}/${res.maxHp}`;
-        uiSheetSp.textContent = `${res.sp}/${res.maxSp}`;
-        uiSheetEp.textContent = `${res.ep}/${res.maxEp}`;
-        uiSheetKarma.textContent = res.karma;
-        
-        if (state.meta) {
-            uiSheetDiscordance.textContent = `${state.meta.discordance}/10`;
-        }
-    }
+    // =======================================================================
+    // 3.5 THE QUIZ LOGIC (UI Tool)
+    // =======================================================================
 
 // =======================================================================
     // 3.5 THE QUIZ LOGIC (UI Tool)
