@@ -194,17 +194,40 @@ function renderPips(containerId, current, max) {
     
     let generatedProfileString = "00000";
 
-    const QUESTIONS_DATA = [
+const QUESTIONS_DATA =[
+        // Section A: Motivation (Body, Mind, Essence)
         { q: "A sudden power outage plunges your neighborhood into darkness. Immediate priority?", answers:[{ text: "Securing the area. Check physical dangers.", value: "Body" }, { text: "Figuring out the system and cause.", value: "Mind" }, { text: "Establishing principle. Prevent panic.", value: "Essence" }]},
         { q: "Looking back on a time you truly grew, what was the most significant change?", answers:[{ text: "Mastered a new skill/knowledge (logic).", value: "Mind" }, { text: "Became certain of what I stand for.", value: "Essence" }, { text: "Became in tune with my body/instincts.", value: "Body" }]},
         { q: "You've been offered two jobs for the same pay. Which do you choose?", answers:[{ text: "Aligns with my life's purpose.", value: "Essence" }, { text: "Best physical environment and safety.", value: "Body" }, { text: "Clear logical structure.", value: "Mind" }]},
-        { q: "A powerful new energy source is discovered. First priority?", answers:[{ text: "Understand *why* it works.", value: "Foundation" }, { text: "Control it with strict protocols.", value: "Control" }, { text: "See *what* it does (practical experiments).", value: "Execution" }]},
-        { q: "Preparing for a hurricane, what is most critical?", answers:[{ text: "Immediate action (boarding windows).", value: "Execution" }, { text: "Reminding everyone of core values.", value: "Foundation" }, { text: "Meticulous resource rationing.", value: "Control" }]},
+        { q: "A friend tells a 'white lie' to make you look better. What bothers you most?", answers:[{ text: "The principle. Reputation should be truth.", value: "Essence" }, { text: "The emotional fallout and awkwardness.", value: "Body" }, { text: "The logical inconsistency/bad data.", value: "Mind" }]},
+        { q: "Solve all future problems with a single tool. You choose:", answers:[{ text: "A perfectly crafted multi-tool.", value: "Body" }, { text: "An infinitely expanding encyclopedia.", value: "Mind" }, { text: "A powerful, inspiring symbol.", value: "Essence" }]},
+        { q: "When collaborating, what frustrates you the most?", answers:[{ text: "Arguments based on feelings over logic.", value: "Mind" }, { text: "Saying one thing but doing another.", value: "Essence" }, { text: "Physical clumsiness creating risks.", value: "Body" }]},
+        { q: "Think about a time you felt truly happy and fulfilled. What were you doing?", answers:[{ text: "Fighting for something I believed in.", value: "Essence" }, { text: "A thrilling physical activity/sport.", value: "Body" }, { text: "Solving a complex puzzle/problem.", value: "Mind" }]},
+        { q: "At a crossroads making a major life decision. The tie-breaker is:", answers:[{ text: "A deep, physical gut feeling.", value: "Body" }, { text: "A final review of the data/logic.", value: "Mind" }, { text: "My moral compass/principles.", value: "Essence" }]},
+        { q: "When your life's story is told, the central theme is:", answers:[{ text: "Intellectual achievement/elegant systems.", value: "Mind" }, { text: "Unwavering character and willpower.", value: "Essence" }, { text: "Incredible adventures and sensory experiences.", value: "Body" }]},
+
+        // Section B: Context (Foundation, Control, Execution)
+        { q: "A powerful new energy source is discovered. First priority?", answers:[{ text: "Understand *why* it works (Principles).", value: "Foundation" }, { text: "Control it with strict protocols.", value: "Control" }, { text: "See *what* it does (Practical experiments).", value: "Execution" }]},
+        { q: "Putting together a team for a mission. Most important element?", answers:[{ text: "Clear and disciplined chain of command.", value: "Control" }, { text: "Skilled, hands-on operators with autonomy.", value: "Execution" }, { text: "A powerful, shared mission statement.", value: "Foundation" }]},
+        { q: "Preparing for a hurricane, what is most critical?", answers:[{ text: "Immediate action (boarding windows).", value: "Execution" }, { text: "Reminding everyone of core values to stop panic.", value: "Foundation" }, { text: "Meticulous resource rationing.", value: "Control" }]},
+        { q: "How do you prefer to learn a new, complex skill (like an instrument)?", answers:[{ text: "Start with theory and fundamental principles.", value: "Foundation" }, { text: "Structured practice regimen with a teacher.", value: "Control" }, { text: "Pick it up and experiment hands-on.", value: "Execution" }]},
+        { q: "Passing on your life's most important lesson to the next generation:", answers:[{ text: "Design a structured curriculum.", value: "Control" }, { text: "Take them as a hands-on apprentice.", value: "Execution" }, { text: "Write down my core philosophy/principles.", value: "Foundation" }]},
+        { q: "A volunteer group has fallen into disarray. First step to fix it?", answers:[{ text: "Get them working on a new, tangible project.", value: "Execution" }, { text: "Review their original charter/principles.", value: "Foundation" }, { text: "Mediate conflicts to manage emotional state.", value: "Control" }]},
         { q: "Which defines 'strength' best?", answers:[{ text: "An unshakeable moral foundation.", value: "Foundation" }, { text: "Disciplined self-control.", value: "Control" }, { text: "Proven, effective action.", value: "Execution" }]},
+        { q: "Someone aggressively challenges your deepest belief. Response?", answers:[{ text: "De-escalate to manage the room's tension.", value: "Control" }, { text: "Direct, immediate counter/sharp comeback.", value: "Execution" }, { text: "Defend the underlying principle calmly.", value: "Foundation" }]},
+        { q: "Planning a month-long wilderness trip. Most critical preparation?", answers:[{ text: "Hitting the trail. Learn by doing.", value: "Execution" }, { text: "Understanding the history/ecology (The 'Why').", value: "Foundation" }, { text: "Meticulous logistical planning.", value: "Control" }]},
+
+        // Section C: Perspective (Internal, External, Collaborative)
         { q: "After perfecting a craft, what gives you most satisfaction?", answers:[{ text: "Personal fulfillment of true self-mastery.", value: "Internal" }, { text: "Passing knowledge to an apprentice.", value: "External" }, { text: "Forming a guild to elevate the craft.", value: "Collaborative" }]},
+        { q: "You come into money. After basic needs, your first impulse?", answers:[{ text: "Give to a specific person/charity in need.", value: "External" }, { text: "Fund a community project for the group.", value: "Collaborative" }, { text: "Invest in personal growth/tools.", value: "Internal" }]},
         { q: "Success in life should be measured by...", answers:[{ text: "The strength of the community you built.", value: "Collaborative" }, { text: "The achievement of true self-mastery.", value: "Internal" }, { text: "Tangible impact on specific individuals.", value: "External" }]},
-        { q: "Your deepest loyalty is to...", answers:[{ text: "My own conscience and principles.", value: "Internal" }, { text: "A specific person I swore to protect.", value: "External" }, { text: "My chosen family or community.", value: "Collaborative" }]}
-    ]; // (Abridged for prototyping. You can easily paste all 27 back in here).
+        { q: "You see a stranger being harassed. First instinct?", answers:[{ text: "Directly intervene for the individual.", value: "External" }, { text: "Rally bystanders for a group response.", value: "Collaborative" }, { text: "Assess my personal safety/readiness first.", value: "Internal" }]},
+        { q: "Stuck on a truly difficult problem. Who do you consult?", answers:[{ text: "Turn inward for quiet solitude/reflection.", value: "Internal" }, { text: "Seek out a single trusted expert/mentor.", value: "External" }, { text: "Gather the team for brainstorming.", value: "Collaborative" }]},
+        { q: "If you wrote a bestselling book, the subject would be:", answers:[{ text: "Inspiring biography of a single individual.", value: "External" }, { text: "Epic story of a team accomplishing the impossible.", value: "Collaborative" }, { text: "Introspective memoir of self-discovery.", value: "Internal" }]},
+        { q: "Your deepest loyalty is to...", answers:[{ text: "My own conscience and principles.", value: "Internal" }, { text: "A specific person I swore to protect.", value: "External" }, { text: "My chosen family or community.", value: "Collaborative" }]},
+        { q: "A team project you lead fails. First internal question?", answers:[{ text: "Did I fail to understand the needs of individuals?", value: "External" }, { text: "How did group dynamics break down?", value: "Collaborative" }, { text: "Where did *I* personally go wrong?", value: "Internal" }]},
+        { q: "Which social situation leaves you most recharged?", answers:[{ text: "Deep one-on-one conversation.", value: "External" }, { text: "Lively party or game night with the group.", value: "Collaborative" }, { text: "Quiet evening alone with a personal project.", value: "Internal" }]}
+    ];
 
     // Render Quiz
     if (uiQuizForm) {
@@ -232,26 +255,48 @@ function renderPips(containerId, current, max) {
                 perspective: { Internal: 0, External: 0, Collaborative: 0 }
             };
 
-            // Tally Scores
+// Tally Scores
             for (let i = 0; i < QUESTIONS_DATA.length; i++) {
                 const val = formData.get(`q${i}`);
-                if (i < 3) scores.motivation[val]++;
-                else if (i < 6) scores.context[val]++;
+                if (i < 9) scores.motivation[val]++;
+                else if (i < 18) scores.context[val]++;
                 else scores.perspective[val]++;
             }
 
-            // Simple calculation for the 5-point profile (Goal, Method, Purpose, Conflict1, Conflict2)
-            // In a full implementation, you map the exact weights. For the UI bridge, we mock the logic output:
-            const colorIds =['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            
-            // Randomly pull based on weights for the prototype bridge
-            const g = colorIds[Math.floor(Math.random() * 3)];
-            const m = colorIds[Math.floor(Math.random() * 3) + 3];
-            const p = colorIds[Math.floor(Math.random() * 3) + 6];
-            const c1 = colorIds[8];
-            const c2 = colorIds[9];
+            // Find Dominant Traits (Axis Math)
+            const domMot = Object.keys(scores.motivation).reduce((a, b) => scores.motivation[a] > scores.motivation[b] ? a : b);
+            const domCon = Object.keys(scores.context).reduce((a, b) => scores.context[a] > scores.context[b] ? a : b);
 
-            generatedProfileString = `${g}${m}${p}${c1}${c2}`;
+            // Step 3: Derive Primary Psychroma (Goal)
+            let primaryGoal = '0';
+            if (domMot === 'Body') {
+                if (domCon === 'Control') primaryGoal = '1';       // Silver
+                else if (domCon === 'Execution') primaryGoal = '2';// Yellow
+                else if (domCon === 'Foundation') primaryGoal = '3';// Green
+            } else if (domMot === 'Mind') {
+                if (domCon === 'Control') primaryGoal = '4';       // Black
+                else if (domCon === 'Execution') primaryGoal = '5';// Orange
+                else if (domCon === 'Foundation') primaryGoal = '6';// White
+            } else if (domMot === 'Essence') {
+                if (domCon === 'Control') primaryGoal = '7';       // Red
+                else if (domCon === 'Execution') primaryGoal = '8';// Blue
+                else if (domCon === 'Foundation') primaryGoal = '9';// Purple
+            }
+
+            // Step 4: Map to Archetypal Profiles (Goal, Method, Purpose, Ext Conflict, Int Conflict)
+            const archetypes = {
+                '1': '18736', // The Achiever
+                '2': '29381', // The Liberator
+                '3': '32674', // The Guardian
+                '4': '47958', // The Chronicler
+                '5': '56892', // The Creator
+                '6': '63549', // The Judge
+                '7': '71465', // The Champion
+                '8': '85123', // The Diplomat
+                '9': '94257'  // The Seeker
+            };
+
+            generatedProfileString = archetypes[primaryGoal] || '00000';
             uiQuizFinalCode.textContent = generatedProfileString;
             uiQuizResults.style.display = 'block';
             uiQuizResults.scrollIntoView({ behavior: 'smooth' });
@@ -1213,11 +1258,17 @@ function renderPips(containerId, current, max) {
     });
 
 PsychroEvents.subscribe('PROFILE_GENERATED', (profileString) => {
-        appendToConsole(`Profile generated:[${profileString}]. Awaiting Builder input.`);
+        appendToConsole(`Profile generated:[${profileString}]. Populating Builder.`);
         
-        // In the next step, we will populate the Builder dropdowns with this string.
-        // For now, we inject it into the text box as a visual confirmation.
-        uiInputString.value = `[C:${profileString}-]`; 
+        // Auto-select the dropdown values in the Builder Tab
+        document.getElementById('sel-goal').value = profileString[0];
+        document.getElementById('sel-method').value = profileString[1];
+        document.getElementById('sel-purpose').value = profileString[2];
+        document.getElementById('sel-conf1').value = profileString[3];
+        document.getElementById('sel-conf2').value = profileString[4];
+
+        // Automatically trigger the compile button to lock the string in
+        document.getElementById('ui-btn-compile').click();
     });
 
     // =======================================================================
