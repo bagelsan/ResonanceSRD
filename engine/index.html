@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Psychromattica OS</title>
+    <meta name="theme-color" content="#222222">
+
+    <!-- Load Google Oswald font used in the CSS styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Link the PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* YOUR ORIGINAL PROTOTYPE CSS */
+        :root {
+            --color-null: #dea193; --color-silver: #a7a9ac; --color-yellow: #f5d36c;
+            --color-green: #688d4c; --color-black: #414042; --color-orange: #f7855d;
+            --color-white: #e3e1da; --color-red: #a95b5a; --color-blue: #88bfe8;
+            --color-purple: #957fa3; --color-background: #222222;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%; 
+            background-color: var(--color-background); 
+            color: var(--color-white); 
+            font-family: Calibri, sans-serif;
+            overflow: hidden;
+        }
+        h2, h3 { font-family: 'Oswald', sans-serif; font-weight: normal; }
+        
+        .app-container { display: flex; flex-direction: column; height: 100%; }
+        .content-area { flex-grow: 1; position: relative; overflow-y: auto; padding: 10px; }
+        
+        /* Unified View Containers instead of iframes */
+        .tool-view { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.2s ease-in; }
+        .tool-view.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section { border: 1px solid var(--color-black); background-color: #2a2a2a; padding: 15px; border-radius: 3px; margin-bottom: 15px; }
+        
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            display: flex; background-color: #1a1a1a; border-top: 1px solid var(--color-black);
+            flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
+        }
+        .nav-button {
+            flex: 1 1 auto; padding: 12px 5px; background: none; border: none;
+            color: var(--color-silver); font-size: 8.5pt; font-weight: bold; 
+            text-transform: uppercase; cursor: pointer; border-top: 3px solid transparent;
+            transition: all 0.2s; min-width: 80px;
+        }
+        .nav-button.active {
+            color: var(--color-yellow); border-top-color: var(--color-yellow); background-color: var(--color-black);
+        }
+        
+        /* Universal Form Elements */
+        button.action-btn { background-color: var(--color-blue); color: var(--color-black); font-weight: bold; border: 1px solid var(--color-silver); padding: 10px 15px; cursor: pointer; border-radius: 2px; width: 100%; transition: 0.2s; }
+        button.action-btn:hover { background-color: var(--color-silver); }
+        input[type="text"], textarea { background-color: #333; border: 1px solid var(--color-silver); color: var(--color-white); padding: 8px; width: 100%; border-radius: 2px; }
+        .code-display { font-family: 'Courier New', Courier, monospace; background: #111; color: var(--color-yellow); padding: 10px; border: 1px solid #444; }
+
+        /* --- DIGITAL CHARACTER SHEET STYLES --- */
+        .sheet-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; border-bottom: 2px solid var(--color-silver); padding-bottom: 10px; }
+        .sheet-header input { font-size: 2em; font-family: 'Oswald', sans-serif; font-weight: bold; color: var(--color-null); background: transparent; border: none; width: 60%; }
+        .sheet-meta { display: flex; gap: 15px; }
+        .stat-box { background: var(--color-black); border: 1px solid var(--color-silver); border-radius: 2px; text-align: center; padding: 5px 15px; }
+        .stat-box span { display: block; font-size: 8pt; text-transform: uppercase; color: var(--color-silver); }
+        .stat-box strong { font-size: 1.5em; color: var(--color-white); }
+        
+        .profile-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; text-align: center; }
+        .profile-box { background: #333; border-top: 3px solid var(--color-silver); padding: 5px; font-size: 0.9em; font-weight: bold; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .stat-matrix-container { display: flex; gap: 10px; align-items: stretch; }
+        .stat-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; flex-grow: 1; }
+        .matrix-box { background: #1a1a1a; border: 1px solid #444; padding: 10px 5px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .matrix-box strong { font-size: 1.5em; color: var(--color-yellow); }
+        .matrix-box span { font-size: 7pt; text-transform: uppercase; color: #888; margin-top: 5px; }
+        .res-box { background: #222; border: 1px solid var(--color-silver); padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; min-width: 80px; }
+        .res-box strong { font-size: 2em; color: var(--color-white); }
+
+        .clock-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .clock-label { font-weight: bold; width: 30px; font-size: 1.2em; }
+        .clock-pips { display: flex; gap: 4px; flex-grow: 1; }
+        .pip { flex: 1; height: 25px; border: 1px solid var(--color-silver); background: #111; cursor: pointer; border-radius: 2px; }
+        .hp-pips .pip.active { background: var(--color-green); }
+        .sp-pips .pip.active { background: var(--color-orange); }
+        .ep-pips .pip.active { background: var(--color-purple); }
+
+        .kw-list { display: flex; flex-direction: column; gap: 5px; }
+        .kw-row { display: flex; gap: 10px; align-items: center; background: #222; padding: 5px; border: 1px solid #444; }
+        .kw-badge { background: #444; padding: 2px 8px; border-radius: 10px; font-size: 8pt; color: #aaa; border: 1px solid #666; }
+        .kw-badge.active { background: var(--color-silver); color: var(--color-black); font-weight: bold; border-color: var(--color-white); }
+        .kw-name { flex-grow: 1; font-weight: bold; font-size: 1.1em; }
+        .kw-level { font-size: 8pt; color: var(--color-silver); background: var(--color-black); padding: 3px 6px; border-radius: 3px; }
+
+        /* --- ROLLER STYLES --- */
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 1.1em; margin-top: 10px; display: none; }
+        .status-badge.crit { background-color: var(--color-green); color: var(--color-black); }
+        .status-badge.super-crit { background-color: var(--color-yellow); color: var(--color-black); box-shadow: 0 0 15px var(--color-yellow); }
+        .status-badge.miss { background-color: var(--color-red); color: var(--color-white); }
+        .stress-panel { display: none; margin-top: 15px; border-top: 1px dashed #555; padding-top: 15px; }
+        .stress-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        #ui-roller-result-display { font-size: 5em; font-weight: bold; color: var(--color-yellow); line-height: 1; margin: 10px 0; text-shadow: 0 0 10px rgba(245, 211, 108, 0.2); }
+        .log-highlight { color: var(--color-white); font-weight: bold; }
+        .log-math { color: var(--color-silver); }
+
+        /* --- GENERATOR STYLES --- */
+        #ui-gen-manifest { font-family: 'Courier New', Courier, monospace; font-size: 10pt; text-align: left; background-color: #1a1a1a; padding: 15px; border-radius: 3px; white-space: pre-wrap; min-height: 150px; margin-top: 15px; border: 1px solid #444; line-height: 1.5; color: #ccc; }
+        .highlight-title { color: var(--color-white); font-weight: bold; font-size: 1.1em; }
+        .highlight-kw { color: var(--color-null); }
+        .highlight-type { color: var(--color-yellow); }
+        .highlight-race { color: var(--color-red); font-weight: bold; }
+
+        /* --- DASHBOARD STYLES --- */
+        .dash-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: start; text-align: center; }
+        .initiative-list { background-color: #1a1a1a; min-height: 120px; padding: 10px; border-radius: 3px; border: 1px solid #444; }
+        .initiative-card { background-color: var(--color-black); color: var(--color-white); padding: 8px; border-radius: 2px; margin-bottom: 5px; font-size: 11pt; cursor: pointer; font-weight: bold; border-left: 3px solid var(--color-silver); }
+        .initiative-card:hover { background-color: #444; }
+        .initiative-card.selected { border-color: var(--color-blue); background-color: #2a3b4c; }
+        #ui-dash-current-turn { background-color: var(--color-yellow); color: var(--color-black); font-weight: bold; font-size: 1.5em; padding: 20px; min-height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 3px; box-shadow: 0 0 10px rgba(245, 211, 108, 0.2); text-transform: uppercase; }
+        
+        .dash-card { background-color: #333; padding: 15px; border-radius: 3px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .dash-card-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .dash-card-header input { font-size: 1.1em; font-weight: bold; background: none; border: none; border-bottom: 1px dashed #555; padding: 4px; color: var(--color-white); width: 100%; }
+        .dash-entity-card { border-left: 4px solid var(--color-yellow); }
+        .dash-barrier-card { border-left: 4px solid var(--color-blue); }
+        
+        .dash-entity-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; align-items: center; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 2px; }
+        .dash-entity-meta { font-size: 10pt; color: var(--color-silver); display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .dash-action-pool { display: flex; align-items: center; gap: 10px; justify-content: center; font-size: 1.2em; font-weight: bold; color: var(--color-yellow); }
+        .dash-action-pool button { padding: 4px 12px; font-size: 14pt; line-height: 1; border-radius: 50%; }
+        .dash-barrier-meta { font-size: 1.2em; color: var(--color-white); display: flex; justify-content: space-around; margin-bottom: 10px; background: #222; padding: 10px; border-radius: 2px; }
+
+        /* --- COMPANION STYLES --- */
+        .comp-tabs { display: flex; border-bottom: 2px solid var(--color-black); margin-bottom: 15px;}
+        .comp-tab-btn { flex: 1; padding: 12px; background-color: #333; border: none; color: var(--color-silver); cursor: pointer; font-size: 1em; font-weight: bold; text-transform: uppercase; }
+        .comp-tab-btn.active { background-color: var(--color-blue); color: var(--color-black); }
+        .comp-tab-content { display: none; }
+        .comp-tab-content.active { display: block; }
+        
+        .comp-kw-list { list-style: none; display: grid; grid-template-columns: 1fr; gap: 10px; padding: 0; }
+        .comp-kw-card { background: #2a2a2a; border-left: 5px solid var(--color-silver); padding: 15px; border-radius: 2px; }
+        .comp-kw-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;}
+        .comp-kw-name { font-size: 1.2em; font-weight: bold; color: var(--color-white); }
+        .comp-kw-code { font-family: monospace; color: var(--color-yellow); font-weight: bold;}
+        .comp-kw-effect { font-style: italic; color: var(--color-silver); }
+
+        details.action-cat { background: #2a2a2a; margin-bottom: 10px; border-radius: 2px; border-left: 4px solid var(--color-yellow);}
+        details.action-cat summary { padding: 15px; font-weight: bold; font-size: 1.2em; cursor: pointer; color: var(--color-white);}
+        .action-item { padding: 15px; border-top: 1px solid #444; background: #222;}
+        .action-item h4 { color: var(--color-null); font-size: 1.1em; margin-bottom: 5px; }
+        .action-cost { color: var(--color-yellow); font-size: 0.9em; font-weight: bold; margin-bottom: 5px; }
+
+        .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 600px) { .rules-grid { grid-template-columns: 1fr; } }
+        .rule-box { background: #2a2a2a; padding: 15px; border-radius: 2px; border-top: 3px solid var(--color-green);}
+        .rule-box h3 { color: var(--color-green); margin-bottom: 10px; margin-top: 0; border: none; }
+        .rule-box ul { padding-left: 20px; line-height: 1.5; color: var(--color-silver);}
+        .rule-box li { margin-bottom: 5px; }
+        .rule-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10pt;}
+        .rule-table th, .rule-table td { border: 1px solid #444; padding: 8px; text-align: left; }
+        .rule-table th { background: #111; color: var(--color-yellow); }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- MAIN VIEWPORT (The "Screen") -->
+        <main class="content-area">
+            
+            <!-- QUIZ VIEW -->
+            <div id="view-quiz" class="tool-view active">
+                <div class="section">
+                    <h2>Motivational Assessment</h2>
+                    <p style="color: var(--color-silver); font-size: 10pt; margin-bottom: 15px;">Answer the questions below to identify your core Psychroma and generate your 5-Digit Profile String.</p>
+                    <form id="ui-quiz-form"></form>
+                </div>
+                <div class="section" id="ui-quiz-results" style="display: none;">
+                    <h3>Assessment Complete</h3>
+                    <p style="color: var(--color-silver); font-size: 10pt; margin-bottom: 5px;">Your System Code:</p>
+                    <div id="ui-quiz-final-code" class="code-display" style="font-size: 2.5em; text-align: center; letter-spacing: 5px;">00000</div>
+                    <button id="ui-btn-send-profile" class="action-btn" style="margin-top: 15px; background-color: var(--color-purple); color: white;">Send to Blueprint Builder</button>
+                </div>
+            </div>
+            
+            <!-- BUILDER VIEW -->
+            <div id="view-builder" class="tool-view">
+                <div class="section">
+                    <h2>Blueprint Compiler</h2>
+                    
+                    <!-- 1. Profile Selectors -->
+                    <h3 style="font-size: 10pt; color: var(--color-silver); margin-top: 10px;">1. Motivational Profile</h3>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px;" id="ui-profile-selects">
+                        <select id="sel-goal"><option value="0">Goal</option></select>
+                        <select id="sel-method"><option value="0">Method</option></select>
+                        <select id="sel-purpose"><option value="0">Purpose</option></select>
+                        <select id="sel-conf1"><option value="0">Conflict 1</option></select>
+                        <select id="sel-conf2"><option value="0">Conflict 2</option></select>
+                    </div>
+                    
+                    <!-- 2. Seed Keyword -->
+                    <h3 style="font-size: 10pt; color: var(--color-silver);">2. Origin (Level 0)</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                        <select id="sel-seed" class="kw-select" style="flex-grow: 1;"><option value="">Select Seed Keyword...</option></select>
+                        <label style="color: var(--color-white); font-size: 10pt; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="chk-seed-passive"> Passive (!)
+                        </label>
+                    </div>
+
+                    <h3 style="font-size: 10pt; color: var(--color-red); margin-top: 10px;">Optional: The Flaw Package</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+                        <select id="sel-flaw" class="kw-select"><option value="">No Flaw Penalty...</option></select>
+                        <select id="sel-comp" class="kw-select"><option value="">Compensation Ability...</option></select>
+                    </div>
+
+                    <!-- 3. Awakening Keywords -->
+                    <h3 style="font-size: 10pt; color: var(--color-silver);">3. The Awakening (Level 1)</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px;" id="ui-awk-selects">
+                        <select class="kw-select sel-awk"><option value="">Awakening KW 1...</option></select>
+                        <select class="kw-select sel-awk"><option value="">Awakening KW 2...</option></select>
+                        <select class="kw-select sel-awk"><option value="">Awakening KW 3...</option></select>
+                    </div>
+
+                    <textarea id="ui-build-string" rows="2" placeholder="[C:01234-!03-11.12.13]"></textarea>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button id="ui-btn-compile" class="action-btn" style="background: var(--color-silver)">Compile String</button>
+                        <button id="ui-btn-load" class="action-btn" style="background: var(--color-purple); color: white;">Sync to Core State</button>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3>System Status Console</h3>
+                    <div id="ui-console-log" class="code-display" style="min-height: 150px; font-size: 9pt;">Awaiting initialization...</div>
+                </div>
+            </div>
+
+            <!-- SHEET VIEW -->
+            <div id="view-sheet" class="tool-view">
+                
+                <div class="sheet-header">
+                    <input type="text" id="ui-sheet-name" value="Subject_01" placeholder="Character Name">
+                    <div class="sheet-meta">
+                        <div class="stat-box"><span>LEVEL</span><strong id="ui-sheet-level">0</strong></div>
+                        <div class="stat-box"><span>KARMA</span><strong id="ui-sheet-karma">0</strong></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="margin-top: 0;">Profile</h3>
+                    <div class="profile-grid" id="ui-sheet-profile">
+                        <div class="profile-box" style="border-color: var(--color-null)">Goal<br><span style="font-weight:normal; color:#ccc;">---</span></div>
+                        <div class="profile-box">Method<br><span style="font-weight:normal; color:#ccc;">---</span></div>
+                        <div class="profile-box">Purpose<br><span style="font-weight:normal; color:#ccc;">---</span></div>
+                        <div class="profile-box" style="border-color: var(--color-red)">Ext. Con<br><span style="font-weight:normal; color:#ccc;">---</span></div>
+                        <div class="profile-box" style="border-color: var(--color-red)">Int. Con<br><span style="font-weight:normal; color:#ccc;">---</span></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="section">
+                        <h3 style="margin-top: 0;">Stats</h3>
+                        <div class="stat-matrix-container">
+                            <div class="stat-matrix" id="ui-sheet-stats">
+                                <!-- Populated via JS -->
+                            </div>
+                            <div class="res-box">
+                                <span style="font-size: 8pt; color: var(--color-silver);">RESISTANCE</span>
+                                <strong id="ui-sheet-res">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 style="margin-top: 0;">Clocks</h3>
+                        <div class="clock-row">
+                            <div class="clock-label">HP:</div>
+                            <div class="clock-pips hp-pips" id="ui-pips-hp"></div>
+                        </div>
+                        <div class="clock-row">
+                            <div class="clock-label">SP:</div>
+                            <div class="clock-pips sp-pips" id="ui-pips-sp"></div>
+                        </div>
+                        <div class="clock-row">
+                            <div class="clock-label">EP:</div>
+                            <div class="clock-pips ep-pips" id="ui-pips-ep"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="margin-top: 0;">Keywords</h3>
+                    <div class="kw-list" id="ui-sheet-keywords">
+                        <!-- Populated via JS -->
+                    </div>
+                    
+                    <h3 style="margin-top: 15px;">Flaw and Compensation</h3>
+                    <div class="kw-list" id="ui-sheet-flaws">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Page 2 (Attachments) renders here -->
+                <div id="ui-sheet-attachments"></div>
+
+            </div>
+
+            <!-- ROLLER VIEW -->
+            <div id="view-roller" class="tool-view">
+                <div class="section" style="text-align: center;">
+                    <div style="font-size: 1.2em; color: var(--color-silver); text-transform: uppercase; letter-spacing: 2px;">Effect Value</div>
+                    <div id="ui-roller-result-display">--</div>
+                    <div id="ui-roller-status" class="status-badge"></div>
+                    
+                    <div id="ui-roller-supercrit-box" style="display: none; background: #1a1a1a; border: 1px solid var(--color-yellow); padding: 15px; margin-top: 15px; border-radius: 3px; text-align: left;">
+                        <h4 style="color: var(--color-yellow); margin-bottom: 5px; text-transform: uppercase;">Super Critical Achieved!</h4>
+                        <ul style="padding-left: 20px; font-size: 10pt; color: var(--color-silver);">
+                            <li><strong>Heroics:</strong> -1 to Situation Clock.</li>
+                            <li><strong>Machina:</strong> Narrative control of the scene.</li>
+                            <li><strong>Anomaly:</strong> Gain a unique Boon.</li>
+                        </ul>
+                    </div>
+                    
+                    <div id="ui-roller-stress-result" style="display: none; margin-top: 15px; padding: 10px; font-weight: bold; border-radius: 3px;"></div>
+                </div>
+
+                <div class="section">
+                    <h2>Roll Parameters</h2>
+                    <button id="ui-btn-pull-stats" class="action-btn" style="background: #333; color: var(--color-silver); margin-bottom: 15px; border-color: #555;">Pull Level/Wit from Active Sheet</button>
+                    
+                    <div class="grid-2">
+                        <div><label>Level</label><input type="number" id="ui-roller-level" value="1" min="0"></div>
+                        <div><label>Chosen Stat</label><input type="number" id="ui-roller-stat" value="2" min="0"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; background: #1a1a1a; padding: 10px; border-radius: 3px; border: 1px solid #444; margin-top: 15px;">
+                        <label style="margin:0; display:flex; align-items:center; gap:5px; cursor:pointer; text-transform:none; color:white;"><input type="radio" name="ui-roller-adv" value="disadvantage"> Disadvantage</label>
+                        <label style="margin:0; display:flex; align-items:center; gap:5px; cursor:pointer; text-transform:none; color:white;"><input type="radio" name="ui-roller-adv" value="normal" checked> Normal</label>
+                        <label style="margin:0; display:flex; align-items:center; gap:5px; cursor:pointer; text-transform:none; color:white;"><input type="radio" name="ui-roller-adv" value="advantage"> Advantage</label>
+                    </div>
+
+                    <label style="display:flex; align-items:center; gap:8px; margin-top: 15px; cursor:pointer; color:white;">
+                        <input type="checkbox" id="ui-roller-twice"> Apply Stat Twice (e.g. Rapid/Focus)
+                    </label>
+
+                    <div style="margin-top: 15px; background: #333; padding: 15px; border-left: 3px solid var(--color-purple); border-radius: 2px;">
+                        <label style="display:flex; align-items:center; gap:8px; margin:0; cursor:pointer; color:white;">
+                            <input type="checkbox" id="ui-roller-stress"> Attempting a Stress Roll
+                        </label>
+                        <div class="stress-panel" id="ui-roller-stress-panel">
+                            <div><label>Wit Stat</label><input type="number" id="ui-roller-wit" value="2" min="0"></div>
+                            <div><label>Total Known Keywords</label><input type="number" id="ui-roller-kws" value="4" min="1"></div>
+                        </div>
+                    </div>
+                    
+                    <button id="ui-btn-roll" class="action-btn" style="background-color: var(--color-green); margin-top: 15px; font-size: 1.2em;">Roll Dice</button>
+                </div>
+                
+                <div class="section">
+                    <h3>Roll Log</h3>
+                    <div id="ui-roller-log" class="code-display" style="min-height: 120px;">Awaiting input...</div>
+                </div>
+            </div>
+
+            <!-- GENERATOR VIEW -->
+            <div id="view-generator" class="tool-view">
+                <div class="section">
+                    <h2>Procedural Scene Generator</h2>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="color: var(--color-silver); font-weight: bold; text-transform: uppercase;">Average Party Level</label>
+                            <input type="number" id="ui-gen-level" value="1" min="0" max="9" style="font-size: 1.2em;">
+                            <p style="font-size: 9pt; color: #888; margin-top: 5px;">Dictates the Level Modifier (L-1 to L+2) for entities and challenges.</p>
+                        </div>
+                    </div>
+                    <button id="ui-btn-generate" class="action-btn" style="background-color: var(--color-orange); color: white;">Execute Procedural Generation</button>
+                </div>
+                
+                <div class="section">
+                    <h3>Generated Scene Blueprint</h3>
+                    <textarea id="ui-gen-output" readonly spellcheck="false" class="code-display" style="min-height: 80px; width: 100%; resize: vertical; margin-bottom: 10px;">Awaiting execution...</textarea>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <p style="font-size: 9pt; color: #888; margin: 0; flex-grow: 1;">Contains fully compliant AST entities.</p>
+                        <button id="ui-btn-gen-copy" class="action-btn" style="width: auto; padding: 6px 12px; background: #333; color: white;">Copy</button>
+                        <button id="ui-btn-gen-send" class="action-btn" style="width: auto; padding: 6px 12px; background-color: var(--color-purple); color: white;">Load to Dashboard</button>
+                    </div>
+
+                    <h3 style="margin-top: 25px;">Manifest Readout</h3>
+                    <div id="ui-gen-manifest">Readout will appear here...</div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard" class="tool-view">
+                <div class="section">
+                    <h2>Load Scene Blueprint</h2>
+                    <textarea id="ui-dash-blueprint" rows="2" placeholder="Paste generated Scene Blueprint here..."></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button id="ui-btn-dash-load" class="action-btn" style="flex-grow: 1;">Parse & Populate Dashboard</button>
+                        <button id="ui-btn-dash-clear" class="action-btn" style="background-color: var(--color-red); color: white; width: auto;">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Scene Pacing</h2>
+                    <div class="grid-2">
+                        <div>
+                            <div class="clock-row">
+                                <span style="color: var(--color-blue); font-weight: bold; width: 120px;">SITUATION</span>
+                                <div class="clock-pips hp-pips" id="ui-dash-sit-pips"></div>
+                                <input type="number" id="ui-dash-sit-max" value="0" min="0" style="width: 50px; margin: 0 0 0 10px; padding: 2px;">
+                            </div>
+                            <p style="font-size: 9pt; color: #888; margin-top: 5px;">Deplete by 1 when an Entity/Barrier is resolved.</p>
+                        </div>
+                        <div>
+                            <div class="clock-row">
+                                <span style="color: var(--color-red); font-weight: bold; width: 120px;">THREAT (RACE)</span>
+                                <div class="clock-pips ep-pips" id="ui-dash-threat-pips"></div>
+                                <input type="number" id="ui-dash-threat-max" value="15" min="0" style="width: 50px; margin: 0 0 0 10px; padding: 2px;">
+                            </div>
+                            <p style="font-size: 9pt; color: #888; margin-top: 5px;">Deplete at the end of each Round, or on failed Effort Rolls.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; border: none;">Initiative Tracker</h2>
+                        <div style="font-size: 10pt; color: var(--color-silver);">Round: <span id="ui-dash-round" style="color: var(--color-white); font-weight: bold; font-size: 1.2em;">1</span></div>
+                    </div>
+                    
+                    <div class="dash-grid-3">
+                        <div>
+                            <h3>Deck (<span id="ui-dash-deck-count">0</span>)</h3>
+                            <div class="initiative-list" id="ui-dash-deck-list"></div>
+                        </div>
+                        <div>
+                            <h3>Current Priority</h3>
+                            <div id="ui-dash-current-turn">AWAITING ROUND</div>
+                        </div>
+                        <div>
+                            <h3>Discard (<span id="ui-dash-discard-count">0</span>)</h3>
+                            <div class="initiative-list" id="ui-dash-discard-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="dash-grid-3" style="margin-top: 15px;">
+                        <button id="ui-btn-dash-start" style="background-color: var(--color-green); color: black;">Start Round</button>
+                        <button id="ui-btn-dash-draw" disabled>Draw Next Card</button>
+                        <button id="ui-btn-dash-pass" disabled title="End turn.">End Turn / Pass</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <input type="text" id="ui-dash-manual-name" placeholder="Add PC or combatant...">
+                        <button id="ui-btn-dash-add-disc" style="width: auto;">Add to Discard</button>
+                        <button id="ui-btn-dash-add-mid" style="width: auto; border-color: var(--color-yellow); color: var(--color-yellow);">Enter Mid-Round</button>
+                        <button id="ui-btn-dash-seize" disabled style="width: auto; background-color: var(--color-red); color: white;">Seize Priority</button>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="section">
+                        <h2 style="border: none;">Barriers & Puzzles</h2>
+                        <div id="ui-dash-barriers-container"></div>
+                    </div>
+                    <div class="section">
+                        <h2 style="border: none;">Entities</h2>
+                        <div id="ui-dash-entities-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DICE MATRIX VIEW -->
+            <div id="view-dice" class="tool-view">
+                <div class="sheet-header">
+                    <h2>Matrix Dice Engine</h2>
+                    <div class="sheet-meta">
+                        <div class="stat-box"><span>EXPERTISE</span><strong id="ui-dice-exp">1</strong></div>
+                        <div class="stat-box" style="border-color: var(--color-blue)"><span>FIELD</span><strong id="ui-dice-field">0</strong></div>
+                        <div class="stat-box" style="border-color: var(--color-null)"><span>KARMA</span><strong id="ui-dice-karma">0</strong></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="margin-top:0;">Affinity Colors</h3>
+                    <div id="ui-dice-affinities" style="display: flex; gap: 10px; margin-bottom: 15px;"></div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="ui-btn-dice-ready" class="action-btn" style="background: var(--color-green);">1. Ready Phase (Upkeep)</button>
+                        <button id="ui-btn-dice-gen" class="action-btn">Paid Generation (-1 Karma)</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>The Matrix</h3>
+                    <p style="font-size: 9pt; color: var(--color-silver);">Click tokens to select them for your next activation.</p>
+                    <div id="ui-dice-grid" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 150px; background: #1a1a1a; border: 1px solid #444; padding: 15px; border-radius: 3px; margin-top: 10px;">
+                        <!-- Tokens populated by JS -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Activation Console</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <button id="ui-btn-dice-activate" class="action-btn" style="background: var(--color-red);">Execute Activation</button>
+                        <button id="ui-btn-dice-break" class="action-btn" style="background: var(--color-purple);">Expertise Break (-5 Tokens)</button>
+                    </div>
+                    <div id="ui-dice-log" class="code-display" style="margin-top: 15px; min-height: 60px;">Awaiting Phase 1...</div>
+                </div>
+            </div>
+
+            <!-- COMPANION VIEW -->
+            <div id="view-companion" class="tool-view">
+                <div class="section" style="padding: 0; background: transparent; border: none;">
+                    <div class="comp-tabs">
+                        <button class="comp-tab-btn active" data-tab="comp-rules">Rules Guide</button>
+                        <button class="comp-tab-btn" data-tab="comp-actions">Action Catalog</button>
+                        <button class="comp-tab-btn" data-tab="comp-keywords">Keyword Codex</button>
+                    </div>
+
+                    <!-- TAB: RULES REF -->
+                    <div id="comp-rules" class="comp-tab-content active">
+                        <div class="rules-grid">
+                            <div class="rule-box">
+                                <h3>The Core Mechanic</h3>
+                                <ul>
+                                    <li><strong>Standard Roll (SR):</strong> Roll 2d10 (Main & Crit). Result is the Main die.</li>
+                                    <li><strong>Critical Chain:</strong> If Main = Crit, add them together, add to total, and roll again! (Even double 1s).</li>
+                                    <li><strong>Effect Value (EV):</strong> `SR + Level + Stat`. Used against Entities (Resistance).</li>
+                                    <li><strong>Effort Roll (ER):</strong> `SR + Level + Stat`. Used against Barriers/Puzzles (Target Number).</li>
+                                    <li><strong>Catastrophic Miss:</strong> Rolling a 1 with Disadvantage on the final die.</li>
+                                </ul>
+                            </div>
+                            <div class="rule-box" style="border-color: var(--color-blue);">
+                                <h3 style="color: var(--color-blue);">Target Numbers (TN)</h3>
+                                <table class="rule-table">
+                                    <tr><th>Difficulty</th><th>TN</th><th>Notes</th></tr>
+                                    <tr><td>Trivial</td><td>6</td><td>Auto-pass for Lvl 1</td></tr>
+                                    <tr><td>Easy</td><td>8</td><td>Reliable for Lvl 1</td></tr>
+                                    <tr><td>Average</td><td>10</td><td>Standard Lvl 0 Barrier</td></tr>
+                                    <tr><td>Difficult</td><td>12</td><td>Risky for Lvl 1</td></tr>
+                                    <tr><td>Challenging</td><td>15</td><td>Coin-Flip for Lvl 5</td></tr>
+                                    <tr><td>Heroic</td><td>18+</td><td>Requires Karma/KWs</td></tr>
+                                </table>
+                            </div>
+                            <div class="rule-box" style="border-color: var(--color-red);">
+                                <h3 style="color: var(--color-red);">Conditions</h3>
+                                <ul>
+                                    <li><strong>Mounted/Riding:</strong> Rider dictates all actions; mount is silenced.</li>
+                                    <li><strong>Prone:</strong> Disadvantage on all actions. Move action to stand.</li>
+                                    <li><strong>Crouching:</strong> Advantage to concealment. Movement is halved.</li>
+                                    <li><strong>Cover:</strong> Attacks against you suffer Disadvantage. Advantage to Hide.</li>
+                                    <li><strong>High Ground:</strong> (+10 ft) Advantage on ranged effects.</li>
+                                    <li><strong>Submerged:</strong> Disadvantage on actions; movement halved; grants cover.</li>
+                                    <li><strong>Hidden:</strong> Cannot be targeted. Advantage on next attack.</li>
+                                    <li><strong>Exhausted (0 SP):</strong> Disadvantage on all rolls.</li>
+                                    <li><strong>Silenced (0 EP):</strong> Cannot use Innate Active Keywords.</li>
+                                    <li><strong>Injured:</strong> Max HP, SP, and EP reduced by 5 until next Downtime.</li>
+                                    <li><strong>Unconscious (0 HP):</strong> Cannot act. Next damage is Fatal.</li>
+                                    <li><strong>Exposed:</strong> Attacks against you gain Advantage.</li>
+                                </ul>
+                            </div>
+                            <div class="rule-box" style="border-color: var(--color-orange);">
+                                <h3 style="color: var(--color-orange);">Keyword EP Costs</h3>
+                                <ul>
+                                    <li><strong>Base Cost:</strong> 1 EP per Keyword applied.</li>
+                                    <li><strong>Reduction:</strong> Subtract your Power (P) stat from total base cost (Min 0).</li>
+                                    <li><strong>Charge Tags:</strong> Expend to reduce remaining cost further.</li>
+                                    <li><strong>Gear Passives:</strong> Free to use when utilizing that specific item.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: ACTIONS -->
+                    <div id="comp-actions" class="comp-tab-content">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <!-- TAB: KEYWORDS -->
+                    <div id="comp-keywords" class="comp-tab-content">
+                        <input type="text" id="ui-comp-kw-search" placeholder="Search by name, code, or color (e.g. 'Red')..." style="margin-bottom: 15px; font-size: 1.2em;">
+                        <ul class="comp-kw-list" id="ui-comp-kw-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLLER VIEW (Mode Switching) -->
+            <div id="view-system" class="tool-view">
+                <div class="section">
+                    <h2>Startup Overrides</h2>
+                    <p style="color: var(--color-silver); font-size: 10pt; margin-bottom: 10px;">Change the Engine Resolution. This applies the filter protocol to the current entity.</p>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                        <button class="action-btn mode-btn" data-mode="TTRPG" style="background: var(--color-null)">TTRPG (Core)</button>
+                        <button class="action-btn mode-btn" data-mode="TACTICS" style="background: var(--color-green)">Tactics (Grid)</button>
+                        <button class="action-btn mode-btn" data-mode="CARDS" style="background: var(--color-blue)">Cards (Duel)</button>
+                        <button class="action-btn mode-btn" data-mode="DICE" style="background: var(--color-yellow)">Dice (Matrix)</button>
+                        <button class="action-btn mode-btn" data-mode="SOVEREIGNTY" style="background: var(--color-purple)">Sovereignty (Map)</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- NAVIGATION -->
+        <nav class="bottom-nav" id="main-nav">
+            <button class="nav-button active" data-target="view-quiz">Quiz</button>
+            <button class="nav-button" data-target="view-builder">Builder</button>
+            <button class="nav-button" data-target="view-sheet">Sheet</button>
+            <button class="nav-button" data-target="view-roller">Roller</button>
+            <button class="nav-button" data-target="view-generator">Gen</button>
+            <button class="nav-button" data-target="view-dashboard">Dash</button>
+            <button class="nav-button" data-target="view-dice">Matrix</button>
+            <button class="nav-button" data-target="view-companion">Comp</button>
+            <button class="nav-button" data-target="view-system">System</button>
+        </nav>
+
+    </div>
+
+    <!-- MODULE ENTRY POINT -->
+    <script type="module" src="app.js"></script>
+
+    <!-- SERVICE WORKER REGISTRATION -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log("Service Worker Registered"))
+          .catch(err => console.error("Service Worker registration failed:", err));
+      }
+    </script>
+</body>
+</html>
