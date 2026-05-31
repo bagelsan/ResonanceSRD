@@ -172,3 +172,288 @@ export class Entity {
     return this.conditions.has(condition);
   }
 }
+
+import { PCM_COLORS, PCM_KEYWORDS_DICTIONARY } from './PCM-definitions.js';
+
+// --- Character Entity Class ---
+export class Character extends Entity {
+  constructor(name = "Unnamed Character", hexCode = "#32647CN") {
+    super(name, 1); // Characters default to Level 1 on awakening
+    this.hexCode = hexCode;
+    this.profile = null;
+    this.flawPackage = null; // { flawCode, compensationCode }
+    this.karma = 0;
+    
+    // Page 2 Attachments
+    this.attachedAnimations = [];
+    this.attachedItems = [];
+
+    this.recalculateFromProfile();
+  }
+
+  /**
+   * Recalculates stats and resistance from the 6-character Hex Code (Layer 5, Section 2.2)
+   */
+  recalculateFromProfile() {
+    const cleanHex = this.hexCode.replace("#", "");
+    if (cleanHex.length !== 6) return;
+
+    const goal = parseInt(cleanHex[0], 10);
+    const method = parseInt(cleanHex[1], 10);
+    const purpose = parseInt(cleanHex[2], 10);
+    const extConflict = parseInt(cleanHex[3], 10);
+    const intConflict = parseInt(cleanHex[4], 10);
+    const scope = cleanHex[5];
+
+    this.profile = { goal, method, purpose, externalConflict: extConflict, internalConflict: intConflict, scope };
+
+    // Level 1 Baseline: All nine stats start at 2 (Section 2.2.3)
+    const statKeys = ["Range", "Alacrity", "Brawn", "Wit", "Expertise", "Technique", "Power", "Influence", "Force"];
+    statKeys.forEach(k => this.stats[k] = 2);
+
+    // Trinity Stat Bonus: +1 to stats associated with Goal, Method, and Purpose (Section 2.2.4)
+    const colorToStatMap = {
+      1: "Range", 2: "Alacrity", 3: "Brawn", 4: "Wit", 
+      5: "Expertise", 6: "Technique", 7: "Power", 8: "Influence", 9: "Force"
+    };
+
+    if (colorToStatMap[goal]) this.stats[colorToStatMap[goal]] += 1;
+    if (colorToStatMap[method]) this.stats[colorToStatMap[method]] += 1;
+    if (colorToStatMap[purpose]) this.stats[colorToStatMap[purpose]] += 1;
+
+    // Apply Flaw Package Bonus Stat Point (Section 3.5.3)
+    if (this.flawPackage) {
+      const compKw = PCM_KEYWORDS_DICTIONARY[this.flawPackage.compensationCode];
+      if (compKw && colorToStatMap[compKw.color]) {
+        this.stats[colorToStatMap[compKw.color]] = Math.min(5, this.stats[colorToStatMap[compKw.color]] + 1);
+      }
+    }
+
+    // Apply Passive Keyword adjustments to Max Clocks (e.g. Resilient 7.1 / Limited 7.0)
+    this.clocksMax.hp = 10;
+    this.clocksMax.sp = 10;
+    this.clocksMax.ep = 10;
+
+    if (this.keywords.includes("7.1")) { // Resilient: +5 Max HP
+      this.clocksMax.hp += 5;
+    }
+    if (this.keywords.includes("7.0")) { // Limited: -5 Max HP
+      this.clocksMax.hp -= 5;
+    }
+
+    // Bind current resource values to new maximum boundaries
+    this.clocks.hp = Math.min(this.clocksMax.hp, this.clocks.hp);
+    this.clocks.sp = Math.min(this.clocksMax.sp, this.clocks.sp);
+    this.clocks.ep = Math.min(this.clocksMax.ep, this.clocks.ep);
+  }
+}
+
+// --- Animation Entity Class ---
+export class Animation extends Entity {
+  constructor(name = "Unnamed Drone") {
+    super(name, 0); // Animations begin at Level 0 (Layer 5, Section 4.1)
+    this.isMinion = false;
+  }
+
+  /**
+   * Automatically scales stats and keywords for leveling (Layer 5, Section 4.4)
+   */
+  levelUpAnimation(statsToIncrease = [], newKeyword = null) {
+    this.level += 1;
+    
+    // Budget: 2 stats and 1 keyword per level
+    statsToIncrease.forEach(statName => {
+      if (this.stats[statName] !== undefined) {
+        this.stats[statName] = Math.min(5, this.stats[statName] + 1);
+      }
+    });
+
+    if (newKeyword) {
+      this.keywords.push(newKeyword);
+    }
+  }
+}
+
+// --- Item / Gear Entity Class ---
+export class Item {
+  constructor(name = "Mundane Item", level = 0) {
+    this.name = name;
+    this.level = level;
+    this.durability = 2; // Durability Clock starts at 2 (Layer 5, Section 6.7)
+    this.keywords = [];
+  }
+
+  get isBroken() {
+    return this.durability === 1;
+  }
+
+  get isDestroyed() {
+    return this.durability === 0;
+  }
+
+  damageItem() {
+    this.durability = Math.max(0, this.durability - 1);
+  }
+
+  repairItem() {
+    this.durability = 2;
+  }
+
+  addKeyword(keywordCode) {
+    if (!this.keywords.includes(keywordCode)) {
+      this.keywords.push(keywordCode);
+    }
+  }
+}
+
+// --- Faction Entity Class ---
+export class Faction {
+  constructor(name = "Unnamed Faction", hexCode = "#333333N") {
+    this.name = name;
+    this.hexCode = hexCode;
+    this.level = 0;
+    this.civilSystems = [];
+    this.keywords = [];
+  }
+
+  /**
+   * Approximates supported population based on exponential scaling (Layer 5, Section 8.6.1)
+   */
+  get supportedPopulation() {
+    if (this.level <= 5) {
+      return Math.pow(10, this.level);
+    }
+    // Scale increases by 250k per level above 5
+    return 100000 + ((this.level - 5) * 250000);
+  }
+}
+
+// --- Unified Ecosystem & Build String Parser ---
+export class PsychromatticaParser {
+  /**
+   * Parses Unified Build Strings verbatim to Appendix I, Section 1.0 - 1.8
+   * Handles C: character structures, @ attachments, and / sub-structures.
+   * @param {string} str - Unified Build String (e.g. "C:#32647CN-!03-11.12.13")
+   * @returns {Array<Entity>} Extracted, parsed entities list
+   */
+  static parse(str) {
+    const ecosystems = [];
+    const parts = str.split(';');
+
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+
+      const attachments = trimmed.split('@');
+      let rootEntity = null;
+
+      for (let i = 0; i < attachments.length; i++) {
+        const attachNode = attachments[i].trim();
+        if (!attachNode) continue;
+
+        const prefix = attachNode.substring(0, 2); // "C:", "A:", "I:", "F:"
+        const content = attachNode.substring(2);
+
+        if (prefix === "C:") {
+          const char = this.parseCharacter(content);
+          if (i === 0) rootEntity = char;
+        } else if (prefix === "A:") {
+          const anim = this.parseAnimation(content);
+          if (rootEntity && rootEntity instanceof Character) {
+            rootEntity.attachedAnimations.push(anim);
+          }
+        } else if (prefix === "I:") {
+          const item = this.parseItem(content);
+          if (rootEntity && rootEntity instanceof Character) {
+            rootEntity.attachedItems.push(item);
+          }
+        }
+      }
+
+      if (rootEntity) {
+        ecosystems.push(rootEntity);
+      }
+    }
+
+    return ecosystems;
+  }
+
+  static parseCharacter(content) {
+    // Format: #[HexCode][+####]-##-##.##.##
+    const segments = content.split('-');
+    const header = segments[0];
+
+    const hexMatch = header.match(/#([0-9]{5}[NXC])/);
+    const hexCode = hexMatch ? `#${hexMatch[1]}` : "#222222N";
+
+    const char = new Character("Awakened Subject", hexCode);
+
+    // Parse Flaw Package (+####)
+    const flawMatch = header.match(/\+([0-9]{4})/);
+    if (flawMatch) {
+      const fVal = flawMatch[1];
+      const flawCode = `${fVal[0]}.${fVal[1]}`;
+      const compCode = `${fVal[2]}.${fVal[3]}`;
+      char.flawPackage = { flawCode, compensationCode: compCode };
+      char.keywords.push(flawCode);
+    }
+
+    // Parse Seed Keyword (Segment 1)
+    if (segments.length > 1) {
+      let seedCode = segments[1];
+      let isPassive = false;
+      if (seedCode.startsWith('!')) {
+        isPassive = true;
+        seedCode = seedCode.substring(1);
+      }
+      if (seedCode.length === 2) {
+        const formattedSeed = `${seedCode[0]}.${seedCode[1]}`;
+        char.keywords.push(formattedSeed);
+        if (isPassive) char.passiveSlots.push(formattedSeed);
+      }
+    }
+
+    // Parse Awakening Keywords (Segment 2)
+    if (segments.length > 2) {
+      const awkList = segments[2].split('.');
+      awkList.forEach(code => {
+        if (code.length === 2) {
+          char.keywords.push(`${code[0]}.${code[1]}`);
+        }
+      });
+    }
+
+    char.recalculateFromProfile();
+    return char;
+  }
+
+  static parseAnimation(content) {
+    const segments = content.split('-');
+    const anim = new Animation("Tactical Companion");
+    
+    if (segments.length > 0) {
+      let seed = segments[0];
+      if (seed.length === 2) anim.keywords.push(`${seed[0]}.${seed[1]}`);
+    }
+    return anim;
+  }
+
+  static parseItem(content) {
+    // Format: L#[-####]-##.##
+    const segments = content.split('-');
+    const lvlMatch = segments[0].match(/L([0-9])/);
+    const level = lvlMatch ? parseInt(lvlMatch[1], 10) : 1;
+
+    const item = new Item("Synthesized Gear", level);
+
+    if (segments.length > 1) {
+      const kws = segments[1].split('.');
+      kws.forEach(code => {
+        if (code.length === 2) {
+          item.addKeyword(`${code[0]}.${code[1]}`);
+        }
+      });
+    }
+    return item;
+  }
+}

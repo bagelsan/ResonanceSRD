@@ -19,24 +19,202 @@ import { StandardDiceRoller } from './PCM-engine.js';
 // 2. PASTE THE NEW EXPANDED CLASS HERE
 // ==========================================
 export class ActionExecutor {
+  /**
+   * Calculates the final EP cost of an action (Layer 2, Section 4.3 / Layer 5, Section 3.4.2)
+   * @param {Entity} actor - The acting character
+   * @param {number} appliedKeywordsCount - Number of active keywords being added
+   * @param {boolean} useChargeTag - Optional: expend a Charge tag to reduce cost
+   * @returns {number} Final resolved EP cost
+   */
   static calculateEPCost(actor, appliedKeywordsCount, useChargeTag = false) {
-    // ... code ...
+    if (appliedKeywordsCount === 0) return 0;
+
+    // Step 1: Determine Base Cost (1 EP per Keyword)
+    let baseCost = appliedKeywordsCount * 1;
+
+    // Check for "Restricted (0.0)" Flaw: doubles all keyword costs (Appendix A)
+    const hasRestricted = actor.keywords.includes("0.0") || (actor.flawPackage && actor.flawPackage.flawCode === "0.0");
+    if (hasRestricted) {
+      baseCost *= 2;
+    }
+
+    // Step 2: Apply Innate Reduction (Reduce by Power stat, min 0)
+    const powerReduction = actor.stats.Power || 1;
+    let actualCost = Math.max(0, baseCost - powerReduction);
+
+    // Step 3: Apply Temporary Reductions (e.g. expending a 'Charge' tag)
+    if (useChargeTag && actualCost > 0) {
+      actualCost = Math.max(0, actualCost - 1);
+    }
+
+    return actualCost;
   }
 
+  /**
+   * Executes an Activate action against a target (Layer 2, Section 4.3)
+   */
   static executeActivate(actor, target, options = {}) {
-    // ... code ...
+    const appliedKWs = options.appliedKeywords || [];
+    const chosenStat = options.chosenStat || "Brawn";
+    const useCharge = options.useChargeTag || false;
+
+    // Calculate and deduct Energy Point cost
+    const epCost = this.calculateEPCost(actor, appliedKWs.length, useCharge);
+    if (actor.clocks.ep < epCost) {
+      return { success: false, reason: `Insufficient Energy (EP). Requires ${epCost} EP.` };
+    }
+
+    actor.clocks.ep -= epCost;
+
+    // Execute standard roll using the dice engine
+    const rollResult = StandardDiceRoller.roll(options.hasAdvantage, options.hasDisadvantage);
+    
+    // Evaluate Hook modifiers
+    const context = {
+      evModifier: 0,
+      bypassResistance: false,
+      bypassCover: false,
+      targetValue: "hp",
+      appliedKeywords: appliedKWs,
+      chosenStat
+    };
+
+    // Run active keyword hooks
+    appliedKWs.forEach(kwCode => {
+      const hook = KEYWORD_HOOKS[kwCode];
+      if (hook && hook.beforeRoll) {
+        hook.beforeRoll(actor, target, context);
+      }
+    });
+
+    const statVal = actor.stats[context.chosenStat] || 1;
+    let ev = rollResult.isMiss ? 0 : (rollResult.sr + actor.level + statVal + context.evModifier);
+
+    // Calculate final damage (EV vs Resistance)
+    let damage = 0;
+    if (ev > 0 && !context.bypassResistance) {
+      const targetRes = target.resistance;
+      damage = Math.max(0, ev - targetRes);
+    } else if (context.bypassResistance) {
+      damage = ev;
+    }
+
+    // Apply value loss
+    if (damage > 0) {
+      target.clocks[context.targetValue] = Math.max(0, target.clocks[context.targetValue] - damage);
+    }
+
+    // Run active keyword hooks post-damage
+    appliedKWs.forEach(kwCode => {
+      const hook = KEYWORD_HOOKS[kwCode];
+      if (hook && hook.afterRoll) {
+        hook.afterRoll(actor, target, rollResult, damage, context);
+      }
+    });
+
+    return {
+      success: true,
+      roll: rollResult,
+      ev,
+      damageDealt: damage,
+      epCostPaid: epCost,
+      targetClocks: { ...target.clocks }
+    };
   }
 
+  /**
+   * Executes a physical Maneuver action (Layer 2, Section 4.5)
+   */
   static executeManeuver(actor, target, maneuverType, chosenStat = "Brawn", options = {}) {
-    // ... code ...
+    // Maneuvers cost 1 SP (unless Brawler 3.2 is active/known)
+    const hasBrawler = actor.keywords.includes("3.2");
+    const spCost = hasBrawler ? 0 : 1;
+
+    if (actor.clocks.sp < spCost) {
+      return { success: false, reason: `Insufficient Stamina (SP) to perform maneuver.` };
+    }
+
+    actor.clocks.sp -= spCost;
+
+    const rollResult = StandardDiceRoller.roll(options.hasAdvantage, options.hasDisadvantage);
+    const statVal = actor.stats[chosenStat] || 1;
+    const ev = rollResult.sr + actor.level + statVal;
+
+    const success = ev > target.resistance;
+
+    if (success) {
+      if (maneuverType === "Shove") {
+        target.addCondition("Prone");
+      } else if (maneuverType === "Restrain") {
+        target.addStatusTag("Bind");
+      } else if (maneuverType === "Feint") {
+        target.addCondition("Exposed");
+      }
+    }
+
+    return {
+      success,
+      ev,
+      targetResistance: target.resistance,
+      spPaid: spCost
+    };
   }
 
+  /**
+   * Executes an active Reaction against an incoming strike (Layer 2, Section 4.8)
+   */
   static executeReaction(actor, incomingEV, reactionType, chosenStat = "Alacrity", options = {}) {
-    // ... code ...
+    let spCost = 1; // Default Dodge/Block is 1 SP
+    if (reactionType === "Parry") spCost = 3;
+
+    if (actor.clocks.sp < spCost) {
+      return { success: false, reason: `Insufficient Stamina (SP) to react.` };
+    }
+
+    actor.clocks.sp -= spCost;
+
+    const rollResult = StandardDiceRoller.roll(options.hasAdvantage, options.hasDisadvantage);
+    const statVal = actor.stats[chosenStat] || 1;
+    let ev = rollResult.sr + actor.level + statVal;
+
+    let negated = false;
+
+    if (reactionType === "Avoid" || reactionType === "Parry") {
+      negated = ev > incomingEV;
+    } else if (reactionType === "Resist") {
+      // Block adds Level to the character's base resistance
+      const temporaryRes = actor.resistance + actor.level;
+      negated = temporaryRes >= incomingEV;
+    }
+
+    return {
+      success: negated,
+      reactionEV: ev,
+      spPaid: spCost
+    };
   }
 
-  static executeEffortRoll(actor, challengeClock, chosenStat = "Technique") {
-    // ... code ...
+  /**
+   * Executes an Effort Roll against a non-conflict challenge (Layer 2, Section 5.1)
+   */
+  static executeEffortRoll(actor, challengeClock, chosenStat = "Technique", options = {}) {
+    const rollResult = StandardDiceRoller.roll(options.hasAdvantage, options.hasDisadvantage);
+    const statVal = actor.stats[chosenStat] || 1;
+    const er = rollResult.sr + actor.level + statVal;
+
+    const tn = options.tn || 10;
+    let reduction = 0;
+
+    if (er > tn) {
+      reduction = er - tn;
+    }
+
+    return {
+      er,
+      tn,
+      reduction,
+      roll: rollResult
+    };
   }
 }
 
